@@ -4,24 +4,12 @@
 import Link from '@/components/link/Link';
 import MessageBoxChat from '@/components/MessageBox';
 import { ChatBody, OpenAIModel } from '@/types/types';
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Button,
-  Flex,
-  Icon,
-  Img,
-  Input,
-  Text,
-  useColorModeValue,
-} from '@chakra-ui/react';
+import { Box,Button,Flex,Icon,Img,Input,Text,useColorModeValue,} from '@chakra-ui/react';
+import NextImage, { ImageProps } from 'next/legacy/image';
 import { useEffect, useState } from 'react';
 import { MdAutoAwesome, MdBolt, MdEdit, MdPerson } from 'react-icons/md';
-import Bg from '../public/img/chat/bg-image.png';
+import DoctorModal  from '@/components/doctorModal/Doctor';
+
 
 export default function Chat(props: { apiKeyApp: string }) {
   // Input States
@@ -30,10 +18,19 @@ export default function Chat(props: { apiKeyApp: string }) {
   // Response message
   const [outputCode, setOutputCode] = useState<string>('');
   // ChatGPT model
-  const [model, setModel] = useState<OpenAIModel>('gpt-4o');
+  const [model, setModel] = useState<OpenAIModel>('gpt-3.5-turbo');
   // Loading state
   const [loading, setLoading] = useState<boolean>(false);
 
+  // Loading state
+  const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setInputOnSubmit('의사를 추천해주세요');
+    }, 2000);
+  }, []);
+  
   // API Key
   // const [apiKey, setApiKey] = useState<string>(apiKeyApp);
   const borderColor = useColorModeValue('gray.200', 'whiteAlpha.200');
@@ -57,8 +54,7 @@ export default function Chat(props: { apiKeyApp: string }) {
   );
   const handleTranslate = async () => {
     let apiKey = localStorage.getItem('apiKey');
-    setInputOnSubmit(inputCode);
-
+    
     // Chat post conditions(maximum number of characters, valid message etc.)
     const maxCodeLength = model === 'gpt-4o' ? 700 : 700;
 
@@ -78,9 +74,8 @@ export default function Chat(props: { apiKeyApp: string }) {
       );
       return;
     }
-    setOutputCode(' ');
-    setLoading(true);
-    const controller = new AbortController();
+ 
+    /* const controller = new AbortController();
     const body: ChatBody = {
       inputCode,
       model,
@@ -125,7 +120,7 @@ export default function Chat(props: { apiKeyApp: string }) {
       done = doneReading;
       const chunkValue = decoder.decode(value);
       setOutputCode((prevCode) => prevCode + chunkValue);
-    }
+    } */
 
     setLoading(false);
   };
@@ -288,7 +283,8 @@ export default function Chat(props: { apiKeyApp: string }) {
           direction="column"
           w="100%"
           mx="auto"
-          display={outputCode ? 'flex' : 'none'}
+          //display={outputCode ? 'flex' : 'none'}
+          display={inputOnSubmit ? 'flex' : 'none'}
           mb={'auto'}
         >
           <Flex w="100%" align={'center'} mb="10px">
@@ -356,6 +352,68 @@ export default function Chat(props: { apiKeyApp: string }) {
               />
             </Flex>
             <MessageBoxChat output={outputCode} />
+            <Flex
+              alignItems={"center"}
+              mt="20px"
+              padding={'10px'}
+              justifyContent={'flex-start'}
+              minWidth={'100%'}
+              width={'auto'}
+              minHeight={"50px"}
+              maxHeight={"210px"}
+              overflowX={'auto'}
+            >
+              
+              <Box mr={5} boxSize={200}  flexShrink="0" onClick={() => setIsOpenDoctorModal(!isOpenDoctorModal)}>
+                <NextImage
+                  width="200"
+                  height="200"
+                  src={require("../public/img/sample/doctor1.png")}
+                  alt={'doctor1'}
+                />
+              </Box>
+              <Box mr={5} boxSize={200}  flexShrink="0" onClick={() => setIsOpenDoctorModal(!isOpenDoctorModal)}>
+                <NextImage
+                  width="200"
+                  height="200"
+                  src={require("../public/img/sample/doctor2.jpg")}
+                  alt={'doctor1'}
+                />
+              </Box>
+              <Box mr={5} boxSize={200} flexShrink="0">
+                <NextImage
+                  width="200"
+                  height="200"
+                  src={require("../public/img/sample/doctor1.png")}
+                  alt={'doctor1'}
+                />
+              </Box>
+              <Box mr={5} boxSize={200} flexShrink="0">
+                <NextImage
+                  width="200"
+                  height="200"
+                  src={require("../public/img/sample/doctor2.jpg")}
+                  alt={'doctor1'}
+                />
+              </Box>
+              <Box mr={5} boxSize={200} flexShrink="0">
+                <NextImage
+                  width="200"
+                  height="200"
+                  src={require("../public/img/sample/doctor1.png")}
+                  alt={'doctor1'}
+                />
+              </Box>
+              <Box mr={5} boxSize={200} flexShrink="0">
+                <NextImage
+                  width="200"
+                  height="200"
+                  src={require("../public/img/sample/doctor2.jpg")}
+                  alt={'doctor1'}
+                />
+              </Box>
+
+            </Flex>
           </Flex>
         </Flex>
         {/* Chat Input */}
@@ -400,10 +458,13 @@ export default function Chat(props: { apiKeyApp: string }) {
             onClick={handleTranslate}
             isLoading={loading ? true : false}
           >
-            Submit
+            전송
           </Button>
         </Flex>
-
+        <DoctorModal
+          isOpen={isOpenDoctorModal}
+          setClose={() => setIsOpenDoctorModal(false)}
+        />
         {/* <Flex
           justify="center"
           mt="20px"

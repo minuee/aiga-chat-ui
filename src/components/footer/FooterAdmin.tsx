@@ -52,6 +52,7 @@ export default function Footer() {
             fontSize={{ base: 'xs', md: 'sm' }}
             color={textColor}
             href="https://kormedi.com/"
+            target='_blank'
           >
             회사소개
           </Link>
@@ -67,6 +68,7 @@ export default function Footer() {
             fontSize={{ base: 'xs', md: 'sm' }}
             color={textColor}
             href="https://kormedi.com/%ec%9d%b4%ec%9a%a9%ec%95%bd%ea%b4%80-%ec%bd%94%eb%a9%94%eb%94%94%eb%8b%b7%ec%bb%b4/"
+            target='_blank'
           >
             이용약관
           </Link>
@@ -77,6 +79,7 @@ export default function Footer() {
             fontSize={{ base: 'xs', md: 'sm' }}
             color={textColor}
             href="https://kormedi.com/%ea%b0%9c%ec%9d%b8%ec%a0%95%eb%b3%b4%ec%b2%98%eb%a6%ac%eb%b0%a9%ec%b9%a8-%ec%bd%94%eb%a9%94%eb%94%94%eb%8b%b7%ec%bb%b4/"
+            target='_blank'
           >
             개인정보처리방침
           </Link>
