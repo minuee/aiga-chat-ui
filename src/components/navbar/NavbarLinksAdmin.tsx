@@ -1,34 +1,22 @@
 'use client';
 // Chakra Imports
-import {
-  Box,
-  Button,
-  Center,
-  Flex,
-  Icon,
-  Link,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Text,
-  useColorMode,
-  useColorModeValue,
-} from '@chakra-ui/react';
-import { SearchBar } from '@/components/navbar/searchBar/SearchBar';
+import * as React from 'react';
+import { Box,Button,Center,Flex,Icon,Link,Menu,MenuButton,MenuItem,MenuList,Text,useColorMode,useColorModeValue,} from '@chakra-ui/react';
 import { SidebarResponsive } from '@/components/sidebar/Sidebar';
 import { IoMdMoon, IoMdSunny } from 'react-icons/io';
 import { MdInfoOutline } from 'react-icons/md';
-import APIModal from '@/components/apiModal';
+import NoticerModal  from '@/components/modal/Notice';
 import NavLink from '../link/NavLink';
 import routes from '@/routes';
 
-export default function HeaderLinks(props: {
-  secondary: boolean;
-  setApiKey: any;
-}) {
+export default function HeaderLinks(props: {secondary: boolean;setApiKey: any;}) {
+
   const { secondary, setApiKey } = props;
   const { colorMode, toggleColorMode } = useColorMode();
+
+  // Loading state
+  const [isOpenNoticeModal, setIsOpenNoticeModal] = React.useState<boolean>(false);
+
   // Chakra Color Mode
   const navbarIcon = useColorModeValue('gray.500', 'white');
   let menuBg = useColorModeValue('white', 'navy.800');
@@ -104,6 +92,23 @@ export default function HeaderLinks(props: {
         >
           {/* <Flex bgImage={navImage} borderRadius="16px" mb="28px" alt="" /> */}
           <Flex flexDirection="column">
+            <Link
+              isExternal
+              w="100%"
+            >
+              <Button
+                w="100%"
+                h="44px"
+                variant="no-hover"
+                color={textColor}
+                fontSize="sm"
+                borderRadius="45px"
+                bg="transparent"
+                onClick={() => setIsOpenNoticeModal(!isOpenNoticeModal)}
+              >
+                공지사항
+              </Button>
+            </Link>
             <Link
               isExternal
               w="100%"
@@ -261,6 +266,15 @@ export default function HeaderLinks(props: {
           </Flex>
         </MenuList>
       </Menu>
+      {
+        isOpenNoticeModal && (
+          <NoticerModal
+            isOpen={isOpenNoticeModal}
+            setClose={() => setIsOpenNoticeModal(false)}
+          />
+        )
+      }
+      
     </Flex>
   );
 }

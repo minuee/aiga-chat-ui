@@ -8,7 +8,7 @@ import { Box,Button,Flex,Icon,Img,Input,Text,useColorModeValue,} from '@chakra-u
 import NextImage, { ImageProps } from 'next/legacy/image';
 import { useEffect, useState } from 'react';
 import { MdAutoAwesome, MdBolt, MdEdit, MdPerson } from 'react-icons/md';
-import DoctorModal  from '@/components/doctorModal/Doctor';
+import DoctorModal  from '@/components/modal/Doctor';
 
 
 export default function Chat(props: { apiKeyApp: string }) {

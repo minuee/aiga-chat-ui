@@ -40,8 +40,8 @@ function DoctorModal(props: DoctorModalProps) {
       >
         <DrawerOverlay />
         <DrawerContent
-          w="300px"
-          maxW="300px"
+          w="100%"
+          maxW="350px"
           ms={{
             sm: '16px',
           }}
@@ -57,7 +57,7 @@ function DoctorModal(props: DoctorModalProps) {
             _focus={{ boxShadow: 'none' }}
             _hover={{ boxShadow: 'none' }}
           />
-          <DrawerBody maxW="300px" px="0rem" pb="0">
+          <DrawerBody maxW="350px" px="0rem" pb="0">
             <Scrollbars
               universal={true}
               autoHide
