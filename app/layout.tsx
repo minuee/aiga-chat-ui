@@ -4,6 +4,7 @@ import type { AppProps } from 'next/app';
 import { ChakraProvider, Box, Portal, useDisclosure } from '@chakra-ui/react';
 import theme from '@/theme/theme';
 import routes from '@/routes';
+import Header from '@/components/header/MainHeader';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Footer from '@/components/footer/FooterAdmin';
 import Navbar from '@/components/navbar/NavbarAdmin';
@@ -33,9 +34,23 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body id={'root'}>
         <AppWrappers>
           {/* <ChakraProvider theme={theme}> */}
-          {pathname?.includes('register') || pathname?.includes('sign-in') ? (
-            children
-          ) : (
+          {
+            (pathname?.includes('register') || pathname?.includes('sign-in') || pathname?.includes('chat') ) 
+            ?
+            (
+              children
+            ) 
+            :
+            pathname?.includes('/') 
+            ? 
+            (
+              <Box>
+                <Header />
+                {children} 
+              </Box>
+            )
+            : 
+            (
             <Box>
               {/* <Sidebar setApiKey={setApiKey} routes={routes} /> */}
               <Box
@@ -43,7 +58,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 float="right"
                 minHeight="100vh"
                 height="100%"
-                overflow="auto"
+                overflow="hidden" /* 여기가 중요 */
                 position="relative"
                 maxHeight="100%"
                 w={{ base: '100%', xl: '100%' }}
@@ -66,7 +81,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 </Portal>
                 <Box
                   mx="auto"
-                  p={{ base: '20px', md: '30px' }}
+                  p={{ base: '20px', md: '20px' }}
                   pe="20px"
                   minH="100vh"
                   pt="50px"

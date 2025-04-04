@@ -102,28 +102,12 @@ export default function AdminNavbar(props: {
     >
       <Flex
         w="100%"
-        flexDirection={{
-          base: 'column',
-          md: 'row',
-        }}
+        //flexDirection={{ base: 'column', md: 'row' }}
+        flexDirection={{ base: 'row', sm: 'column' , md: 'row' , lg: 'row'}}
         alignItems={{ xl: 'center' }}
         mb={gap}
       >
         <Box mb={{ base: '8px', md: '0px' }}>
-          <Breadcrumb>
-            {/* <BreadcrumbItem color={secondaryText} fontSize="sm" mb="5px">
-              <BreadcrumbLink href="#" color={secondaryText}>
-                Pages
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-
-            <BreadcrumbItem color={secondaryText} fontSize="sm">
-              <BreadcrumbLink href="#" color={secondaryText}>
-                {brandText}
-              </BreadcrumbLink>
-            </BreadcrumbItem> */}
-          </Breadcrumb>
-          {/* Here we create navbar brand, based on route name */}
           <Link
             color={mainText}
             href="#"
@@ -145,7 +129,7 @@ export default function AdminNavbar(props: {
             {brandText}
           </Link>
         </Box>
-        <Box ms="auto" w={{ sm: '100%', md: 'unset' }}>
+        <Box ms="auto" w={{ sm: '100%', md: 'auto' }}>
           <AdminNavbarLinks setApiKey={setApiKey} secondary={props.secondary} />
         </Box>
       </Flex>

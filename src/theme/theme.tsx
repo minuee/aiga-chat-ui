@@ -9,7 +9,21 @@ import { switchStyles } from './components/switch';
 import { linkStyles } from './components/link';
 import { globalStyles } from './styles';
 
+const breakpoints = {
+  base: '0em',
+  sm: '30em',
+  mobile : "380px",
+  tablet : "1024px",
+  md: '48em',
+  lg: '62em',
+  xl: '80em',
+  '2xl': '96em',
+ 
+}
+
+
 export default extendTheme(
+  breakpoints,
   globalStyles,
   badgeStyles, // badge styles
   buttonStyles, // button styles

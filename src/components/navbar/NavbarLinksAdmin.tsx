@@ -45,7 +45,8 @@ export default function HeaderLinks(props: {secondary: boolean;setApiKey: any;})
   return (
     <Flex
       zIndex="100"
-      w={{ sm: '100%', md: 'auto' }}
+      //w={{ sm: '100%', md: 'auto' }}
+      w={'auto'}
       alignItems="center"
       justifyContent={'flex-end'}
       flexDirection="row"
