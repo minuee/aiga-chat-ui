@@ -14,10 +14,6 @@ export const sungwonjungThumb = [
   {
     idx : 4,
     name : '서브 안내 4',
-  },
-  {
-    idx : 5,
-    name : '서브 안내 5',
   }
 ]
 

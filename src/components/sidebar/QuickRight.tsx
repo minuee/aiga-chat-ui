@@ -3,10 +3,12 @@
 import * as React from 'react';
 import Link from "next/link"
 import Image from 'next/image';
-import { Box,Stack,Flex,Icon,Img,Input,Text,Progress,} from '@chakra-ui/react';
+import { Box,Button,Flex,Icon,Img,Input,Text,Progress,} from '@chakra-ui/react';
+
+import PopWondowScreen from "@/components/modal/popWindow";
+import ChatScreenModal  from '@/components/modal/ChatScreen';
+
 import BgImage from "@/assets/images/etc/sub-quick-bar-box.png";
-
-
 import IconInfo from "@/assets/images/etc/icon-sub-quick-info.png";
 import IconEvent from "@/assets/images/etc/icon-sub-quick-event.png";
 import IconReservation from "@/assets/images/etc/icon-sub-quick-reservation.png";
@@ -16,7 +18,8 @@ type QuickRightProps = {
   isMode? : string;
 };
 const QuickRight : React.FC<QuickRightProps> = ({isMode}) => {
- 
+  const [isOpenDoctorModal, setIsOpenDoctorModal] = React.useState<boolean>(false);
+
   return (
       <Box sx={styles.mainWrapper}>
         <Image 
@@ -29,36 +32,54 @@ const QuickRight : React.FC<QuickRightProps> = ({isMode}) => {
              href="/chat"
             target='_blank'
           >
-          <Image 
-            src={IconInfo}  
-            alt="slide" 
-            style={{width:'25px',objectFit: 'contain',marginBottom:'3px'}}
-          />  
-          <Text variant="sourceHanSans" sx={styles.titleStyle}>
-            AIGA
-          </Text>
+            <Flex flexDirection={'column'} alignItems='center'>
+              <Image 
+                src={IconInfo}  
+                alt="slide" 
+                style={{width:'25px',objectFit: 'contain',marginBottom:'3px'}}
+              />  
+              <Text variant="sourceHanSans" sx={styles.titleStyle}>
+                Page이동
+              </Text>
+            </Flex>
+          
           </Link>
         </Box>
         <Box sx={styles.middleWrapper} >
-          <Image 
-            src={IconEvent}  
-            alt="slide" 
-            style={{width:'25px',objectFit: 'contain',marginBottom:'3px'}}
-          />  
-          <Text variant="sourceHanSans" sx={styles.titleStyle}>
-            Event
-          </Text>
+          <PopWondowScreen
+            url="/chat"
+            window_width={450}
+            window_height={900}
+          >
+            <Flex flexDirection={'column'} alignItems='center'>
+              <Image 
+                src={IconEvent}  
+                alt="slide" 
+                style={{width:'25px',objectFit: 'contain',marginBottom:'3px'}}
+              />  
+              <Text variant="sourceHanSans" sx={styles.titleStyle}>
+                Window
+              </Text>
+            </Flex>
+          </PopWondowScreen>
         </Box>
         <Box sx={styles.bottomWrapper} >
-          <Image 
-            src={IconReservation}  
-            alt="slide" 
-            style={{width:'25px',objectFit: 'contain',marginBottom:'3px'}}
-          />  
-          <Text variant="sourceHanSans" sx={styles.titleStyle}>
-            예약
-          </Text>
+          <Flex flexDirection={'column'} alignItems='center' onClick={() => setIsOpenDoctorModal(!isOpenDoctorModal)}>
+            <Image 
+                src={IconReservation}  
+                alt="slide" 
+                style={{width:'25px',objectFit: 'contain',marginBottom:'3px'}}
+              />  
+              <Text variant="sourceHanSans" sx={styles.titleStyle}>
+                Drawer
+              </Text>
+            </Flex>
         </Box>
+        <ChatScreenModal
+          isOpen={isOpenDoctorModal}
+          setClose={() => setIsOpenDoctorModal(false)}
+        />
+
       </Box>
   );
 }

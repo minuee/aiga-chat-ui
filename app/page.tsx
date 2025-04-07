@@ -1,12 +1,14 @@
 'use client';
 /*eslint-disable*/
 
-import React from 'react';
+import React, { Children } from 'react';
 import { Box,Stack,Flex,Icon,Img,Input,Text,Progress,} from '@chakra-ui/react';
 import Image from "next/image";
 import Footer from '@/components/footer/MainFooter';
 import * as mConst from "@/utils/constants";
 import QuickRight from "@/components/sidebar/QuickRight";
+import DepWindow from "@/components/modal/DepWindow";
+
 
 import MainBgImage from "@/assets/images/etc/bg_1.png";
 import MainBgImage2 from "@/assets/images/etc/bg_2.png";
@@ -20,7 +22,9 @@ export default function MainPage(props: { apiKeyApp: string }) {
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [showPopDetail, setShowPopDetail] = React.useState(9);
   const [progress, setProgress] = React.useState(0);
+  const [isOpenWindow, setOpenWindow] = React.useState(false);
   const elementRef = React.useRef(null);
+
   const onClickChageIndex = React.useCallback(
     (num:number,element:any) => {
       setActiveIndex(num);
@@ -35,7 +39,7 @@ export default function MainPage(props: { apiKeyApp: string }) {
       setProgress((oldProgress) => {
           
         if (oldProgress === 100) {
-          if ( activeIndex == 4 ) {
+          if ( activeIndex == mConst.sungwonjungThumb.length ) {
               setActiveIndex(0)
           }else{
               setActiveIndex(activeIndex+1)
@@ -63,6 +67,8 @@ export default function MainPage(props: { apiKeyApp: string }) {
   const openQuickMenu = (val:number) => {
       setShowPopDetail(val);
   }
+
+
 
   return (
     <Box sx={styles.wrapper} minWidth={{base:'100%', md:'1600px'}} minHeight={{base:'100%', md:'100vh'}} >
@@ -107,7 +113,7 @@ export default function MainPage(props: { apiKeyApp: string }) {
           </Text>
         </Box>
         <Box sx={styles.miniWrapper} minWidth={{base:'100%', md:'1600px'}} ref={elementRef} >
-          <Box sx={styles.miniInsideWrapper} minWidth={{base:'100%', md:'1100px'}} >
+          <Box sx={styles.miniInsideWrapper} minWidth={{base:'100%', md:'850px'}} >
             {
               mConst.sungwonjungThumb.map((item:any,index:number) => {
                 return (
@@ -139,6 +145,18 @@ export default function MainPage(props: { apiKeyApp: string }) {
       <Box sx={{position:'absolute',left:0,top:"100vh",width:'100%',heigth:"100px",backgroundColor:"#ffffff"}}>
         <Footer />
       </Box>
+
+      
+      {/* { isOpenWindow && (
+        <DepWindow
+          title="주문정보 새창보기"
+          width={800}
+          height={600}
+          closeWindowPortal={() => setOpenWindow(false)}
+        >
+          {clonedElement}
+        </DepWindow>
+      )} */}
     </Box>
   )
 }

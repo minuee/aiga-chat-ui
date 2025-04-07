@@ -11,7 +11,7 @@ import { MdAutoAwesome, MdBolt, MdEdit, MdPerson } from 'react-icons/md';
 import DoctorModal  from '@/components/modal/Doctor';
 
 
-export default function Chat(props: { apiKeyApp: string }) {
+export default function Chat() {
   // Input States
   const [inputOnSubmit, setInputOnSubmit] = useState<string>('');
   const [inputCode, setInputCode] = useState<string>('');
