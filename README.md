@@ -1,97 +1,216 @@
-# [Horizon ChatGPT AI Template](https://horizon-ui.com/chatgpt-ai-template) [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&logo=twitter)](https://twitter.com/intent/tweet?text=Check%20Horizon%20ChatGPT%20AI%20Template,%20the%20trendiest%20open%20source%20ChatGPT%20AI%20admin%20template%20for%20%23nextjs%20and%20%23react!%0A%0Ahttps%3A//horizon-ui.com/chatgpt-ai-template/%20%20)
 
-![version](https://img.shields.io/badge/version-3.0.0-brightgreen.svg)
-[![GitHub issues open](https://img.shields.io/github/issues/horizon-ui/chatgpt-ai-template.svg?maxAge=2592000)](https://github.com/horizon-ui/chatgpt-ai-template/issues?q=is%3Aopen+is%3Aissue)
+### Installation
 
-<p>&nbsp;</p>
+1. Clone the repo
+   ```
+   git clone http://10.4.20.180:8081/gitlab-instance-e12220eb/sw_frontend_groupwareapp.git
+   ```
+2. 서버 환경설정(options)
+    ```
+    ```
+3. 라이브러리 설치
+    ```
+    $npm install
+    ```
+    
+    만약 에러가 있다면
+    ```
+    $npm install --force
 
-[<img alt="Horizon UI - Tailwind CSS React Admin dashboard template" src="https://i.ibb.co/mqnbX1Y/horizon-ai-template-presentation-image-open-source.png" />](https://horizon-ui.com/ai-template)
+    ```
 
-<p>&nbsp;</p>
+4. 실행 (package.json의 script 참조)
+    
+   ```
+   $npm run dev OR $yarn dev
+   ```
+  
+## Framework 설명
+1. Node
+    ```
+    nvm use 20
+    ```
+2. React v19 with NextJs ON TypeScript
+    ```
+    px create-next-app@latest project "project_name" --version 0.70
+    ```
+3. Style 
+    ```
+    react-native core stylesheet활용
+    ```
+4. Statement Adminstor
+    ```
+    (내장)context-api
+    ```
+5. Navigation 
+    ```
+    yarn add react-navigation // v6임
+    ```
+6. Networking 
+    ```
+    (내장)fetch _ costomize minueefetch활용
+    yarn add react-query //this is option 
+    ```
 
-Get started and build your dream AI web app with Horizon AI Template, the trendiest & innovative Open-Source Free ChatGPT AI Admin Template for NextJS & React!
+### 주요 기능 안내
+1. Module추가
+    ```
+    yarn add react-query ( 서버상태관리 _ 필요시에만 )
 
----
-
-### Introduction
-
-Horizon ChatGPT AI Template is the world's best open source OpenAI ChatGPT AI Template made with React, NextJS and Chakra UI! Start creating outstanding Chat AI SaaS Apps faster.
-
-It comes with over 30+ dark/light frontend individual elements, like buttons, inputs, navbars, nav tabs, cards, or alerts, giving you the freedom of choosing and combining.
-
-### Documentation
-
-Each element is well presented in a very complex documentation. You can read more about the <a href="https://horizon-ui.com/docs-ai-template/docs/introduction?ref=readme-horizon-ai-template-free" target="_blank">documentation here.</a>
-
-### Quick Start
-
-Install Horizon ChatGPT AI Template by running either of the following:
-
-- Install NodeJS LTS from [NodeJs Official Page](https://nodejs.org/en/?ref=horizon-documentation) (NOTE: Product only works with LTS version)
-
-Clone the repository with the following command:
-
-```bash
-git clone https://github.com/horizon-ui/chatgpt-ai-template.git
+    ```
+## File & Directory 구조
+```
+aiga_frontend_userSite
+├── app                     => 페이징 설정
+│   ├── api                 => 로컬 API 주소 ( 주로 테스트 )
+│   ├── chat                => 챗봇 메인화면
+│   ├── layout              => auth, non-auth등 구분에 의한 레이아웃
+│   └── page                => root index page
+├── node_modules            => library
+├── src
+│   ├── assets              => 각종 이미지,글꼴,아이콘등
+│   ├── components          => 공통 단위 컴포넌트 관리
+│   ├── contexts            => react Core형 state management
+│   ├── style               => style, theme등 설정
+│   ├── types               => typescript type 설정 
+│   └── utils               => 각종함수
+├── assets                  => 위 assets 상세
+│   ├── icons               => icons files
+│   ├── images              => images files
+│   ├── fonts               => custom fonts
+│   └── etc                 => etc files
+├── .gitignore              => git 관리 비대상 설정 파일
+├── .env                    => 환경설정파일
+├── next.config.js          => nextjs 설정파일
+├── pacakge-lock.json       => 의존성에 관한 구체적인 정보를 갖는 파일(package-lock.json이 있을경우 package.json을 참조하지 않는다)
+├── package.json            => Module정보 설정 파일
+├── README.md               => 프로젝트 설명 파일
+├── tsconfig.json           => typescript 설정 파일
+└── yarn.lock               => yarn의 package-lock.json
 ```
 
-Run in the terminal this command:
+### Original README.md
+# Getting Started with Create React App
 
-```bash
-npm install
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Available Scripts
+
+In the project directory, you can run:
+
+### `npm start`
+### "start": "react-app-rewired start",
+
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
+
+### `npm test`
+
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+### `npm run build`
+"build": "react-app-rewired build && open build",
+
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+
+# original sw_frontend_groupwareapp`s README
+
+## Getting started
+
+To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+
+Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+
+## Add your files
+
+- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
+- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+
+```
+cd existing_repo
+git remote add origin http://10.4.20.180:8081/gitlab-instance-e12220eb/sw_frontend_groupwareapp.git
+git branch -M main
+git push -uf origin main
 ```
 
-Then run this command to start your local server
+## Integrate with your tools
 
-```bash
-npm run dev
-```
+- [ ] [Set up project integrations](http://10.4.20.180:8081/gitlab-instance-e12220eb/sw_frontend_groupwareapp/-/settings/integrations)
 
-### Your API Key is not working?
+## Collaborate with your team
 
-- Make sure you have an [OpenAI account](https://platform.openai.com/account) and a valid API key to use ChatGPT. We don't sell API keys.
-- Make sure you have your billing info added in [OpenAI Billing page](https://platform.openai.com/account/billing/overview). Without billing info, your API key will not work.
-- The app will connect to the OpenAI API server to check if your API Key is working properly.
+- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
+- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
+- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
+- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
+- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
 
-### Example Page
+## Test and Deploy
 
-If you want to get inspiration or just show something directly to your clients, you can jump start your development with our pre-built example page. You will be able to quickly set up the basic structure for your web project.
+Use the built-in continuous integration in GitLab.
 
-View <a href="https://horizon-ui.com/chatgpt-ai-template/?ref=readme-horizon-ai-template-free" target="_blank">example pages here.</a>
+- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
+- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
+- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
+- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
+- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
 
-### Versions
+***
 
-| Free Version                                                                                                                                                         | PRO Version                                                                                                                                                                   |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [![Horizon ChatGPT AI Template](https://i.ibb.co/Qmym1qt/horizon-ai-template-presentation-image-open-source.png)](https://github.com/horizon-ui/chatgpt-ai-template) | [![Horizon AI Template PRO](https://i.ibb.co/ChL2fvf/horizon-ai-template-presentation-image.png)](https://www.horizon-ui.com/ai-template?ref=readme-horizon-ai-template-free) |
+# Editing this README
 
-### Figma Version
+When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
 
-Horizon AI Template is available in Figma format as well! [Check it out here](https://www.figma.com/community/file/1253038328954459768)! 🎨
+## Suggestions for a good README
+Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
 
-### Reporting Issues
+## Name
+Choose a self-explaining name for your project.
 
-We use GitHub Issues as the official bug tracker for the Horizon UI. Here are
-some advices for our users that want to report an issue:
+## Description
+Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
 
-1. Make sure that you are using the latest version of the Horizon AI Template.
-   Check the CHANGELOG from your dashboard on our
-   [CHANGE LOG File](https://github.com/horizon-ui/chatgpt-ai-template/blob/main/CHANGELOG.md?ref=readme-horizon-ai-template-free).
-2. Providing us reproducible steps for the issue will shorten the time it takes
-   for it to be fixed.
-3. Some issues may be browser specific, so specifying in what browser you
-   encountered the issue might help.
+## Badges
+On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
 
----
+## Visuals
+Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
 
-### Community
+## Installation
+Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-Connect with the community! Feel free to ask questions, report issues, and meet new people that already use Horizon AI Template!
+## Usage
+Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-💬 [Join the #HorizonUI Discord Community!](https://discord.gg/f6tEKFBd4m)
+## Support
+Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
 
-### Copyright and license
+## Roadmap
+If you have ideas for releases in the future, it is a good idea to list them in the README.
 
-⭐️ [Copyright 2023 Horizon UI ](https://www.horizon-ui.com/?ref=readme-horizon-ai-template-free)
+## Contributing
+State if you are open to contributions and what your requirements are for accepting them.
 
-📄 [Horizon UI License](https://horizon-ui.notion.site/End-User-License-Agreement-8fb09441ea8c4c08b60c37996195a6d5)
+For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+
+You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+
+## Authors and acknowledgment
+Show your appreciation to those who have contributed to the project.
+
+## License
+For open source projects, say how it is licensed.
+
+## Project status
+If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.

@@ -5,7 +5,7 @@ import '@/styles/Contact.css';
 import '@/styles/Plugins.css';
 import '@/styles/MiniCalendar.css';
 import { ChakraProvider } from '@chakra-ui/react';
-
+import { useReportWebVitals } from 'next/web-vitals'
 // import dynamic from 'next/dynamic';
 import theme from '@/theme/theme';
 
@@ -18,6 +18,9 @@ const _NoSSR = ({ children }: any) => (
 // });
 
 export default function AppWrappers({ children }: { children: ReactNode }) {
+  useReportWebVitals((metric) => {
+    console.log(metric)
+  })
   return (
     // <NoSSR>
     <ChakraProvider theme={theme}>{children}</ChakraProvider>
