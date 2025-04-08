@@ -1,12 +1,12 @@
 'use client';
 /*eslint-disable*/
 
-import Link from '@/components/link/Link';
+import functions from '@/utils/functions';
 import MessageBoxChat from '@/components/MessageBox';
 import { ChatBody, OpenAIModel } from '@/types/types';
-import { Box,Button,Flex,Icon,Img,Input,Text,useColorModeValue,} from '@chakra-ui/react';
+import { Box,Button,Flex,Icon,Textarea,Input,Text,useColorModeValue,} from '@chakra-ui/react';
 import NextImage, { ImageProps } from 'next/legacy/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useState,useRef } from 'react';
 import { MdAutoAwesome, MdBolt, MdEdit, MdPerson } from 'react-icons/md';
 import DoctorModal  from '@/components/modal/Doctor';
 
@@ -16,18 +16,18 @@ export default function Chat() {
   const [inputOnSubmit, setInputOnSubmit] = useState<string>('');
   const [inputCode, setInputCode] = useState<string>('');
   // Response message
-  const [outputCode, setOutputCode] = useState<string>('');
+  const [outputCode, setOutputCode] = useState<any>([]);
   // ChatGPT model
   const [model, setModel] = useState<OpenAIModel>('gpt-3.5-turbo');
   // Loading state
   const [loading, setLoading] = useState<boolean>(false);
-
+  const scrollRef = useRef<HTMLDivElement>(null);
   // Loading state
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
 
   useEffect(() => {
     setTimeout(() => {
-      setInputOnSubmit('의사를 추천해주세요');
+      //setInputOnSubmit('의사를 추천해주세요');
     }, 2000);
   }, []);
   
@@ -52,7 +52,74 @@ export default function Chat() {
     { color: 'gray.500' },
     { color: 'whiteAlpha.600' },
   );
-  const handleTranslate = async () => {
+
+  const handleTranslate = async() => {
+    console.log('handleTranslate ', inputCode);
+    if ( functions.isEmpty(inputCode)) return;
+    const msgLen = parseInt(outputCode.length+1);
+    setOutputCode((prevCode: any[]) => [...prevCode, { ismode: "me", msg: inputCode }]);
+    setInputCode('')
+    console.log('handleTranslate ', outputCode);
+    const response = await fetch('http://localhost:9999/api/v1/see',{credentials: 'include'});
+    const reader = response?.body?.getReader();
+
+    const decoder = new TextDecoder();
+    
+    let streamData:string = "";
+    while (true) {
+      const { value, done } : any = await reader?.read();
+    
+      if (done) {
+        setLoading(false);
+        console.log('🔚 스트림 종료됨');
+        break;
+      }
+    
+      const chunk = decoder.decode(value, { stream: true });
+      console.log('📥 받은 메시지:', chunk);
+     
+      if ( chunk ) {
+        //setOutputCode((prevCode) => prevCode + chunk);
+        //setOutputCode((prevCode:any) => prevCode.push({ismode:"server",msg:chunk}));
+        streamData = streamData.concat(chunk);
+      }else{
+        console.error('data가 null입니다. getReader를 호출할 수 없습니다.');
+      }
+      //setOutputCode((prevCode: any[]) => [...prevCode, { ismode: "server", msg: streamData }]);
+      // 필요하다면 chunk를 파싱해서 처리하세요 (예: data: ... 형식 파싱)
+      setOutputCode((prevCode: any[]) => {
+       
+        const newArray = [...prevCode];
+        const lastIndex = msgLen;
+        if ( !newArray[lastIndex]?.msg ) {
+          newArray[lastIndex] = {
+            ismode : 'server',
+            msg:chunk,
+          };
+        }else{
+          const tmpMsg = prevCode[lastIndex].msg;
+          newArray[lastIndex] = {
+            ...prevCode[lastIndex],
+            msg: tmpMsg.concat(chunk)
+          };
+        }
+        
+        return newArray;
+      });
+    }
+    //setOutputCode((prevCode: any[]) => [...prevCode, { ismode: "server", msg: streamData }]);
+    //if (scrollRef?.current) scrollRef?.current.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+  }
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      scrollRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 0); // or 100ms 정도로 조정 가능
+    console.log("outputCode",outputCode)
+    return () => clearTimeout(timeout);
+  }, [outputCode]);
+  
+
+  const handleTranslate_old = async () => {
     let apiKey = localStorage.getItem('apiKey');
     
     // Chat post conditions(maximum number of characters, valid message etc.)
@@ -83,7 +150,7 @@ export default function Chat() {
     };
 
     // -------------- Fetch --------------
-    const response = await fetch('./api/chatAPI', {
+    /* const response = await fetch('./api/chatAPI', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -100,27 +167,76 @@ export default function Chat() {
         );
       }
       return;
+    } */
+    /* const response = await fetch('http://localhost:9999/api/v1/see', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include'
+      //signal: controller.signal
+    }); */
+
+   /*  const eventSource = new EventSource('http://localhost:9999/api/v1/see',{withCredentials: true});
+
+    let response: {
+      ok: boolean;
+      data: ReadableStream<Uint8Array> | null;
+    } = {
+      ok: false,
+      data: null
+    };
+    eventSource.onmessage = function (event) {
+      response = {
+        ok : true,
+        data : event.data
+      }
+      console.log('받은 데이터:', response);
+    };
+
+    eventSource.onerror = function (err) {
+      response = {
+        ok : false,
+        data : null
+      }
+      console.error('SSE 연결 오류:', err);
+    };
+
+    console.log('response ',response);
+
+    if (!response?.ok) {
+      setLoading(false);
+      if (response) {
+        alert(
+          'Something went wrong went fetching from the API. Make sure to use a valid API key.',
+        );
+      }
+      return;
     }
 
-    const data = response.body;
-
+    const data = response?.data;
+    console.log('response data',data);
     if (!data) {
       setLoading(false);
       alert('Something went wrong');
       return;
     }
-
-    const reader = data.getReader();
-    const decoder = new TextDecoder();
-    let done = false;
-
-    while (!done) {
-      setLoading(true);
-      const { value, done: doneReading } = await reader.read();
-      done = doneReading;
-      const chunkValue = decoder.decode(value);
-      setOutputCode((prevCode) => prevCode + chunkValue);
-    }
+    if ( data ) {
+      const reader = data?.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+  
+      while (!done) {
+        setLoading(true);
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+        const chunkValue = decoder.decode(value);
+        setOutputCode((prevCode) => prevCode + chunkValue);
+      }
+    }else{
+      console.error('data가 null입니다. getReader를 호출할 수 없습니다.');
+    } */
+    
 
     //setLoading(false);
   };
@@ -167,8 +283,9 @@ export default function Chat() {
         direction="column"
         mx="auto"
         w={{ base: '100%',sm : '100%', md: '100%', xl: '100%' }}
-       
+        overflowY='scroll'
         minH={{ base: '75vh', '2xl': '85vh' }}
+        maxH={{ base: '75vh', '2xl': '85vh' }}
         maxW="1024px"
       >
         <Flex direction={'column'} w="100%" mb={outputCode ? '20px' : 'auto'}>
@@ -178,77 +295,85 @@ export default function Chat() {
         <Flex
           direction="column"
           w="100%"
+          maxH={{ base: '75vh', '2xl': '85vh' }}
+          overflowY='auto'
           mx="auto"
-          //display={outputCode ? 'flex' : 'none'}
-          display={inputOnSubmit ? 'flex' : 'none'}
+          display={outputCode ? 'flex' : 'none'}
           mb={'auto'}
         >
-          <Flex w="100%" align={'center'} mb="10px">
-            <Flex
-              borderRadius="full"
-              justify="center"
-              align="center"
-              bg={'transparent'}
-              border="1px solid"
-              borderColor={borderColor}
-              me="20px"
-              h="40px"
-              minH="40px"
-              minW="40px"
-            >
-              <Icon
-                as={MdPerson}
-                width="20px"
-                height="20px"
-                color={brandColor}
-              />
-            </Flex>
-            <Flex
-              p="22px"
-              border="1px solid"
-              borderColor={borderColor}
-              borderRadius="14px"
-              w="100%"
-              zIndex={'2'}
-            >
-              <Text
-                color={textColor}
-                fontWeight="600"
-                fontSize={{ base: 'sm', md: 'md' }}
-                lineHeight={{ base: '24px', md: '26px' }}
-              >
-                {inputOnSubmit}
-              </Text>
-              <Icon
-                cursor="pointer"
-                as={MdEdit}
-                ms="auto"
-                width="20px"
-                height="20px"
-                color={gray}
-              />
-            </Flex>
-          </Flex>
-          <Flex w="100%">
-            <Flex
-              borderRadius="full"
-              justify="center"
-              align="center"
-              bg={'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)'}
-              me="20px"
-              h="40px"
-              minH="40px"
-              minW="40px"
-            >
-              <Icon
-                as={MdAutoAwesome}
-                width="20px"
-                height="20px"
-                color="white"
-              />
-            </Flex>
-            <MessageBoxChat output={outputCode} />
-            <Flex
+            {
+              outputCode?.length > 0 && 
+              outputCode.map((element:any,index:number) => {
+                if ( element.ismode == 'me') {
+                  return (
+                    <Flex w="100%" align={'center'} mb="10px" key={index} justifyContent='flex-end'>
+                      <Flex
+                        p="10px"
+                        border="1px solid"
+                        borderColor={borderColor}
+                        borderRadius="14px"
+                        w="auto"
+                        zIndex={'2'}
+                      >
+                        <Text
+                          color={textColor}
+                          fontWeight="600"
+                          fontSize={{ base: 'sm', md: 'md' }}
+                          lineHeight={{ base: '24px', md: '26px' }}
+                          whiteSpace="pre-line"
+                        >
+                          {element?.msg}
+                        </Text>
+                      </Flex>
+                      <Flex
+                        borderRadius="full"
+                        justify="center"
+                        align="center"
+                        bg={'transparent'}
+                        border="1px solid"
+                        borderColor={borderColor}
+                        ms="10px"
+                        h="40px"
+                        minH="40px"
+                        minW="40px"
+                      >
+                        <Icon
+                          as={MdPerson}
+                          width="20px"
+                          height="20px"
+                          color={brandColor}
+                        />
+                      </Flex>
+                    </Flex>
+                  )
+                }else{
+                  return (
+                    <Flex w="100%" key={index} mb="10px">
+                      <Flex
+                        borderRadius="full"
+                        justify="center"
+                        align="center"
+                        bg={'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)'}
+                        me="10px"
+                        h="40px"
+                        minH="40px"
+                        minW="40px"
+                      >
+                        <Icon
+                          as={MdAutoAwesome}
+                          width="20px"
+                          height="20px"
+                          color="white"
+                        />
+                      </Flex>
+                      <MessageBoxChat output={element.msg} />
+                    </Flex>
+                  )
+                }
+              })
+            }
+            <Box ref={scrollRef} h="1px" />
+            {/* <Flex
               alignItems={"center"}
               mt="20px"
               padding={'10px'}
@@ -308,9 +433,7 @@ export default function Chat() {
                   alt={'doctor1'}
                 />
               </Box>
-
-            </Flex>
-          </Flex>
+            </Flex> */}
         </Flex>
         {/* Chat Input */}
         <Flex
@@ -318,11 +441,12 @@ export default function Chat() {
           mt="20px"
           justifySelf={'flex-end'}
         >
-          <Input
+          <Textarea
             minH="54px"
             h="100%"
             border="1px solid"
             borderColor={borderColor}
+        
             borderRadius="45px"
             p="15px 20px"
             me="10px"
@@ -331,6 +455,7 @@ export default function Chat() {
             _focus={{ borderColor: 'none' }}
             color={inputColor}
             _placeholder={placeholderColor}
+            value={inputCode}
             placeholder="Type your message here..."
             onChange={handleChange}
           />
