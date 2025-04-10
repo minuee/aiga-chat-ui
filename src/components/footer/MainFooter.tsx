@@ -12,7 +12,7 @@ import {
 import Link from '@/components/link/Link';
 
 export default function Footer() {
-  const textColor = useColorModeValue('gray.500', 'white');
+  const textColor = useColorModeValue('gray.500', 'black');
   return (
     <Flex
       zIndex="3"

@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from 'next/image';
 import { Box,Button,Flex,Icon,Img,Input,Text,Progress,} from '@chakra-ui/react';
 
-import PopWondowScreen from "@/components/modal/popWindow";
+import PopWondowScreen from "@/components/modal/PopWindow";
 import ChatScreenModal  from '@/components/modal/ChatScreen';
 
 import BgImage from "@/assets/images/etc/sub-quick-bar-box.png";
@@ -48,8 +48,8 @@ const QuickRight : React.FC<QuickRightProps> = ({isMode}) => {
         <Box sx={styles.middleWrapper} >
           <PopWondowScreen
             url="/chat"
-            window_width={450}
-            window_height={900}
+            window_width={500}
+            window_height={750}
           >
             <Flex flexDirection={'column'} alignItems='center'>
               <Image 

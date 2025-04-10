@@ -24,8 +24,6 @@ const PopWindowScreen: React.FC<PopWindowProps> = ({
       const top = height / 2 - window_height / 2 + dualScreenTop;
   
       const features = `
-        noopener,
-        noreferrer,
         width=${window_width},
         height=${window_height},
         top=${top},

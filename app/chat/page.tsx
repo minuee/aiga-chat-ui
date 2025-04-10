@@ -266,36 +266,31 @@ export default function Chat() {
   return (
     <Flex
       w="100%"
-      pt={{ base: '70px', md: '0px' }}
+      //pt={{ base: '0px', lg: '70px' }}
       direction="column"
       position="relative"
-      //bg={{ sm : 'red', md: 'yellow', xl: 'blue' }}
     >
-      {/* <Img
-        src={Bg.src}
-        position={'absolute'}
-        w="350px"
-        left="50%"
-        top="50%"
-        transform={'translate(-50%, -50%)'}
-      /> */}
       <Flex
         direction="column"
         mx="auto"
         w={{ base: '100%',sm : '100%', md: '100%', xl: '100%' }}
         overflowY='scroll'
-        minH={{ base: '75vh', '2xl': '85vh' }}
-        maxH={{ base: '75vh', '2xl': '85vh' }}
+        //minH={{ base: '75vh', md: '85vh'  }}
+        //minH="calc(100vh - 150px)"
+        //maxH={{ base: '75vh', md: '85vh'  }}
+        //height={`calc(var(--vh, 1vh) * 85)`}
         maxW="1024px"
+        minH="calc(100vh - 150px)"
       >
-        <Flex direction={'column'} w="100%" mb={outputCode ? '20px' : 'auto'}>
+        {/* <Flex direction={'column'} w="100%" mb={outputCode ? '20px' : 'auto'}>
           
-        </Flex>
-        
+        </Flex> */}
         <Flex
           direction="column"
           w="100%"
-          maxH={{ base: '75vh', '2xl': '85vh' }}
+          //maxH={{ base: '75vh', md: '85vh' }}
+          //height={`calc(var(--vh, 1vh) * 100)`}
+          maxH="calc(100vh - 200px)"
           overflowY='auto'
           mx="auto"
           display={outputCode ? 'flex' : 'none'}
@@ -373,82 +368,33 @@ export default function Chat() {
               })
             }
             <Box ref={scrollRef} h="1px" />
-            {/* <Flex
-              alignItems={"center"}
-              mt="20px"
-              padding={'10px'}
-              justifyContent={'flex-start'}
-              minWidth={'100%'}
-              width={'auto'}
-              minHeight={"50px"}
-              maxHeight={"210px"}
-              overflowX={'auto'}
-            >
-              
-              <Box mr={5} boxSize={200}  flexShrink="0" onClick={() => setIsOpenDoctorModal(!isOpenDoctorModal)}>
-                <NextImage
-                  width="200"
-                  height="200"
-                  src={require("../../public/img/sample/doctor1.png")}
-                  alt={'doctor1'}
-                />
-              </Box>
-              <Box mr={5} boxSize={200}  flexShrink="0" onClick={() => setIsOpenDoctorModal(!isOpenDoctorModal)}>
-                <NextImage
-                  width="200"
-                  height="200"
-                  src={require("../../public/img/sample/doctor2.jpg")}
-                  alt={'doctor1'}
-                />
-              </Box>
-              <Box mr={5} boxSize={200} flexShrink="0">
-                <NextImage
-                  width="200"
-                  height="200"
-                  src={require("../../public/img/sample/doctor1.png")}
-                  alt={'doctor1'}
-                />
-              </Box>
-              <Box mr={5} boxSize={200} flexShrink="0">
-                <NextImage
-                  width="200"
-                  height="200"
-                  src={require("../../public/img/sample/doctor2.jpg")}
-                  alt={'doctor1'}
-                />
-              </Box>
-              <Box mr={5} boxSize={200} flexShrink="0">
-                <NextImage
-                  width="200"
-                  height="200"
-                  src={require("../../public/img/sample/doctor1.png")}
-                  alt={'doctor1'}
-                />
-              </Box>
-              <Box mr={5} boxSize={200} flexShrink="0">
-                <NextImage
-                  width="200"
-                  height="200"
-                  src={require("../../public/img/sample/doctor2.jpg")}
-                  alt={'doctor1'}
-                />
-              </Box>
-            </Flex> */}
         </Flex>
         {/* Chat Input */}
-        <Flex
+        {/* <Flex
           ms={{ base: '0px', xl: '60px' }}
           mt="20px"
+          maxH="60px"
           justifySelf={'flex-end'}
+        > */}
+        <Flex
+          position="fixed"          // ✅ 고정 위치
+          bottom="0"                // ✅ 화면 하단에 붙임
+          left="0"
+          w="100%"                  // ✅ 전체 너비
+          px="20px"                 // 양쪽 여백
+          py="10px"                 // 위아래 여백
+          bg="white"                // 배경색 (필수! 안 넣으면 뒤 채팅이 비쳐요)
+          zIndex="100"              // 채팅보다 위에 오게
+          //boxShadow="0 -2px 10px rgba(0,0,0,0.05)" // 선택: 살짝 그림자 효과
         >
           <Textarea
-            minH="54px"
+            minH="40px"
             h="100%"
             border="1px solid"
             borderColor={borderColor}
         
             borderRadius="45px"
-            p="15px 20px"
+            //p="15px 20px"
             me="10px"
             fontSize="sm"
             fontWeight="500"
@@ -486,26 +432,6 @@ export default function Chat() {
           isOpen={isOpenDoctorModal}
           setClose={() => setIsOpenDoctorModal(false)}
         />
-        {/* <Flex
-          justify="center"
-          mt="20px"
-          direction={{ base: 'column', md: 'row' }}
-          alignItems="center"
-        >
-          <Text fontSize="xs" textAlign="center" color={gray}>
-            당사에서 제공되는 서비스의 결과에는...
-          </Text>
-          <Link href="https://www.kormedi.com">
-            <Text
-              fontSize="xs"
-              color={textColor}
-              fontWeight="500"
-              textDecoration="underline"
-            >
-              KorMedi
-            </Text>
-          </Link>
-        </Flex> */}
       </Flex>
     </Flex>
   );

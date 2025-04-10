@@ -8,7 +8,10 @@ option {
   color: black;
 }
 
-
+/* CSS root에 선언 (예: index.css) */
+html {
+  --vh: 1vh;
+}
 
 .fade-in-image {
   animation: fadeIn 3s;

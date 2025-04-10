@@ -82,14 +82,8 @@ export default function AdminNavbar(props: {
       mt={secondaryMargin}
       pb="8px"
       right={{ base: '12px', md: '30px', lg: '30px', xl: '30px' }}
-      px={{
-        base: '8px',
-        md: '10px',
-      }}
-      ps={{
-        base: '8px',
-        md: '12px',
-      }}
+      px={{ base: '8px',md: '10px',}}
+      ps={{ base: '8px',md: '12px',}}
       pt="8px"
       top={{ base: '12px', md: '16px', xl: '18px' }}
       w={{
@@ -102,8 +96,8 @@ export default function AdminNavbar(props: {
     >
       <Flex
         w="100%"
-        //flexDirection={{ base: 'column', md: 'row' }}
-        flexDirection={{ base: 'row', sm: 'column' , md: 'row' , lg: 'row'}}
+        flexDirection={'row'}
+        //flexDirection={{ base: 'row', sm: 'column' , md: 'row' , lg: 'row'}}
         alignItems={{ xl: 'center' }}
         mb={gap}
       >
@@ -129,7 +123,7 @@ export default function AdminNavbar(props: {
             {brandText}
           </Link>
         </Box>
-        <Box ms="auto" w={{ sm: '100%', md: 'auto' }}>
+        <Box ms="auto" w={{ sm: '100%', md: 'auto' }} maxW="160px">
           <AdminNavbarLinks setApiKey={setApiKey} secondary={props.secondary} />
         </Box>
       </Flex>
