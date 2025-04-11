@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic';
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: false });
-import { useColorModeValue } from '@chakra-ui/react'
+import { useColorModeValue,Text } from '@chakra-ui/react'
 import Card from '@/components/card/Card'
 
 export default function MessageBox(props: { output: any }) {
@@ -20,7 +20,7 @@ export default function MessageBox(props: { output: any }) {
     >
       <ReactMarkdown
         components={{
-          p: ({ children }) => <p className="font-medium">{children}</p>
+          p: ({ children }) => <Text whiteSpace="pre-line">{children}</Text>
         }}
       >
         {output ? output : ''}

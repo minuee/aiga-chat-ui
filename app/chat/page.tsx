@@ -5,16 +5,24 @@ import functions from '@/utils/functions';
 import MessageBoxChat from '@/components/MessageBox';
 import { ChatBody, OpenAIModel } from '@/types/types';
 import { Box,Button,Flex,Icon,Textarea,Input,Text,useColorModeValue,} from '@chakra-ui/react';
-import NextImage, { ImageProps } from 'next/legacy/image';
 import { useEffect, useState,useRef } from 'react';
-import { MdAutoAwesome, MdBolt, MdEdit, MdPerson } from 'react-icons/md';
+import Image from "next/image";
+import { MdAutoAwesome, MdFitbit, MdEdit, MdPerson } from 'react-icons/md';
 import DoctorModal  from '@/components/modal/Doctor';
+import SelectBody  from '@/components/msgType/SelectBody';
+import SelectDoctor  from '@/components/msgType/SelectDoctor';
+import SelectName  from '@/components/msgType/SelectName';
+import Welcome  from '@/components/msgType/Welcome';
+import { MdOutlineArrowDownward } from "react-icons/md";
+import LoadingBar from "@/assets/icons/loading.gif";
 
 
 export default function Chat() {
   // Input States
-  const [inputOnSubmit, setInputOnSubmit] = useState<string>('');
+  const [isAccessFirst, setAccessFirst] = useState<boolean>(false);
   const [inputCode, setInputCode] = useState<string>('');
+  const [isShowScroll, setShowScroll] = useState(false);
+  const [isReceiving, setReceiving] = useState(false);
   // Response message
   const [outputCode, setOutputCode] = useState<any>([]);
   // ChatGPT model
@@ -22,19 +30,15 @@ export default function Chat() {
   // Loading state
   const [loading, setLoading] = useState<boolean>(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollBottomRef = useRef<HTMLDivElement>(null);
   // Loading state
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
+  const navbarIcon = useColorModeValue('gray.500', 'white');
 
-  useEffect(() => {
-    setTimeout(() => {
-      //setInputOnSubmit('의사를 추천해주세요');
-    }, 2000);
-  }, []);
-  
   // API Key
   // const [apiKey, setApiKey] = useState<string>(apiKeyApp);
-  const borderColor = useColorModeValue('gray.200', 'whiteAlpha.200');
-  const inputColor = useColorModeValue('navy.700', 'white');
+  const borderColor = useColorModeValue('gray.200', 'gray');
+  const inputColor = useColorModeValue('navy.700', 'black');
   const iconColor = useColorModeValue('brand.500', 'white');
   const bgIcon = useColorModeValue(
     'linear-gradient(180deg, #FBFBFF 0%, #CACAFF 100%)',
@@ -43,23 +47,57 @@ export default function Chat() {
   const brandColor = useColorModeValue('brand.500', 'white');
   const buttonBg = useColorModeValue('white', 'whiteAlpha.100');
   const gray = useColorModeValue('gray.500', 'white');
-  const buttonShadow = useColorModeValue(
-    '14px 27px 45px rgba(112, 144, 176, 0.2)',
-    'none',
-  );
+  const buttonShadow = useColorModeValue('14px 27px 45px rgba(112, 144, 176, 0.2)','none');
   const textColor = useColorModeValue('navy.700', 'white');
-  const placeholderColor = useColorModeValue(
-    { color: 'gray.500' },
-    { color: 'whiteAlpha.600' },
-  );
+  const placeholderColor = useColorModeValue({ color: 'gray.500' },{ color: 'gray' });
 
-  const handleTranslate = async() => {
-    console.log('handleTranslate ', inputCode);
-    if ( functions.isEmpty(inputCode)) return;
+  useEffect(() => {
+    if ( !isAccessFirst ) {
+      
+    }
+    return () => setAccessFirst(false);
+  }, [isAccessFirst]);
+  
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      setShowScroll((prev) => {
+        const goingUp = e.deltaY < 0;
+        const shouldUpdate = goingUp !== prev;
+        if (shouldUpdate) {
+          console.log("스크롤 상태 변경:", !prev);
+          return !prev;
+        }
+        return prev;
+      });
+    };
+
+    el.addEventListener("wheel", handleWheel);
+    return () => el.removeEventListener("wheel", handleWheel);
+  }, []);
+
+  // 스크롤을 맨 아래로 내리는 함수
+  const scrollToBottom = () => {
+   
+    const el = scrollBottomRef.current;
+    if (el) {
+      console.log("scrollToBottom",el)
+      scrollBottomRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      setShowScroll(false)
+    }
+  };
+
+  const handleTranslate = async( isText:any = '') => {
+
+    if ( functions.isEmpty(inputCode) && functions.isEmpty(isText) ) return;
+    setReceiving(true);
     const msgLen = parseInt(outputCode.length+1);
-    setOutputCode((prevCode: any[]) => [...prevCode, { ismode: "me", msg: inputCode }]);
+    const inputCodeText = inputCode || isText;
+    setOutputCode((prevCode: any[]) => [...prevCode, { ismode: "me", msg: inputCodeText }]);
     setInputCode('')
-    console.log('handleTranslate ', outputCode);
+
     const response = await fetch('http://localhost:9999/api/v1/see',{credentials: 'include'});
     const reader = response?.body?.getReader();
 
@@ -71,6 +109,7 @@ export default function Chat() {
     
       if (done) {
         setLoading(false);
+        setReceiving(false);
         console.log('🔚 스트림 종료됨');
         break;
       }
@@ -112,7 +151,8 @@ export default function Chat() {
   }
   useEffect(() => {
     const timeout = setTimeout(() => {
-      scrollRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      setShowScroll(false)
+      scrollBottomRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }, 0); // or 100ms 정도로 조정 가능
     console.log("outputCode",outputCode)
     return () => clearTimeout(timeout);
@@ -263,6 +303,28 @@ export default function Chat() {
     setInputCode(Event.target.value);
   };
 
+  const onSendButton = async( str : string) => {
+    console.log("onSendButton",str)
+    await handleTranslate(str);
+  }
+
+  const onSendWelcomeButton = async( str : string) => {
+    console.log("onSendButton",str)
+    await handleTranslate(str);
+  }
+
+  const onSendDoctorButton = async( isBool : boolean) => {
+    console.log("onSendDoctorButton",isBool)
+    setIsOpenDoctorModal(isBool);
+  }
+
+  const onSendNameButton = async( str : string) => {
+    console.log("onSendButton",str)
+    await handleTranslate(str);
+  }
+
+  
+
   return (
     <Flex
       w="100%"
@@ -280,7 +342,7 @@ export default function Chat() {
         //maxH={{ base: '75vh', md: '85vh'  }}
         //height={`calc(var(--vh, 1vh) * 85)`}
         maxW="1024px"
-        minH="calc(100vh - 150px)"
+        minH="calc(100vh - 100px)"
       >
         {/* <Flex direction={'column'} w="100%" mb={outputCode ? '20px' : 'auto'}>
           
@@ -290,84 +352,130 @@ export default function Chat() {
           w="100%"
           //maxH={{ base: '75vh', md: '85vh' }}
           //height={`calc(var(--vh, 1vh) * 100)`}
-          maxH="calc(100vh - 200px)"
+          maxH="calc(100vh - 150px)"
           overflowY='auto'
           mx="auto"
           display={outputCode ? 'flex' : 'none'}
           mb={'auto'}
+          ref={scrollRef}
         >
-            {
-              outputCode?.length > 0 && 
-              outputCode.map((element:any,index:number) => {
-                if ( element.ismode == 'me') {
-                  return (
-                    <Flex w="100%" align={'center'} mb="10px" key={index} justifyContent='flex-end'>
-                      <Flex
-                        p="10px"
-                        border="1px solid"
-                        borderColor={borderColor}
-                        borderRadius="14px"
-                        w="auto"
-                        zIndex={'2'}
+          <Box>
+            <Welcome 
+              msg={`안녕하세요? 건강AI AIGA에요\r\n누가 아프신가요?`}
+              onSendButton={onSendButton}
+            />
+          </Box>
+          <Box>
+            <SelectBody 
+              onSendButton={onSendWelcomeButton}
+            />
+          </Box>
+          <Box>
+            <SelectDoctor 
+              onSendButton={onSendDoctorButton}
+            />
+          </Box>
+          <Box mb={3}>
+            <SelectName 
+              data={[]}
+              onSendButton={onSendNameButton}
+            />
+          </Box>
+          { 
+            outputCode.map((element:any,index:number) => {
+              if ( element.ismode == 'me') {
+                return (
+                  <Flex w="100%" align={'center'} mb="10px" key={index} justifyContent='flex-end'>
+                    <Flex
+                      p="10px"
+                      border="1px solid"
+                      borderColor={borderColor}
+                      borderRadius="14px"
+                      w="auto"
+                      zIndex={'2'}
+                    >
+                      <Text
+                        color={textColor}
+                        fontWeight="600"
+                        fontSize={{ base: 'sm', md: 'md' }}
+                        lineHeight={{ base: '24px', md: '26px' }}
+                        whiteSpace="pre-line"
                       >
-                        <Text
-                          color={textColor}
-                          fontWeight="600"
-                          fontSize={{ base: 'sm', md: 'md' }}
-                          lineHeight={{ base: '24px', md: '26px' }}
-                          whiteSpace="pre-line"
-                        >
-                          {element?.msg}
-                        </Text>
-                      </Flex>
-                      <Flex
-                        borderRadius="full"
-                        justify="center"
-                        align="center"
-                        bg={'transparent'}
-                        border="1px solid"
-                        borderColor={borderColor}
-                        ms="10px"
-                        h="40px"
-                        minH="40px"
-                        minW="40px"
-                      >
-                        <Icon
-                          as={MdPerson}
-                          width="20px"
-                          height="20px"
-                          color={brandColor}
-                        />
-                      </Flex>
+                        {element?.msg}
+                      </Text>
                     </Flex>
-                  )
-                }else{
-                  return (
-                    <Flex w="100%" key={index} mb="10px">
-                      <Flex
-                        borderRadius="full"
-                        justify="center"
-                        align="center"
-                        bg={'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)'}
-                        me="10px"
-                        h="40px"
-                        minH="40px"
-                        minW="40px"
-                      >
-                        <Icon
-                          as={MdAutoAwesome}
-                          width="20px"
-                          height="20px"
-                          color="white"
-                        />
-                      </Flex>
-                      <MessageBoxChat output={element.msg} />
+                    <Flex
+                      borderRadius="full"
+                      justify="center"
+                      align="center"
+                      bg={'transparent'}
+                      border="1px solid"
+                      borderColor={borderColor}
+                      ms="10px"
+                      h="40px"
+                      minH="40px"
+                      minW="40px"
+                    >
+                      <Icon
+                        as={MdPerson}
+                        width="20px"
+                        height="20px"
+                        color={brandColor}
+                      />
                     </Flex>
-                  )
-                }
-              })
-            }
-            <Box ref={scrollRef} h="1px" />
+                  </Flex>
+                )
+              }else{
+                return (
+                  <Flex w="100%" key={index} mb="10px">
+                    <Flex
+                      borderRadius="full"
+                      justify="center"
+                      align="center"
+                      bg={'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)'}
+                      me="10px"
+                      h="40px"
+                      minH="40px"
+                      minW="40px"
+                    >
+                      <Icon
+                        as={MdFitbit}
+                        width="20px"
+                        height="20px"
+                        color="white"
+                      />
+                    </Flex>
+                    <MessageBoxChat output={element.msg} />
+                  </Flex>
+                )
+              }
+            })
+          }
+          
+          { isShowScroll &&  
+            (
+              <Box
+                position={'absolute'}
+                right="10px"
+                bottom={{base : "100px", md:"150px"}}
+                width="50px"
+                height={"50px"}
+                zIndex={10}
+                display={'flex'}
+                justifyContent='center'
+                alignItems={'center'}
+                onClick={()=> scrollToBottom()}
+              >
+                <Icon
+                  as={MdOutlineArrowDownward}
+                  width="40px"
+                  height="40px"
+                  color={navbarIcon}
+                />
+              </Box>
+            )
+          }
+          <Box ref={scrollBottomRef} h="1px" />
         </Flex>
         {/* Chat Input */}
         {/* <Flex
@@ -383,7 +491,7 @@ export default function Chat() {
           w="100%"                  // ✅ 전체 너비
           px="20px"                 // 양쪽 여백
           py="10px"                 // 위아래 여백
-          bg="white"                // 배경색 (필수! 안 넣으면 뒤 채팅이 비쳐요)
+          bg={"white"}                // 배경색 (필수! 안 넣으면 뒤 채팅이 비쳐요)
           zIndex="100"              // 채팅보다 위에 오게
           //boxShadow="0 -2px 10px rgba(0,0,0,0.05)" // 선택: 살짝 그림자 효과
         >
@@ -392,7 +500,7 @@ export default function Chat() {
             h="100%"
             border="1px solid"
             borderColor={borderColor}
-        
+            readOnly={isReceiving}
             borderRadius="45px"
             //p="15px 20px"
             me="10px"
@@ -422,11 +530,24 @@ export default function Chat() {
                 bg: 'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)',
               },
             }}
-            onClick={handleTranslate}
+            onClick={() => handleTranslate(inputCode)}
             isLoading={loading ? true : false}
           >
-            전송
+            {
+              isReceiving
+              ?
+              <Image 
+                src={LoadingBar}  
+                alt="LoadingBar" 
+                style={{width:'30px', height:'30px'}}
+              /> 
+              :
+              <Text>
+                전송
+              </Text>
+            }
           </Button>
+          
         </Flex>
         <DoctorModal
           isOpen={isOpenDoctorModal}

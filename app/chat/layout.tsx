@@ -1,7 +1,7 @@
 'use client';
 import React, { ReactNode } from 'react';
 import type { AppProps } from 'next/app';
-import { ChakraProvider, Box, Portal, useDisclosure } from '@chakra-ui/react';
+import { useColorModeValue, Box, Portal, Icon, useDisclosure } from '@chakra-ui/react';
 import theme from '@/theme/theme';
 import routes from '@/routes';
 import Header from '@/components/header/MainHeader';
@@ -10,7 +10,7 @@ import Footer from '@/components/footer/FooterAdmin';
 import Navbar from '@/components/navbar/NavbarAdmin';
 import { getActiveRoute, getActiveNavbar } from '@/utils/navigation';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import '@/styles/App.css';
 import '@/styles/Contact.css';
 import '@/styles/Plugins.css';
@@ -21,6 +21,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [apiKey, setApiKey] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isShowScroll, setShowScroll] = useState(false);
+  const navbarIcon = useColorModeValue('gray.500', 'white');
+
   useEffect(() => {
     const initialKey = localStorage.getItem('apiKey');
     console.log(initialKey);
@@ -50,24 +53,24 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 transitionProperty="top, bottom, width"
                 transitionTimingFunction="linear, linear, ease"
               >
-                <Portal>
-                  <Box>
-                    <Navbar
-                      setApiKey={setApiKey}
-                      onOpen={onOpen}
-                      logoText={'AIGA Beta'}
-                      brandText={getActiveRoute(routes, pathname)}
-                      secondary={getActiveNavbar(routes, pathname)}
-                    />
-                  </Box>
-                </Portal>
+
+                <Box>
+                  <Navbar
+                    setApiKey={setApiKey}
+                    onOpen={onOpen}
+                    logoText={'AIGA Beta'}
+                    brandText={getActiveRoute(routes, pathname)}
+                    secondary={getActiveNavbar(routes, pathname)}
+                  />
+                </Box>
                 <Box
-                  mx="auto"
+                  //mx="auto"
                   p={{ base: '20px', lg: '20px' }}
-                  pe="20px"
-                  minH="100vh"
-                  pt="50px"
+                  //pe="20px"
+                  //minH="100vh"
+                  //pt="50px"
                   //bg="white"
+                  //ref={scrollRef}
                 >
                   {children}
                   {/* <Component apiKeyApp={apiKey} {...pageProps} /> */}
@@ -78,6 +81,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   <Footer />
                 </Box>
               </Box>
+              
             </Box>
         </AppWrappers>
       </body>
