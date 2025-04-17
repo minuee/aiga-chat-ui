@@ -1,6 +1,6 @@
 'use client';
 /*eslint-disable*/
-
+import customfetch from '@/utils/customfetch';
 import functions from '@/utils/functions';
 import MessageBoxChat from '@/components/MessageBox';
 import { ChatBody, OpenAIModel } from '@/types/types';
@@ -13,6 +13,8 @@ import SelectBody  from '@/components/msgType/SelectBody';
 import SelectDoctor  from '@/components/msgType/SelectDoctor';
 import SelectName  from '@/components/msgType/SelectName';
 import Welcome  from '@/components/msgType/Welcome';
+import SelectType  from '@/components/msgType/SelectType';
+
 import { MdOutlineArrowDownward } from "react-icons/md";
 import LoadingBar from "@/assets/icons/loading.gif";
 
@@ -50,6 +52,11 @@ export default function Chat() {
   const buttonShadow = useColorModeValue('14px 27px 45px rgba(112, 144, 176, 0.2)','none');
   const textColor = useColorModeValue('navy.700', 'white');
   const placeholderColor = useColorModeValue({ color: 'gray.500' },{ color: 'gray' });
+  
+
+  const isSystemText = [
+    "system_text","system_doctors","system_list","system_select","system_image"
+  ]
 
   useEffect(() => {
     if ( !isAccessFirst ) {
@@ -95,16 +102,47 @@ export default function Chat() {
     setReceiving(true);
     const msgLen = parseInt(outputCode.length+1);
     const inputCodeText = inputCode || isText;
-    setOutputCode((prevCode: any[]) => [...prevCode, { ismode: "me", msg: inputCodeText }]);
+    
+    if ( isSystemText.includes(inputCodeText) ) {
+      console.log("ddddddddd", inputCodeText,outputCode[outputCode?.length -1]?.msg)
+      if( inputCodeText != outputCode[outputCode?.length -1]?.msg) { 
+        setOutputCode((prevCode: any[]) => [...prevCode, { id: functions.getUUID(), ismode: "system", msg: inputCodeText }]);
+        setLoading(false);
+        setReceiving(false);
+        return;
+      }else{
+        setLoading(false);
+        setReceiving(false);
+        return;
+      }
+    }else{
+      setOutputCode((prevCode: any[]) => [...prevCode, { id: functions.getUUID(),ismode: "me", msg: inputCodeText }]);
+    }
     setInputCode('')
 
+    const url = 'http://localhost:9999/api/v1/chat'
+ 
+    const payload = {
+      "user_id": "minuee",
+      "msg_type": isText,
+      "msg": inputCodeText
+    }
+
+     /*let reader:any = null;
     const response = await fetch('http://localhost:9999/api/v1/see',{credentials: 'include'});
     const reader = response?.body?.getReader();
+    console.log("reader",reader) */
+    const response = await customfetch.callAPI(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      credentials: 'include',
+      body: JSON.stringify(payload)
+    }, 10000);
 
+    const reader = response?.body?.getReader();
     const decoder = new TextDecoder();
-    
     let streamData:string = "";
-    while (true) {
+    while (true ) {
       const { value, done } : any = await reader?.read();
     
       if (done) {
@@ -132,6 +170,7 @@ export default function Chat() {
         const lastIndex = msgLen;
         if ( !newArray[lastIndex]?.msg ) {
           newArray[lastIndex] = {
+            id: functions.getUUID(),
             ismode : 'server',
             msg:chunk,
           };
@@ -153,7 +192,7 @@ export default function Chat() {
     const timeout = setTimeout(() => {
       setShowScroll(false)
       scrollBottomRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }, 0); // or 100ms 정도로 조정 가능
+    }, outputCode?.ismode == "me" ? 0 : 300); // or 100ms 정도로 조정 가능
     console.log("outputCode",outputCode)
     return () => clearTimeout(timeout);
   }, [outputCode]);
@@ -323,7 +362,67 @@ export default function Chat() {
     await handleTranslate(str);
   }
 
-  
+  const onSendTypeButton = async( typeString : string ) => {
+    console.log("onSendTypeButton",typeString)
+    await handleTranslate(typeString);
+  }
+
+  const handleTranslate_get = async( isText:any = '') => {
+
+    if ( functions.isEmpty(inputCode) && functions.isEmpty(isText) ) return;
+    setReceiving(true);
+    const msgLen = parseInt(outputCode.length+1);
+    const inputCodeText = inputCode || isText;
+    setOutputCode((prevCode: any[]) => [...prevCode, { ismode: "me", msg: inputCodeText }]);
+    setInputCode('')
+
+    const response = await fetch('http://localhost:9999/api/v1/see',{credentials: 'include'});
+    const reader = response?.body?.getReader();
+
+    const decoder = new TextDecoder();
+    
+    let streamData:string = "";
+    while (true) {
+      const { value, done } : any = await reader?.read();
+    
+      if (done) {
+        setLoading(false);
+        setReceiving(false);
+        console.log('🔚 스트림 종료됨');
+        break;
+      }
+    
+      const chunk = decoder.decode(value, { stream: true });
+      console.log('📥 받은 메시지:', chunk);
+     
+      if ( chunk ) {
+        streamData = streamData.concat(chunk);
+      }else{
+        console.error('data가 null입니다. getReader를 호출할 수 없습니다.');
+      }
+     
+      setOutputCode((prevCode: any[]) => {
+       
+        const newArray = [...prevCode];
+        const lastIndex = msgLen;
+        if ( !newArray[lastIndex]?.msg ) {
+          newArray[lastIndex] = {
+            ismode : 'server',
+            msg:chunk,
+          };
+        }else{
+          const tmpMsg = prevCode[lastIndex].msg;
+          newArray[lastIndex] = {
+            ...prevCode[lastIndex],
+            msg: tmpMsg.concat(chunk)
+          };
+        }
+        
+        return newArray;
+      });
+    }
+    
+  }
 
   return (
     <Flex
@@ -352,7 +451,7 @@ export default function Chat() {
           w="100%"
           //maxH={{ base: '75vh', md: '85vh' }}
           //height={`calc(var(--vh, 1vh) * 100)`}
-          maxH="calc(100vh - 150px)"
+          maxH="calc(100vh - 200px)" /* 여기가 하단 스크롤 영역 영향 받음 */
           overflowY='auto'
           mx="auto"
           display={outputCode ? 'flex' : 'none'}
@@ -366,6 +465,11 @@ export default function Chat() {
             />
           </Box>
           <Box>
+            <SelectType 
+              onSendButton={onSendTypeButton}
+            />
+          </Box>
+          {/* <Box>
             <SelectBody 
               onSendButton={onSendWelcomeButton}
             />
@@ -379,13 +483,13 @@ export default function Chat() {
             <SelectName 
               data={[]}
               onSendButton={onSendNameButton}
-            />
-          </Box>
+            /> 
+          </Box>*/}
           { 
             outputCode.map((element:any,index:number) => {
               if ( element.ismode == 'me') {
                 return (
-                  <Flex w="100%" align={'center'} mb="10px" key={index} justifyContent='flex-end'>
+                  <Flex w="100%" align={'center'} mb="10px"  mt="5px"  key={element.id} justifyContent='flex-end'>
                     <Flex
                       p="10px"
                       border="1px solid"
@@ -425,9 +529,68 @@ export default function Chat() {
                     </Flex>
                   </Flex>
                 )
+              }else if ( element.ismode == 'system') {
+                if ( element.msg === "system_doctors" ) {
+                  return (
+                    <Box key={element.id}>
+                      <SelectDoctor 
+                        onSendButton={onSendDoctorButton}
+                      />
+                    </Box>
+                  )
+                }else if ( element.msg === "system_list" ) {
+                  return (
+                  <Box key={element.id}>
+                    <SelectName 
+                      data={[]}
+                      onSendButton={onSendNameButton}
+                    /> 
+                  </Box>
+                  )
+                }else if ( element.msg === "system_select" ) {
+                  return (
+                    <Box key={element.id}>
+                      <Welcome 
+                        msg={`안녕하세요? 건강AI AIGA에요\r\n누가 아프신가요?`}
+                        onSendButton={onSendButton}
+                      />
+                    </Box>
+                  )
+                }else if ( element.msg === "system_image" ) {
+                  return (
+                    <Box key={element.id}>
+                      <SelectBody 
+                        onSendButton={onSendWelcomeButton}
+                      />
+                    </Box>
+                  )
+                }else {
+                  return (
+                    <Flex w="100%" key={element.id} margin="10px 0">
+                      <Flex
+                        borderRadius="full"
+                        justify="center"
+                        align="center"
+                        bg={'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)'}
+                        me="10px"
+                        h="40px"
+                        minH="40px"
+                        minW="40px"
+                      >
+                        <Icon
+                          as={MdFitbit}
+                          width="20px"
+                          height="20px"
+                          color="white"
+                        />
+                      </Flex>
+                      <MessageBoxChat output={"잘못된 선택입니다.."} />
+                    </Flex>
+                  )
+                }
               }else{
                 return (
-                  <Flex w="100%" key={index} mb="10px">
+                  <Flex w="100%" key={element.id} mb="10px">
                     <Flex
                       borderRadius="full"
                       justify="center"
@@ -475,7 +638,7 @@ export default function Chat() {
               </Box>
             )
           }
-          <Box ref={scrollBottomRef} h="1px" />
+          <Box ref={scrollBottomRef} h="1px" pb={"30px"} />
         </Flex>
         {/* Chat Input */}
         {/* <Flex
@@ -489,15 +652,20 @@ export default function Chat() {
           bottom="0"                // ✅ 화면 하단에 붙임
           left="0"
           w="100%"                  // ✅ 전체 너비
+          //maxW="1024px"
           px="20px"                 // 양쪽 여백
           py="10px"                 // 위아래 여백
           bg={"white"}                // 배경색 (필수! 안 넣으면 뒤 채팅이 비쳐요)
           zIndex="100"              // 채팅보다 위에 오게
           //boxShadow="0 -2px 10px rgba(0,0,0,0.05)" // 선택: 살짝 그림자 효과
+          //display={'flex'}
+          //justifyContent='center'
+          //alignItems={'center'}
         >
           <Textarea
             minH="40px"
             h="100%"
+            maxH="55px"
             border="1px solid"
             borderColor={borderColor}
             readOnly={isReceiving}

@@ -1,11 +1,42 @@
+import React from 'react';
 import dynamic from 'next/dynamic';
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: false });
 import { useColorModeValue,Text } from '@chakra-ui/react'
-import Card from '@/components/card/Card'
+import Card from '@/components/card/Card';
+import TypeAnimation  from'@/components/text/TypeAnimation';
 
+const MessageBox = React.memo(function MessageBox({ output }: { output: any }) {
+  const textColor = useColorModeValue('navy.700', 'white');
+
+  return (
+    <Card
+      display={output ? 'flex' : 'none'}
+      color={textColor}
+      px="22px !important"
+      minH="50px"
+      fontSize={{ base: 'sm', md: 'md' }}
+    >
+      <ReactMarkdown
+        components={{
+          p: ({ children }) => (
+            <TypeAnimation
+              msg={Array.isArray(children) ? children.join('') : String(children)}
+            />
+          )
+        }}
+      >
+        {output || ''}
+      </ReactMarkdown>
+    </Card>
+  );
+}, (prevProps, nextProps) => prevProps.output === nextProps.output);
+
+export default MessageBox;
+/*
 export default function MessageBox(props: { output: any }) {
   const { output } = props
   const textColor = useColorModeValue('navy.700', 'white')
+
   return (
     <Card
       display={output ? 'flex' : 'none'}
@@ -25,6 +56,15 @@ export default function MessageBox(props: { output: any }) {
       >
         {output ? output : ''}
       </ReactMarkdown>
+      <ReactMarkdown
+        components={{
+          p: ({ children }) => <TypeAnimation msg={String(children)} />
+        }}
+      >
+        {output ? output : ''}
+      </ReactMarkdown>
+      
     </Card>
   )
 }
+  */

@@ -13,6 +13,8 @@ import {
 import { useState, useEffect } from 'react';
 import AdminNavbarLinks from './NavbarLinksAdmin';
 import { isWindowAvailable } from '@/utils/navigation';
+import Image from 'next/image';
+import LogoImage from "@/assets/images/logo.png";
 
 export default function AdminNavbar(props: {
   secondary: boolean;
@@ -102,7 +104,7 @@ export default function AdminNavbar(props: {
         mb={gap}
       >
         <Box mb={{ base: '8px', md: '0px' }}>
-          <Link
+          {/* <Link
             color={mainText}
             href="#"
             bg="inherit"
@@ -121,7 +123,12 @@ export default function AdminNavbar(props: {
             }}
           >
             {brandText}
-          </Link>
+          </Link> */}
+          <Image 
+            src={LogoImage}
+            alt="Aiga Logo"
+            style={{width:'100px',objectFit: 'contain',maxWidth:"100px"}}
+          />
         </Box>
         <Box ms="auto" w={{ sm: '100%', md: 'auto' }} maxW="160px">
           <AdminNavbarLinks setApiKey={setApiKey} secondary={props.secondary} />
