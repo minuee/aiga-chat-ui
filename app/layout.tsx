@@ -17,6 +17,8 @@ import '@/styles/Plugins.css';
 import '@/styles/MiniCalendar.css';
 import AppWrappers from './AppWrappers';
 
+import { SessionProvider } from "next-auth/react";
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [apiKey, setApiKey] = useState('');
@@ -33,6 +35,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body id={'root'}>
         <AppWrappers>
+        <SessionProvider>
           {/* <ChakraProvider theme={theme}> */}
           {
             (pathname?.includes('register') || pathname?.includes('sign-in') || pathname?.includes('chat') ) 
@@ -96,6 +99,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </Box>
           )}
           {/* </ChakraProvider> */}
+          </SessionProvider>
         </AppWrappers>
       </body>
     </html>

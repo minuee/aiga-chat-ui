@@ -7,6 +7,13 @@ import TypeAnimation  from'@/components/text/TypeAnimation';
 
 const MessageBox = React.memo(function MessageBox({ output }: { output: any }) {
   const textColor = useColorModeValue('navy.700', 'white');
+  const previousOutputRef = React.useRef<string | null>(null); // 이전 output 값을 저장
+
+  React.useEffect(() => {
+    previousOutputRef.current = output; // output이 변경될 때마다 이전 값을 업데이트
+  }, [output]);
+
+  const isOutputSame = previousOutputRef.current === output; // 이전 output과 현재 output 비교
 
   return (
     <Card
@@ -16,17 +23,29 @@ const MessageBox = React.memo(function MessageBox({ output }: { output: any }) {
       minH="50px"
       fontSize={{ base: 'sm', md: 'md' }}
     >
-      <ReactMarkdown
-        components={{
-          p: ({ children }) => (
-            <TypeAnimation
-              msg={Array.isArray(children) ? children.join('') : String(children)}
-            />
-          )
-        }}
-      >
-        {output || ''}
-      </ReactMarkdown>
+      {
+        isOutputSame
+        ?
+        <ReactMarkdown
+          components={{
+            p: ({ children }) => <Text whiteSpace="pre-line">{children}</Text>
+          }}
+        >
+          {output ? output : ''}
+        </ReactMarkdown>
+        :
+        <ReactMarkdown
+          components={{
+            p: ({ children }) => (
+              <TypeAnimation
+                msg={Array.isArray(children) ? children.join('') : String(children)}
+              />
+            )
+          }}
+        >
+          {output || ''}
+        </ReactMarkdown>
+      }
     </Card>
   );
 }, (prevProps, nextProps) => prevProps.output === nextProps.output);

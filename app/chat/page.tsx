@@ -1,5 +1,6 @@
 'use client';
 /*eslint-disable*/
+import { signIn, signOut, useSession } from "next-auth/react";
 import customfetch from '@/utils/customfetch';
 import functions from '@/utils/functions';
 import MessageBoxChat from '@/components/MessageBox';
@@ -20,6 +21,9 @@ import LoadingBar from "@/assets/icons/loading.gif";
 
 
 export default function Chat() {
+  // 세션 상태 확인
+  const { data: session, status } = useSession();
+  console.log("session",session,status)
   // Input States
   const [isAccessFirst, setAccessFirst] = useState<boolean>(false);
   const [inputCode, setInputCode] = useState<string>('');
