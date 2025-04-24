@@ -20,6 +20,7 @@ import AppWrappers from './AppWrappers';
 import { SessionProvider } from "next-auth/react";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  
   const pathname = usePathname();
   const [apiKey, setApiKey] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();

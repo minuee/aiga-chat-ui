@@ -21,6 +21,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@/serverActions/*": [
+        "./app/api/serverActions/*"
       ]
     },
     "plugins": [
@@ -33,8 +36,9 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
+    ".next/types/**/*.ts",
+    "src/types/*.d.ts"
+, "app/api/auth/[...nextauth]/route.ts"  ],
   "exclude": [
     "node_modules"
   ]

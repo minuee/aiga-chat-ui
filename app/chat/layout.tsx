@@ -17,7 +17,7 @@ import '@/styles/Plugins.css';
 import '@/styles/MiniCalendar.css';
 import AppWrappers from '../AppWrappers';
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function PageLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [apiKey, setApiKey] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();

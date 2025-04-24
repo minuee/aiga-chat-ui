@@ -13,7 +13,7 @@ import {
   AccordionPanel,
   AccordionIcon,
 } from '@chakra-ui/react'
-import HeadTitle from './Notice_title';
+import HeadTitle from './Title';
 export interface NoticerModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
@@ -61,7 +61,7 @@ function NoticerModal(props: NoticerModalProps) {
           borderRadius="16px"
           bg={sidebarBackgroundColor}
         >
-          <HeadTitle />
+          <HeadTitle title="공지사항" />
           <DrawerCloseButton
             zIndex="3"
             onClick={setClose}

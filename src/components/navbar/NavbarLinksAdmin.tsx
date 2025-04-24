@@ -6,6 +6,7 @@ import { SidebarResponsive } from '@/components/sidebar/Sidebar';
 import { IoMdMoon, IoMdSunny } from 'react-icons/io';
 import { MdInfoOutline } from 'react-icons/md';
 import NoticerModal  from '@/components/modal/Notice';
+import LoginModal  from '@/components/modal/LoginForm';
 import NavLink from '../link/NavLink';
 import routes from '@/routes';
 
@@ -16,7 +17,7 @@ export default function HeaderLinks(props: {secondary: boolean;setApiKey: any;})
 
   // Loading state
   const [isOpenNoticeModal, setIsOpenNoticeModal] = React.useState<boolean>(false);
-
+  const [isOpenLoginModal, setIsOpenLoginModal] = React.useState<boolean>(false);
   // Chakra Color Mode
   const navbarIcon = useColorModeValue('gray.500', 'white');
   let menuBg = useColorModeValue('white', 'navy.800');
@@ -233,7 +234,7 @@ export default function HeaderLinks(props: {secondary: boolean;setApiKey: any;})
                 color={textColor}
                 borderRadius="8px"
                 px="14px"
-                onClick={()=> handleApiKeyChange(process.env.NEXT_PUBLIC_OPENAI_API_KEY)}
+                //onClick={()=> handleApiKeyChange(process.env.NEXT_PUBLIC_OPENAI_API_KEY)}
               >
                 
                 <Text fontWeight="500" fontSize="sm">
@@ -256,6 +257,18 @@ export default function HeaderLinks(props: {secondary: boolean;setApiKey: any;})
             <MenuItem
               _hover={{ bg: 'none' }}
               _focus={{ bg: 'none' }}
+              color="blue.500"
+              borderRadius="8px"
+              px="14px"
+              onClick={()=> setIsOpenLoginModal(!isOpenLoginModal)}
+            >
+              <Text fontWeight="500" fontSize="sm">
+                Log In
+              </Text>
+            </MenuItem>
+            <MenuItem
+              _hover={{ bg: 'none' }}
+              _focus={{ bg: 'none' }}
               color="red.400"
               borderRadius="8px"
               px="14px"
@@ -272,6 +285,14 @@ export default function HeaderLinks(props: {secondary: boolean;setApiKey: any;})
           <NoticerModal
             isOpen={isOpenNoticeModal}
             setClose={() => setIsOpenNoticeModal(false)}
+          />
+        )
+      }
+      {
+        isOpenLoginModal && (
+          <LoginModal
+            isOpen={isOpenLoginModal}
+            setClose={() => setIsOpenLoginModal(false)}
           />
         )
       }

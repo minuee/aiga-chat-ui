@@ -5,7 +5,8 @@ import { Flex, useColorModeValue,Text,Box } from '@chakra-ui/react';
 import { HorizonLogo,AigaLog } from '@/components/icons/Icons';
 import { HSeparator } from '@/components/separator/Separator';
 
-export function HeadTitle() {
+export function HeadTitle(props: {title: string}) {
+  const { title } = props;
   //   Chakra color mode
   let logoColor = useColorModeValue('navy.700', 'white');
 
@@ -18,7 +19,7 @@ export function HeadTitle() {
           fontWeight="500"
           fontSize="xl"
         >
-          공지사항
+          {title}
         </Text>
       </Box>
       <HSeparator mt="10px" mb="10px" w="100%" />

@@ -1,15 +1,7 @@
 'use client';
 /* eslint-disable */
 // Chakra Imports
-import {
-  Box,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  Flex,
-  Link,
-  useColorModeValue,
-} from '@chakra-ui/react';
+import { Box,Flex,Link,useColorModeValue } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import AdminNavbarLinks from './NavbarLinksAdmin';
 import { isWindowAvailable } from '@/utils/navigation';
