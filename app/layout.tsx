@@ -22,15 +22,24 @@ import { SessionProvider } from "next-auth/react";
 export default function RootLayout({ children }: { children: ReactNode }) {
   
   const pathname = usePathname();
-  const [apiKey, setApiKey] = useState('');
+  
   const { isOpen, onOpen, onClose } = useDisclosure();
+  
+
   useEffect(() => {
-    const initialKey = localStorage.getItem('apiKey');
-    console.log(initialKey);
-    if (initialKey?.includes('sk-') && apiKey !== initialKey) {
-      setApiKey(initialKey);
+
+    if (!("serviceWorker" in navigator)) return;
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register("/worker/index.js")
+        .then((registration) => {
+          console.log('Service Worker registered with scope:', registration.scope);
+        })
+        .catch((error) => {
+          console.error('Service Worker registration failed:', error);
+        });
     }
-  }, [apiKey]);
+  }, []);
 
   return (
     <html lang="en">
@@ -56,7 +65,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             : 
             (
             <Box>
-              {/* <Sidebar setApiKey={setApiKey} routes={routes} /> */}
               <Box
                 pt={{ base: '60px', md: '100px' }}
                 float="right"
@@ -75,7 +83,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 <Portal>
                   <Box>
                     <Navbar
-                      setApiKey={setApiKey}
                       onOpen={onOpen}
                       logoText={'AIGA Beta'}
                       brandText={getActiveRoute(routes, pathname)}

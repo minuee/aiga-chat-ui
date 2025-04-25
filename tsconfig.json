@@ -30,15 +30,19 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "types": ["service-worker"]
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/types/*.d.ts"
-, "app/api/auth/[...nextauth]/route.ts"  ],
+    "src/types/*.d.ts", 
+    "app/api/auth/[...nextauth]/route.ts",
+    "public/worker/global.d.ts",
+    "public/worker/index.js"
+  ],
   "exclude": [
     "node_modules"
   ]

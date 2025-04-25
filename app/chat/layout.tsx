@@ -19,18 +19,9 @@ import AppWrappers from '../AppWrappers';
 
 export default function PageLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const [apiKey, setApiKey] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isShowScroll, setShowScroll] = useState(false);
   const navbarIcon = useColorModeValue('gray.500', 'white');
-
-  useEffect(() => {
-    const initialKey = localStorage.getItem('apiKey');
-    console.log(initialKey);
-    if (initialKey?.includes('sk-') && apiKey !== initialKey) {
-      setApiKey(initialKey);
-    }
-  }, [apiKey]);
 
   return (
     <html lang="en">
@@ -56,7 +47,6 @@ export default function PageLayout({ children }: { children: ReactNode }) {
 
                 <Box>
                   <Navbar
-                    setApiKey={setApiKey}
                     onOpen={onOpen}
                     logoText={'AIGA Beta'}
                     brandText={getActiveRoute(routes, pathname)}

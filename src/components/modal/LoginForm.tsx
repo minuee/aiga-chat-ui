@@ -2,6 +2,13 @@
 import React, { PropsWithChildren } from 'react';
 import { signInWithCredentials } from '@/serverActions/login';
 import { signIn } from 'next-auth/react';
+import { useGeoLocation } from '@/hooks/useGeoLocation';
+
+const geolocationOptions = {
+  enableHighAccuracy: true,
+  timeout: 1000 * 10,
+  maximumAge: 1000 * 3600 * 24,
+}
 
 // chakra imports
 import { 
@@ -17,7 +24,9 @@ import {
   Avatar,
   FormControl,
   FormHelperText,
-  InputRightElement
+  InputRightElement,
+  Spinner,
+  useToast
 } from '@chakra-ui/react';
 import { FaUserAlt, FaLock } from "react-icons/fa";
 
@@ -51,11 +60,11 @@ const items = [
 
 function NoticerModal(props: NoginModalProps) {
   const { isOpen, setClose } = props;
-  const [ isLoading, setLoading] = React.useState(true);
+  const [ isLoading, setLoading] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
-
+  const toast = useToast();
   let sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
-
+  const { location, error } = useGeoLocation(geolocationOptions)
   React.useEffect(() => {
     console.log("isLoading",isOpen,isLoading)
     setTimeout(() => {
@@ -67,26 +76,38 @@ function NoticerModal(props: NoginModalProps) {
   const handleShowClick = () => setShowPassword(!showPassword);
   const handleSubmit = async (e:any) => {
     e.preventDefault();
-    const user_email = e.target.email.value;
-    const user_password = e.target.password.value;
-    if ( !functions.isEmpty(user_email) && !functions.isEmpty(user_password) ) {
-      const result:any = await signIn('aiga_credentials', { 
-        user_email,
-        user_password,
-        //callbackUrl: '/chat', // 로그인 성공 후 리다이렉션 할 URL
-        redirect: false,
-      });
-      console.log('result',result);
-      if (result?.ok) {
-        // 로그인 성공 처리
-        
-        // 사용자에게 오류 메시지 표시 등 추가 처리
-      } else {
-        // 로그인 실패시 
-        console.log(result.error);
-        // 예: router.push('/chat');
+    toast.closeAll();
+    setLoading(true)
+    setTimeout(async () => {
+      const user_email = e.target.email.value;
+      const user_password = e.target.password.value;
+      if ( !functions.isEmpty(user_email) && !functions.isEmpty(user_password) ) {
+        const result:any = await signIn('aiga_credentials', { 
+          user_email,
+          user_password,
+          //callbackUrl: '/chat', // 로그인 성공 후 리다이렉션 할 URL
+          redirect: false,
+        });
+        console.log('result',result);
+        setLoading(false)
+        if (result?.ok) {
+          // 로그인 성공 처리
+          
+          // 사용자에게 오류 메시지 표시 등 추가 처리
+        } else {
+          toast({
+            title: "login Fail",
+            position: 'top-left',
+            status: 'info',
+            isClosable: true,
+          });
+          // 로그인 실패시 
+          console.log(result.error);
+          // 예: router.push('/chat');
+        }
       }
-    }
+    }, 1500)
+    
   };
   // SIDEBAR
   return (
@@ -195,7 +216,7 @@ function NoticerModal(props: NoginModalProps) {
                             colorScheme="teal"
                             width="full"
                           >
-                            Login
+                            {isLoading ? <Spinner size='xs' /> : "Login"}
                           </Button>
                         </Stack>
                       </form>
@@ -206,6 +227,9 @@ function NoticerModal(props: NoginModalProps) {
                     <Link color="teal.500" href="#">
                       Sign Up
                     </Link>
+                  </Box>
+                  <Box>
+                    {`로그인 geoLoction 위도 : ${location?.latitude} 경도 ${location?.longitude}`}
                   </Box>
                 </Flex>
               </Box>

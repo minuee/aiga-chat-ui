@@ -1,7 +1,7 @@
 'use client';
 // Chakra Imports
 import * as React from 'react';
-import { Box,Button,Center,Flex,Icon,Link,Menu,MenuButton,MenuItem,MenuList,Text,useColorMode,useColorModeValue,} from '@chakra-ui/react';
+import { Box,Button,Center,Flex,Icon,Link,Menu,MenuButton,MenuItem,MenuList,Text,useColorMode,useColorModeValue,useToast} from '@chakra-ui/react';
 import { SidebarResponsive } from '@/components/sidebar/Sidebar';
 import { IoMdMoon, IoMdSunny } from 'react-icons/io';
 import { MdInfoOutline } from 'react-icons/md';
@@ -10,11 +10,11 @@ import LoginModal  from '@/components/modal/LoginForm';
 import NavLink from '../link/NavLink';
 import routes from '@/routes';
 
-export default function HeaderLinks(props: {secondary: boolean;setApiKey: any;}) {
+export default function HeaderLinks(props: {secondary: boolean;}) {
 
-  const { secondary, setApiKey } = props;
+  const { secondary } = props;
   const { colorMode, toggleColorMode } = useColorMode();
-
+  const toast = useToast();
   // Loading state
   const [isOpenNoticeModal, setIsOpenNoticeModal] = React.useState<boolean>(false);
   const [isOpenLoginModal, setIsOpenLoginModal] = React.useState<boolean>(false);
@@ -37,11 +37,69 @@ export default function HeaderLinks(props: {secondary: boolean;setApiKey: any;})
     { bg: 'whiteAlpha.200' },
   );
 
-  const handleApiKeyChange = (value: any) => {
-    setApiKey(value);
+  const [myToken, setMyToken] = React.useState<PushSubscription | null>(null);
+  const sendNotification = async() => {
+    try {
+      console.log('myToken',myToken);
+      const bodyDat = {
+        ...myToken,
+        endpoint: "http://localhost:3000/chat"
+      }
+      const response = await fetch('/api/sendpush', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(myToken),
+      }).then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error('Error:', error));;
+     /*  if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log(data); */
+    } catch (error) {
+        console.error('Error sending notification:', error);
+    }
+  }
 
-    localStorage.setItem('apiKey', value);
-  };
+   const subscribeUser = async() => {
+    navigator.serviceWorker.ready.then((registration) => {
+      registration.pushManager.getSubscription().then((subscription) => {
+        if (subscription) {
+          setMyToken(subscription);
+          console.log('Already subscribed',subscription);
+          toast({
+            title: 'Already subscribed',
+            position: 'top-right',
+            description: 'You are already subscribed to the push notifications',
+            status: 'info',
+            duration: 5000,
+            isClosable: true,
+          });
+        } else {
+          registration.pushManager
+            .subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+            })
+            .then((subscription) => {
+              console.log('subscription',subscription);
+              setMyToken(subscription);
+              // save subscription on DB
+              /* fetch('/api/subscribe', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(subscription),
+              }); */
+            });
+        }
+      });
+    });
+  }
 
   return (
     <Flex
@@ -252,6 +310,30 @@ export default function HeaderLinks(props: {secondary: boolean;setApiKey: any;})
             >
               <Text fontWeight="500" fontSize="sm">
                 History
+              </Text>
+            </MenuItem>
+            <MenuItem
+              _hover={{ bg: 'none' }}
+              _focus={{ bg: 'none' }}
+              color="blue.500"
+              borderRadius="8px"
+              px="14px"
+              onClick={()=> subscribeUser()}
+            >
+              <Text fontWeight="500" fontSize="sm">
+                구독
+              </Text>
+            </MenuItem>
+            <MenuItem
+              _hover={{ bg: 'none' }}
+              _focus={{ bg: 'none' }}
+              color="blue.500"
+              borderRadius="8px"
+              px="14px"
+              onClick={()=> sendNotification()}
+            >
+              <Text fontWeight="500" fontSize="sm">
+                푸시발송
               </Text>
             </MenuItem>
             <MenuItem
