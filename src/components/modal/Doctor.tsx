@@ -7,10 +7,6 @@ import Content from '@/components/sidebar/components/Content';
 import { renderThumb,renderTrack,renderView } from '@/components/scrollbar/Scrollbar';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 
-import { IoMenuOutline } from 'react-icons/io5';
-import { IRoute } from '@/types/navigation';
-import { isWindowAvailable } from '@/utils/navigation';
-
 export interface DoctorModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;

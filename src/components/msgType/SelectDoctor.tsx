@@ -47,7 +47,7 @@ const SelectDoctor = ({
       minWidth={'100%'}
       width={'auto'}
       minHeight={"50px"}
-      maxHeight={"210px"}
+      maxHeight={"250px"}
       position={'relative'}
       sx={{
         '&::after': {
@@ -70,7 +70,7 @@ const SelectDoctor = ({
         minWidth={'100%'}
         width={'auto'}
         minHeight={"50px"}
-        maxHeight={"210px"}
+        maxHeight={"250px"}
         overflowX={'auto'}
         ref={flexRef} 
       >

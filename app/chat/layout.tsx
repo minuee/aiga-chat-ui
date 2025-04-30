@@ -20,7 +20,7 @@ export default function PageLayout({ children }: { children: ReactNode }) {
  
   return (
     <html lang="en">
-      <body id={'chat_root'}>
+      <body id={'root'}>
         <MainComponent>
           {children}
         </MainComponent>
