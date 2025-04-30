@@ -1,5 +1,5 @@
 // app/api/sendpush/route.ts
-import { NextApiRequest, NextApiResponse } from 'next';
+
 import webPush from 'web-push';
 
 const publicVapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
@@ -8,21 +8,26 @@ const privateVapidKey = process.env.NEXT_PUBLIC_VAPID_PRIVATE_KEY;
 webPush.setVapidDetails('mailto:minuee@kormedi.com', publicVapidKey, privateVapidKey);
 
 export async function POST(req: Request) {
+  console.log('Public Vapid Key:', publicVapidKey);
+  console.log('Private Vapid Key:', privateVapidKey);
   try {
-    console.log('Public Vapid Key:', publicVapidKey);
-    console.log('Private Vapid Key:', privateVapidKey);
+    
     const body = await req.json(); // 요청 본문을 JSON으로 파싱합니다.
     console.log(`req.body: ${JSON.stringify(body)}`);
     const subscription = body; // 구독 정보를 가져옵니다.
     const notificationPayload = {
+      messageType: 'supplement',
       title: 'Hello from PWA',
       body: 'This is a test push notification',
-      icon: '/icon-192x192.png',
-      badge: '/icon-192x192.png',
+      icon: '/img/push/196.png',
+      badge: '/img/push/72.png',
+      data: {
+        url: 'https://kormedi.com',
+      },
     };
 
 
-    console.log(notificationPayload);
+    console.log(subscription);
     await webPush.sendNotification(subscription, JSON.stringify(notificationPayload));
     return new Response(JSON.stringify({ message: 'Push notification sent' }), { status: 200 });
   } catch (error) {

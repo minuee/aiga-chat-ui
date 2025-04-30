@@ -17,7 +17,7 @@ import MiniSmall11F from "@/assets/images/etc/mini_small_11f.png";
 import MiniSmall3F from "@/assets/images/etc/mini_small_3f.png";
 
 
-export default function MainPage(props: { apiKeyApp: string }) {
+export default function MainPage() {
 
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [showPopDetail, setShowPopDetail] = React.useState(9);

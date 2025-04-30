@@ -12,7 +12,7 @@ const functions = {
     return str === null || str === undefined || str === '' || (typeof str === 'object' && Array.isArray(str) === false && Object.keys(str).length === 0);
   },
 
-  urlB64ToUint8Array(base64String: string): Uint8Array {
+  urlBase64ToUint8Array(base64String: any): Uint8Array {
     const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
     const base64 = (base64String + padding)
       .replace(/\-/g, "+")

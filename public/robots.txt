@@ -1,3 +1,4 @@
 User-Agent: *
-Disallow:
-Sitemap: https://kormedi.com
+Disallow: /api/*
+Disallow: /chat
+Sitemap: https://www.aiga.com/sitemap.xml

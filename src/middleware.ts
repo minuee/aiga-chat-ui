@@ -1,6 +1,5 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { getSession } from '@/serverActions/auth' // import { auth } from '@/auth'
 
 export async function middleware(request: NextRequest) {
 	// 요청 헤더에서 로그인 여부를 확인할 수 있도록 쿠키

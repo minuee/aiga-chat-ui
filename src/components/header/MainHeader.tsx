@@ -12,7 +12,7 @@ import { getActiveRoute, getActiveNavbar } from '@/utils/navigation';
 import { usePathname } from 'next/navigation';
 import routes from '@/routes';
 
-export default function Footer() {
+export default function Header() {
   const textColor = useColorModeValue('gray.500', 'white');
   let mainText = useColorModeValue('navy.700', 'white');
    const pathname = usePathname();

@@ -12,7 +12,7 @@ import { JWT } from 'next-auth/jwt';
 
 
 
-export const authOptions: any = {
+const authOptions: any = {
   providers: [
     CredentialsProvider({
       id: "aiga_credentials",
@@ -167,4 +167,4 @@ export const authOptions: any = {
 };
 
 const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST , handler as signIn};
+export { handler as GET, handler as POST};

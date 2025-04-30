@@ -1,6 +1,5 @@
-'use client';
 import React, { ReactNode } from 'react';
-import type { AppProps } from 'next/app';
+import type { Metadata } from 'next'
 import { ChakraProvider, Box, Portal, useDisclosure } from '@chakra-ui/react';
 import theme from '@/theme/theme';
 import routes from '@/routes';
@@ -10,105 +9,96 @@ import Footer from '@/components/footer/FooterAdmin';
 import Navbar from '@/components/navbar/NavbarAdmin';
 import { getActiveRoute, getActiveNavbar } from '@/utils/navigation';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import '@/styles/App.css';
 import '@/styles/Contact.css';
 import '@/styles/Plugins.css';
 import '@/styles/MiniCalendar.css';
-import AppWrappers from './AppWrappers';
-
+import MainComponent from './mainPage';
 import { SessionProvider } from "next-auth/react";
 
-export default function RootLayout({ children }: { children: ReactNode }) {
-  
-  const pathname = usePathname();
-  
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  
+import { subMetadata } from '@/components/header/SubHeader';
 
-  useEffect(() => {
+export const metadata: Metadata = {
+  ...subMetadata,
+  title: {
+    default: 'AIGA Chatbot',
+    template: '%s | AIGA',
+  },
+  description: 'AIGA Chatbot',
+  icons: {
+    icon: '/img/push/512.png',
+  },
+}
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+
+  /* useEffect(() => {
 
     if (!("serviceWorker" in navigator)) return;
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
-        .register("/worker/index.js")
-        .then((registration) => {
+        .register("/service-worker.js")
+        .then(async (registration) => {
           console.log('Service Worker registered with scope:', registration.scope);
+          const subscription = await registration.pushManager.getSubscription();
+          console.log('subscription',subscription);
+          if (subscription) {
+              console.log('Already subscribed',subscription);
+          } else {
+             console.log('Not subscribed');
+          }
         })
         .catch((error) => {
           console.error('Service Worker registration failed:', error);
         });
     }
-  }, []);
+
+    if ('PushManager' in window) {
+      // 푸시 알림 구독 요청
+      async function subscribeToPush() {
+        try {
+          const registration = await navigator.serviceWorker.ready;
+          const pushManager = registration.pushManager;
+  
+          if (pushManager) {
+            const subscription = await pushManager.getSubscription();
+  
+            if (subscription) {
+              // 이미 구독 중인 경우
+              console.log('이미 구독 중');
+              return subscription;
+            } else {
+              // 구독 신청
+              const subscription = await pushManager.subscribe({
+                applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY, // 서버 키
+                userVisibleOnly: true, // 사용자에게 보이는 알림만 허용
+              });
+              console.log('구독 완료', subscription);
+              return subscription;
+            }
+          }
+        } catch (error) {
+          console.error('푸시 알림 구독 실패', error);
+        }
+      }
+  
+      // 웹 페이지 로드 시 푸시 알림 구독 요청
+      window.addEventListener('load', () => {
+        subscribeToPush();
+      });
+    } else {
+      console.warn('브라우저에서 Push API를 지원하지 않습니다.');
+    }
+  }, []); */
+
+
 
   return (
     <html lang="en">
       <body id={'root'}>
-        <AppWrappers>
-        <SessionProvider>
-          {/* <ChakraProvider theme={theme}> */}
-          {
-            (pathname?.includes('register') || pathname?.includes('sign-in') || pathname?.includes('chat') ) 
-            ?
-            (
-              children
-            ) 
-            :
-            pathname?.includes('/') 
-            ? 
-            (
-              <Box>
-                <Header />
-                {children} 
-              </Box>
-            )
-            : 
-            (
-            <Box>
-              <Box
-                pt={{ base: '60px', md: '100px' }}
-                float="right"
-                minHeight="100vh"
-                height="100%"
-                overflow="hidden" /* 여기가 중요 */
-                position="relative"
-                maxHeight="100%"
-                w={{ base: '100%', xl: '100%' }}
-                maxWidth={{ base: '100%', xl: '100%' }}
-                transition="all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1)"
-                transitionDuration=".2s, .2s, .35s"
-                transitionProperty="top, bottom, width"
-                transitionTimingFunction="linear, linear, ease"
-              >
-                <Portal>
-                  <Box>
-                    <Navbar
-                      onOpen={onOpen}
-                      logoText={'AIGA Beta'}
-                      brandText={getActiveRoute(routes, pathname)}
-                      secondary={getActiveNavbar(routes, pathname)}
-                    />
-                  </Box>
-                </Portal>
-                <Box
-                  mx="auto"
-                  p={{ base: '20px', md: '20px' }}
-                  pe="20px"
-                  minH="100vh"
-                  pt="50px"
-                >
-                  {children}
-                  {/* <Component apiKeyApp={apiKey} {...pageProps} /> */}
-                </Box>
-                <Box>
-                  <Footer />
-                </Box>
-              </Box>
-            </Box>
-          )}
-          {/* </ChakraProvider> */}
-          </SessionProvider>
-        </AppWrappers>
+        <MainComponent>
+          {children}
+        </MainComponent>
       </body>
     </html>
   );

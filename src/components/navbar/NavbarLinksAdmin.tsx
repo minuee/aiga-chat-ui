@@ -9,6 +9,7 @@ import NoticerModal  from '@/components/modal/Notice';
 import LoginModal  from '@/components/modal/LoginForm';
 import NavLink from '../link/NavLink';
 import routes from '@/routes';
+import functions from '@/utils/functions';
 
 export default function HeaderLinks(props: {secondary: boolean;}) {
 
@@ -18,6 +19,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
   // Loading state
   const [isOpenNoticeModal, setIsOpenNoticeModal] = React.useState<boolean>(false);
   const [isOpenLoginModal, setIsOpenLoginModal] = React.useState<boolean>(false);
+  const [buttonText, setButtonText] = React.useState<string>('구독하기');
   // Chakra Color Mode
   const navbarIcon = useColorModeValue('gray.500', 'white');
   let menuBg = useColorModeValue('white', 'navy.800');
@@ -64,9 +66,39 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
     }
   }
 
+  const requestPermission = async () => {
+    try {
+        const registration = await navigator.serviceWorker.ready;
+        console.log('registration',registration);
+        const subscription = await registration.pushManager.getSubscription();
+        if (subscription) {
+            // 이미 구독이 되어있다면 해지하기
+            // TODO: DB에 구독 해지 정보 보내기
+            setButtonText('구독하기');
+            subscription.unsubscribe();
+        } else {
+            // 구독이 되어있지 않으면 구독하기
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+            });
+            // TODO: DB에 구독 정보 보내기
+            console.log('subscription => ', subscription.toJSON());
+            setButtonText('구독 해지하기');
+        }
+    } catch (e:any) {
+        console.error(e.message);
+    }
+  }
+
    const subscribeUser = async() => {
+    console.log('subscription 111');
+  
+
     navigator.serviceWorker.ready.then((registration) => {
+      console.log('registration',registration);
       registration.pushManager.getSubscription().then((subscription) => {
+        console.log('subscription',subscription);
         if (subscription) {
           setMyToken(subscription);
           console.log('Already subscribed',subscription);
@@ -98,6 +130,8 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
             });
         }
       });
+    }).catch(e => {
+      console.error(e);
     });
   }
 
@@ -312,7 +346,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
                 History
               </Text>
             </MenuItem>
-            <MenuItem
+            {/* <MenuItem
               _hover={{ bg: 'none' }}
               _focus={{ bg: 'none' }}
               color="blue.500"
@@ -335,7 +369,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
               <Text fontWeight="500" fontSize="sm">
                 푸시발송
               </Text>
-            </MenuItem>
+            </MenuItem> */}
             <MenuItem
               _hover={{ bg: 'none' }}
               _focus={{ bg: 'none' }}

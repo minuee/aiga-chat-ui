@@ -1,18 +1,17 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
-import { signInWithCredentials } from '@/serverActions/login';
 import { signIn } from 'next-auth/react';
 import { useGeoLocation } from '@/hooks/useGeoLocation';
+import Image from "next/image";
 
 const geolocationOptions = {
   enableHighAccuracy: true,
   timeout: 1000 * 10,
   maximumAge: 1000 * 3600 * 24,
 }
-
 // chakra imports
 import { 
-  Box,Flex,Drawer,DrawerBody,Icon,useColorModeValue,DrawerOverlay,useDisclosure,DrawerContent,DrawerCloseButton,
+  Box,Flex,Drawer,DrawerBody,Text,useColorModeValue,DrawerOverlay,useDisclosure,DrawerContent,DrawerCloseButton,
   Heading,
   Input,
   Button,
@@ -20,6 +19,7 @@ import {
   Stack,
   InputLeftElement,
   chakra,
+  Divider,
   Link,
   Avatar,
   FormControl,
@@ -45,7 +45,12 @@ import {
 import HeadTitle from './Title';
 import functions from '@/utils/functions';
 
-export interface NoginModalProps extends PropsWithChildren {
+import KakaoButtom from "@/assets/images/login/kakao_login.png";
+import NaverButtom from "@/assets/images/login/naver_login.png";
+
+
+
+export interface LoginModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
 }
@@ -58,12 +63,13 @@ const items = [
   { idx: 5, title: "Third Item", text: "Some value 3..." },
 ]
 
-function NoticerModal(props: NoginModalProps) {
+function LoginModal(props: LoginModalProps) {
   const { isOpen, setClose } = props;
   const [ isLoading, setLoading] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const toast = useToast();
   let sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
+  
   const { location, error } = useGeoLocation(geolocationOptions)
   React.useEffect(() => {
     console.log("isLoading",isOpen,isLoading)
@@ -166,11 +172,7 @@ function NoticerModal(props: NoginModalProps) {
                     <Avatar bg="teal.500" />
                     <Heading color="teal.400">Welcome</Heading>
                     <Box minW={{ base: "80%", md: "408px" }}>
-                      {/* <form onSubmit={async (e) => {
-                        e.preventDefault(); // 기본 폼 제출 방지
-                        const formData = new FormData(e.currentTarget); // FormData 생성
-                        await signInWithCredentials(formData); // 함수 호출
-                      }}> */}
+                      
                       <form onSubmit={handleSubmit}>
                         <Stack
                           spacing={4}
@@ -218,18 +220,30 @@ function NoticerModal(props: NoginModalProps) {
                           >
                             {isLoading ? <Spinner size='xs' /> : "Login"}
                           </Button>
+                          <Divider orientation='horizontal' />
+                          <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
+                            <Image 
+                              src={KakaoButtom}  
+                              alt="kakao" 
+                              style={{width:'183px', height:'45px',borderRadius:'10px',objectFit: 'cover'}}
+                            /> 
+                          </Box>
+                          <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
+                            <Image 
+                              src={NaverButtom}  
+                              alt="naver" 
+                              style={{ width:'183px', height:'45px',borderRadius:'10px',objectFit: 'cover'}}
+                            /> 
+                          </Box>
+                          
                         </Stack>
                       </form>
                     </Box>
                   </Stack>
-                  <Box>
-                    New to us?{" "}
-                    <Link color="teal.500" href="#">
-                      Sign Up
-                    </Link>
-                  </Box>
-                  <Box>
-                    {`로그인 geoLoction 위도 : ${location?.latitude} 경도 ${location?.longitude}`}
+                  
+                  <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
+                    <Text>{`위도 : ${location?.latitude}`}</Text>
+                    <Text>{`경도 : ${location?.longitude}`}</Text>
                   </Box>
                 </Flex>
               </Box>
@@ -242,4 +256,4 @@ function NoticerModal(props: NoginModalProps) {
 }
 
 
-export default NoticerModal;
+export default LoginModal;

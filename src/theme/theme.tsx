@@ -33,6 +33,12 @@ export default extendTheme(
   textareaStyles, // textarea styles
   switchStyles, // switch styles
   CardComponent, // card component
+  {
+    fonts: {
+      heading: `'Heading Font Name', sans-serif`,
+      body: `'Body Font Name', sans-serif`,
+    }
+  },
 );
 
 export interface CustomCardProps extends HTMLChakraProps<'div'>, ThemingProps {}

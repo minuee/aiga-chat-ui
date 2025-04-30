@@ -30,8 +30,8 @@
       {
         "name": "next"
       }
-    ],
-    "types": ["service-worker"]
+    ]
+   /*  "types": ["service-worker"] */
   },
   "include": [
     "next-env.d.ts",
@@ -40,9 +40,8 @@
     ".next/types/**/*.ts",
     "src/types/*.d.ts", 
     "app/api/auth/[...nextauth]/route.ts",
-    "public/worker/global.d.ts",
     "public/worker/index.js"
-  ],
+, "src/utils/chatStream.mts"  ],
   "exclude": [
     "node_modules"
   ]
