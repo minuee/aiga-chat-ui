@@ -1,21 +1,13 @@
 import React, { ReactNode } from 'react';
 import type { Metadata } from 'next'
-import { ChakraProvider, Box, Portal, useDisclosure } from '@chakra-ui/react';
-import theme from '@/theme/theme';
-import routes from '@/routes';
-import Header from '@/components/header/MainHeader';
-import Sidebar from '@/components/sidebar/Sidebar';
-import Footer from '@/components/footer/FooterAdmin';
-import Navbar from '@/components/navbar/NavbarAdmin';
-import { getActiveRoute, getActiveNavbar } from '@/utils/navigation';
-import { usePathname } from 'next/navigation';
+
 import '@/styles/App.css';
 import '@/styles/Contact.css';
 import '@/styles/Plugins.css';
 import '@/styles/MiniCalendar.css';
 import MainComponent from './mainPage';
-import { SessionProvider } from "next-auth/react";
-
+import { locales, LocaleTypes } from '@i18n/settings';
+import { dir } from 'i18next';
 import { subMetadata } from '@/components/header/SubHeader';
 
 export const metadata: Metadata = {
@@ -29,7 +21,29 @@ export const metadata: Metadata = {
     icon: '/img/push/512.png',
   },
 }
+export async function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
 
+export default function RootLayout({
+  children,
+  params,
+}: Readonly<{
+  children: ReactNode;
+  params: { locale: LocaleTypes };
+}>) {
+  
+  return (
+    <html lang={params.locale} dir={dir(params.locale)}>
+      <body id={'root'}>
+      <MainComponent>
+         {children}
+       </MainComponent>
+      </body>
+    </html>
+  );
+}
+/*
 export default function RootLayout({ children }: { children: ReactNode }) {
 
   /* useEffect(() => {
@@ -89,7 +103,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     } else {
       console.warn('브라우저에서 Push API를 지원하지 않습니다.');
     }
-  }, []); */
+  }, []); 
 
 
 
@@ -103,3 +117,4 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     </html>
   );
 }
+*/

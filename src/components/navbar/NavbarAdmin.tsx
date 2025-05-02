@@ -1,12 +1,27 @@
 'use client';
 /* eslint-disable */
 // Chakra Imports
-import { Box,Flex,Link,useColorModeValue } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
+import { 
+  Box,
+  Flex,
+  Button,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  useDisclosure,
+  useColorModeValue 
+} from '@chakra-ui/react';
+import { useState, useEffect,useRef } from 'react';
 import AdminNavbarLinks from './NavbarLinksAdmin';
 import { isWindowAvailable } from '@/utils/navigation';
 import Image from 'next/image';
 import LogoImage from "@/assets/images/logo.png";
+
+//새창열기 전역상태
+import NewChatStateStore from '@/store/newChatStore';
 
 export default function AdminNavbar(props: {
   secondary: boolean;
@@ -14,8 +29,10 @@ export default function AdminNavbar(props: {
   logoText: string;
   onOpen: (...args: any[]) => any;
 }) {
+  const { isOpen, onOpen, onClose } = useDisclosure()
   const [scrolled, setScrolled] = useState(false);
-
+  const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
+  const confirmRef = useRef();
   useEffect(() => {
     isWindowAvailable() && window.addEventListener('scroll', changeNavbar);
 
@@ -48,6 +65,7 @@ export default function AdminNavbar(props: {
     }
   };
 
+  
   return (
     <Box
       zIndex="100"
@@ -94,7 +112,7 @@ export default function AdminNavbar(props: {
         alignItems={{ xl: 'center' }}
         mb={gap}
       >
-        <Box mb={{ base: '8px', md: '0px' }}>
+        <Box mb={{ base: '8px', md: '0px' }} onClick={onOpen}>
           {/* <Link
             color={mainText}
             href="#"
@@ -125,6 +143,33 @@ export default function AdminNavbar(props: {
           <AdminNavbarLinks secondary={props.secondary} />
         </Box>
       </Flex>
+      <AlertDialog
+          isOpen={isOpen}
+          leastDestructiveRef={confirmRef as any}
+          onClose={onClose}
+        >
+          <AlertDialogOverlay>
+            <AlertDialogContent backgroundColor='white'>
+              <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                AIGA
+              </AlertDialogHeader>
+
+              <AlertDialogBody>
+                새로운 대화로 이동하시겠습니까?
+                이전 데이터는 히스토리를 통해 열람하실 수 있습니다.
+              </AlertDialogBody>
+             
+              <AlertDialogFooter>
+                <Button ref={confirmRef as any} onClick={onClose}>
+                  취소
+                </Button>
+                <Button colorScheme='red' onClick={() => {setNewChatOpen(true);onClose()}} ml={3}>
+                  열기
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
     </Box>
   );
 }

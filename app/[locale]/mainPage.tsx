@@ -16,7 +16,7 @@ import '@/styles/MiniCalendar.css';
 import AppWrappers from './AppWrappers';
 import { SessionProvider } from "next-auth/react";
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+function RootLayout({ children }: { children: ReactNode }) {
   
   const pathname = usePathname();
   
@@ -91,3 +91,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </>
   );
 }
+
+
+export default RootLayout;

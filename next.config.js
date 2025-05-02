@@ -1,5 +1,3 @@
-/** @type {import('next').NextConfig} */
-
 const runtimeCaching = require('next-pwa/cache');
 const withPWA = require('next-pwa')({
   dest: 'public',
@@ -14,6 +12,7 @@ const nextConfig = {
   basePath: process.env.NEXT_PUBLIC_BASE_PATH,
   assetPrefix: process.env.NEXT_PUBLIC_BASE_PATH,
   reactStrictMode: false, // changed this to false
+  /* 다국어버전 */
   images: {
     domains: [
       'images.unsplash.com',

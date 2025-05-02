@@ -11,7 +11,9 @@ const geolocationOptions = {
 }
 // chakra imports
 import { 
-  Box,Flex,Drawer,DrawerBody,Text,useColorModeValue,DrawerOverlay,useDisclosure,DrawerContent,DrawerCloseButton,
+  Box,
+  Flex,
+  Text,
   Heading,
   Input,
   Button,
@@ -32,10 +34,7 @@ import { FaUserAlt, FaLock } from "react-icons/fa";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
-import { renderThumb,renderTrack,renderView } from '@/components/scrollbar/Scrollbar';
-import { Scrollbars } from 'react-custom-scrollbars-2';
 
-import HeadTitle from '@/components/modal/Title';
 import functions from '@/utils/functions';
 
 import KakaoButtom from "@/assets/images/login/kakao_login.png";
@@ -50,11 +49,7 @@ function LoginScreen(props: LoginScreenProps) {
   const [ isLoading, setLoading] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const toast = useToast();
-
-
-
   const { location, error } = useGeoLocation(geolocationOptions)
- 
 
   const handleShowClick = () => setShowPassword(!showPassword);
   const handleSubmit = async (e:any) => {

@@ -8,7 +8,7 @@ import { ChatBody, OpenAIModel } from '@/types/types';
 import { Box,Button,Flex,Icon,Textarea,Input,Text,useColorModeValue,} from '@chakra-ui/react';
 import { useEffect, useState,useRef } from 'react';
 import Image from "next/image";
-import { MdAutoAwesome, MdFitbit, MdEdit, MdPerson } from 'react-icons/md';
+import { MdOutlineArrowDownward, MdFitbit, MdInfoOutline, MdPerson } from 'react-icons/md';
 import DoctorModal  from '@/components/modal/Doctor';
 import SelectBody  from '@/components/msgType/SelectBody';
 import SelectDoctor  from '@/components/msgType/SelectDoctor';
@@ -16,15 +16,16 @@ import SelectName  from '@/components/msgType/SelectName';
 import Welcome  from '@/components/msgType/Welcome';
 import SelectType  from '@/components/msgType/SelectType';
 
-import { MdOutlineArrowDownward } from "react-icons/md";
 import LoadingBar from "@/assets/icons/loading.gif";
-
+//새창열기 전역상태
+import NewChatStateStore from '@/store/newChatStore';
 
 export default function Chat() {
   // 세션 상태 확인
   const { data: session, status } = useSession();
   console.log("session",session,status)
   // Input States
+  const [isFocus, setIsFocus] = useState<boolean>(false);
   const [isAccessFirst, setAccessFirst] = useState<boolean>(false);
   const [inputCode, setInputCode] = useState<string>('');
   const [isShowScroll, setShowScroll] = useState(false);
@@ -40,7 +41,8 @@ export default function Chat() {
   // Loading state
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
   const navbarIcon = useColorModeValue('gray.500', 'white');
-
+  const isNewChat = NewChatStateStore(state => state.isNew);
+  const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
   // API Key
   // const [apiKey, setApiKey] = useState<string>(apiKeyApp);
   const borderColor = useColorModeValue('gray.200', 'gray');
@@ -68,6 +70,19 @@ export default function Chat() {
     }
     return () => setAccessFirst(false);
   }, [isAccessFirst]);
+
+  useEffect(() => {
+    if ( isNewChat && outputCode.length > 0 ) {
+      console.log("isNewChat",isNewChat,outputCode.length)
+      // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
+      setOutputCode([]);
+      setTimeout(() => {
+        setNewChatOpen(false);
+      }, 1000);
+    }
+    
+  }, [isNewChat]);
+  
   
   useEffect(() => {
     const el = scrollRef.current;
@@ -666,6 +681,14 @@ export default function Chat() {
           //justifyContent='center'
           //alignItems={'center'}
         >
+          <Box display={isFocus ? 'flex' : 'none'} sx={{position:'absolute',top:'-20px',left:'0',width:'100%',height:'30px',justifyContent:'center',alignItems:'center'}}>
+            <Box display='flex' alignItems='center' gap='5px' width={"90%"}>
+              <Icon as={MdInfoOutline} width="20px" height="20px" color={navbarIcon} />
+              <Text fontSize='0.8rem' color='gray.500'>
+                AIGA는 의료행위가 아니며 또한 실수 할 수 있습니다. 그 어떠한 책임도 안집니다. 
+              </Text>
+            </Box>
+          </Box>
           <Textarea
             minH="40px"
             h="100%"
@@ -684,6 +707,8 @@ export default function Chat() {
             value={inputCode}
             placeholder="Type your message here..."
             onChange={handleChange}
+            onFocus={() => setIsFocus(true)}
+            onBlur={() => setIsFocus(false)}
           />
           <Button
             variant="primary"

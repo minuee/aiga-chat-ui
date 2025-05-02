@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "nodenext",
+    "module": "esnext",
     "lib": [
       "dom",
       "dom.iterable",
@@ -12,6 +12,7 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
+    //"jsx": "react",
     "jsx": "preserve",
     "esModuleInterop": true,
     "moduleResolution": "nodenext",
@@ -20,10 +21,11 @@
     "incremental": true,
     "paths": {
       "@/*": [
-        "./src/*"
+        "./src/*",
+        "./i18n/*"
       ],
-      "@/serverActions/*": [
-        "./app/api/serverActions/*"
+      "@i18n/*": [
+        "./i18n/*"
       ]
     },
     "plugins": [
@@ -31,17 +33,18 @@
         "name": "next"
       }
     ]
-   /*  "types": ["service-worker"] */
+    /*  "types": ["service-worker"] */
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/types/*.d.ts", 
-    "app/api/auth/[...nextauth]/route.ts",
-    "public/worker/index.js"
-, "src/utils/chatStream.mts"  ],
+    "src/types/*.d.ts",
+    "app/[locale]/api/auth/[...nextauth]/route.ts",
+    "public/worker/index.js",
+    "src/utils/chatStream.mts"
+  ],
   "exclude": [
     "node_modules"
   ]
