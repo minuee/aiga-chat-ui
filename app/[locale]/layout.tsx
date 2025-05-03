@@ -6,8 +6,10 @@ import '@/styles/Contact.css';
 import '@/styles/Plugins.css';
 import '@/styles/MiniCalendar.css';
 import MainComponent from './mainPage';
-import { locales, LocaleTypes } from '@i18n/settings';
-import { dir } from 'i18next';
+import { Locale, routing } from "@/i18n/routing";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
+import { notFound } from "next/navigation";
 import { subMetadata } from '@/components/header/SubHeader';
 
 export const metadata: Metadata = {
@@ -21,24 +23,31 @@ export const metadata: Metadata = {
     icon: '/img/push/512.png',
   },
 }
-export async function generateStaticParams() {
-  return locales.map((locale) => ({ locale }));
-}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   params,
 }: Readonly<{
-  children: ReactNode;
-  params: { locale: LocaleTypes };
+  children: React.ReactNode;
+  params: Promise<{ locale: Locale }>; // Next.js 15에서는 Promise로 params를 받아야 합니다.
 }>) {
-  
+  const locale = (await params).locale;
+
+  // Ensure that the incoming `locale` is valid
+  if (!routing.locales.includes(locale as Locale)) {
+    notFound();
+  }
+
+  const messages = await getMessages();
+
   return (
-    <html lang={params.locale} dir={dir(params.locale)}>
-      <body id={'root'}>
-      <MainComponent>
-         {children}
-       </MainComponent>
+    <html lang={locale}>
+      <body>
+        <NextIntlClientProvider messages={messages}>
+          <MainComponent>
+            {children}
+          </MainComponent>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 const publicVapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-const privateVapidKey = process.env.VAPID_PRIVATE_KEY;
+const privateVapidKey = process.env.NEXT_PUBLIC_VAPID_PRIVATE_KEY;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {

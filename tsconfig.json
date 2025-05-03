@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "esnext",
+    "module": "CommonJS",
     "lib": [
       "dom",
       "dom.iterable",
@@ -15,7 +15,7 @@
     //"jsx": "react",
     "jsx": "preserve",
     "esModuleInterop": true,
-    "moduleResolution": "nodenext",
+    /*     "moduleResolution": "nodenext", */
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
@@ -33,7 +33,8 @@
         "name": "next"
       }
     ]
-    /*  "types": ["service-worker"] */
+    /*  "types": ["service-worker"] */,
+    "moduleResolution": "node"
   },
   "include": [
     "next-env.d.ts",
