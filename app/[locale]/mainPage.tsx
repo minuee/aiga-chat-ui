@@ -9,10 +9,6 @@ import Footer from '@/components/footer/FooterAdmin';
 import Navbar from '@/components/navbar/NavbarAdmin';
 import { getActiveRoute, getActiveNavbar } from '@/utils/navigation';
 import { usePathname } from 'next/navigation';
-import '@/styles/App.css';
-import '@/styles/Contact.css';
-import '@/styles/Plugins.css';
-import '@/styles/MiniCalendar.css';
 import AppWrappers from './AppWrappers';
 import { SessionProvider } from "next-auth/react";
 

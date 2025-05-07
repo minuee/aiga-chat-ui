@@ -1,6 +1,7 @@
 import createNextIntlPlugin from "next-intl/plugin"
 import runtimeCaching from 'next-pwa/cache.js'; // 이 부분은 이미 수정된 상태입니다.
-import withPWA from 'next-pwa'; // 수정된 부분
+import withPWAInit from 'next-pwa'; // 수정된 부분
+//import runtimeCaching from "next-pwa/cache";
 
 const withNextIntl = createNextIntlPlugin();
 
@@ -11,15 +12,16 @@ const withNextIntl = createNextIntlPlugin();
   customWorkerDir: 'worker',
   runtimeCaching,
 }); */
-
-const pwaConfig = {
+const withPWA = withPWAInit({
   dest: 'public',
-  register: true,
-  skipWaiting: true,
-  customWorkerDir: 'worker',
+  //register: true,
+  //skipWaiting: true,
+  //customWorkerDir: 'worker',
+  //runtimeCaching,
+  disable: process.env.NODE_ENV !== "production",
   runtimeCaching,
-  //basePath: process.env.NEXT_PUBLIC_BASE_PATH, // 여기에 추가
-};
+  buildExcludes: [/middleware-manifest.json$/,/app-build-manifest.json$/]
+});
 
 const nextConfig = {
   basePath: process.env.NEXT_PUBLIC_BASE_PATH,
@@ -38,9 +40,9 @@ const nextConfig = {
 };
 
 //module.exports = withPWA(withNextIntl(nextConfig));
-//export default withPWA(withNextIntl(nextConfig))
+export default withPWA(withNextIntl(nextConfig))
 //export default withPWA(withNextIntl({ ...nextConfig, ...pwaConfig }));
-export default withNextIntl(nextConfig)
+//export default withNextIntl(nextConfig)
 /*
 
 

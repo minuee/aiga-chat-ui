@@ -1,15 +1,20 @@
-import { getRequestConfig } from "next-intl/server";
+import { getRequestConfig,getLocale } from "next-intl/server";
 import { Locale, routing } from "./routing";
+import { cookies } from 'next/headers';
 
 export default getRequestConfig(async ({ requestLocale }) => {
   // This typically corresponds to the `[locale]` segment
-  let locale = await requestLocale;
+  let locale:any = await requestLocale;
+  if ( locale === undefined ) {
+    const cookieStore = await cookies();
+    //console.log('headersList',cookieStore.get("x-current-path"))
+    locale = cookieStore.get("x-current-path")?.value?.includes("/ja") ? "ja" : null;
+  }
 
   // Ensure that a valid locale is used
   if (!locale || !routing.locales.includes(locale as Locale)) {
-    locale = routing.defaultLocale;
+   locale = routing.defaultLocale;
   }
-
   return {
     locale,
     messages: (await import(`./messages/${locale}.json`)).default,

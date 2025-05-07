@@ -1,4 +1,10 @@
 {
-    "projectName": "AIGA",   
-    "title": "AIGA 의사추천"
+    "Titles": {
+        "projectName": "AIGA",   
+        "title": "AIGA 의사추천 KO"
+    },
+    "Messages": {
+        "welcome": "안녕하세요",
+        "welcome_msg": "안녕하세요. {app_name}에요.누가 아프신가요?"
+    }
 }

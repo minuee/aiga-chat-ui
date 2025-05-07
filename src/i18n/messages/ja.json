@@ -1,0 +1,10 @@
+{
+    "Titles": {
+        "projectName": "AIGA",   
+        "title": "AIGA 医師の推薦 JP"
+    },
+    "Messages": {
+        "welcome": "안녕하세요",
+         "welcome_msg": "ようこそ. {app_name}でございます.どなたがお悩みですか?"
+    }
+}

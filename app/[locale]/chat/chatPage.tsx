@@ -2,7 +2,7 @@
 import React, { ReactNode } from 'react';
 import { useColorModeValue, Box, Portal, Icon, useDisclosure } from '@chakra-ui/react';
 import routes from '@/routes';
-
+import { SessionProvider } from "next-auth/react";
 import Footer from '@/components/footer/FooterAdmin';
 import Navbar from '@/components/navbar/NavbarAdmin';
 import { getActiveRoute, getActiveNavbar } from '@/utils/navigation';
@@ -20,6 +20,7 @@ export default function PageLayout({ children }: { children: ReactNode }) {
   return (
     <>
     <AppWrappers>
+      <SessionProvider>
         <Box>
           <Box
             pt={{ base: '60px', md: '100px' }}
@@ -61,6 +62,7 @@ export default function PageLayout({ children }: { children: ReactNode }) {
             </Box>
           </Box>
         </Box>
+        </SessionProvider>
       </AppWrappers>
     </>
   );
