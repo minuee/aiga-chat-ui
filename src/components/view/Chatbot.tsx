@@ -5,11 +5,25 @@ import customfetch from '@/utils/customfetch';
 import functions from '@/utils/functions';
 import MessageBoxChat from '@/components/MessageBox';
 import { ChatBody, OpenAIModel } from '@/types/types';
-import { Box,Button,Flex,Icon,Textarea,Input,Text,useColorModeValue,} from '@chakra-ui/react';
+import { 
+    Box,Button,Flex,Icon,Textarea,Input,Text,useColorModeValue,
+    Drawer,
+    DrawerOverlay,
+    DrawerContent,
+    DrawerBody,
+    DrawerCloseButton,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    ModalCloseButton
+} from '@chakra-ui/react';
 import { useEffect, useState,useRef } from 'react';
 import Image from "next/image";
 import { MdOutlineArrowDownward, MdFitbit, MdInfoOutline, MdPerson } from 'react-icons/md';
-import DoctorModal  from '@/components/modal/Doctor';
+import DoctorDetail  from '@/components/modal/Doctor';
 import SelectBody  from '@/components/msgType/SelectBody';
 import SelectDoctor  from '@/components/msgType/SelectDoctor';
 import SelectName  from '@/components/msgType/SelectName';
@@ -17,8 +31,11 @@ import Welcome  from '@/components/msgType/Welcome';
 import SelectType  from '@/components/msgType/SelectType';
 import {useTranslations} from 'next-intl';
 import LoadingBar from "@/assets/icons/loading.gif";
+import HeadTitle from '@/components/modal/Title';
+
 //새창열기 전역상태
 import NewChatStateStore from '@/store/newChatStore';
+
 
 export default function ChatBot() {
   const t = useTranslations('Messages');
@@ -39,8 +56,10 @@ export default function ChatBot() {
   const [loading, setLoading] = useState<boolean>(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollBottomRef = useRef<HTMLDivElement>(null);
+  const btnRef = useRef(null)
   // Loading state
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
+  const [isOpenDoctorDrawer, setIsOpenDoctorDrawer] = useState<boolean>(false);
   const navbarIcon = useColorModeValue('gray.500', 'white');
   const isNewChat = NewChatStateStore(state => state.isNew);
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
@@ -48,13 +67,14 @@ export default function ChatBot() {
   // const [apiKey, setApiKey] = useState<string>(apiKeyApp);
   const borderColor = useColorModeValue('gray.200', 'gray');
   const inputColor = useColorModeValue('navy.700', 'black');
+  const sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
   const iconColor = useColorModeValue('brand.500', 'white');
   const bgIcon = useColorModeValue(
     'linear-gradient(180deg, #FBFBFF 0%, #CACAFF 100%)',
     'whiteAlpha.200',
   );
   const brandColor = useColorModeValue('brand.500', 'white');
-  const buttonBg = useColorModeValue('white', 'whiteAlpha.100');
+  const themeColor = useColorModeValue('white', 'navy.900');
   const gray = useColorModeValue('gray.500', 'white');
   const buttonShadow = useColorModeValue('14px 27px 45px rgba(112, 144, 176, 0.2)','none');
   const textColor = useColorModeValue('navy.700', 'white');
@@ -208,6 +228,7 @@ export default function ChatBot() {
     //setOutputCode((prevCode: any[]) => [...prevCode, { ismode: "server", msg: streamData }]);
     //if (scrollRef?.current) scrollRef?.current.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
   }
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       setShowScroll(false)
@@ -248,115 +269,11 @@ export default function ChatBot() {
       apiKey,
     };
 
-    // -------------- Fetch --------------
-    /* const response = await fetch('./api/chatAPI', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      signal: controller.signal,
-      body: JSON.stringify(body),
-    });
-
-    if (!response.ok) {
-      setLoading(false);
-      if (response) {
-        alert(
-          'Something went wrong went fetching from the API. Make sure to use a valid API key.',
-        );
-      }
-      return;
-    } */
-    /* const response = await fetch('http://localhost:9999/api/v1/see', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include'
-      //signal: controller.signal
-    }); */
-
-   /*  const eventSource = new EventSource('http://localhost:9999/api/v1/see',{withCredentials: true});
-
-    let response: {
-      ok: boolean;
-      data: ReadableStream<Uint8Array> | null;
-    } = {
-      ok: false,
-      data: null
-    };
-    eventSource.onmessage = function (event) {
-      response = {
-        ok : true,
-        data : event.data
-      }
-      console.log('받은 데이터:', response);
-    };
-
-    eventSource.onerror = function (err) {
-      response = {
-        ok : false,
-        data : null
-      }
-      console.error('SSE 연결 오류:', err);
-    };
-
-    console.log('response ',response);
-
-    if (!response?.ok) {
-      setLoading(false);
-      if (response) {
-        alert(
-          'Something went wrong went fetching from the API. Make sure to use a valid API key.',
-        );
-      }
-      return;
-    }
-
-    const data = response?.data;
-    console.log('response data',data);
-    if (!data) {
-      setLoading(false);
-      alert('Something went wrong');
-      return;
-    }
-    if ( data ) {
-      const reader = data?.getReader();
-      const decoder = new TextDecoder();
-      let done = false;
-  
-      while (!done) {
-        setLoading(true);
-        const { value, done: doneReading } = await reader.read();
-        done = doneReading;
-        const chunkValue = decoder.decode(value);
-        setOutputCode((prevCode) => prevCode + chunkValue);
-      }
-    }else{
-      console.error('data가 null입니다. getReader를 호출할 수 없습니다.');
-    } */
     
 
     //setLoading(false);
   };
-  // -------------- Copy Response --------------
-  // const copyToClipboard = (text: string) => {
-  //   const el = document.createElement('textarea');
-  //   el.value = text;
-  //   document.body.appendChild(el);
-  //   el.select();
-  //   document.execCommand('copy');
-  //   document.body.removeChild(el);
-  // };
 
-  // *** Initializing apiKey with .env.local value
-  // useEffect(() => {
-  // ENV file verison
-  // const apiKeyENV = process.env.NEXT_PUBLIC_OPENAI_API_KEY
-  // if (apiKey === undefined || null) {
-  //   setApiKey(apiKeyENV)
-  // }
-  // }, [])
 
   const handleChange = (Event: any) => {
     setInputCode(Event.target.value);
@@ -372,9 +289,13 @@ export default function ChatBot() {
     await handleTranslate(str);
   }
 
-  const onSendDoctorButton = async( isBool : boolean) => {
-    console.log("onSendDoctorButton",isBool)
-    setIsOpenDoctorModal(isBool);
+  const onSendDoctorButton = async( isBool : boolean,isType : number) => {
+    console.log("onSendDoctorButton",isBool,isType)
+    if ( isType == 1 ) {
+      setIsOpenDoctorModal(isBool);
+    }else{
+      setIsOpenDoctorDrawer(isBool);
+    }
   }
 
   const onSendNameButton = async( str : string) => {
@@ -446,21 +367,23 @@ export default function ChatBot() {
 
   return (
     <Flex
-      w="100%"
-      //pt={{ base: '0px', lg: '70px' }}
+      w={{ base: '100%', md: `${process.env.NEXT_PUBLIC_CONTENT_AREA_WIDTH}px` }}
+      maxWidth={{ base: '100%', md: `${process.env.NEXT_PUBLIC_CONTENT_AREA_WIDTH}px` }}
+      //pt={{ base: '0px', lg: '0px' }}
+      padding={"10px"}
       direction="column"
       position="relative"
     >
       <Flex
         direction="column"
         mx="auto"
-        w={{ base: '100%',sm : '100%', md: '100%', xl: '100%' }}
+        w={'100%'}
         overflowY='scroll'
         //minH={{ base: '75vh', md: '85vh'  }}
         //minH="calc(100vh - 150px)"
         //maxH={{ base: '75vh', md: '85vh'  }}
         //height={`calc(var(--vh, 1vh) * 85)`}
-        maxW="1024px"
+        //maxW="1024px"
         minH="calc(100vh - 100px)"
       >
         {/* <Flex direction={'column'} w="100%" mb={outputCode ? '20px' : 'auto'}>
@@ -675,82 +598,154 @@ export default function ChatBot() {
           //maxW="1024px"
           px="20px"                 // 양쪽 여백
           py="10px"                 // 위아래 여백
-          bg={"white"}                // 배경색 (필수! 안 넣으면 뒤 채팅이 비쳐요)
+          bg={themeColor}                // 배경색 (필수! 안 넣으면 뒤 채팅이 비쳐요)
           zIndex="100"              // 채팅보다 위에 오게
           //boxShadow="0 -2px 10px rgba(0,0,0,0.05)" // 선택: 살짝 그림자 효과
-          //display={'flex'}
-          //justifyContent='center'
+          display={'flex'}
+          justifyContent='center'
           //alignItems={'center'}
         >
-          <Box display={isFocus ? 'flex' : 'none'} sx={{position:'absolute',top:'-20px',left:'0',width:'100%',height:'30px',justifyContent:'center',alignItems:'center'}}>
-            <Box display='flex' alignItems='center' gap='5px' width={"90%"}>
-              <Icon as={MdInfoOutline} width="20px" height="20px" color={navbarIcon} />
-              <Text fontSize='0.8rem' color='gray.500'>
-                AIGA는 의료행위가 아니며 또한 실수 할 수 있습니다. 그 어떠한 책임도 안집니다. 
-              </Text>
-            </Box>
-          </Box>
-          <Textarea
-            minH="40px"
-            h="100%"
-            maxH="55px"
-            border="1px solid"
-            borderColor={borderColor}
-            readOnly={isReceiving}
-            borderRadius="45px"
-            //p="15px 20px"
-            me="10px"
-            fontSize="sm"
-            fontWeight="500"
-            _focus={{ borderColor: 'none' }}
-            color={inputColor}
-            _placeholder={placeholderColor}
-            value={inputCode}
-            placeholder="Type your message here..."
-            onChange={handleChange}
-            onFocus={() => setIsFocus(true)}
-            onBlur={() => setIsFocus(false)}
-          />
-          <Button
-            variant="primary"
-            py="20px"
-            px="16px"
-            fontSize="sm"
-            borderRadius="45px"
-            ms="auto"
-            w={{ base: '160px', md: '210px' }}
-            h="54px"
-            _hover={{
-              boxShadow:
-                '0px 21px 27px -10px rgba(96, 60, 255, 0.48) !important',
-              bg: 'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%) !important',
-              _disabled: {
-                bg: 'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)',
-              },
-            }}
-            onClick={() => handleTranslate(inputCode)}
-            isLoading={loading ? true : false}
+          <Box 
+            w={{ base: '100%', md: `${process.env.NEXT_PUBLIC_CONTENT_AREA_WIDTH}px` }}
+            position={'relative'}
+            display={'flex'} 
+            flexDirection={'row'}
           >
-            {
-              isReceiving
-              ?
-              <Image 
-                src={LoadingBar}  
-                alt="LoadingBar" 
-                style={{width:'30px', height:'30px'}}
-              /> 
-              :
-              <Text>
-                전송
-              </Text>
-            }
-          </Button>
-          
+
+            <Box 
+              display={isFocus ? 'flex' : 'none'} 
+              position={'absolute'}
+              top={{base : '-40px', md : '-30px'}}
+              left={'0'}
+              w={{ base: '100%', md: `${process.env.NEXT_PUBLIC_CONTENT_AREA_WIDTH}px` }}
+              height={'30px'}
+              justifyContent={'center'}
+              alignItems={'center'}
+            >
+              <Box display='flex' alignItems='center' gap='5px' width={"90%"}>
+                <Icon as={MdInfoOutline} width="20px" height="20px" color={navbarIcon} />
+                <Text fontSize='0.8rem' color='gray.500' lineHeight={'0.8rem'}>
+                  AIGA는 의료행위가 아니며 또한 실수 할 수 있습니다. 그 어떠한 책임도 안집니다. 
+                </Text>
+              </Box>
+            </Box>
+            <Textarea
+              minH="40px"
+              h="100%"
+              maxH="55px"
+              border="1px solid"
+              borderColor={borderColor}
+              readOnly={isReceiving}
+              borderRadius="45px"
+              //p="15px 20px"
+              me="10px"
+              fontSize="sm"
+              fontWeight="500"
+              _focus={{ borderColor: 'none' }}
+              color={inputColor}
+              _placeholder={placeholderColor}
+              value={inputCode}
+              placeholder="Type your message here..."
+              onChange={handleChange}
+              onFocus={() => setIsFocus(true)}
+              onBlur={() => setIsFocus(false)}
+            />
+            <Button
+              variant="primary"
+              py="20px"
+              px="16px"
+              fontSize="sm"
+              borderRadius="45px"
+              ms="auto"
+              w={{ base: '160px', md: '210px' }}
+              h="54px"
+              _hover={{
+                boxShadow:
+                  '0px 21px 27px -10px rgba(96, 60, 255, 0.48) !important',
+                bg: 'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%) !important',
+                _disabled: {
+                  bg: 'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)',
+                },
+              }}
+              onClick={() => handleTranslate(inputCode)}
+              isLoading={loading ? true : false}
+            >
+              {
+                isReceiving
+                ?
+                <Image 
+                  src={LoadingBar}  
+                  alt="LoadingBar" 
+                  style={{width:'30px', height:'30px'}}
+                /> 
+                :
+                <Text>
+                  전송
+                </Text>
+              }
+            </Button>
+          </Box>
         </Flex>
-        <DoctorModal
-          isOpen={isOpenDoctorModal}
-          setClose={() => setIsOpenDoctorModal(false)}
-        />
+        {
+          isOpenDoctorDrawer && (
+            <Box display={{ base: 'block', xl: 'block' }} position="fixed" minH="100%">
+              <Drawer
+                isOpen={isOpenDoctorDrawer}
+                onClose={() => setIsOpenDoctorDrawer(false)}
+                placement={'left'}
+              >
+                <DrawerOverlay />
+                <DrawerContent
+                  w="100%"
+                  maxW="450px"
+                  borderRadius="0px"
+                  bg={sidebarBackgroundColor}
+                >
+                  <HeadTitle title={"의사명 프로필"}/>
+                  <DrawerCloseButton
+                    zIndex="3"
+                    onClick={() => setIsOpenDoctorDrawer(false)}
+                    _focus={{ boxShadow: 'none' }}
+                    _hover={{ boxShadow: 'none' }}
+                  />
+                  <DrawerBody maxW="450px" px="10px" pb="0">
+                    <DoctorDetail
+                      isOpen={isOpenDoctorDrawer}
+                      setClose={() => setIsOpenDoctorDrawer(false)}
+                    />
+                  </DrawerBody>
+                </DrawerContent>
+              </Drawer>
+            </Box>
+          )
+        }
+        
+        {
+          isOpenDoctorModal && (
+            
+            <Modal
+              onClose={() => setIsOpenDoctorModal(false)}
+              finalFocusRef={btnRef}
+              isOpen={isOpenDoctorModal}
+              scrollBehavior={'inside'}
+            >
+              <ModalOverlay />
+              <ModalContent maxW="450px" bg={sidebarBackgroundColor}>
+                <ModalHeader>{"의사명 프로필"}</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody >
+                  <DoctorDetail
+                    isOpen={isOpenDoctorModal}
+                    setClose={() => setIsOpenDoctorModal(false)}
+                  />
+                </ModalBody>
+               {/*  <ModalFooter>
+                  <Button onClick={() => setIsOpenDoctorModal(false)}>Close</Button>
+                </ModalFooter> */}
+              </ModalContent>
+            </Modal>
+          )
+        }
       </Flex>
     </Flex>
   );

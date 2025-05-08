@@ -1,6 +1,6 @@
 import {notFound} from 'next/navigation';
 import {NextIntlClientProvider, hasLocale} from 'next-intl';
-import {ReactNode} from 'react';
+import React, { ReactNode } from 'react';
 import {routing} from '@/i18n/routing';
 import { subMetadata } from '@/components/header/SubHeader';
 import type { Metadata } from 'next';

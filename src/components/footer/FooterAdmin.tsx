@@ -17,7 +17,7 @@ export default function Footer() {
       zIndex="3"
       flexDirection={{
         base: 'column',
-        xl: 'row',
+        md: 'row',
       }}
       alignItems="center"
       justifyContent="space-between"

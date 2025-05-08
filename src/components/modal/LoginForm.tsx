@@ -44,7 +44,7 @@ function LoginModal(props: LoginModalProps) {
   }
 
   const setClcikClose = (str:string) => {
-    if(str === 'kakao' || str === 'naver') {
+    if(str === 'kakao' || str === 'naver' || str === 'aiga') {
       setLoginForm({socialType : ""});
     }else{
       setClose();
@@ -71,7 +71,7 @@ function LoginModal(props: LoginModalProps) {
           //borderRadius="16px"
           bg={sidebarBackgroundColor}
         >
-          <HeadTitle title={(loginForm.socialType === 'kakao' || loginForm.socialType === 'naver' ) ? "회원가입" : "로그인"} />
+          <HeadTitle title={(loginForm.socialType === 'kakao' || loginForm.socialType === 'naver' || loginForm.socialType === 'aiga') ? "회원가입" : "로그인"} />
           <DrawerCloseButton
             zIndex="3"
             onClick={ () => setClcikClose(loginForm.socialType)}
@@ -89,7 +89,7 @@ function LoginModal(props: LoginModalProps) {
             >
               <Box width='calc( 100% - 20px)' padding='10px' height='100%'>
                 {
-                  ( loginForm.socialType === 'kakao' || loginForm.socialType === 'naver'  ) 
+                  (  ['naver','kakao','aiga'].includes(loginForm.socialType) ) 
                   ?
                   (
                     <JoinScreen

@@ -3,6 +3,7 @@ import React, { PropsWithChildren } from 'react';
 import { signIn } from 'next-auth/react';
 import { useGeoLocation } from '@/hooks/useGeoLocation';
 import Image from "next/image";
+import { MdCoPresent } from "react-icons/md";
 
 const geolocationOptions = {
   enableHighAccuracy: true,
@@ -157,6 +158,11 @@ function LoginScreen(props: LoginScreenProps) {
                     {isLoading ? <Spinner size='xs' /> : "Login"}
                   </Button>
                   <Divider orientation='horizontal' />
+                  <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} onClick={() => onClickJoin('aiga')}>
+                  <Button leftIcon={<MdCoPresent />} colorScheme='blue' variant='outline' width={'183px'} borderRadius={'10px'}>
+                    AIGA 회원가입
+                  </Button>
+                  </Box>
                   <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} onClick={() => onClickJoin('kakao')}>
                     <Image 
                       src={KakaoButtom}  

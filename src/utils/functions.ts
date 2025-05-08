@@ -397,12 +397,17 @@ const functions = {
     }
     //return !!password.match(PASSWORD_RULE);
   },
-  isMobile(mobile:any) {
+  isMobilePhone(mobile:any) {
     if (!_.isString(mobile)) {
       return false;
     }
     return !!mobile.match(MOBILE_FORMAT);
   },
+
+  isMobile (userAgent: string): boolean  {
+    return /android.+mobile|ip(hone|[oa]d)/i.test(userAgent);
+  },
+
   getEmailId(email:any) {
     if (email != null && email && email.indexOf("@") >= 0) {
       return email.substring(0, email.indexOf("@"));
@@ -414,7 +419,8 @@ const functions = {
     if (
       (email && email.endsWith("@facebook.com")) ||
       email.endsWith("@naver.com") ||
-      email.endsWith("@apple.com")
+      email.endsWith("@apple.com") ||
+      email.endsWith("@kakao.com")
     ) {
       return true;
     }

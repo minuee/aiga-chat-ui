@@ -7,7 +7,7 @@ import { MdAutoAwesome, MdFitbit, MdCall, MdPerson } from 'react-icons/md';
 import Image from 'next/image';
 import Card from '@/components/card/Card'
 type SelectDoctorProps = {
-    onSendButton: (bool: boolean) => void; 
+    onSendButton: (bool: boolean,id:number) => void; 
 };
 
 const SelectDoctor = ({ 
@@ -74,7 +74,7 @@ const SelectDoctor = ({
         overflowX={'auto'}
         ref={flexRef} 
       >
-        <Box mr={5} boxSize={200}  flexShrink="0" onClick={() => onSendButton(true)}>
+        <Box mr={5} boxSize={200}  flexShrink="0" onClick={() => onSendButton(true,1)}>
           <NextImage
             width="200"
             height="200"
@@ -82,7 +82,7 @@ const SelectDoctor = ({
             alt={'doctor1'}
           />
         </Box>
-        <Box mr={5} boxSize={200}  flexShrink="0" onClick={() => onSendButton(true)}>
+        <Box mr={5} boxSize={200}  flexShrink="0" onClick={() => onSendButton(true,2)}>
           <NextImage
             width="200"
             height="200"
@@ -90,7 +90,7 @@ const SelectDoctor = ({
             alt={'doctor1'}
           />
         </Box>
-        <Box mr={5} boxSize={200} flexShrink="0" onClick={() => onSendButton(true)}>
+        <Box mr={5} boxSize={200} flexShrink="0" onClick={() => onSendButton(true,1)}>
           <NextImage
             width="200"
             height="200"
@@ -98,7 +98,7 @@ const SelectDoctor = ({
             alt={'doctor1'}
           />
         </Box>
-        <Box mr={5} boxSize={200} flexShrink="0" onClick={() => onSendButton(true)}>
+        <Box mr={5} boxSize={200} flexShrink="0" onClick={() => onSendButton(true,2)}>
           <NextImage
             width="200"
             height="200"
@@ -106,7 +106,7 @@ const SelectDoctor = ({
             alt={'doctor1'}
           />
         </Box>
-        <Box mr={5} boxSize={200} flexShrink="0" onClick={() => onSendButton(true)}>
+        <Box mr={5} boxSize={200} flexShrink="0" onClick={() => onSendButton(true, 1)}>
           <NextImage
             width="200"
             height="200"
@@ -114,7 +114,7 @@ const SelectDoctor = ({
             alt={'doctor1'}
           />
         </Box>
-        <Box  boxSize={200} flexShrink="0" onClick={() => onSendButton(true)}>
+        <Box  boxSize={200} flexShrink="0" onClick={() => onSendButton(true, 2)}>
           <NextImage
             width="200"
             height="200"

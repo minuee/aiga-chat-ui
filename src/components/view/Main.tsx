@@ -12,7 +12,6 @@ import {useTranslations} from 'next-intl';
 import MainBgImage from "@/assets/images/etc/bg_1.png";
 import MainBgImage2 from "@/assets/images/etc/bg_2.png";
 import MiniMiddle12F from "@/assets/images/etc/mini_middle_12f.png";
-import MiniSmall11F from "@/assets/images/etc/mini_small_11f.png";
 import MiniSmall3F from "@/assets/images/etc/mini_small_3f.png";
 
 
@@ -23,6 +22,8 @@ export default function MainPage() {
   const [progress, setProgress] = React.useState(0);
   const [isOpenWindow, setOpenWindow] = React.useState(false);
   const elementRef = React.useRef(null);
+  const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
+  const valueRef = React.useRef(0);
   const t = useTranslations('Titles');
 
   const onClickChageIndex = React.useCallback(
@@ -33,6 +34,34 @@ export default function MainPage() {
     },
     [activeIndex]
   );
+
+/* 
+  React.useEffect(() => {
+    intervalRef.current = setInterval(() => {
+  
+      setProgress((oldProgress) => {
+          
+        if (oldProgress === 100) {
+          if ( activeIndex == mConst.sungwonjungThumb.length ) {
+            valueRef.current =  1
+          }else{
+            valueRef.current += 1; 
+          }
+          return 0;
+        }
+        const diff = 1;
+        return oldProgress + diff;
+      });
+    }, 100);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []); */
+
+/* 
   React.useEffect(() => {
     setProgress(0);
     const timer = setInterval(() => {
@@ -62,22 +91,18 @@ export default function MainPage() {
     return () => {
       clearInterval(timer);
     };
-  }, [activeIndex,showPopDetail]);
+  }, [activeIndex,showPopDetail]); */
 
   const openQuickMenu = (val:number) => {
       setShowPopDetail(val);
   }
-
-
 
   return (
     
         <Box sx={styles.wrapper} minWidth={{base:'100%', md:'1600px'}} minHeight={{base:'100%', md:'100vh'}} >
           <Box sx={styles.outerWrap} minWidth={{base:'100%', md:'1600px'}} minHeight={{base:'100%', md:'100vh'}}>
             <Box sx={styles.quickWrap}>
-              <QuickRight 
-                isMode={"sungwonjung"}
-              />
+              <QuickRight />
             </Box>
             <Stack hideFrom="mobile">
               <Image 

@@ -31,7 +31,6 @@ export default async function MainLayout({ children,params }: Readonly<{
   const locale = (await params).locale;
 
   // Ensure that the incoming `locale` is valid
-  console.log('locale',locale);
   if (!routing.locales.includes(locale as Locale)) {
     notFound();
   }

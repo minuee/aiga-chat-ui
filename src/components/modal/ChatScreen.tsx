@@ -5,7 +5,9 @@ import React, { PropsWithChildren } from 'react';
 import { Box,Flex,Drawer,DrawerBody,Icon,useColorModeValue,DrawerOverlay,useDisclosure,DrawerContent,DrawerCloseButton } from '@chakra-ui/react';
 import { renderThumb,renderTrack,renderView } from '@/components/scrollbar/Scrollbar';
 import { Scrollbars } from 'react-custom-scrollbars-2';
-
+import * as mCookie from "@/utils/cookies";
+import functions from '@/utils/functions';
+import { routing } from '@/i18n/routing';
 
 export interface ChatModalProps extends PropsWithChildren {
   isOpen : boolean;
@@ -14,6 +16,16 @@ export interface ChatModalProps extends PropsWithChildren {
 
 function ChatScreenModal(props: ChatModalProps) {
   const { isOpen, setClose } = props;
+  const [locale, setLocale] = React.useState<string>(routing.defaultLocale);
+
+
+  React.useEffect(() => {  
+    const locale = mCookie.getCookie('currentLocale'); 
+    if ( !functions.isEmpty(locale) ) {
+      setLocale(locale);
+    }
+  },[isOpen]);
+  console.log('locale 111',locale);
   let sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
   let menuColor = useColorModeValue('gray.400', 'white');
   // this is for the rest of the collapses
@@ -38,13 +50,7 @@ function ChatScreenModal(props: ChatModalProps) {
         <DrawerContent
           w="100%"
           maxW="450px"
-          ms={{
-            sm: '16px',
-          }}
-          my={{
-            sm: '16px',
-          }}
-          borderRadius="16px"
+          borderRadius="0px"
           bg={sidebarBackgroundColor}
         >
           <DrawerCloseButton
@@ -62,10 +68,10 @@ function ChatScreenModal(props: ChatModalProps) {
               renderView={renderView}
             >
               <iframe
-                src="/chat"
+                src={`/${locale}/chat`}
                 width="100%"
                 height="100%"
-                style={{ border: "none" }}
+                style={{ border: "none", paddingBottom: "20px" }}
               />
             </Scrollbars>
           </DrawerBody>

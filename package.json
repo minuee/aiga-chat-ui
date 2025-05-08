@@ -36,6 +36,7 @@
     "react": "^19.0.0-rc.1",
     "react-cookie": "^8.0.1",
     "react-custom-scrollbars-2": "^4.2.1",
+    "react-device-detect": "^2.2.3",
     "react-dom": "^19.0.0-rc.1",
     "react-icons": "^4.9.0",
     "react-is": "^18.0.0",

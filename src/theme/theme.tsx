@@ -37,6 +37,14 @@ export default extendTheme(
     fonts: {
       heading: `'Heading Font Name', sans-serif`,
       body: `'Body Font Name', sans-serif`,
+    },
+    Progress: {
+      baseStyle: {
+        filledTrack: {
+          bg: '#cccccc',
+          borderRadius: '0px',
+        }
+      }
     }
   },
 );

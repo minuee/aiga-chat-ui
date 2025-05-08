@@ -5,7 +5,7 @@ import * as React from 'react';
 import {Link} from '@/i18n/routing';
 import Image from 'next/image';
 import { Box,Button,Flex,Icon,Img,Input,Text,Progress,} from '@chakra-ui/react';
-
+import * as mCookie from "@/utils/cookies";
 import PopWondowScreen from "@/components/modal/PopWindow";
 import ChatScreenModal  from '@/components/modal/ChatScreen';
 
@@ -13,13 +13,19 @@ import BgImage from "@/assets/images/etc/sub-quick-bar-box.png";
 import IconInfo from "@/assets/images/etc/icon-sub-quick-info.png";
 import IconEvent from "@/assets/images/etc/icon-sub-quick-event.png";
 import IconReservation from "@/assets/images/etc/icon-sub-quick-reservation.png";
+import { routing } from '@/i18n/routing';
+import functions from '@/utils/functions';
 
-
-type QuickRightProps = {
-  isMode? : string;
-};
-const QuickRight : React.FC<QuickRightProps> = ({isMode}) => {
+const QuickRight : React.FC = () => {
   const [isOpenDoctorModal, setIsOpenDoctorModal] = React.useState<boolean>(false);
+  const [locale, setLocale] = React.useState<string>(routing.defaultLocale);
+
+  React.useEffect(() => {  
+    const locale = mCookie.getCookie('currentLocale'); 
+    if ( !functions.isEmpty(locale) ) {
+      setLocale(locale);
+    }
+  },[isOpenDoctorModal]);
 
   return (
       <Box sx={styles.mainWrapper}>
@@ -48,7 +54,7 @@ const QuickRight : React.FC<QuickRightProps> = ({isMode}) => {
         </Box>
         <Box sx={styles.middleWrapper} >
           <PopWondowScreen
-            url="/chat"
+            url={`/${locale}/chat`}
             window_width={500}
             window_height={750}
           >
@@ -76,10 +82,15 @@ const QuickRight : React.FC<QuickRightProps> = ({isMode}) => {
               </Text>
             </Flex>
         </Box>
-        <ChatScreenModal
-          isOpen={isOpenDoctorModal}
-          setClose={() => setIsOpenDoctorModal(false)}
-        />
+        {
+          isOpenDoctorModal && (
+            <ChatScreenModal
+              isOpen={isOpenDoctorModal}
+              setClose={() => setIsOpenDoctorModal(false)}
+            />
+          )
+        }
+       
 
       </Box>
   );

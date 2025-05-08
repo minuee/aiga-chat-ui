@@ -77,7 +77,7 @@ export default function AdminNavbar(props: {
       backdropFilter={navbarBackdrop}
       backgroundPosition="center"
       backgroundSize="cover"
-      borderRadius="16px"
+      borderRadius="10px"
       borderWidth="1.5px"
       borderStyle="solid"
       transitionDelay="0s, 0s, 0s, 0s"
@@ -92,21 +92,21 @@ export default function AdminNavbar(props: {
       mx="auto"
       mt={secondaryMargin}
       pb="8px"
-      right={{ base: '12px', md: '30px', lg: '30px', xl: '30px' }}
       px={{ base: '8px',md: '10px',}}
       ps={{ base: '8px',md: '12px',}}
       pt="8px"
-      top={{ base: '12px', md: '16px', xl: '18px' }}
-      w={{
+      top={{ base: '10px', md: '10x', xl: '10px' }}
+      width={{base:'100%',md:'768px'}}
+      /* w={{
         base: 'calc(100vw - 5%)',
         md: 'calc(100vw - 5%)',
         lg: 'calc(100vw - 6%)',
         xl: 'calc(100vw - 50px)',
         '2xl': 'calc(100vw - 65px)',
-      }}
+      }} */
     >
       <Flex
-        w="100%"
+        w={{base:'100%',md:`${process.env.NEXT_PUBLIC_CONTENT_AREA_WIDTH}px`}}
         flexDirection={'row'}
         //flexDirection={{ base: 'row', sm: 'column' , md: 'row' , lg: 'row'}}
         alignItems={{ xl: 'center' }}
