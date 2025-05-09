@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "start-pm2": "pm2 list && pm2-runtime start ecosystem.config.js"
   },
   "dependencies": {
     "@babel/traverse": "^7.24.6",
