@@ -8,6 +8,7 @@ import { Scrollbars } from 'react-custom-scrollbars-2';
 import * as mCookie from "@/utils/cookies";
 import functions from '@/utils/functions';
 import { routing } from '@/i18n/routing';
+import  mConstants from '@/utils/constants';
 
 export interface ChatModalProps extends PropsWithChildren {
   isOpen : boolean;
@@ -49,7 +50,7 @@ function ChatScreenModal(props: ChatModalProps) {
         <DrawerOverlay />
         <DrawerContent
           w="100%"
-          maxW="450px"
+          maxW={`${mConstants.modalMaxWidth}px`}
           borderRadius="0px"
           bg={sidebarBackgroundColor}
         >
@@ -59,7 +60,7 @@ function ChatScreenModal(props: ChatModalProps) {
             _focus={{ boxShadow: 'none' }}
             _hover={{ boxShadow: 'none' }}
           />
-          <DrawerBody maxW="450px" px="0rem" pb="0">
+          <DrawerBody maxW={`${mConstants.modalMaxWidth}px`} px="0rem" pb="0">
             <Scrollbars
               universal={true}
               autoHide

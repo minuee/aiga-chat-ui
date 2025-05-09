@@ -10,6 +10,7 @@ import HeadTitle from './Title';
 import LoginScreen from '@/components/signup/LoginScreen';
 import JoinScreen from '@/components/signup/JoinScreen';
 import functions from '@/utils/functions';
+import mConstants from '@/utils/constants';
 
 export interface LoginModalProps extends PropsWithChildren {
   isOpen : boolean;
@@ -61,7 +62,7 @@ function LoginModal(props: LoginModalProps) {
         <DrawerOverlay />
         <DrawerContent
           w="100%"
-          maxW="450px"
+          maxW={`${mConstants.modalMaxWidth}px`}
          /*  ms={{
             sm: '16px',
           }}
@@ -78,7 +79,7 @@ function LoginModal(props: LoginModalProps) {
             _focus={{ boxShadow: 'none' }}
             _hover={{ boxShadow: 'none' }}
           />
-          <DrawerBody maxW="450px" px="0rem" pb="10" height="100%" backgroundColor="white">
+          <DrawerBody maxW={`${mConstants.modalMaxWidth}px`} px="0rem" pb="10" height="100%" backgroundColor="white">
             
             <Scrollbars
               universal={true}

@@ -19,7 +19,7 @@ export const sungwonjungThumb = [
 
 const contrants  = {
   defaultColor : '#6c62d1',
-  projectTitle : 'SW ERP',
+  projectTitle : 'AIGA WEB',
   popDetailSizeRule1 : 1024,// 멀티뷰 최소너비 기준지점
   popDetailSizeRule2 : '800px',//멀티뷰최소너비
   popDetailSizeRule3 : '80%',//  멀티뷰 최소너비 이상일때 너비 비율
@@ -30,8 +30,8 @@ const contrants  = {
   headerHeight: 56,
   mobileSidebarWidth: 0,
   mobileHeaderHeight: 60,
-  desktopMinWidth : 1600,
-
+  modalMaxWidth : 540,
+  desktopMinWidth : 768,
 }
 
 export default contrants;

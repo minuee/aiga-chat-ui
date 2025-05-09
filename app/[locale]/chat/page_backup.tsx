@@ -750,6 +750,8 @@ export default function Chat() {
         <DoctorModal
           isOpen={isOpenDoctorModal}
           setClose={() => setIsOpenDoctorModal(false)}
+          onHandleWriteReview={() => {}}
+          onHandleEditDoctor={() => {}}
         />
       </Flex>
     </Flex>

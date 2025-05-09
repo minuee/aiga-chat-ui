@@ -16,7 +16,7 @@ export default function Index(  ) {
     }else{
       mCookie.setCookie("currentLocale",params?.locale);
     }
-  },[params]);
+  },[params?.locale]);
 
   return (
     <PageLayout title="AIGA Chatbot">

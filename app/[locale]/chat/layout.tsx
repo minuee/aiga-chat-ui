@@ -4,7 +4,6 @@ import React, { ReactNode } from 'react';
 import {routing} from '@/i18n/routing';
 import { subMetadata } from '@/components/header/SubHeader';
 import type { Metadata } from 'next';
-
 type Props = {
   children: ReactNode;
   params: Promise<{locale: string}>;
@@ -13,7 +12,7 @@ type Props = {
 export const metadata: Metadata = {
   ...subMetadata,
   title: {
-    default: 'AIGA',
+    default: 'AIGA Chatbot',
     template: '%s',
   },
   description: 'AIGA 의사 추천 서비스',
@@ -30,10 +29,8 @@ export default async function LocaleLayout({children, params}: Props) {
   }
 
   return (
-    <html lang={locale}>
-      <body>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
-      </body>
-    </html>
+    <>
+      <NextIntlClientProvider>{children}</NextIntlClientProvider>
+    </>
   );
 }

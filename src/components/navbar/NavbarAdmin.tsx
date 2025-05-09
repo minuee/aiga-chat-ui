@@ -19,7 +19,7 @@ import AdminNavbarLinks from './NavbarLinksAdmin';
 import { isWindowAvailable } from '@/utils/navigation';
 import Image from 'next/image';
 import LogoImage from "@/assets/images/logo.png";
-
+import mConstants from '@/utils/constants';
 //새창열기 전역상태
 import NewChatStateStore from '@/store/newChatStore';
 
@@ -106,7 +106,7 @@ export default function AdminNavbar(props: {
       }} */
     >
       <Flex
-        w={{base:'100%',md:`${process.env.NEXT_PUBLIC_CONTENT_AREA_WIDTH}px`}}
+        w={{base:'100%',md:`${mConstants.desktopMinWidth}px`}}
         flexDirection={'row'}
         //flexDirection={{ base: 'row', sm: 'column' , md: 'row' , lg: 'row'}}
         alignItems={{ xl: 'center' }}

@@ -14,6 +14,8 @@ import {
   AccordionIcon,
 } from '@chakra-ui/react'
 import HeadTitle from './Title';
+import mConstants from '@/utils/constants';
+
 export interface NoticerModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
@@ -51,7 +53,7 @@ function NoticerModal(props: NoticerModalProps) {
         <DrawerOverlay />
         <DrawerContent
           w="100%"
-          maxW="450px"
+          maxW={`${mConstants.modalMaxWidth}px`}
           ms={{
             sm: '16px',
           }}
@@ -68,7 +70,7 @@ function NoticerModal(props: NoticerModalProps) {
             _focus={{ boxShadow: 'none' }}
             _hover={{ boxShadow: 'none' }}
           />
-          <DrawerBody maxW="450px" px="0rem" pb="10">
+          <DrawerBody maxW={`${mConstants.modalMaxWidth}px`} px="0rem" pb="10">
             
             <Scrollbars
               universal={true}

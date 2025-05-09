@@ -6,33 +6,49 @@ import { StarIcon } from '@chakra-ui/icons';
 import { 
   Box,Flex,Drawer,DrawerBody,Button,useColorModeValue,DrawerOverlay,Text,DrawerContent,DrawerCloseButton,SkeletonCircle,SkeletonText,Divider,
   Card,CardHeader,CardBody,CardFooter,Heading,Icon,Popover,PopoverTrigger,PopoverContent,PopoverHeader,PopoverArrow,PopoverBody,
-  Stack,Progress,SimpleGrid,Textarea
+  Stack,Progress,SimpleGrid,Textarea,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,Portal
  } from '@chakra-ui/react';
-import { renderThumb,renderTrack,renderView } from '@/components/scrollbar/Scrollbar';
-import { Scrollbars } from 'react-custom-scrollbars-2';
+
 import Image from 'next/image';
-import { MdInfoOutline } from 'react-icons/md';
+import { MdInfoOutline,MdEdit } from 'react-icons/md';
 import { FULLStarContainer, HalfStarContainer } from '@/components/icons/Star';
 import ProgressBar from '@/components/fields/ProgressBar';
 import ListItem from '@/components/text/ListItem';
 import DoctorAvatar from "@/assets/images/avatar0.png";
-
+import mConstants from '@/utils/constants';
+import ReviewDetail from '@/components/modal/ReviewDetail';
+import RequestDoctor from '@/components/modal/RequestDoctor';
 export interface DoctorModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
+  onHandleWriteReview : () => void;
+  onHandleEditDoctor : (doctorId:string) => void;
 }
 const limintView = 3
 function DoctorModal(props: DoctorModalProps) {
-  const { isOpen, setClose } = props;
+  const { isOpen, setClose, onHandleWriteReview,onHandleEditDoctor } = props;
   const [isLoading, setIsLoading] = React.useState(true);
   const [expandedCount, setExpandedCount] = React.useState<any>(limintView);
-
+  const [isOpenReview, setIsOpenReview] = React.useState(false);
+  const [reviewData, setReviewData] = React.useState<any>(null);
+  const formBtnRef = React.useRef<HTMLButtonElement>(null);
+  const [isOpenRequestModal, setIsOpenRequestModal] = React.useState(false);
+  const reviewBtnRef = React.useRef<HTMLButtonElement>(null);
+  const sidebarBackgroundColor = useColorModeValue('white', 'gray.700');
   React.useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
       console.log('isMobile', isMobile);
-    }, 2000);
+    }, 600);
   }, [isOpen]);
+
+  const onHandleRegistReview = (data:any) => {
+    console.log('data', data);
+  }
+
+  const onHandleRequestDoctor = (data:any) => {
+    console.log('data', data);
+  }
 
   if ( isLoading ) {
     return (
@@ -94,7 +110,24 @@ function DoctorModal(props: DoctorModalProps) {
           limintView={limintView}
           marginTop={5}
         />
-        <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} padding={'0 10px'} mt={10}>
+
+        <Flex display={'flex'} flexDirection={'column'}  padding={'0 10px'} mt={10}>
+          <Box 
+            display={'flex'} 
+            flexDirection={'row'} 
+            alignItems={'center'} 
+            cursor={'pointer'} 
+            onClick={() => setIsOpenRequestModal(true)}
+          >
+            <Box display={'flex'} alignItems={'center'} mr={1}>
+              <Icon as={MdEdit} color={'green.600'} />
+            </Box>
+            <Text fontWeight={'bold'} color={'green.600'}>의사 정보 수정 요청 {">"} </Text> 
+          </Box>
+        </Flex>
+
+
+        <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} padding={'0 10px'} mt={5}>
           <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
             <Text fontWeight={'bold'} color={'green.600'}>AI 소셜리뷰</Text>
             <Box display={'flex'} alignItems={'center'} ml={2} cursor={'pointer'}>
@@ -187,41 +220,24 @@ function DoctorModal(props: DoctorModalProps) {
           <Box display={'flex'} flexDirection={'row'} justifyContent={'space-evenly'} alignItems={'center'} minHeight={'100px'} width={'98%'}>
             <Box flex={1} display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'} height={'100%'}>
               <Box display={'flex'} flexDirection={'row'} mb={5}  alignItems={'flex-start'}>
-                <Box position={'relative'} width={'20px'}>
-                  <FULLStarContainer >
-                    <StarIcon color="blue" />
-                    <StarIcon color="white" stroke="blue" />
-                  </FULLStarContainer>
-                </Box>
-                <Box position={'relative'} width={'20px'}>
-                  <FULLStarContainer >
-                    <StarIcon color="blue" />
-                    <StarIcon color="white" stroke="blue" />
-                  </FULLStarContainer>
-                </Box>
-                <Box position={'relative'} width={'20px'}>
-                  <FULLStarContainer >
-                    <StarIcon color="blue" />
-                    <StarIcon color="white" stroke="blue" />
-                  </FULLStarContainer>
-                </Box>
-                <Box position={'relative'} width={'20px'}>
-                  <FULLStarContainer >
-                    <StarIcon color="blue" />
-                    <StarIcon color="white" stroke="blue" />
-                  </FULLStarContainer>
-                <Box position={'relative'} width={'20px'}>
-                  <FULLStarContainer >
-                    <StarIcon color="blue" />
-                    <StarIcon color="white" stroke="blue" />
-                  </FULLStarContainer>
-                </Box></Box>
-                <Box position={'relative'} width={'20px'}>
-                  <HalfStarContainer >
-                    <StarIcon color="blue" />
-                    <StarIcon color="white" stroke="gray" />
-                  </HalfStarContainer>
-                </Box>
+                {[1,2,3,4,5].map((_, index) => (
+                  <Box key={index} position={'relative'} width={'20px'}>
+                    {
+                      index == 4
+                      ?
+                      <HalfStarContainer>
+                        <StarIcon color="blue" />
+                        <StarIcon color="white" stroke="gray" />
+                      </HalfStarContainer>
+                      :
+                      <FULLStarContainer>
+                        <StarIcon color="blue" />
+                        <StarIcon color="white" stroke="blue" />
+                      </FULLStarContainer>
+                    }
+                    
+                  </Box>
+                ))}
               </Box>
               <Text fontSize={'2em'} color={'blue.500'}>4.5</Text>
             </Box>
@@ -286,12 +302,73 @@ function DoctorModal(props: DoctorModalProps) {
               variant='solid' 
               width={'99%'} 
               borderRadius={'10px'}
+              onClick={() => setIsOpenReview(true)}
             >
               리뷰쓰기
             </Button>
           </Box>
         </Flex>
         <Box height={'100px'} />
+        {
+          isOpenReview && (
+            <Portal>
+            <Modal
+              onClose={() => setIsOpenReview(false)}
+              finalFocusRef={formBtnRef}
+              isOpen={isOpenReview}
+              scrollBehavior={'inside'}
+              //blockScrollOnMount={false}
+              //preserveScrollBarGap={true}
+              //trapFocus={false} 
+              //allowPinchZoom={true}
+              size={'full'}
+            >
+              <ModalOverlay />
+              <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
+                <ModalHeader>{"의사 리뷰"}</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody overflowY="auto" maxH="100vh">
+                  <ReviewDetail
+                    isOpen={isOpenReview}
+                    setClose={() => setIsOpenReview(false)}
+                    onHandleRegistReview={(data:any) => onHandleRegistReview(data)}
+                    reviewData={reviewData}
+                  />
+                </ModalBody>
+              </ModalContent>
+            </Modal>
+            </Portal>
+          )
+        }
+        {
+          isOpenRequestModal && (   
+            <Portal> 
+            <Modal
+              onClose={() => setIsOpenRequestModal(false)}
+              finalFocusRef={reviewBtnRef}
+              isOpen={isOpenRequestModal}
+              scrollBehavior={'inside'}
+              blockScrollOnMount={false}
+              preserveScrollBarGap={true}
+              trapFocus={false}
+            >
+              <ModalOverlay />
+              <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
+                <ModalHeader>{"의사정보 수정 요청"}</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody overflowY="auto" maxH="100vh">
+                  <RequestDoctor
+                    isOpen={isOpenRequestModal}
+                    setClose={() => setIsOpenRequestModal(false)}
+                    onHandleRegistReview={(data:any) => onHandleRequestDoctor(data)}
+                    doctorId={'1'}
+                   />
+                </ModalBody>
+              </ModalContent>
+            </Modal>
+            </Portal>
+          )
+        }
       </>
     )
   }

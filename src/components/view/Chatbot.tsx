@@ -5,6 +5,8 @@ import customfetch from '@/utils/customfetch';
 import functions from '@/utils/functions';
 import MessageBoxChat from '@/components/MessageBox';
 import { ChatBody, OpenAIModel } from '@/types/types';
+import { renderThumb,renderTrack,renderView } from '@/components/scrollbar/Scrollbar';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 import { 
     Box,Button,Flex,Icon,Textarea,Input,Text,useColorModeValue,
     Drawer,
@@ -18,12 +20,15 @@ import {
     ModalHeader,
     ModalBody,
     ModalFooter,
-    ModalCloseButton
+    ModalCloseButton,
+    Portal
 } from '@chakra-ui/react';
 import { useEffect, useState,useRef } from 'react';
 import Image from "next/image";
 import { MdOutlineArrowDownward, MdFitbit, MdInfoOutline, MdPerson } from 'react-icons/md';
 import DoctorDetail  from '@/components/modal/Doctor';
+import ReviewDetail  from '@/components/modal/ReviewDetail';
+import RequestDoctor  from '@/components/modal/RequestDoctor';
 import SelectBody  from '@/components/msgType/SelectBody';
 import SelectDoctor  from '@/components/msgType/SelectDoctor';
 import SelectName  from '@/components/msgType/SelectName';
@@ -32,7 +37,7 @@ import SelectType  from '@/components/msgType/SelectType';
 import {useTranslations} from 'next-intl';
 import LoadingBar from "@/assets/icons/loading.gif";
 import HeadTitle from '@/components/modal/Title';
-
+import mConstants from '@/utils/constants';
 //새창열기 전역상태
 import NewChatStateStore from '@/store/newChatStore';
 
@@ -48,6 +53,7 @@ export default function ChatBot() {
   const [inputCode, setInputCode] = useState<string>('');
   const [isShowScroll, setShowScroll] = useState(false);
   const [isReceiving, setReceiving] = useState(false);
+  const [reviewData, setReviewData] = useState<any>(null);
   // Response message
   const [outputCode, setOutputCode] = useState<any>([]);
   // ChatGPT model
@@ -57,9 +63,13 @@ export default function ChatBot() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollBottomRef = useRef<HTMLDivElement>(null);
   const btnRef = useRef(null)
+  const formBtnRef = useRef(null)
+  const reviewBtnRef = useRef(null)
   // Loading state
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
   const [isOpenDoctorDrawer, setIsOpenDoctorDrawer] = useState<boolean>(false);
+  const [isOpenReview, setIsOpenReview] = useState<boolean>(false);
+  const [isOpenRequestModal, setIsOpenRequestModal] = useState<boolean>(false);
   const navbarIcon = useColorModeValue('gray.500', 'white');
   const isNewChat = NewChatStateStore(state => state.isNew);
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
@@ -110,6 +120,7 @@ export default function ChatBot() {
     if (!el) return;
 
     const handleWheel = (e: WheelEvent) => {
+      if (e.deltaX !== 0) return;
       setShowScroll((prev) => {
         const goingUp = e.deltaY < 0;
         const shouldUpdate = goingUp !== prev;
@@ -237,42 +248,6 @@ export default function ChatBot() {
     console.log("outputCode",outputCode)
     return () => clearTimeout(timeout);
   }, [outputCode]);
-  
-
-  const handleTranslate_old = async () => {
-    let apiKey = localStorage.getItem('apiKey');
-    
-    // Chat post conditions(maximum number of characters, valid message etc.)
-    const maxCodeLength = model === 'gpt-4o' ? 700 : 700;
-
-    if (!apiKey?.includes('sk-')) {
-      alert('Please enter an API key.');
-      return;
-    }
-
-    if (!inputCode) {
-      alert('Please enter your message.');
-      return;
-    }
-
-    if (inputCode.length > maxCodeLength) {
-      alert(
-        `Please enter code less than ${maxCodeLength} characters. You are currently at ${inputCode.length} characters.`,
-      );
-      return;
-    }
- 
-    const controller = new AbortController();
-    const body: ChatBody = {
-      inputCode,
-      model,
-      apiKey,
-    };
-
-    
-
-    //setLoading(false);
-  };
 
 
   const handleChange = (Event: any) => {
@@ -291,6 +266,7 @@ export default function ChatBot() {
 
   const onSendDoctorButton = async( isBool : boolean,isType : number) => {
     console.log("onSendDoctorButton",isBool,isType)
+    setIsOpenReview(false);
     if ( isType == 1 ) {
       setIsOpenDoctorModal(isBool);
     }else{
@@ -362,13 +338,27 @@ export default function ChatBot() {
         return newArray;
       });
     }
-    
+  }
+
+  const onHandleRegistReview = (data:any) => {
+    console.log("onHandleRegistReview",data)
+  }
+
+  const onHandleEditDoctor = (id:string) => {
+    console.log("onHandleEditDoctor",id)
+    if ( id ) {
+      setIsOpenRequestModal(true);
+    }
+  }
+
+  const onHandleRequestDoctor = (data:any) => {
+    console.log("onHandleRequestDoctor",data)
   }
 
   return (
     <Flex
-      w={{ base: '100%', md: `${process.env.NEXT_PUBLIC_CONTENT_AREA_WIDTH}px` }}
-      maxWidth={{ base: '100%', md: `${process.env.NEXT_PUBLIC_CONTENT_AREA_WIDTH}px` }}
+      w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
+      maxWidth={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
       //pt={{ base: '0px', lg: '0px' }}
       padding={"10px"}
       direction="column"
@@ -606,7 +596,7 @@ export default function ChatBot() {
           //alignItems={'center'}
         >
           <Box 
-            w={{ base: '100%', md: `${process.env.NEXT_PUBLIC_CONTENT_AREA_WIDTH}px` }}
+            w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
             position={'relative'}
             display={'flex'} 
             flexDirection={'row'}
@@ -617,7 +607,7 @@ export default function ChatBot() {
               position={'absolute'}
               top={{base : '-40px', md : '-30px'}}
               left={'0'}
-              w={{ base: '100%', md: `${process.env.NEXT_PUBLIC_CONTENT_AREA_WIDTH}px` }}
+              w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
               height={'30px'}
               justifyContent={'center'}
               alignItems={'center'}
@@ -688,7 +678,7 @@ export default function ChatBot() {
         </Flex>
         {
           isOpenDoctorDrawer && (
-            <Box display={{ base: 'block', xl: 'block' }} position="fixed" minH="100%">
+            <Box display={ isOpenReview ? 'none' : 'block'} position="fixed" minH="100%">
               <Drawer
                 isOpen={isOpenDoctorDrawer}
                 onClose={() => setIsOpenDoctorDrawer(false)}
@@ -697,7 +687,7 @@ export default function ChatBot() {
                 <DrawerOverlay />
                 <DrawerContent
                   w="100%"
-                  maxW="450px"
+                  maxW={`${mConstants.modalMaxWidth}px`}
                   borderRadius="0px"
                   bg={sidebarBackgroundColor}
                 >
@@ -708,10 +698,12 @@ export default function ChatBot() {
                     _focus={{ boxShadow: 'none' }}
                     _hover={{ boxShadow: 'none' }}
                   />
-                  <DrawerBody maxW="450px" px="10px" pb="0">
+                  <DrawerBody maxW={`${mConstants.modalMaxWidth}px`} px="10px" pb="0">
                     <DoctorDetail
                       isOpen={isOpenDoctorDrawer}
                       setClose={() => setIsOpenDoctorDrawer(false)}
+                      onHandleWriteReview={() => setIsOpenReview(true)}
+                      onHandleEditDoctor={(id) => onHandleEditDoctor(id)}
                     />
                   </DrawerBody>
                 </DrawerContent>
@@ -722,21 +714,22 @@ export default function ChatBot() {
         
         {
           isOpenDoctorModal && (
-            
             <Modal
               onClose={() => setIsOpenDoctorModal(false)}
-              finalFocusRef={btnRef}
               isOpen={isOpenDoctorModal}
               scrollBehavior={'inside'}
+              size={'full'}
             >
               <ModalOverlay />
-              <ModalContent maxW="450px" bg={sidebarBackgroundColor}>
+              <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1}>
                 <ModalHeader>{"의사명 프로필"}</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody >
                   <DoctorDetail
                     isOpen={isOpenDoctorModal}
                     setClose={() => setIsOpenDoctorModal(false)}
+                    onHandleWriteReview={() => setIsOpenReview(true)}
+                    onHandleEditDoctor={(id) => onHandleEditDoctor(id)}
                   />
                 </ModalBody>
                {/*  <ModalFooter>

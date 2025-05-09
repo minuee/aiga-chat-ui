@@ -4,6 +4,7 @@ import React, { Children } from 'react';
 import { Box,Stack,Flex,Icon,Img,Input,Text,Progress,} from '@chakra-ui/react';
 import Image from "next/image";
 import Footer from '@/components/footer/MainFooter';
+import Header from '@/components/header/MainHeader';
 import * as mConst from "@/utils/constants";
 import QuickRight from "@/components/sidebar/QuickRight";
 import DepWindow from "@/components/modal/DepWindow";
@@ -98,81 +99,80 @@ export default function MainPage() {
   }
 
   return (
-    
-        <Box sx={styles.wrapper} minWidth={{base:'100%', md:'1600px'}} minHeight={{base:'100%', md:'100vh'}} >
-          <Box sx={styles.outerWrap} minWidth={{base:'100%', md:'1600px'}} minHeight={{base:'100%', md:'100vh'}}>
-            <Box sx={styles.quickWrap}>
-              <QuickRight />
-            </Box>
-            <Stack hideFrom="mobile">
-              <Image 
-                alt={"main"}
-                src={activeIndex%2 == 0 ?  MainBgImage :  MainBgImage2 }
-                placeholder="blur"
-                fill
-                className={progress < 20 ? "fade-in-image" : ""}
-                /* sizes="100%"
-                style={{
-                    objectFit: 'cover'
-                }} */
-              />
-            </Stack>
-            <Box sx={styles.contentWrapper} minWidth={{base:'100%', md:'1600px'}} height='calc( 100vh - 200px )'>
-              <Text variant="sourceHanSans" sx={{color:'#fff',fontSize:'48px',lineHeight:'3em'}}>
-                {activeIndex%2 == 0 ? t('title') : '병원추천 AIGA'}
-              </Text>
-              <Text variant="sourceHanSans" sx={{color:'#fff',fontSize:'22px'}}>
-              {
-                activeIndex %2 == 0?  
-                `의사추천 안내 메시지 1 의사추천 안내 메시지 1 의사 추천합시다`
-                :
-                `의사추천 안내 메시지 2 의사추천 안내 메시지 2 의사 추천합시다`
-              }
-              </Text>
-              <Text variant="sourceHanSans" sx={{color:'#fff',fontSize:'22px'}}>
-              {
-                activeIndex %2 == 0?  
-                `느껴지는 구성으로 매일 신선하고 건강한 상차림을 제공합니다.`
-                :
-                `풍부한 육즙과 부드러운 육질을 제공합니다.`
-              }
-              </Text>
-            </Box>
-            <Box sx={styles.miniWrapper} minWidth={{base:'100%', md:'1600px'}} ref={elementRef} >
-              <Box sx={styles.miniInsideWrapper} minWidth={{base:'100%', md:'850px'}} >
-                {
-                  mConst.sungwonjungThumb.map((item:any,index:number) => {
-                    return (
-                      <Box
-                        key={index} 
-                        sx={{...styles.miniBoxWrapper,height: activeIndex == index ? '66px' : "56px", border : activeIndex == index ? "2px solid #fff" : "0.3px solid #ccc"}} onClick={()=> onClickChageIndex(index,elementRef.current)}
-                      >
-                        <Image 
-                          src={index%2 == 0 ? MiniSmall3F : MiniMiddle12F}  
-                          alt="slide" 
-                          style={{width:'100%', height:'100%',borderRadius:'10px',objectFit: 'cover',opacity: activeIndex == index ? 1 :  0.4}}
-                        />  
-                        <Box sx={styles.miniTextWrapper}>
-                            <Text variant="sourceHanSans" sx={{color:'#fff',fontSize:'18px'}}>{item.name}</Text>
+    <Box sx={styles.wrapper} minWidth={{base:'100%', md:'1600px'}} minHeight={{base:'100%', md:'100vh'}} >
+      <Header />
+      <Box sx={styles.outerWrap} minWidth={{base:'100%', md:'1600px'}} minHeight={{base:'100%', md:'100vh'}}>
+        <Box sx={styles.quickWrap}>
+          <QuickRight />
+        </Box>
+        <Stack hideFrom="mobile">
+          <Image 
+            alt={"main"}
+            src={activeIndex%2 == 0 ?  MainBgImage :  MainBgImage2 }
+            placeholder="blur"
+            fill
+            className={progress < 20 ? "fade-in-image" : ""}
+            /* sizes="100%"
+            style={{
+                objectFit: 'cover'
+            }} */
+          />
+        </Stack>
+        <Box sx={styles.contentWrapper} minWidth={{base:'100%', md:'1600px'}} height='calc( 100vh - 200px )'>
+          <Text variant="sourceHanSans" sx={{color:'#fff',fontSize:'48px',lineHeight:'3em'}}>
+            {activeIndex%2 == 0 ? t('title') : '병원추천 AIGA'}
+          </Text>
+          <Text variant="sourceHanSans" sx={{color:'#fff',fontSize:'22px'}}>
+          {
+            activeIndex %2 == 0?  
+            `의사추천 안내 메시지 1 의사추천 안내 메시지 1 의사 추천합시다`
+            :
+            `의사추천 안내 메시지 2 의사추천 안내 메시지 2 의사 추천합시다`
+          }
+          </Text>
+          <Text variant="sourceHanSans" sx={{color:'#fff',fontSize:'22px'}}>
+          {
+            activeIndex %2 == 0?  
+            `느껴지는 구성으로 매일 신선하고 건강한 상차림을 제공합니다.`
+            :
+            `풍부한 육즙과 부드러운 육질을 제공합니다.`
+          }
+          </Text>
+        </Box>
+        <Box sx={styles.miniWrapper} minWidth={{base:'100%', md:'1600px'}} ref={elementRef} >
+          <Box sx={styles.miniInsideWrapper} minWidth={{base:'100%', md:'850px'}} >
+            {
+              mConst.sungwonjungThumb.map((item:any,index:number) => {
+                return (
+                  <Box
+                    key={index} 
+                    sx={{...styles.miniBoxWrapper,height: activeIndex == index ? '66px' : "56px", border : activeIndex == index ? "2px solid #fff" : "0.3px solid #ccc"}} onClick={()=> onClickChageIndex(index,elementRef.current)}
+                  >
+                    <Image 
+                      src={index%2 == 0 ? MiniSmall3F : MiniMiddle12F}  
+                      alt="slide" 
+                      style={{width:'100%', height:'100%',borderRadius:'10px',objectFit: 'cover',opacity: activeIndex == index ? 1 :  0.4}}
+                    />  
+                    <Box sx={styles.miniTextWrapper}>
+                        <Text variant="sourceHanSans" sx={{color:'#fff',fontSize:'18px'}}>{item.name}</Text>
+                    </Box>
+                    {activeIndex == index && (
+                        <Box sx={styles.progressBar}>
+                            <Progress hasStripe height='2px' width="100%" value={progress} />
                         </Box>
-                        {activeIndex == index && (
-                            <Box sx={styles.progressBar}>
-                                <Progress hasStripe height='2px' width="100%" value={progress} />
-                            </Box>
-                        )}
-                      </Box>
-                    )
-                  })
-                }
-              </Box>
-            </Box>
-          </Box>
-              
-          <Box sx={{position:'absolute',left:0,top:"100vh",width:'100%',heigth:"100px",backgroundColor:"#ffffff"}}>
-            <Footer />
+                    )}
+                  </Box>
+                )
+              })
+            }
           </Box>
         </Box>
-    
+      </Box>
+          
+      <Box sx={{position:'absolute',left:0,top:"100vh",width:'100%',heigth:"100px",backgroundColor:"#ffffff"}}>
+        <Footer />
+      </Box>
+    </Box>
   )
 }
 
