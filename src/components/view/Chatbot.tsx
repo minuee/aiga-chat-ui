@@ -27,8 +27,6 @@ import { useEffect, useState,useRef } from 'react';
 import Image from "next/image";
 import { MdOutlineArrowDownward, MdFitbit, MdInfoOutline, MdPerson } from 'react-icons/md';
 import DoctorDetail  from '@/components/modal/Doctor';
-import ReviewDetail  from '@/components/modal/ReviewDetail';
-import RequestDoctor  from '@/components/modal/RequestDoctor';
 import SelectBody  from '@/components/msgType/SelectBody';
 import SelectDoctor  from '@/components/msgType/SelectDoctor';
 import SelectName  from '@/components/msgType/SelectName';
@@ -596,12 +594,11 @@ export default function ChatBot() {
           //alignItems={'center'}
         >
           <Box 
-            w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
+            w={{ base: '100%', md: `${mConstants.desktopMinWidth-10}px` }}
             position={'relative'}
             display={'flex'} 
             flexDirection={'row'}
           >
-
             <Box 
               display={isFocus ? 'flex' : 'none'} 
               position={'absolute'}
@@ -626,8 +623,7 @@ export default function ChatBot() {
               border="1px solid"
               borderColor={borderColor}
               readOnly={isReceiving}
-              borderRadius="45px"
-              //p="15px 20px"
+              borderRadius="15px"
               me="10px"
               fontSize="sm"
               fontWeight="500"
@@ -645,7 +641,7 @@ export default function ChatBot() {
               py="20px"
               px="16px"
               fontSize="sm"
-              borderRadius="45px"
+              borderRadius="15px"
               ms="auto"
               w={{ base: '160px', md: '210px' }}
               h="54px"

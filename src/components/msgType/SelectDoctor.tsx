@@ -17,12 +17,12 @@ const SelectDoctor = ({
   const textColor = useColorModeValue('navy.700', 'white')
   const flexRef = useRef<HTMLDivElement>(null);
   const [showGradient, setShowGradient] = useState(true);
-
+  const isDark = useColorModeValue(false, true);
   const handleScroll = () => {
     if (flexRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = flexRef.current;
       // 스크롤이 끝에 도달했는지 확인
-      if (scrollLeft + clientWidth >= scrollWidth) {
+      if (( scrollLeft + clientWidth +100 ) >= scrollWidth) {
         setShowGradient(false);
       } else {
         setShowGradient(true);
@@ -57,7 +57,7 @@ const SelectDoctor = ({
           right: 0,
           width: '200px',
           height: '100%',
-          background: 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)',
+          background:  isDark ? 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0  , 1) 100%)' : 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)',
           pointerEvents: 'none', // 클릭 이벤트 방지
         },
       }}

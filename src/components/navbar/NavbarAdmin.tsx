@@ -96,7 +96,7 @@ export default function AdminNavbar(props: {
       ps={{ base: '8px',md: '12px',}}
       pt="8px"
       top={{ base: '10px', md: '10x', xl: '10px' }}
-      width={{base:'100%',md:'768px'}}
+      width={{base:'100%',md: `${mConstants.desktopMinWidth-2}px`}}
       /* w={{
         base: 'calc(100vw - 5%)',
         md: 'calc(100vw - 5%)',
@@ -139,37 +139,37 @@ export default function AdminNavbar(props: {
             style={{width:'100px',objectFit: 'contain',maxWidth:"100px"}}
           />
         </Box>
-        <Box ms="auto" w={{ sm: '100%', md: 'auto' }} maxW="160px">
+        <Box ms="auto" w={{ sm: '100%', md: 'auto' }} maxW="160px" >
           <AdminNavbarLinks secondary={props.secondary} />
         </Box>
       </Flex>
       <AlertDialog
-          isOpen={isOpen}
-          leastDestructiveRef={confirmRef as any}
-          onClose={onClose}
-        >
-          <AlertDialogOverlay>
-            <AlertDialogContent backgroundColor='white'>
-              <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                AIGA
-              </AlertDialogHeader>
+        isOpen={isOpen}
+        leastDestructiveRef={confirmRef as any}
+        onClose={onClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent backgroundColor='white'>
+            <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+              AIGA
+            </AlertDialogHeader>
 
-              <AlertDialogBody>
-                새로운 대화로 이동하시겠습니까?
-                이전 데이터는 히스토리를 통해 열람하실 수 있습니다.
-              </AlertDialogBody>
-             
-              <AlertDialogFooter>
-                <Button ref={confirmRef as any} onClick={onClose}>
-                  취소
-                </Button>
-                <Button colorScheme='red' onClick={() => {setNewChatOpen(true);onClose()}} ml={3}>
-                  열기
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialogOverlay>
-        </AlertDialog>
+            <AlertDialogBody>
+              새로운 대화로 이동하시겠습니까?
+              이전 데이터는 히스토리를 통해 열람하실 수 있습니다.
+            </AlertDialogBody>
+            
+            <AlertDialogFooter>
+              <Button ref={confirmRef as any} onClick={onClose}>
+                취소
+              </Button>
+              <Button colorScheme='red' onClick={() => {setNewChatOpen(true);onClose()}} ml={3}>
+                열기
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Box>
   );
 }

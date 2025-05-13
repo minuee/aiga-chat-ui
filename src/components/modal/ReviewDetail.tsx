@@ -2,7 +2,7 @@
 import React, { PropsWithChildren } from 'react';
 import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
 // chakra imports
-import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Divider,Icon,Textarea} from '@chakra-ui/react';
+import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Divider,Icon,Textarea, useColorModeValue } from '@chakra-ui/react';
 import Image from 'next/image';
 import { MdDiversity1 } from 'react-icons/md';
 import Slider from '@/components/text/Slider';
@@ -19,7 +19,8 @@ const limintView = 3
 function ReviewModal(props: ReviewModalProps) {
   const { isOpen, setClose, onHandleRegistReview, reviewData } = props;
   const [isLoading, setIsLoading] = React.useState(true);
-  
+  const skeletonColor = useColorModeValue('white', 'gray.700');
+
   const [expandedCount, setExpandedCount] = React.useState<any>(limintView);
   const [inputs, setInputs] = React.useState<any>({
     doctorId: '',
@@ -50,7 +51,7 @@ function ReviewModal(props: ReviewModalProps) {
 
   if ( isLoading ) {
     return (
-      <Box padding='6' boxShadow='lg' bg='white'>
+      <Box padding='6' boxShadow='lg' bg={skeletonColor}>
         <SkeletonCircle size='10' />
         <SkeletonText mt='4' noOfLines={4} spacing='4' skeletonHeight='2' />
       </Box>

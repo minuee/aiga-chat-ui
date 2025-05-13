@@ -2,7 +2,7 @@
 import React, { PropsWithChildren } from 'react';
 import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
 // chakra imports
-import { StarIcon } from '@chakra-ui/icons';
+import { Rating } from 'react-simple-star-rating'
 import { 
   Box,Flex,Drawer,DrawerBody,Button,useColorModeValue,DrawerOverlay,Text,DrawerContent,DrawerCloseButton,SkeletonCircle,SkeletonText,Divider,
   Card,CardHeader,CardBody,CardFooter,Heading,Icon,Popover,PopoverTrigger,PopoverContent,PopoverHeader,PopoverArrow,PopoverBody,
@@ -11,7 +11,6 @@ import {
 
 import Image from 'next/image';
 import { MdInfoOutline,MdEdit } from 'react-icons/md';
-import { FULLStarContainer, HalfStarContainer } from '@/components/icons/Star';
 import ProgressBar from '@/components/fields/ProgressBar';
 import ListItem from '@/components/text/ListItem';
 import DoctorAvatar from "@/assets/images/avatar0.png";
@@ -28,13 +27,15 @@ const limintView = 3
 function DoctorModal(props: DoctorModalProps) {
   const { isOpen, setClose, onHandleWriteReview,onHandleEditDoctor } = props;
   const [isLoading, setIsLoading] = React.useState(true);
-  const [expandedCount, setExpandedCount] = React.useState<any>(limintView);
   const [isOpenReview, setIsOpenReview] = React.useState(false);
   const [reviewData, setReviewData] = React.useState<any>(null);
   const formBtnRef = React.useRef<HTMLButtonElement>(null);
   const [isOpenRequestModal, setIsOpenRequestModal] = React.useState(false);
   const reviewBtnRef = React.useRef<HTMLButtonElement>(null);
   const sidebarBackgroundColor = useColorModeValue('white', 'gray.700');
+  const starColor = useColorModeValue('#0000ff', '#ffffff');
+  const skeletonColor = useColorModeValue('white', 'navy.700');
+
   React.useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
@@ -52,7 +53,7 @@ function DoctorModal(props: DoctorModalProps) {
 
   if ( isLoading ) {
     return (
-      <Box padding='6' boxShadow='lg' bg='white'>
+      <Box padding='6' boxShadow='lg' bg={skeletonColor}>
         <SkeletonCircle size='10' />
         <SkeletonText mt='4' noOfLines={4} spacing='4' skeletonHeight='2' />
       </Box>
@@ -218,28 +219,13 @@ function DoctorModal(props: DoctorModalProps) {
           </Box>
           <Divider orientation='horizontal' my={2}/>
           <Box display={'flex'} flexDirection={'row'} justifyContent={'space-evenly'} alignItems={'center'} minHeight={'100px'} width={'98%'}>
-            <Box flex={1} display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'} height={'100%'}>
-              <Box display={'flex'} flexDirection={'row'} mb={5}  alignItems={'flex-start'}>
-                {[1,2,3,4,5].map((_, index) => (
-                  <Box key={index} position={'relative'} width={'20px'}>
-                    {
-                      index == 4
-                      ?
-                      <HalfStarContainer>
-                        <StarIcon color="blue" />
-                        <StarIcon color="white" stroke="gray" />
-                      </HalfStarContainer>
-                      :
-                      <FULLStarContainer>
-                        <StarIcon color="blue" />
-                        <StarIcon color="white" stroke="blue" />
-                      </FULLStarContainer>
-                    }
-                    
-                  </Box>
-                ))}
-              </Box>
-              <Text fontSize={'2em'} color={'blue.500'}>4.5</Text>
+            <Box flex={1} display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'space-evenly'} height={'100%'}>
+              <Flex flex={1} >
+                <Rating initialValue={4.5} readonly size={20} fillColor={starColor} SVGstyle={{ display: 'inline' }} />
+              </Flex>
+              <Flex flex={1} >
+              <Text fontSize={'2em'} color={'blue.500'}>5.0</Text>
+              </Flex>
             </Box>
             <Box flex={2} display={'flex'} flexDirection={'column'}  alignItems={'center'} justifyContent={'flex-end'} padding={'0 10px'}>
               <Box display={'flex'} flexDirection={'row'}  alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>

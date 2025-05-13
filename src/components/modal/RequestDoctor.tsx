@@ -2,7 +2,7 @@
 import React, { PropsWithChildren } from 'react';
 import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
 // chakra imports
-import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Divider,Icon,Textarea,Input, FormControl, FormLabel, RadioGroup, Radio, Stack} from '@chakra-ui/react';
+import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Divider,Icon,Textarea,Input, FormControl, FormLabel, RadioGroup, Radio, Stack, useColorModeValue } from '@chakra-ui/react';
 import functions from '@/utils/functions';
 
 
@@ -16,6 +16,7 @@ export interface ReviewModalProps extends PropsWithChildren {
 function ReviewModal(props: ReviewModalProps) {
   const { isOpen, setClose, onHandleRegistReview, doctorId } = props;
   const [isLoading, setIsLoading] = React.useState(true);  
+  const skeletonColor = useColorModeValue('white', 'gray.700');
   const [inputs, setInputs] = React.useState<any>({
     doctorId: '',
     relation: null,
@@ -40,7 +41,7 @@ function ReviewModal(props: ReviewModalProps) {
 
   if ( isLoading ) {
     return (
-      <Box padding='6' boxShadow='lg' bg='white'>
+      <Box padding='6' boxShadow='lg' bg={skeletonColor}>
         <SkeletonCircle size='10' />
         <SkeletonText mt='4' noOfLines={4} spacing='4' skeletonHeight='2' />
       </Box>

@@ -21,7 +21,7 @@ import {
   renderView,
 } from '@/components/scrollbar/Scrollbar';
 import { Scrollbars } from 'react-custom-scrollbars-2';
-
+import mConstants from '@/utils/constants';
 import { IoMenuOutline } from 'react-icons/io5';
 import { IRoute } from '@/types/navigation';
 import { isWindowAvailable } from '@/utils/navigation';
@@ -112,15 +112,9 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
       >
         <DrawerOverlay />
         <DrawerContent
-          w="285px"
-          maxW="285px"
-          ms={{
-            sm: '16px',
-          }}
-          my={{
-            sm: '16px',
-          }}
-          borderRadius="16px"
+          w="100%"
+          maxW={`${mConstants.modalMaxWidth-10}px`}
+          
           bg={sidebarBackgroundColor}
         >
           <DrawerCloseButton
@@ -129,7 +123,12 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
             _focus={{ boxShadow: 'none' }}
             _hover={{ boxShadow: 'none' }}
           />
-          <DrawerBody maxW="285px" px="0rem" pb="0">
+          <DrawerBody 
+            w="100%"
+            maxW={`${mConstants.modalMaxWidth-10}px`} 
+            px="0rem" 
+            pb="0"
+          >
             <Scrollbars
               universal={true}
               autoHide
