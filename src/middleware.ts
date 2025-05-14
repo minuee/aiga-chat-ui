@@ -21,10 +21,16 @@ export async function middleware(request: NextRequest) {
 
     
 }
-
-
 export const config = {
-    //matcher: ['/((?!api|_next/static|_next/image|favicon.ico|fonts|images|.*\\.png$).*)']
-    matcher: [ "/", "/(ko|ja)/:path*"]
-    //matcher: '/((?!api|trpc|_next|_vercel|.*\\..*).*)'
+  matcher: [
+    '/',
+    '/(ko|ja)',
+    '/(ko|ja)/((?!_next|favicon.ico|manifest.json|robots.txt|sitemap.xml|.*\\.(png|jpg|jpeg|webp|svg|ico|woff2?)$).*)',
+  ],
 };
+
+/* export const config = {
+    matcher: ['/((?!api|_next/static|_next/image|favicon.ico|fonts|images|.*\\.png$).*)']
+    matcher: [ "/", "/(ko|ja)/:path*"]
+    matcher: '/((?!api|trpc|_next|_vercel|.*\\..*).*)'
+}; */

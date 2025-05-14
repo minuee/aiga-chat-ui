@@ -2,24 +2,9 @@
 import React, { PropsWithChildren } from 'react';
 
 // chakra imports
-import {
-  Box,
-  Flex,
-  Drawer,
-  DrawerBody,
-  Icon,
-  useColorModeValue,
-  DrawerOverlay,
-  useDisclosure,
-  DrawerContent,
-  DrawerCloseButton,
-} from '@chakra-ui/react';
+import { Box,Flex,Drawer,DrawerBody,Icon,useColorModeValue,DrawerOverlay,useDisclosure,DrawerContent,DrawerCloseButton } from '@chakra-ui/react';
 import Content from '@/components/sidebar/components/Content';
-import {
-  renderThumb,
-  renderTrack,
-  renderView,
-} from '@/components/scrollbar/Scrollbar';
+import { renderThumb,renderTrack,renderView } from '@/components/scrollbar/Scrollbar';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 import mConstants from '@/utils/constants';
 import { IoMenuOutline } from 'react-icons/io5';
@@ -49,7 +34,8 @@ function Sidebar(props: SidebarProps) {
       <Box
         bg={sidebarBg}
         transition={variantChange}
-        w="285px"
+        w="100%"
+        maxW={`${mConstants.modalMaxWidth-10}px`}
         ms={{
           sm: '16px',
         }}
@@ -113,8 +99,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
         <DrawerOverlay />
         <DrawerContent
           w="100%"
-          maxW={`${mConstants.modalMaxWidth-10}px`}
-          
+          maxW={`${mConstants.modalMaxWidth-10}px`} 
           bg={sidebarBackgroundColor}
         >
           <DrawerCloseButton
@@ -136,7 +121,10 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
               renderThumbVertical={renderThumb}
               renderView={renderView}
             >
-              <Content routes={routes} />
+              <Content 
+                routes={routes} 
+                onParentClose={onClose}
+              />
             </Scrollbars>
           </DrawerBody>
         </DrawerContent>

@@ -101,8 +101,9 @@ export default function ChatBot() {
   }, [isAccessFirst]);
 
   useEffect(() => {
+    console.log("isNewChat",isNewChat,outputCode.length)
     if ( isNewChat && outputCode.length > 0 ) {
-      console.log("isNewChat",isNewChat,outputCode.length)
+      
       // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
       setOutputCode([]);
       setTimeout(() => {
