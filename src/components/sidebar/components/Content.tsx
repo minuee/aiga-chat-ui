@@ -125,10 +125,10 @@ function SidebarContent(props: SidebarContent) {
                {format(Date.now(), 'yyyy-MM-dd')}
             </Text>
           </Box>
-          <Flex flexDirection={'column'} justifyContent={'flex-start'} minHeight={'200px'} maxHeight={'calc( 100vh - 200px )'} >
+          <Flex flexDirection={'column'} justifyContent={'flex-start'} minHeight={'200px'} maxHeight={'calc( 100vh - 200px )'} width="100%" maxWidth={`${mConstants.modalMaxWidth-50}px`}>
             {
               isLoading ? (
-                <Box padding='6' boxShadow='lg' bg={skeletonColor} width={`${mConstants.modalMaxWidth-50}px`}>
+                <Box padding='6' boxShadow='lg' bg={skeletonColor} width="100%" maxWidth={`${mConstants.modalMaxWidth-50}px`}>
                   <SkeletonText mt='4' noOfLines={4} spacing='4' skeletonHeight='4' width={'100%'}  />
                 </Box>
               )

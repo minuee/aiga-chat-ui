@@ -26,7 +26,7 @@ function ChatScreenModal(props: ChatModalProps) {
       setLocale(locale);
     }
   },[isOpen]);
-  console.log('locale 111',locale);
+
   let sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
   let menuColor = useColorModeValue('gray.400', 'white');
   // this is for the rest of the collapses

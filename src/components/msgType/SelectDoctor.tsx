@@ -2,12 +2,12 @@ import { useRef, useEffect, useState } from "react";
 import functions from "../../utils/functions";
 import dynamic from 'next/dynamic';
 import NextImage, { ImageProps } from 'next/legacy/image';
-import { Box,Flex,Stack,useColorModeValue ,Icon} from '@chakra-ui/react';
-import { MdAutoAwesome, MdFitbit, MdCall, MdPerson } from 'react-icons/md';
-import Image from 'next/image';
-import Card from '@/components/card/Card'
+import { Box,Flex,Stack,useColorModeValue ,Button, Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,Portal } from '@chakra-ui/react';
+import mConstants from "@/utils/constants"
+import DoctorList from "@/components/modal/DoctorList";
+
 type SelectDoctorProps = {
-    onSendButton: (bool: boolean,id:number) => void; 
+    onSendButton: (data: any,id:number) => void; 
 };
 
 const SelectDoctor = ({ 
@@ -17,7 +17,13 @@ const SelectDoctor = ({
   const textColor = useColorModeValue('navy.700', 'white')
   const flexRef = useRef<HTMLDivElement>(null);
   const [showGradient, setShowGradient] = useState(true);
+  const [isOpenModal, setIsOpenModal] = useState(false);
   const isDark = useColorModeValue(false, true);
+  const modalBtnRef = useRef<HTMLButtonElement>(null);
+  const sidebarBackgroundColor = useColorModeValue('white', 'navy.700');
+  const starColor = useColorModeValue('#0000ff', '#ffffff');
+  const skeletonColor = useColorModeValue('white', 'navy.700');
+
   const handleScroll = () => {
     if (flexRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = flexRef.current;
@@ -47,7 +53,7 @@ const SelectDoctor = ({
       minWidth={'100%'}
       width={'auto'}
       minHeight={"50px"}
-      maxHeight={"250px"}
+      maxHeight={"300px"}
       position={'relative'}
       sx={{
         '&::after': {
@@ -74,7 +80,7 @@ const SelectDoctor = ({
         overflowX={'auto'}
         ref={flexRef} 
       >
-        <Box mr={5} boxSize={200}  flexShrink="0" onClick={() => onSendButton(true,1)}>
+        <Box mr={5} boxSize={200}  flexShrink="0" onClick={() => onSendButton("data",1)} cursor={'pointer'}>
           <NextImage
             width="200"
             height="200"
@@ -82,39 +88,39 @@ const SelectDoctor = ({
             alt={'doctor1'}
           />
         </Box>
-        <Box mr={5} boxSize={200}  flexShrink="0" onClick={() => onSendButton(true,2)}>
+        <Box mr={5} boxSize={200}  flexShrink="0" onClick={() => onSendButton("data",2)} cursor={'pointer'}>
           <NextImage
             width="200"
             height="200"
-            src={require("../../../public/img/sample/doctor2.jpg")}
+            src={require("../../../public/img/avatars/doctor.png")}
             alt={'doctor1'}
           />
         </Box>
-        <Box mr={5} boxSize={200} flexShrink="0" onClick={() => onSendButton(true,1)}>
+        <Box mr={5} boxSize={200} flexShrink="0" onClick={() => onSendButton("data",1)} cursor={'pointer'}>
           <NextImage
             width="200"
             height="200"
-            src={require("../../../public/img/sample/doctor1.png")}
+            src={require("../../../public/img/avatars/doctor.png")}
             alt={'doctor1'}
           />
         </Box>
-        <Box mr={5} boxSize={200} flexShrink="0" onClick={() => onSendButton(true,2)}>
+        <Box mr={5} boxSize={200} flexShrink="0" onClick={() => onSendButton('data',2)} cursor={'pointer'}>
           <NextImage
             width="200"
             height="200"
-            src={require("../../../public/img/sample/doctor2.jpg")}
+            src={require("../../../public/img/avatars/doctor.png")}
             alt={'doctor1'}
           />
         </Box>
-        <Box mr={5} boxSize={200} flexShrink="0" onClick={() => onSendButton(true, 1)}>
+        <Box mr={5} boxSize={200} flexShrink="0" onClick={() => onSendButton('data', 1)} cursor={'pointer'}>
           <NextImage
             width="200"
             height="200"
-            src={require("../../../public/img/sample/doctor1.png")}
+            src={require("../../../public/img/avatars/doctor.png")}
             alt={'doctor1'}
           />
         </Box>
-        <Box  boxSize={200} flexShrink="0" onClick={() => onSendButton(true, 2)}>
+        <Box  boxSize={200} flexShrink="0" onClick={() => onSendButton('data', 2)} cursor={'pointer'}>
           <NextImage
             width="200"
             height="200"
@@ -123,6 +129,35 @@ const SelectDoctor = ({
           />
         </Box>
       </Flex>
+      <Flex pl={2}>
+        <Button size={'sm'} colorScheme="blue" onClick={() => setIsOpenModal(true)}>
+          전체보기
+        </Button>
+      </Flex>
+      {
+          isOpenModal && (
+            <Modal
+              onClose={() => setIsOpenModal(false)}
+              finalFocusRef={modalBtnRef}
+              isOpen={isOpenModal}
+              scrollBehavior={'inside'}
+              size={'full'}
+            >
+              <ModalOverlay />
+              <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
+                <ModalHeader>{"신경쇠약[질환명]"}</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody overflowY="auto" maxH="100vh">
+                  <DoctorList
+                    isOpen={isOpenModal}
+                    setClose={() => setIsOpenModal(false)}
+                    doctorData={[]}
+                  />
+                </ModalBody>
+              </ModalContent>
+            </Modal>
+          )
+        }
     </Stack>
   )
     

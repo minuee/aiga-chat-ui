@@ -7,7 +7,7 @@ type AlertProps = {
     isOpen: boolean;
     closeText: string;
     confirmText: string;
-    onClose: () => void;
+    onClose: (isBool?: boolean) => void;
     onConfirm: () => void;
     isCentered?: boolean;
 };
@@ -22,7 +22,7 @@ const Alert = ({ AppName, bodyContent, isOpen, onClose, onConfirm, closeText, co
         <AlertDialog
             isOpen={isOpen}
             leastDestructiveRef={confirmRef as any}
-            onClose={onClose}
+            onClose={() => onClose(true)}
             isCentered={isCentered}
         >
             <AlertDialogOverlay>
@@ -36,7 +36,7 @@ const Alert = ({ AppName, bodyContent, isOpen, onClose, onConfirm, closeText, co
                 </AlertDialogBody>
                 
                 <AlertDialogFooter>
-                <Button ref={confirmRef as any} onClick={onClose}>
+                <Button ref={confirmRef as any} onClick={() => onClose(true)}>
                     {closeText}
                 </Button>
                 <Button colorScheme='red' onClick={() => onConfirm()} ml={3}>

@@ -33,9 +33,8 @@ function NoticerModal(props: NoticerModalProps) {
   const { isOpen, setClose } = props;
   const [ isLoading, setLoading] = React.useState(true);
   let sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
-
+  const skeletonColor = useColorModeValue('white', 'navy.800');
   React.useEffect(() => {
-    console.log("isLoading",isOpen,isLoading)
     setTimeout(() => {
       setLoading(false)
     }, 2000);
@@ -54,13 +53,6 @@ function NoticerModal(props: NoticerModalProps) {
         <DrawerContent
           w="100%"
           maxW={`${mConstants.modalMaxWidth}px`}
-          ms={{
-            sm: '16px',
-          }}
-          my={{
-            sm: '16px',
-          }}
-          borderRadius="16px"
           bg={sidebarBackgroundColor}
         >
           <HeadTitle title="공지사항" />
@@ -79,11 +71,11 @@ function NoticerModal(props: NoticerModalProps) {
               renderThumbVertical={renderThumb}
               renderView={renderView}
             >
-              <Box sx={{width:'calc( 100% - 20px)',heigh:"90%",padding:'10px'}}>
+              <Box sx={{width:'100%',heigh:"90%",padding:'10px'}}>
                 {
                   isLoading 
                   ?
-                  <Box padding='6' boxShadow='lg' bg='white'>
+                  <Box padding='6' boxShadow='lg' bg={skeletonColor}>
                     {/* <SkeletonCircle size='10' /> */}
                     <SkeletonText noOfLines={5} spacing='4' skeletonHeight='10' />
                   </Box>

@@ -8,12 +8,10 @@ const privateVapidKey = process.env.NEXT_PUBLIC_VAPID_PRIVATE_KEY;
 webPush.setVapidDetails('mailto:minuee@kormedi.com', publicVapidKey, privateVapidKey);
 
 export async function POST(req: Request) {
-  console.log('Public Vapid Key:', publicVapidKey);
-  console.log('Private Vapid Key:', privateVapidKey);
+
   try {
     
     const body = await req.json(); // 요청 본문을 JSON으로 파싱합니다.
-    console.log(`req.body: ${JSON.stringify(body)}`);
     const subscription = body; // 구독 정보를 가져옵니다.
     const notificationPayload = {
       messageType: 'supplement',
@@ -26,8 +24,6 @@ export async function POST(req: Request) {
       },
     };
 
-
-    console.log(subscription);
     await webPush.sendNotification(subscription, JSON.stringify(notificationPayload));
     return new Response(JSON.stringify({ message: 'Push notification sent' }), { status: 200 });
   } catch (error) {

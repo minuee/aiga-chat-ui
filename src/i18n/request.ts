@@ -7,7 +7,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
   let locale:any = await requestLocale;
   if ( locale === undefined ) {
     const cookieStore = await cookies();
-    //console.log('headersList',cookieStore.get("x-current-path"))
     locale = cookieStore.get("x-current-path")?.value?.includes("/ja") ? "ja" : null;
   }
 

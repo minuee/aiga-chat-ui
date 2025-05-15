@@ -22,7 +22,6 @@ const authOptions: any = {
         user_password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        console.log("CredentialsProvider",credentials);
         const authResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/login`, {
           body : JSON.stringify({
             ...credentials
@@ -33,10 +32,8 @@ const authOptions: any = {
           }
         })
         // 여기 주목!!! 서버에서 에러가 발생할 때 그 에러 내용이 서버에 담겨 있을 겁니다.
-        console.log("CredentialsProvider",authResponse.status, authResponse.statusText)
         if (authResponse.ok) {
           const user = await authResponse.json();
-          console.log('user', user);
           // id, name, image, email만 허용
           if (authResponse?.ok && user) {
             return {
@@ -97,7 +94,6 @@ const authOptions: any = {
   debug: process.env.NODE_ENV === "development",
   callbacks: {
    /*  signIn: async ({ account , user}: { account: any, user: any }) => {
-      console.log('callbacks signIn', account, user);
       if (account?.provider === 'credentials') {
         // <사용자 확인 후 회원가입 또는 로그인...>
         if ( user?.user_email ) {
@@ -109,16 +105,12 @@ const authOptions: any = {
       return true;
     }, */
     jwt: async ({ token, user } : { token: JWT, user: any }) => {
-      console.log('jwt callback token', token);
-      console.log('jwt callback user', user);
       if (user?.accessToken) {
         token.accessToken = user.accessToken
       }
       return token
     },
     session: async ({ session, token } : { session: Session, token: JWT }) => {
-      console.log('session callback session', session);
-      console.log('session callback token', token);
       if (token?.accessToken) {
         session.accessToken = token.accessToken
       }else{

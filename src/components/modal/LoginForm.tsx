@@ -31,14 +31,12 @@ function LoginModal(props: LoginModalProps) {
   let sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
   
   React.useEffect(() => {
-    console.log("isLoading",isOpen,isLoading)
     setTimeout(() => {
       setLoading(false)
     }, 2000);
   }, [isOpen]);
   
   const onClickJoin = (str:string) => {
-    console.log('onClickJoin : ', str);
     setLoginForm({
       socialType : str
     });

@@ -3,12 +3,6 @@ import React, { PropsWithChildren } from 'react';
 // chakra imports
 import { 
     Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Divider,FormControl,FormLabel,Input,
-    AlertDialog,
-    AlertDialogOverlay,
-    AlertDialogContent,
-    AlertDialogHeader,
-    AlertDialogBody,
-    AlertDialogFooter,
     useToast,
     Modal,
     ModalOverlay,
@@ -21,6 +15,12 @@ import {
 import mConstants from '@/utils/constants';
 import RequestForm from '@/components/modal/RequestForm';
 import EntireForm from '@/components/modal/EntireForm';
+import Alert from '@/components/alert/Alert';
+import NoticerModal  from '@/components/modal/Notice';
+//로그인 전역상태
+import UserStateStore from '@/store/userStore';
+
+
 export interface ProfileSettingModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
@@ -28,10 +28,14 @@ export interface ProfileSettingModalProps extends PropsWithChildren {
 
 function ProfileSettingModal(props: ProfileSettingModalProps) {
   const { isOpen, setClose } = props;
+
+  const setLoginUserInfo = UserStateStore((state) => state.setUserState);
+  const { nickName, ...userInfo } = UserStateStore(state => state);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isOpenLogoutModal, setIsOpenLogoutModal] = React.useState(false);
   const [isOpenRequestModal, setIsOpenRequestModal] = React.useState(false);
   const [isOpenEntireModal, setIsOpenEntireModal] = React.useState(false);
+  const [isOpenNoticeModal, setIsOpenNoticeModal] = React.useState<boolean>(false);
   const confirmRef = React.useRef<any>();
   const reviewBtnRef = React.useRef<any>();
   const entireBtnRef = React.useRef<any>();
@@ -46,12 +50,15 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
 
   React.useEffect(() => {
     setTimeout(() => {
+      setInputs({
+        ...inputs,
+        nickName : nickName
+      })
       setIsLoading(false);
     }, 1000);
   }, [isOpen]);
 
   const onHandleSave = () => {
-    console.log(inputs);
     toast({
       title: "이미 사용중인 닉네임입니다.",
       position: 'top-right',
@@ -61,13 +68,31 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   }
 
   const onHandleEntireAction = (inputs: any) => {
-    console.log(inputs);
     toast({
-      title: "정상적으로 등록되었습니다. 의견 주셔서 감사합니다.",
+      title: "이용해 주셔서 감사합니다. 정상적으로 탈퇴처리 되었습니다.",
       position: 'top-right',
       status: 'info',
       isClosable: true,
     });
+    setIsOpenEntireModal(false);
+    /* global logout */
+    setIsOpenLogoutModal(false)
+  }
+
+  const onHandleLogout = () => {
+    /* 여기서 전체 로그아웃을 처리한다 
+    1. 세션제거
+    2. Global State null 처리
+    setLoginUserInfo(
+      isState : boolean;
+      userId: string;
+      isGuest:boolean;
+      joinType:string;
+      nickName : string);
+    */
+    setLoginUserInfo(false,'',true,'',"Guest");
+    setIsOpenLogoutModal(false)
+
   }
 
   if ( isLoading ) {
@@ -113,7 +138,9 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
           <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} mt={5}>
             <Text fontSize={'16px'} fontWeight={'bold'}>고객지원</Text>
             <Box my={2}>
-              <Text fontSize={'14px'} fontWeight={'normal'} lineHeight={'2em'}>공지사항</Text>
+              <Box onClick={() => setIsOpenNoticeModal(true)} cursor={'pointer'}>
+                <Text fontSize={'14px'} fontWeight={'normal'} lineHeight={'2em'}>공지사항</Text>
+              </Box>
               <Text fontSize={'14px'} fontWeight={'normal'} lineHeight={'2em'}>이용약관</Text>
               <Text fontSize={'14px'} fontWeight={'normal'} lineHeight={'2em'}>개인정보 처리방침</Text>
               <Box onClick={() => setIsOpenRequestModal(true)} cursor={'pointer'}>
@@ -180,34 +207,27 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
             </Modal>
           )
         }
-        <AlertDialog
-          isOpen={isOpenLogoutModal}
-          leastDestructiveRef={confirmRef as any}
-          onClose={() => setIsOpenLogoutModal(false)}
-          size={'sm'}
-          isCentered
-        >
-          <AlertDialogOverlay>
-            <AlertDialogContent backgroundColor='white'>
-              <AlertDialogHeader fontSize='lg' fontWeight='bold' borderBottom={'1px solid #e0e0e0'} color={textColor}>
-                AIGA
-              </AlertDialogHeader>
-
-              <AlertDialogBody minHeight={'50px'} py={5} color={textColor}>
-                로그아웃 하시겠습니까?
-              </AlertDialogBody>
-             
-              <AlertDialogFooter>
-                <Button ref={confirmRef as any} onClick={() => setIsOpenLogoutModal(false)} color={textColor}>
-                  취소
-                </Button>
-                <Button colorScheme='red' onClick={() => setIsOpenLogoutModal(false)} ml={3} color={textColor}>
-                  확인
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialogOverlay>
-        </AlertDialog>
+        {
+          isOpenLogoutModal && (
+            <Alert 
+              AppName='AIGA'
+              bodyContent='로그아웃 하시겠습니까?'
+              isOpen={isOpenLogoutModal}
+              onClose={(bool) => setIsOpenLogoutModal(false)}
+              onConfirm={() => onHandleLogout()}
+              closeText='취소'
+              confirmText='확인'
+            />
+          )
+        }
+        {
+          isOpenNoticeModal && (
+            <NoticerModal
+              isOpen={isOpenNoticeModal}
+              setClose={() => setIsOpenNoticeModal(false)}
+            />
+          )
+        }
       </>
     )
   }

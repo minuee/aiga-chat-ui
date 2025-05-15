@@ -28,7 +28,6 @@ function ReviewModal(props: ReviewModalProps) {
   React.useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
-      console.log('isMobile', isMobile);
     }, 1000);
 
     if( !functions.isEmpty(doctorId) ){

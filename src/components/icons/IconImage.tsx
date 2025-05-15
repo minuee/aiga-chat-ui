@@ -1,0 +1,1 @@
+export const loadingImage = require("../../../public/img/loading.gif")

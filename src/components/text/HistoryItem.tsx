@@ -19,7 +19,7 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle }:HistoryItemP
     const [inputs, setInputs] = React.useState<any>({
         ...data,
         content: content,
-        shareLink : `https://aiga.kormedi.com/share/${data.historyId}`
+        shareLink : `https://aiga.kormedi.com/share/minuee/${data.historyId}`
     });
     const textColor = useColorModeValue('navy.700', 'white');
     const borderColor = useColorModeValue('gray.200', 'whiteAlpha.300');
@@ -49,7 +49,7 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle }:HistoryItemP
     }
 
     return (
-        <Box position={'relative'} width={`${mConstants.modalMaxWidth-100}px`}>
+        <Box position={'relative'} width="100%" maxWidth={`${mConstants.modalMaxWidth-100}px`}>
             <Heading size='xs' textTransform='uppercase' fontWeight={'normal'}>
             {createdAt || '0000-00-00'}
             </Heading>

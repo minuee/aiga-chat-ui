@@ -21,7 +21,6 @@ self.addEventListener("install", function () {
   });
   
   self.addEventListener("notificationclick", (event) => {
-    console.log("notificationclick",event.notification.data);
     event.notification.close();
     const urlToOpen = event.notification.data;
     event.waitUntil(self.clients.openWindow(urlToOpen));

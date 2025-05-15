@@ -54,7 +54,6 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
   
   const sendNotification = async() => {
     try {
-      console.log('myToken',myToken);
       const bodyDat = {
         ...myToken,
         endpoint: "http://localhost:3000/chat"
@@ -72,7 +71,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
           throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      console.log(data); */
+       */
     } catch (error) {
         console.error('Error sending notification:', error);
     }
@@ -81,7 +80,6 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
   const requestPermission = async () => {
     try {
         const registration = await navigator.serviceWorker.ready;
-        console.log('registration',registration);
         const subscription = await registration.pushManager.getSubscription();
         if (subscription) {
             // 이미 구독이 되어있다면 해지하기
@@ -95,7 +93,6 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
                 applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
             });
             // TODO: DB에 구독 정보 보내기
-            console.log('subscription => ', subscription.toJSON());
             setButtonText('구독 해지하기');
         }
     } catch (e:any) {
@@ -104,16 +101,11 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
   }
 
    const subscribeUser = async() => {
-    console.log('subscription 111');
-  
 
     navigator.serviceWorker.ready.then((registration) => {
-      console.log('registration',registration);
       registration.pushManager.getSubscription().then((subscription) => {
-        console.log('subscription',subscription);
         if (subscription) {
           setMyToken(subscription);
-          console.log('Already subscribed',subscription);
           toast({
             title: 'Already subscribed',
             position: 'top-right',
@@ -129,7 +121,6 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
               applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
             })
             .then((subscription) => {
-              console.log('subscription',subscription);
               setMyToken(subscription);
               // save subscription on DB
               /* fetch('/api/subscribe', {

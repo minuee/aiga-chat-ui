@@ -5,8 +5,7 @@ import customfetch from '@/utils/customfetch';
 import functions from '@/utils/functions';
 import MessageBoxChat from '@/components/MessageBox';
 import { ChatBody, OpenAIModel } from '@/types/types';
-import { renderThumb,renderTrack,renderView } from '@/components/scrollbar/Scrollbar';
-import { Scrollbars } from 'react-custom-scrollbars-2';
+
 import { 
     Box,Button,Flex,Icon,Textarea,Input,Text,useColorModeValue,
     Drawer,
@@ -21,7 +20,7 @@ import {
     ModalBody,
     ModalFooter,
     ModalCloseButton,
-    Portal
+    useToast
 } from '@chakra-ui/react';
 import { useEffect, useState,useRef } from 'react';
 import Image from "next/image";
@@ -31,6 +30,8 @@ import SelectBody  from '@/components/msgType/SelectBody';
 import SelectDoctor  from '@/components/msgType/SelectDoctor';
 import SelectName  from '@/components/msgType/SelectName';
 import Welcome  from '@/components/msgType/Welcome';
+import Processing  from '@/components/msgType/Processing';
+
 import SelectType  from '@/components/msgType/SelectType';
 import {useTranslations} from 'next-intl';
 import LoadingBar from "@/assets/icons/loading.gif";
@@ -44,7 +45,6 @@ export default function ChatBot() {
   const t = useTranslations('Messages');
   // 세션 상태 확인
   const { data: session, status } = useSession();
-  console.log("session",session,status)
   // Input States
   const [isFocus, setIsFocus] = useState<boolean>(false);
   const [isAccessFirst, setAccessFirst] = useState<boolean>(false);
@@ -52,6 +52,7 @@ export default function ChatBot() {
   const [isShowScroll, setShowScroll] = useState(false);
   const [isReceiving, setReceiving] = useState(false);
   const [reviewData, setReviewData] = useState<any>(null);
+  const toast = useToast();
   // Response message
   const [outputCode, setOutputCode] = useState<any>([]);
   // ChatGPT model
@@ -71,10 +72,9 @@ export default function ChatBot() {
   const navbarIcon = useColorModeValue('gray.500', 'white');
   const isNewChat = NewChatStateStore(state => state.isNew);
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
-  // API Key
-  // const [apiKey, setApiKey] = useState<string>(apiKeyApp);
+  const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
   const borderColor = useColorModeValue('gray.200', 'gray');
-  const inputColor = useColorModeValue('navy.700', 'black');
+  const inputColor = useColorModeValue('navy.700', 'white');
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
   const iconColor = useColorModeValue('brand.500', 'white');
   const bgIcon = useColorModeValue(
@@ -88,7 +88,6 @@ export default function ChatBot() {
   const textColor = useColorModeValue('navy.700', 'white');
   const placeholderColor = useColorModeValue({ color: 'gray.500' },{ color: 'gray' });
   
-
   const isSystemText = [
     "system_text","system_doctors","system_list","system_select","system_image"
   ]
@@ -101,7 +100,6 @@ export default function ChatBot() {
   }, [isAccessFirst]);
 
   useEffect(() => {
-    console.log("isNewChat",isNewChat,outputCode.length)
     if ( isNewChat && outputCode.length > 0 ) {
       
       // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
@@ -124,7 +122,6 @@ export default function ChatBot() {
         const goingUp = e.deltaY < 0;
         const shouldUpdate = goingUp !== prev;
         if (shouldUpdate) {
-          console.log("스크롤 상태 변경:", !prev);
           return !prev;
         }
         return prev;
@@ -137,14 +134,17 @@ export default function ChatBot() {
 
   // 스크롤을 맨 아래로 내리는 함수
   const scrollToBottom = () => {
-   
     const el = scrollBottomRef.current;
     if (el) {
-      console.log("scrollToBottom",el)
       scrollBottomRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
       setShowScroll(false)
     }
   };
+
+  const onHandleStopRequest = () => {
+    setReceiving(false);
+    setLoading(false)
+  }
 
   const handleTranslate = async( isText:any = '') => {
 
@@ -154,7 +154,6 @@ export default function ChatBot() {
     const inputCodeText = inputCode || isText;
     
     if ( isSystemText.includes(inputCodeText) ) {
-      console.log("ddddddddd", inputCodeText,outputCode[outputCode?.length -1]?.msg)
       if( inputCodeText != outputCode[outputCode?.length -1]?.msg) { 
         setOutputCode((prevCode: any[]) => [...prevCode, { id: functions.getUUID(), ismode: "system", msg: inputCodeText }]);
         setLoading(false);
@@ -178,10 +177,6 @@ export default function ChatBot() {
       "msg": inputCodeText
     }
 
-     /*let reader:any = null;
-    const response = await fetch('http://localhost:9999/api/v1/see',{credentials: 'include'});
-    const reader = response?.body?.getReader();
-    console.log("reader",reader) */
     const response = await customfetch.callAPI(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json; charset=utf-8' },
@@ -196,8 +191,11 @@ export default function ChatBot() {
       const { value, done } : any = await reader?.read();
     
       if (done) {
-        setLoading(false);
-        setReceiving(false);
+        setTimeout(() => {
+          setLoading(false);
+          setReceiving(false);
+        },3000)
+        
         console.log('🔚 스트림 종료됨');
         break;
       }
@@ -206,14 +204,11 @@ export default function ChatBot() {
       console.log('📥 받은 메시지:', chunk);
      
       if ( chunk ) {
-        //setOutputCode((prevCode) => prevCode + chunk);
-        //setOutputCode((prevCode:any) => prevCode.push({ismode:"server",msg:chunk}));
         streamData = streamData.concat(chunk);
       }else{
         console.error('data가 null입니다. getReader를 호출할 수 없습니다.');
       }
-      //setOutputCode((prevCode: any[]) => [...prevCode, { ismode: "server", msg: streamData }]);
-      // 필요하다면 chunk를 파싱해서 처리하세요 (예: data: ... 형식 파싱)
+
       setOutputCode((prevCode: any[]) => {
        
         const newArray = [...prevCode];
@@ -231,12 +226,9 @@ export default function ChatBot() {
             msg: tmpMsg.concat(chunk)
           };
         }
-        
         return newArray;
       });
     }
-    //setOutputCode((prevCode: any[]) => [...prevCode, { ismode: "server", msg: streamData }]);
-    //if (scrollRef?.current) scrollRef?.current.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
   }
 
   useEffect(() => {
@@ -244,7 +236,6 @@ export default function ChatBot() {
       setShowScroll(false)
       scrollBottomRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }, outputCode?.ismode == "me" ? 0 : 300); // or 100ms 정도로 조정 가능
-    console.log("outputCode",outputCode)
     return () => clearTimeout(timeout);
   }, [outputCode]);
 
@@ -254,33 +245,29 @@ export default function ChatBot() {
   };
 
   const onSendButton = async( str : string) => {
-    console.log("onSendButton",str)
-    await handleTranslate(str);
+    if ( !isReceiving) await handleTranslate(str);
   }
 
   const onSendWelcomeButton = async( str : string) => {
-    console.log("onSendButton",str)
-    await handleTranslate(str);
+    if ( !isReceiving ) await handleTranslate(str);
   }
 
-  const onSendDoctorButton = async( isBool : boolean,isType : number) => {
-    console.log("onSendDoctorButton",isBool,isType)
+  const onSendDoctorButton = async( data : any,isType : number) => {
     setIsOpenReview(false);
+    setSelectedDoctor(data)
     if ( isType == 1 ) {
-      setIsOpenDoctorModal(isBool);
+      setIsOpenDoctorModal(true);
     }else{
-      setIsOpenDoctorDrawer(isBool);
+      setIsOpenDoctorDrawer(true);
     }
   }
 
   const onSendNameButton = async( str : string) => {
-    console.log("onSendButton",str)
-    await handleTranslate(str);
+    if ( !isReceiving ) await handleTranslate(str);
   }
 
   const onSendTypeButton = async( typeString : string ) => {
-    console.log("onSendTypeButton",typeString)
-    await handleTranslate(typeString);
+    if ( !isReceiving ) await handleTranslate(typeString);
   }
 
   const handleTranslate_get = async( isText:any = '') => {
@@ -339,26 +326,10 @@ export default function ChatBot() {
     }
   }
 
-  const onHandleRegistReview = (data:any) => {
-    console.log("onHandleRegistReview",data)
-  }
-
-  const onHandleEditDoctor = (id:string) => {
-    console.log("onHandleEditDoctor",id)
-    if ( id ) {
-      setIsOpenRequestModal(true);
-    }
-  }
-
-  const onHandleRequestDoctor = (data:any) => {
-    console.log("onHandleRequestDoctor",data)
-  }
-
   return (
     <Flex
       w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
-      maxWidth={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
-      //pt={{ base: '0px', lg: '0px' }}
+      maxWidth={{ base: '100%', md: `${mConstants.desktopMinWidth-30}px` }}
       padding={"10px"}
       direction="column"
       position="relative"
@@ -368,19 +339,12 @@ export default function ChatBot() {
         mx="auto"
         w={'100%'}
         overflowY='scroll'
-        //minH={{ base: '75vh', md: '85vh'  }}
-        //minH="calc(100vh - 150px)"
-        //maxH={{ base: '75vh', md: '85vh'  }}
-        //height={`calc(var(--vh, 1vh) * 85)`}
-        //maxW="1024px"
         minH="calc(100vh - 100px)"
       >
-        {/* <Flex direction={'column'} w="100%" mb={outputCode ? '20px' : 'auto'}>
-          
-        </Flex> */}
         <Flex
           direction="column"
           w="100%"
+          //maxW={{ base : `${mConstants.desktopMinWidth}px`, md:"97%" }}
           //maxH={{ base: '75vh', md: '85vh' }}
           //height={`calc(var(--vh, 1vh) * 100)`}
           maxH="calc(100vh - 200px)" /* 여기가 하단 스크롤 영역 영향 받음 */
@@ -401,27 +365,12 @@ export default function ChatBot() {
               onSendButton={onSendTypeButton}
             />
           </Box>
-          {/* <Box>
-            <SelectBody 
-              onSendButton={onSendWelcomeButton}
-            />
-          </Box>
-          <Box>
-            <SelectDoctor 
-              onSendButton={onSendDoctorButton}
-            />
-          </Box>
-          <Box mb={3}>
-            <SelectName 
-              data={[]}
-              onSendButton={onSendNameButton}
-            /> 
-          </Box>*/}
+          
           { 
             outputCode.map((element:any,index:number) => {
               if ( element.ismode == 'me') {
                 return (
-                  <Flex w="100%" align={'center'} mb="10px"  mt="5px"  key={element.id} justifyContent='flex-end'>
+                  <Flex w="100%" align={'center'} mb="10px"  mt="5px" key={element.id} justifyContent='flex-end'>
                     <Flex
                       p="10px"
                       border="1px solid"
@@ -452,12 +401,7 @@ export default function ChatBot() {
                       minH="40px"
                       minW="40px"
                     >
-                      <Icon
-                        as={MdPerson}
-                        width="20px"
-                        height="20px"
-                        color={brandColor}
-                      />
+                      <Icon as={MdPerson} width="20px" height="20px" color={brandColor} />
                     </Flex>
                   </Flex>
                 )
@@ -545,6 +489,15 @@ export default function ChatBot() {
                 )
               }
             })
+          }
+          {
+            isReceiving && (
+              <Box>
+                <Processing 
+                  msg="증상 분석중"
+                />
+              </Box>
+            )
           }
           
           { isShowScroll &&  
@@ -654,21 +607,40 @@ export default function ChatBot() {
                   bg: 'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)',
                 },
               }}
-              onClick={() => handleTranslate(inputCode)}
+             
               isLoading={loading ? true : false}
             >
               {
                 isReceiving
                 ?
-                <Image 
-                  src={LoadingBar}  
-                  alt="LoadingBar" 
-                  style={{width:'30px', height:'30px'}}
-                /> 
+                <Box onClick={() => onHandleStopRequest()}>
+                  <Image 
+                    src={LoadingBar}  
+                    alt="LoadingBar" 
+                    style={{width:'30px', height:'30px'}}
+                  /> 
+                </Box>
+                
                 :
-                <Text>
-                  전송
-                </Text>
+                <Box
+                  onClick={() => { 
+                    if ( !isReceiving ) {
+                      handleTranslate(inputCode);
+                    }else {
+                      toast({
+                        title: 'AIGA',
+                        position: 'top-right',
+                        description: '수신중입니다. 잠시만 기달주세요',
+                        status: 'info',
+                        duration: 2000,
+                        isClosable: true,
+                      });
+                    }
+                  }}
+                >
+                  <Text>전송</Text>
+                </Box>
+                
               }
             </Button>
           </Box>
@@ -697,10 +669,7 @@ export default function ChatBot() {
                   />
                   <DrawerBody maxW={`${mConstants.modalMaxWidth}px`} px="10px" pb="0">
                     <DoctorDetail
-                      isOpen={isOpenDoctorDrawer}
-                      setClose={() => setIsOpenDoctorDrawer(false)}
-                      onHandleWriteReview={() => setIsOpenReview(true)}
-                      onHandleEditDoctor={(id) => onHandleEditDoctor(id)}
+                      data={selectedDoctor}
                     />
                   </DrawerBody>
                 </DrawerContent>
@@ -723,10 +692,7 @@ export default function ChatBot() {
                 <ModalCloseButton />
                 <ModalBody >
                   <DoctorDetail
-                    isOpen={isOpenDoctorModal}
-                    setClose={() => setIsOpenDoctorModal(false)}
-                    onHandleWriteReview={() => setIsOpenReview(true)}
-                    onHandleEditDoctor={(id) => onHandleEditDoctor(id)}
+                    data={selectedDoctor}
                   />
                 </ModalBody>
                {/*  <ModalFooter>

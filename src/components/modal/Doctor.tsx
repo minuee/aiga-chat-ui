@@ -18,14 +18,11 @@ import mConstants from '@/utils/constants';
 import ReviewDetail from '@/components/modal/ReviewDetail';
 import RequestDoctor from '@/components/modal/RequestDoctor';
 export interface DoctorModalProps extends PropsWithChildren {
-  isOpen : boolean;
-  setClose : () => void;
-  onHandleWriteReview : () => void;
-  onHandleEditDoctor : (doctorId:string) => void;
+  data : any;
 }
 const limintView = 3
 function DoctorModal(props: DoctorModalProps) {
-  const { isOpen, setClose, onHandleWriteReview,onHandleEditDoctor } = props;
+  const { data } = props;
   const [isLoading, setIsLoading] = React.useState(true);
   const [isOpenReview, setIsOpenReview] = React.useState(false);
   const [reviewData, setReviewData] = React.useState<any>(null);
@@ -39,9 +36,8 @@ function DoctorModal(props: DoctorModalProps) {
   React.useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
-      console.log('isMobile', isMobile);
     }, 600);
-  }, [isOpen]);
+  }, [data]);
 
   const onHandleRegistReview = (data:any) => {
     console.log('data', data);
