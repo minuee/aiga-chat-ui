@@ -1,4 +1,4 @@
-import { Button,Flex,Stack,useColorModeValue ,Icon} from '@chakra-ui/react';
+import { Button,Flex,Stack,useColorModeValue } from '@chakra-ui/react';
 import { Md13Mp, MdFamilyRestroom, MdHub, MdEarbuds,MdGridView } from 'react-icons/md';
 type SelectTypeProps = {
     onSendButton: (str: string) => void; 

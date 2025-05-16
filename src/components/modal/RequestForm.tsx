@@ -1,7 +1,7 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Divider,Icon,Textarea,Checkbox,Card,useColorModeValue,CardBody,Stack,StackDivider,Heading} from '@chakra-ui/react';
+import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Textarea,Checkbox,Card,useColorModeValue,CardBody,Stack,StackDivider,Heading} from '@chakra-ui/react';
 import functions from '@/utils/functions';
 import Link from '@/components/link/Link';
 
@@ -10,7 +10,6 @@ export interface ReviewModalProps extends PropsWithChildren {
   setClose : () => void;
   onHandleEntire : (data:any) => void;
 }
-const limintView = 3
 
 function ReviewModal(props: ReviewModalProps) {
 

@@ -1,11 +1,7 @@
-import { useRef,useEffect } from "react";
-import functions from "../../utils/functions";
-import dynamic from 'next/dynamic';
 import MessageBoxChat from '@/components/MessageBox';
 import { Button,Flex,Stack,useColorModeValue ,Icon} from '@chakra-ui/react';
-import { MdAutoAwesome, MdFitbit, MdCall, MdPerson } from 'react-icons/md';
-import Image from 'next/image';
-import Card from '@/components/card/Card'
+import { MdFitbit, MdPerson } from 'react-icons/md';
+
 type WelcomeProps = {
     msg: string;
     onSendButton: (str: string) => void; 

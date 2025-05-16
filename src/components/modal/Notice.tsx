@@ -2,17 +2,11 @@
 import React, { PropsWithChildren } from 'react';
 
 // chakra imports
-import { Box,Flex,Drawer,DrawerBody,Icon,useColorModeValue,DrawerOverlay,useDisclosure,DrawerContent,DrawerCloseButton } from '@chakra-ui/react';
-import { Skeleton, SkeletonCircle, SkeletonText } from '@chakra-ui/react'
+import { Box,Drawer,DrawerBody,Icon,useColorModeValue,DrawerOverlay,DrawerContent,DrawerCloseButton } from '@chakra-ui/react';
+import { SkeletonText } from '@chakra-ui/react'
 import { renderThumb,renderTrack,renderView } from '@/components/scrollbar/Scrollbar';
 import { Scrollbars } from 'react-custom-scrollbars-2';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
-} from '@chakra-ui/react'
+import { Accordion,AccordionItem,AccordionButton,AccordionPanel,AccordionIcon } from '@chakra-ui/react'
 import HeadTitle from './Title';
 import mConstants from '@/utils/constants';
 
@@ -40,7 +34,6 @@ function NoticerModal(props: NoticerModalProps) {
     }, 2000);
   }, [isOpen]);
   
- 
   // SIDEBAR
   return (
     <Box display={{ base: 'block', xl: 'block' }} position="fixed" minH="100%">

@@ -7,7 +7,6 @@ import Footer from '@/components/footer/MainFooter';
 import Header from '@/components/header/MainHeader';
 import * as mConst from "@/utils/constants";
 import QuickRight from "@/components/sidebar/QuickRight";
-import DepWindow from "@/components/modal/DepWindow";
 import {useTranslations} from 'next-intl';
 
 import MainBgImage from "@/assets/images/etc/bg_1.png";

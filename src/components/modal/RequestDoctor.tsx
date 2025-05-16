@@ -1,10 +1,8 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
-import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
 // chakra imports
-import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Divider,Icon,Textarea,Input, FormControl, FormLabel, RadioGroup, Radio, Stack, useColorModeValue } from '@chakra-ui/react';
+import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Divider,Textarea,Input, FormControl, FormLabel, RadioGroup, Radio, Stack, useColorModeValue } from '@chakra-ui/react';
 import functions from '@/utils/functions';
-
 
 export interface ReviewModalProps extends PropsWithChildren {
   isOpen : boolean;

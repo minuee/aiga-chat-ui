@@ -1,24 +1,13 @@
-import { useRef,useEffect } from "react";
-import functions from "../../utils/functions";
-import { Box,Flex,Text,useColorModeValue } from '@chakra-ui/react';
+
+import { Flex } from '@chakra-ui/react';
 import Image from 'next/image';
 import BgImage from "@/assets/images/select_body_point.png";
 
 type SelectBodyProps = {
-    /* windowSrc?: string;
-    title: string;
-    width?: number;
-    height?: number;
-    children: React.ReactNode;*/
     onSendButton: (str: string) => void; 
 };
 
 const SelectBody = ({
-   /*  windowSrc = "",
-  title,
-  width = 600,
-  height = 600,
-  children,*/
   onSendButton, 
 }: SelectBodyProps) => {
 

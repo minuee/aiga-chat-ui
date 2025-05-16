@@ -23,29 +23,16 @@ const Processing = ({ msg = "증상 분석 중"}: ProcessingProps) => {
         minH="40px"
         minW="40px"
       >
-        <Icon
-          as={MdFitbit}
-          width="20px"
-          height="20px"
-          color="white"
-        />
+        <Icon as={MdFitbit} width="20px" height="20px" color="white" />
       </Flex>
       <Box ml={2} pt={2}>
-        <NextImage
-          width="25"
-          height="25"
-          src={loadingImage}
-          alt={'loading'}
-        />
+        <NextImage width="25" height="25" src={loadingImage} alt={'loading'} />
       </Box>
-      
       <Box ml={2} pt={1}>
         <Text color={textColor}>{msg}</Text>
       </Box>
-      
     </Flex>
   )
-    
 };
   
 export default Processing;

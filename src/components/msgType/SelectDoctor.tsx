@@ -1,10 +1,9 @@
 import { useRef, useEffect, useState } from "react";
-import functions from "../../utils/functions";
-import dynamic from 'next/dynamic';
-import NextImage, { ImageProps } from 'next/legacy/image';
-import { Box,Flex,Stack,useColorModeValue ,Button, Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,Portal } from '@chakra-ui/react';
+import NextImage from 'next/legacy/image';
+import { Box,Flex,Stack,useColorModeValue ,Button, Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody } from '@chakra-ui/react';
 import mConstants from "@/utils/constants"
 import DoctorList from "@/components/modal/DoctorList";
+import { sampleDoctor1, sampleDoctor2,sampleDoctor3 } from "@/components/icons/IconImage";
 
 type SelectDoctorProps = {
     onSendButton: (data: any,id:number) => void; 
@@ -84,7 +83,7 @@ const SelectDoctor = ({
           <NextImage
             width="200"
             height="200"
-            src={require("../../../public/img/sample/doctor1.png")}
+            src={sampleDoctor1}
             alt={'doctor1'}
           />
         </Box>
@@ -92,7 +91,7 @@ const SelectDoctor = ({
           <NextImage
             width="200"
             height="200"
-            src={require("../../../public/img/avatars/doctor.png")}
+            src={sampleDoctor2}
             alt={'doctor1'}
           />
         </Box>
@@ -100,7 +99,7 @@ const SelectDoctor = ({
           <NextImage
             width="200"
             height="200"
-            src={require("../../../public/img/avatars/doctor.png")}
+            src={sampleDoctor2}
             alt={'doctor1'}
           />
         </Box>
@@ -108,7 +107,7 @@ const SelectDoctor = ({
           <NextImage
             width="200"
             height="200"
-            src={require("../../../public/img/avatars/doctor.png")}
+            src={sampleDoctor2}
             alt={'doctor1'}
           />
         </Box>
@@ -116,7 +115,7 @@ const SelectDoctor = ({
           <NextImage
             width="200"
             height="200"
-            src={require("../../../public/img/avatars/doctor.png")}
+            src={sampleDoctor2}
             alt={'doctor1'}
           />
         </Box>
@@ -124,7 +123,7 @@ const SelectDoctor = ({
           <NextImage
             width="200"
             height="200"
-            src={require("../../../public/img/sample/doctor2.jpg")}
+            src={sampleDoctor3}
             alt={'doctor1'}
           />
         </Box>

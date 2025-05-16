@@ -1,10 +1,11 @@
 'use client';
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 // chakra imports
-import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Tag,TagLabel, useColorModeValue,FormControl,Input ,FormLabel, Divider} from '@chakra-ui/react';
+import { Box,Flex, useColorModeValue,FormControl,Input, Divider} from '@chakra-ui/react';
 import Image from 'next/image';
 import NextImage, { ImageProps } from 'next/legacy/image';
 import functions from '@/utils/functions';
+import { sampleDoctor2 } from "@/components/icons/IconImage";
 
 type DoctorListProps = {
     data: any;
@@ -26,7 +27,7 @@ const DoctorList = ({ data, onSendDoctorButton }:DoctorListProps) => {
                             <NextImage
                                 width="200"
                                 height="200"
-                                src={require("../../../public/img/avatars/doctor.png")}
+                                src={sampleDoctor2}
                                 alt={'doctor1'}
                             />
                         :

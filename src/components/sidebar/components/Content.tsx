@@ -1,7 +1,6 @@
 'use client';
 // chakra imports
-import { Box,Button,Flex,Icon,Menu,MenuButton,Stack,Text,useColorModeValue,Card,CardBody,StackDivider,useDisclosure,SkeletonCircle,SkeletonText } from '@chakra-ui/react';
-import NavLink from '@/components/link/NavLink';
+import { Box,Button,Flex,Icon,Menu,MenuButton,Stack,Text,useColorModeValue,Card,CardBody,StackDivider,useDisclosure,SkeletonText } from '@chakra-ui/react';
 import { format } from 'date-fns';
 //   Custom components
 import avatar4 from '/public/img/avatars/myphoto.jpeg';
@@ -14,7 +13,7 @@ import React, { useRef } from 'react';
 import { PropsWithChildren } from 'react';
 import { IRoute } from '@/types/navigation';
 import { FiLogOut } from 'react-icons/fi';
-import { MdOutlineMoreVert, MdOutlineSettings } from 'react-icons/md';
+import { MdOutlineSettings } from 'react-icons/md';
 import mConstants from '@/utils/constants';
 //새창열기 전역상태
 import NewChatStateStore from '@/store/newChatStore';
@@ -42,7 +41,6 @@ const mockupHistoryData = [
     content: '空気読めない奴だな訳してKYな奴決して許せない。Qさまという番組は俺が一番好きな番組でござんす',
   },
 ]
-
 
 interface SidebarContent extends PropsWithChildren {
   routes: IRoute[];
@@ -79,13 +77,11 @@ function SidebarContent(props: SidebarContent) {
   }, []);
 
   const onDeleteHistory = (historyId: number) => {
-    console.log('onDeleteHistory', historyId);
     const newHistoryData = historyData.filter((item) => item.historyId !== historyId);
     setHistoryData(newHistoryData);
   }
 
   const onHandleUpdateTitle = (inputs: any) => {
-    console.log('onHandleUpdateTitle', inputs);
     const newHistoryData = historyData.map((item) => {
       if (item.historyId === inputs.historyId) {
         return { ...item, content: inputs.content };

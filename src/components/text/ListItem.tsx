@@ -1,5 +1,5 @@
 import React from 'react';
-import { useColorMode,Flex,Text,Divider,Box,List,ListItem,ListIcon,Button } from '@chakra-ui/react';
+import { Flex,Text,Divider,Box,List,ListItem,ListIcon,Button } from '@chakra-ui/react';
 import { MdCheckCircle } from 'react-icons/md';
 type ListItemScreenProps = {
     title: string;
@@ -8,7 +8,6 @@ type ListItemScreenProps = {
     marginTop?: number;
 };
   
-
 const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 }:ListItemScreenProps) => {
     const [expandedCount, setExpandedCount] = React.useState<any>(content.length > limintView ? limintView : undefined);
     const handleToggle = () =>

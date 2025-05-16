@@ -4,9 +4,8 @@ import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-devi
 // chakra imports
 import { Rating } from 'react-simple-star-rating'
 import { 
-  Box,Flex,Drawer,DrawerBody,Button,useColorModeValue,DrawerOverlay,Text,DrawerContent,DrawerCloseButton,SkeletonCircle,SkeletonText,Divider,
-  Card,CardHeader,CardBody,CardFooter,Heading,Icon,Popover,PopoverTrigger,PopoverContent,PopoverHeader,PopoverArrow,PopoverBody,
-  Stack,Progress,SimpleGrid,Textarea,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,Portal
+  Box,Flex,Button,useColorModeValue,Text,SkeletonCircle,SkeletonText,Divider,Card,CardHeader,CardBody,Heading,Icon,Popover,PopoverTrigger,PopoverContent,PopoverHeader,PopoverArrow,
+  PopoverBody,SimpleGrid,Textarea,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,Portal
  } from '@chakra-ui/react';
 
 import Image from 'next/image';
@@ -90,19 +89,19 @@ function DoctorModal(props: DoctorModalProps) {
           )}
         </Flex>
         <ListItem
-          title="경력"
+          title="경력(4)"
           content={["경력____1", "경력____2", "경력____3", "경력____4"]}
           limintView={limintView}
           marginTop={0}
         />
         <ListItem
-          title="학력"
+          title="학력(2)"
           content={["학력____1", "학력____2"]}
           limintView={limintView}
           marginTop={5}
         />
         <ListItem
-          title="논문"
+          title="논문(8)"
           content={["논문____1", "논문____2", "논문____3", "논문____4", "논문____5", "논문____6", "논문____7", "논문____8"]}
           limintView={limintView}
           marginTop={5}

@@ -1,13 +1,10 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
-import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
 // chakra imports
 import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Divider,Icon,Textarea, useColorModeValue } from '@chakra-ui/react';
-import Image from 'next/image';
 import { MdDiversity1 } from 'react-icons/md';
 import Slider from '@/components/text/Slider';
 import functions from '@/utils/functions';
-
 
 export interface ReviewModalProps extends PropsWithChildren {
   isOpen : boolean;
@@ -15,13 +12,12 @@ export interface ReviewModalProps extends PropsWithChildren {
   onHandleRegistReview : (data:any) => void;
   reviewData : any;
 }
-const limintView = 3
+
 function ReviewModal(props: ReviewModalProps) {
   const { isOpen, setClose, onHandleRegistReview, reviewData } = props;
   const [isLoading, setIsLoading] = React.useState(true);
   const skeletonColor = useColorModeValue('white', 'gray.700');
 
-  const [expandedCount, setExpandedCount] = React.useState<any>(limintView);
   const [inputs, setInputs] = React.useState<any>({
     doctorId: '',
     comment: null,

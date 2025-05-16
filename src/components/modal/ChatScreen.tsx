@@ -19,7 +19,6 @@ function ChatScreenModal(props: ChatModalProps) {
   const { isOpen, setClose } = props;
   const [locale, setLocale] = React.useState<string>(routing.defaultLocale);
 
-
   React.useEffect(() => {  
     const locale = mCookie.getCookie('currentLocale'); 
     if ( !functions.isEmpty(locale) ) {

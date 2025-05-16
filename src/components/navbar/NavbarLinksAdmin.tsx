@@ -3,23 +3,16 @@
 import * as React from 'react';
 import { 
     Box,Button,Center,Flex,Icon,Link,Menu,MenuButton,MenuItem,MenuList,Text,useColorMode,useColorModeValue,useToast,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody
+    Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody
 } from '@chakra-ui/react';
 import { SidebarResponsive } from '@/components/sidebar/Sidebar';
 import { IoMdMoon, IoMdSunny } from 'react-icons/io';
-import { MdInfoOutline } from 'react-icons/md';
 import NoticerModal  from '@/components/modal/Notice';
 import LoginModal  from '@/components/modal/LoginForm';
-import NavLink from '../link/NavLink';
 import routes from '@/routes';
-import functions from '@/utils/functions';
 import ProfileSetting from '@/components/modal/ProfileSetting';
 import mConstants from '@/utils/constants';
+
 export default function HeaderLinks(props: {secondary: boolean;}) {
 
   const { secondary } = props;
@@ -40,15 +33,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
     '14px 17px 40px 4px rgba(112, 144, 176, 0.18)',
     '0px 41px 75px #081132',
   );
-  const buttonBg = useColorModeValue('transparent', 'navy.800');
-  const hoverButton = useColorModeValue(
-    { bg: 'gray.100' },
-    { bg: 'whiteAlpha.100' },
-  );
-  const activeButton = useColorModeValue(
-    { bg: 'gray.200' },
-    { bg: 'whiteAlpha.200' },
-  );
+
   const sidebarBackgroundColor = useColorModeValue('white', 'gray.700');
   const reviewBtnRef = React.useRef<HTMLButtonElement>(null);
   
@@ -152,20 +137,8 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
       borderRadius="30px"
       boxShadow={shadow}
     >
-      {/* <SearchBar
-        mb={() => {
-          if (secondary) {
-            return { base: '10px', md: 'unset' };
-          }
-          return 'unset';
-        }}
-        me="10px"
-        borderRadius="30px"
-      /> */}
       <SidebarResponsive routes={routes} />
-      {/* <APIModal setApiKey={setApiKey} /> */}
-
-
+      
       <Button
         variant="no-hover"
         bg="transparent"

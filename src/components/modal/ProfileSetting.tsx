@@ -3,14 +3,7 @@ import React, { PropsWithChildren } from 'react';
 // chakra imports
 import { 
     Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Divider,FormControl,FormLabel,Input,
-    useToast,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
-    useColorModeValue
+    useToast,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,useColorModeValue
 } from '@chakra-ui/react';
 import mConstants from '@/utils/constants';
 import RequestForm from '@/components/modal/RequestForm';
@@ -19,7 +12,6 @@ import Alert from '@/components/alert/Alert';
 import NoticerModal  from '@/components/modal/Notice';
 //로그인 전역상태
 import UserStateStore from '@/store/userStore';
-
 
 export interface ProfileSettingModalProps extends PropsWithChildren {
   isOpen : boolean;
@@ -36,7 +28,6 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   const [isOpenRequestModal, setIsOpenRequestModal] = React.useState(false);
   const [isOpenEntireModal, setIsOpenEntireModal] = React.useState(false);
   const [isOpenNoticeModal, setIsOpenNoticeModal] = React.useState<boolean>(false);
-  const confirmRef = React.useRef<any>();
   const reviewBtnRef = React.useRef<any>();
   const entireBtnRef = React.useRef<any>();
   const toast = useToast();

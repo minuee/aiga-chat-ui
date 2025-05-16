@@ -7,20 +7,8 @@ import MessageBoxChat from '@/components/MessageBox';
 import { ChatBody, OpenAIModel } from '@/types/types';
 
 import { 
-    Box,Button,Flex,Icon,Textarea,Input,Text,useColorModeValue,
-    Drawer,
-    DrawerOverlay,
-    DrawerContent,
-    DrawerBody,
-    DrawerCloseButton,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    ModalCloseButton,
-    useToast
+    Box,Button,Flex,Icon,Textarea,Input,Text,useColorModeValue,Drawer,DrawerOverlay,DrawerContent,DrawerBody,DrawerCloseButton,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,
+    ModalFooter,ModalCloseButton,useToast
 } from '@chakra-ui/react';
 import { useEffect, useState,useRef } from 'react';
 import Image from "next/image";
@@ -40,7 +28,6 @@ import mConstants from '@/utils/constants';
 //새창열기 전역상태
 import NewChatStateStore from '@/store/newChatStore';
 
-
 export default function ChatBot() {
   const t = useTranslations('Messages');
   // 세션 상태 확인
@@ -51,7 +38,6 @@ export default function ChatBot() {
   const [inputCode, setInputCode] = useState<string>('');
   const [isShowScroll, setShowScroll] = useState(false);
   const [isReceiving, setReceiving] = useState(false);
-  const [reviewData, setReviewData] = useState<any>(null);
   const toast = useToast();
   // Response message
   const [outputCode, setOutputCode] = useState<any>([]);
@@ -61,14 +47,11 @@ export default function ChatBot() {
   const [loading, setLoading] = useState<boolean>(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollBottomRef = useRef<HTMLDivElement>(null);
-  const btnRef = useRef(null)
-  const formBtnRef = useRef(null)
-  const reviewBtnRef = useRef(null)
+
   // Loading state
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
   const [isOpenDoctorDrawer, setIsOpenDoctorDrawer] = useState<boolean>(false);
   const [isOpenReview, setIsOpenReview] = useState<boolean>(false);
-  const [isOpenRequestModal, setIsOpenRequestModal] = useState<boolean>(false);
   const navbarIcon = useColorModeValue('gray.500', 'white');
   const isNewChat = NewChatStateStore(state => state.isNew);
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
@@ -101,16 +84,13 @@ export default function ChatBot() {
 
   useEffect(() => {
     if ( isNewChat && outputCode.length > 0 ) {
-      
       // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
       setOutputCode([]);
       setTimeout(() => {
         setNewChatOpen(false);
       }, 1000);
     }
-    
   }, [isNewChat]);
-  
   
   useEffect(() => {
     const el = scrollRef.current;
@@ -169,7 +149,7 @@ export default function ChatBot() {
     }
     setInputCode('')
 
-    const url = 'http://localhost:9999/api/v1/chat'
+    const url = 'http://localhost:9999/api/v1/chat';
  
     const payload = {
       "user_id": "minuee",
@@ -334,19 +314,10 @@ export default function ChatBot() {
       direction="column"
       position="relative"
     >
-      <Flex
-        direction="column"
-        mx="auto"
-        w={'100%'}
-        overflowY='scroll'
-        minH="calc(100vh - 100px)"
-      >
+      <Flex direction="column" mx="auto" w={'100%'} overflowY='scroll' minH="calc(100vh - 100px)">
         <Flex
           direction="column"
           w="100%"
-          //maxW={{ base : `${mConstants.desktopMinWidth}px`, md:"97%" }}
-          //maxH={{ base: '75vh', md: '85vh' }}
-          //height={`calc(var(--vh, 1vh) * 100)`}
           maxH="calc(100vh - 200px)" /* 여기가 하단 스크롤 영역 영향 받음 */
           overflowY='auto'
           mx="auto"
@@ -695,9 +666,6 @@ export default function ChatBot() {
                     data={selectedDoctor}
                   />
                 </ModalBody>
-               {/*  <ModalFooter>
-                  <Button onClick={() => setIsOpenDoctorModal(false)}>Close</Button>
-                </ModalFooter> */}
               </ModalContent>
             </Modal>
           )

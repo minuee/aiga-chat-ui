@@ -1,11 +1,6 @@
 import { useState,useEffect } from "react";
-import functions from "../../utils/functions";
-import dynamic from 'next/dynamic';
-import MessageBoxChat from '@/components/MessageBox';
-import { Box,Flex,Stack,useColorModeValue ,Text} from '@chakra-ui/react';
-import { MdAutoAwesome, MdFitbit, MdCall, MdPerson } from 'react-icons/md';
-import Image from 'next/image';
-import Card from '@/components/card/Card'
+import { Box,Flex,useColorModeValue,Text} from '@chakra-ui/react';
+
 type SelectNameProps = {
     data: any;
     onSendButton: (str: string) => void; 
@@ -47,10 +42,8 @@ const SelectName = ({
           )
         })
       }
-      
     </Flex>
   )
-    
 };
   
 export default SelectName;

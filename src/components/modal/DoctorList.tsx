@@ -2,27 +2,23 @@
 import React, { PropsWithChildren } from 'react';
 // chakra imports
 import { 
-  Box,Flex,Text,SkeletonCircle,SkeletonText,Tag,TagLabel, useColorModeValue,Stack,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  Icon,
+  Box,Flex,Text,SkeletonCircle,SkeletonText,Tag,TagLabel, useColorModeValue,Stack,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,Icon,
   Popover,PopoverTrigger,PopoverContent,PopoverHeader,PopoverArrow,PopoverBody,
 } from '@chakra-ui/react';
 import DoctorItems from "@/components/text/DoctorItem";
-import NextImage, { ImageProps } from 'next/legacy/image';
+import NextImage from 'next/legacy/image';
 import functions from '@/utils/functions';
 import { useGeoLocation } from '@/hooks/useGeoLocation';
 import mConstants from '@/utils/constants';
 import DoctorDetail  from '@/components/modal/Doctor';
-import { MdArrowBack,MdInfoOutline } from 'react-icons/md';
+import { MdArrowBack } from 'react-icons/md';
 const geolocationOptions = {
   enableHighAccuracy: true,
   timeout: 1000 * 10,
   maximumAge: 1000 * 3600 * 24,
 }
+
+import { loadingImage } from "@/components/icons/IconImage"
 
 const mockupDoctors = [
   {
@@ -70,7 +66,6 @@ function DoctorListModal(props: DoctorListModalProps) {
   });
   const [doctors, setDoctors] = React.useState<any>([]);
   const [showGradient, setShowGradient] = React.useState(true);
-  const [isOpenModal, setIsOpenModal] = React.useState(false);
   const isDark = useColorModeValue(false, true);
   const { location, error } = useGeoLocation(geolocationOptions)
   const skeletonColor = useColorModeValue('white', 'gray.700');
@@ -157,7 +152,7 @@ function DoctorListModal(props: DoctorListModalProps) {
                   <NextImage
                       width="100"
                       height="100"
-                      src={require("../../../public/img/loading.gif")}
+                      src={loadingImage}
                       alt={'doctor1'}
                   />
                   <Text color="#ffffff">Data Processing!!!</Text>
