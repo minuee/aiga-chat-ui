@@ -1,43 +1,10 @@
 'use client';
 import React from 'react';
 // chakra imports
-import { 
-  Box,
-  Flex,
-  chakra,
-  Button,
-  Step,
-  StepDescription,
-  StepIcon,
-  StepIndicator,
-  StepNumber,
-  StepSeparator,
-  StepStatus,
-  StepTitle,
-  Stepper,
-  useSteps,
-  FormControl,
-  Checkbox, 
-  useDisclosure,
-  InputGroup,
-  InputLeftElement,
-  Input,
-  LinkBox,
-  LinkOverlay,
-  Heading,
-  Text,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
-  Spinner,
-} from '@chakra-ui/react';
+import { Box,Flex,chakra,Button,Step,StepDescription,StepIcon,StepIndicator,StepNumber,StepSeparator,StepStatus,StepTitle,Stepper,useSteps,FormControl,Checkbox, useDisclosure,InputGroup,
+  InputLeftElement,Input,LinkBox,LinkOverlay,Heading,Text,AlertDialog,AlertDialogBody,AlertDialogFooter,AlertDialogHeader,AlertDialogContent,AlertDialogOverlay,Spinner } from '@chakra-ui/react';
 import { FaUserAlt, FaLock } from "react-icons/fa";
 const CFaUserAlt = chakra(FaUserAlt);
-const CFaLock = chakra(FaLock);
-import functions from '@/utils/functions';
 
 export interface JoinScreenProps {
   socialType : string;

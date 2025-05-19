@@ -6,6 +6,7 @@ import Card from '@/components/card/Card';
 import TypeAnimation  from'@/components/text/TypeAnimation';
 
 const MessageBox = React.memo(function MessageBox({ output }: { output: any }) {
+  
   const textColor = useColorModeValue('navy.700', 'white');
   const previousOutputRef = React.useRef<string | null>(null); // 이전 output 값을 저장
 

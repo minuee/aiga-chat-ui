@@ -14,7 +14,6 @@ import MainBgImage2 from "@/assets/images/etc/bg_2.png";
 import MiniMiddle12F from "@/assets/images/etc/mini_middle_12f.png";
 import MiniSmall3F from "@/assets/images/etc/mini_small_3f.png";
 
-
 export default function MainPage() {
 
   const [activeIndex, setActiveIndex] = React.useState(0);
@@ -153,12 +152,12 @@ export default function MainPage() {
                       style={{width:'100%', height:'100%',borderRadius:'10px',objectFit: 'cover',opacity: activeIndex == index ? 1 :  0.4}}
                     />  
                     <Box sx={styles.miniTextWrapper}>
-                        <Text variant="sourceHanSans" sx={{color:'#fff',fontSize:'18px'}}>{item.name}</Text>
+                      <Text variant="sourceHanSans" sx={{color:'#fff',fontSize:'18px'}}>{item.name}</Text>
                     </Box>
                     {activeIndex == index && (
-                        <Box sx={styles.progressBar}>
-                            <Progress hasStripe height='2px' width="100%" value={progress} />
-                        </Box>
+                      <Box sx={styles.progressBar}>
+                        <Progress hasStripe height='2px' width="100%" value={progress} />
+                      </Box>
                     )}
                   </Box>
                 )
@@ -174,8 +173,6 @@ export default function MainPage() {
     </Box>
   )
 }
-
-
 
 const styles = {
   wrapper : {

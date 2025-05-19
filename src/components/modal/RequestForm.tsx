@@ -23,6 +23,7 @@ function ReviewModal(props: ReviewModalProps) {
   const skeletonColor = useColorModeValue('white', 'gray.700');
   const textColor = useColorModeValue('blue', 'yellow');
   const textColor2 = useColorModeValue('gray.500', 'white');
+  
   React.useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);

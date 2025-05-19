@@ -6,15 +6,15 @@ type SliderProps = {
 };
   
 const labelStylesStart = {
-    mt: '2',
-    ml: '0',
-    fontSize: 'sm',
-  }
-  const labelStylesEnd = {
-    mt: '2',
-    ml: '-2.5',
-    fontSize: 'sm',
-  }
+  mt: '2',
+  ml: '0',
+  fontSize: 'sm',
+}
+const labelStylesEnd = {
+  mt: '2',
+  ml: '-2.5',
+  fontSize: 'sm',
+}
 
 const SliderScreen = ({ data, setInputs }:SliderProps) => {
     const [showTooltip, setShowTooltip] = React.useState(false);
@@ -52,13 +52,13 @@ const SliderScreen = ({ data, setInputs }:SliderProps) => {
           >
             {data}
           </SliderMark>
-          <SliderTrack>
-            <SliderFilledTrack />
-          </SliderTrack>
-          <SliderThumb bg={'blue.500'} />
-        </Slider>
-      </>
-    )
+        <SliderTrack>
+          <SliderFilledTrack />
+        </SliderTrack>
+        <SliderThumb bg={'blue.500'} />
+      </Slider>
+    </>
+  )
 };
 
 export default React.memo(SliderScreen);

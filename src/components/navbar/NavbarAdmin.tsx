@@ -1,19 +1,7 @@
 'use client';
 /* eslint-disable */
 // Chakra Imports
-import { 
-  Box,
-  Flex,
-  Button,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
-  useDisclosure,
-  useColorModeValue 
-} from '@chakra-ui/react';
+import { Box,Flex,useColorModeValue } from '@chakra-ui/react';
 import { useState, useEffect,useRef } from 'react';
 import AdminNavbarLinks from './NavbarLinksAdmin';
 import { isWindowAvailable } from '@/utils/navigation';
@@ -29,7 +17,6 @@ export default function AdminNavbar(props: {
   logoText: string;
   onOpen: (...args: any[]) => any;
 }) {
-  const { isOpen, onOpen, onClose } = useDisclosure()
   const [scrolled, setScrolled] = useState(false);
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
   const confirmRef = useRef();
@@ -50,13 +37,11 @@ export default function AdminNavbar(props: {
   let navbarFilter = 'none';
   let navbarBackdrop = 'blur(20px)';
   let navbarShadow = 'none';
-  let navbarBg = useColorModeValue(
-    'rgba(244, 247, 254, 0.2)',
-    'rgba(11,20,55,0.5)',
-  );
+  let navbarBg = useColorModeValue('rgba(244, 247, 254, 0.2)','rgba(11,20,55,0.5)');
   let navbarBorder = 'transparent';
   let secondaryMargin = '0px';
   let gap = '0px';
+
   const changeNavbar = () => {
     if (isWindowAvailable() && window.scrollY > 1) {
       setScrolled(true);
@@ -64,7 +49,6 @@ export default function AdminNavbar(props: {
       setScrolled(false);
     }
   };
-
   
   return (
     <Box
@@ -112,7 +96,7 @@ export default function AdminNavbar(props: {
         alignItems={{ xl: 'center' }}
         mb={gap}
       >
-        <Box mb={{ base: '8px', md: '0px' }} onClick={onOpen}>
+        <Box mb={{ base: '8px', md: '0px' }} >
           {/* <Link
             color={mainText}
             href="#"
@@ -143,33 +127,6 @@ export default function AdminNavbar(props: {
           <AdminNavbarLinks secondary={props.secondary} />
         </Box>
       </Flex>
-      <AlertDialog
-        isOpen={isOpen}
-        leastDestructiveRef={confirmRef as any}
-        onClose={onClose}
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent backgroundColor='white'>
-            <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-              AIGA
-            </AlertDialogHeader>
-
-            <AlertDialogBody>
-              새로운 대화로 이동하시겠습니까?
-              이전 데이터는 히스토리를 통해 열람하실 수 있습니다.
-            </AlertDialogBody>
-            
-            <AlertDialogFooter>
-              <Button ref={confirmRef as any} onClick={onClose}>
-                취소
-              </Button>
-              <Button colorScheme='red' onClick={() => {setNewChatOpen(true);onClose()}} ml={3}>
-                열기
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
     </Box>
   );
 }

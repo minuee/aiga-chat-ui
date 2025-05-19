@@ -18,12 +18,8 @@ export interface SidebarProps extends PropsWithChildren {
 
 function Sidebar(props: SidebarProps) {
   const { routes, setApiKey } = props;
-  // this is for the rest of the collapses
   let variantChange = '0.2s linear';
-  let shadow = useColorModeValue(
-    '14px 17px 40px 4px rgba(112, 144, 176, 0.08)',
-    'unset',
-  );
+  let shadow = useColorModeValue( '14px 17px 40px 4px rgba(112, 144, 176, 0.08)','unset' );
   // Chakra Color Mode
   let sidebarBg = useColorModeValue('white', 'navy.800');
   let sidebarRadius = '14px';
@@ -36,12 +32,8 @@ function Sidebar(props: SidebarProps) {
         transition={variantChange}
         w="100%"
         maxW={`${mConstants.modalMaxWidth-10}px`}
-        ms={{
-          sm: '16px',
-        }}
-        my={{
-          sm: '16px',
-        }}
+        ms={{ sm: '16px' }}
+        my={{ sm: '16px' }}
         h="calc(100vh - 32px)"
         m={sidebarMargins}
         borderRadius={sidebarRadius}

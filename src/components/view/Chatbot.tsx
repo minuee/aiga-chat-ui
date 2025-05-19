@@ -5,10 +5,9 @@ import customfetch from '@/utils/customfetch';
 import functions from '@/utils/functions';
 import MessageBoxChat from '@/components/MessageBox';
 import { ChatBody, OpenAIModel } from '@/types/types';
-
 import { 
-    Box,Button,Flex,Icon,Textarea,Input,Text,useColorModeValue,Drawer,DrawerOverlay,DrawerContent,DrawerBody,DrawerCloseButton,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,
-    ModalFooter,ModalCloseButton,useToast
+    Box,Button,Flex,Icon,Textarea,Text,useColorModeValue,Drawer,DrawerOverlay,DrawerContent,DrawerBody,DrawerCloseButton,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,
+    ModalCloseButton,useToast
 } from '@chakra-ui/react';
 import { useEffect, useState,useRef } from 'react';
 import Image from "next/image";
@@ -60,10 +59,7 @@ export default function ChatBot() {
   const inputColor = useColorModeValue('navy.700', 'white');
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
   const iconColor = useColorModeValue('brand.500', 'white');
-  const bgIcon = useColorModeValue(
-    'linear-gradient(180deg, #FBFBFF 0%, #CACAFF 100%)',
-    'whiteAlpha.200',
-  );
+  const bgIcon = useColorModeValue( 'linear-gradient(180deg, #FBFBFF 0%, #CACAFF 100%)','whiteAlpha.200' );
   const brandColor = useColorModeValue('brand.500', 'white');
   const themeColor = useColorModeValue('white', 'navy.900');
   const gray = useColorModeValue('gray.500', 'white');
@@ -336,7 +332,6 @@ export default function ChatBot() {
               onSendButton={onSendTypeButton}
             />
           </Box>
-          
           { 
             outputCode.map((element:any,index:number) => {
               if ( element.ismode == 'me') {
@@ -424,12 +419,7 @@ export default function ChatBot() {
                         minH="40px"
                         minW="40px"
                       >
-                        <Icon
-                          as={MdFitbit}
-                          width="20px"
-                          height="20px"
-                          color="white"
-                        />
+                        <Icon as={MdFitbit} width="20px" height="20px" color="white" />
                       </Flex>
                       <MessageBoxChat output={"잘못된 선택입니다.."} />
                     </Flex>
@@ -448,12 +438,7 @@ export default function ChatBot() {
                       minH="40px"
                       minW="40px"
                     >
-                      <Icon
-                        as={MdFitbit}
-                        width="20px"
-                        height="20px"
-                        color="white"
-                      />
+                      <Icon as={MdFitbit} width="20px" height="20px" color="white" />
                     </Flex>
                     <MessageBoxChat output={element.msg} />
                   </Flex>
@@ -585,11 +570,7 @@ export default function ChatBot() {
                 isReceiving
                 ?
                 <Box onClick={() => onHandleStopRequest()}>
-                  <Image 
-                    src={LoadingBar}  
-                    alt="LoadingBar" 
-                    style={{width:'30px', height:'30px'}}
-                  /> 
+                  <Image src={LoadingBar} alt="LoadingBar" style={{width:'30px', height:'30px'}} /> 
                 </Box>
                 
                 :
@@ -611,7 +592,6 @@ export default function ChatBot() {
                 >
                   <Text>전송</Text>
                 </Box>
-                
               }
             </Button>
           </Box>
@@ -648,7 +628,6 @@ export default function ChatBot() {
             </Box>
           )
         }
-        
         {
           isOpenDoctorModal && (
             <Modal

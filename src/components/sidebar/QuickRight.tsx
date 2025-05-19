@@ -49,7 +49,6 @@ const QuickRight : React.FC = () => {
                 Page이동
               </Text>
             </Flex>
-          
           </Link>
         </Box>
         <Box sx={styles.middleWrapper} >
@@ -90,8 +89,6 @@ const QuickRight : React.FC = () => {
             />
           )
         }
-       
-
       </Box>
   );
 }

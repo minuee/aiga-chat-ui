@@ -24,12 +24,7 @@ const DoctorList = ({ data, onSendDoctorButton }:DoctorListProps) => {
                     {
                         functions.isEmpty(data?.profileimgurl) 
                         ?
-                            <NextImage
-                                width="200"
-                                height="200"
-                                src={sampleDoctor2}
-                                alt={'doctor1'}
-                            />
+                        <NextImage width="200" height="200" src={sampleDoctor2} alt={'doctor1'} />
                         :
                         <Image src={data?.profileimgurl.trimEnd()} alt='profile' width={200} height={200} />
                     }

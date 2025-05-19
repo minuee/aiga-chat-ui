@@ -16,10 +16,8 @@ const PopWindowScreen: React.FC<PopWindowProps> = ({
     const handleClick = () => {
       const dualScreenLeft = window.screenLeft ?? window.screenX;
       const dualScreenTop = window.screenTop ?? window.screenY;
-  
       const width = window.innerWidth ?? document.documentElement.clientWidth ?? screen.width;
       const height = window.innerHeight ?? document.documentElement.clientHeight ?? screen.height;
-  
       const left = width / 2 - window_width / 2 + dualScreenLeft;
       const top = height / 2 - window_height / 2 + dualScreenTop;
   

@@ -55,15 +55,9 @@ function SidebarContent(props: SidebarContent) {
   const textColor = useColorModeValue('navy.700', 'white');
   const borderColor = useColorModeValue('gray.200', 'whiteAlpha.300');
   const bgColor = useColorModeValue('white', 'navy.700');
-  const shadow = useColorModeValue(
-    '14px 17px 40px 4px rgba(112, 144, 176, 0.18)',
-    '14px 17px 40px 4px rgba(12, 44, 55, 0.18)',
-  );
+  const shadow = useColorModeValue( '14px 17px 40px 4px rgba(112, 144, 176, 0.18)','14px 17px 40px 4px rgba(12, 44, 55, 0.18)' );
   const iconColor = useColorModeValue('navy.700', 'white');
-  const shadowPillBar = useColorModeValue(
-    '4px 17px 40px 4px rgba(112, 144, 176, 0.08)',
-    'none',
-  );
+  const shadowPillBar = useColorModeValue( '4px 17px 40px 4px rgba(112, 144, 176, 0.08)','none' );
   const skeletonColor = useColorModeValue('white', 'navy.700');
   const textColor2 = useColorModeValue('gray.500', 'white');
   const confirmRef = useRef();

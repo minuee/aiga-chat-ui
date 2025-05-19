@@ -15,6 +15,7 @@ export const renderTrack = ({ style, ...props }: any) => {
   };
   return <div style={{ ...style, ...trackStyle }} {...props} />;
 };
+
 export const renderThumb = ({ style, ...props }: any) => {
   const thumbStyle = {
     borderRadius: 15,
@@ -22,6 +23,7 @@ export const renderThumb = ({ style, ...props }: any) => {
   };
   return <div style={{ ...style, ...thumbStyle }} {...props} />;
 };
+
 export const renderView = ({ style, ...props }: any) => {
   const viewStyle = {
     marginBottom: -22,

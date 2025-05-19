@@ -1,11 +1,4 @@
-import {
-  Button,
-  Flex,
-  Link,
-  Img,
-  Text,
-  useColorModeValue,
-} from '@chakra-ui/react';
+import { Button,Flex,Link,Img,Text,useColorModeValue } from '@chakra-ui/react';
 import logoWhite from '../../../../public/img/layout/logoWhite.png';
 
 export default function SidebarDocs() {
@@ -13,14 +6,7 @@ export default function SidebarDocs() {
   const borderColor = useColorModeValue('white', 'navy.800');
 
   return (
-    <Flex
-      justify="center"
-      direction="column"
-      align="center"
-      bg={bgColor}
-      borderRadius="16px"
-      position="relative"
-    >
+    <Flex justify="center" direction="column" align="center" bg={bgColor} borderRadius="16px" position="relative">
       <Flex
         border="5px solid"
         borderColor={borderColor}
@@ -38,14 +24,7 @@ export default function SidebarDocs() {
       >
         <Img src={logoWhite.src} w="40px" h="40px" />
       </Flex>
-      <Flex
-        direction="column"
-        mb="12px"
-        align="center"
-        justify="center"
-        px="15px"
-        pt="55px"
-      >
+      <Flex direction="column" mb="12px" align="center" justify="center" px="15px" pt="55px">
         <Text
           fontSize={{ base: 'lg', xl: '18px' }}
           color="white"

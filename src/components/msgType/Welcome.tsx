@@ -26,12 +26,7 @@ const Welcome = ({
           minH="40px"
           minW="40px"
         >
-          <Icon
-            as={MdFitbit}
-            width="20px"
-            height="20px"
-            color="white"
-          />
+          <Icon as={MdFitbit} width="20px" height="20px" color="white" />
         </Flex>
         <MessageBoxChat output={msg} />
       </Flex>
@@ -50,7 +45,6 @@ const Welcome = ({
       </Flex>
     </Flex>
   )
-    
 };
   
 export default Welcome;

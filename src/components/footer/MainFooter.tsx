@@ -1,33 +1,19 @@
 'use client';
 /*eslint-disable*/
 
-import {
-  Box,
-  Flex,
-  List,
-  ListItem,
-  Text,
-  useColorModeValue,
-} from '@chakra-ui/react';
+import { Box,Flex,List,ListItem,Text,useColorModeValue } from '@chakra-ui/react';
 import Link from '@/components/link/Link';
 
 export default function Footer() {
+
   const textColor = useColorModeValue('gray.500', 'black');
+
   return (
     <Flex
       zIndex="3"
-      flexDirection={{
-        base: 'column',
-        sm :'row'
-      }}
-      alignItems={{
-        base: 'center',
-        sm : 'center'
-      }}
-      justifyContent={{
-        base: 'space-between',
-        sm :'center'
-      }}
+      flexDirection={{ base: 'column', sm :'row' }}
+      alignItems={{ base: 'center', sm : 'center' }}
+      justifyContent={{ base: 'space-between', sm :'center' }}
       //px={{ base: '30px', md: '50px' }}
       //pb="10px"
       minHeight={"100px"}
@@ -36,10 +22,7 @@ export default function Footer() {
         <Text
           color={textColor}
           fontSize={{ base: 'xs', md: 'sm' }}
-          textAlign={{
-            base: 'center',
-            xl: 'start',
-          }}
+          textAlign={{ base: 'center', xl: 'start' }}
           fontWeight="500"
           mb={{ base: '10px', xl: '0px' }}
         >
@@ -59,10 +42,7 @@ export default function Footer() {
       >
       <List display="flex">
         <ListItem
-          me={{
-            base: '10px',
-            md: '44px',
-          }}
+          me={{base: '10px',md: '44px'}}
         >
           <Link
             fontWeight="500"
@@ -75,10 +55,7 @@ export default function Footer() {
           </Link>
         </ListItem>
         <ListItem
-          me={{
-            base: '10px',
-            md: '44px',
-          }}
+          me={{base: '10px',md: '44px'}}
         >
           <Link
             fontWeight="500"

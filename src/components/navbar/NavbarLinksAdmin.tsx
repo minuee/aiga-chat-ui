@@ -29,10 +29,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
   let menuBg = useColorModeValue('white', 'navy.800');
   const textColor = useColorModeValue('navy.700', 'white');
   const borderColor = useColorModeValue('#E6ECFA', 'rgba(135, 140, 189, 0.3)');
-  const shadow = useColorModeValue(
-    '14px 17px 40px 4px rgba(112, 144, 176, 0.18)',
-    '0px 41px 75px #081132',
-  );
+  const shadow = useColorModeValue('14px 17px 40px 4px rgba(112, 144, 176, 0.18)', '0px 41px 75px #081132');
 
   const sidebarBackgroundColor = useColorModeValue('white', 'gray.700');
   const reviewBtnRef = React.useRef<HTMLButtonElement>(null);
@@ -140,6 +137,9 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
       <SidebarResponsive routes={routes} />
       
       <Button
+        value={"dark-mode"}
+        aria-label=''
+        aria-labelledby='nonexistent'
         variant="no-hover"
         bg="transparent"
         p="0px"
@@ -205,21 +205,8 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
               px="14px"
               onClick={()=> setIsOpenSetupModal(!isOpenSetupModal)}
             >
-              
               <Text fontWeight="500" fontSize="sm">
                 Profile Settings
-              </Text>
-  
-            </MenuItem>
-            <MenuItem
-              _hover={{ bg: 'none' }}
-              _focus={{ bg: 'none' }}
-              color={textColor}
-              borderRadius="8px"
-              px="14px"
-            >
-              <Text fontWeight="500" fontSize="sm">
-                History
               </Text>
             </MenuItem>
             {/* <MenuItem
@@ -314,7 +301,6 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
           </Modal>
         )
       }
-      
     </Flex>
   );
 }

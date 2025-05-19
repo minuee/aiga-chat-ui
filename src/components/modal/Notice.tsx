@@ -106,5 +106,4 @@ function NoticerModal(props: NoticerModalProps) {
   );
 }
 
-
 export default NoticerModal;

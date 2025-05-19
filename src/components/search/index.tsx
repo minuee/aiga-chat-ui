@@ -1,12 +1,8 @@
 'use client';
-import {
-  IconButton,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  useColorModeValue,
-} from '@chakra-ui/react';
+
+import { IconButton,Input,InputGroup,InputLeftElement,useColorModeValue } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
+
 export function SearchBar(props: {
   variant?: string;
   children?: JSX.Element;
@@ -20,6 +16,7 @@ export function SearchBar(props: {
   const searchIconColor = useColorModeValue('gray.700', 'white');
   const searchColor = useColorModeValue('gray.700', 'white');
   const inputBg = useColorModeValue('transparent', 'navy.800');
+  
   return (
     <InputGroup
       zIndex="0"

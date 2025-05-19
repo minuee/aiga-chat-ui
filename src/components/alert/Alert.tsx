@@ -12,7 +12,6 @@ type AlertProps = {
     isCentered?: boolean;
 };
   
-
 const Alert = ({ AppName, bodyContent, isOpen, onClose, onConfirm, closeText, confirmText, isCentered = false }:AlertProps) => {
 
     const confirmRef = React.useRef();
@@ -26,23 +25,23 @@ const Alert = ({ AppName, bodyContent, isOpen, onClose, onConfirm, closeText, co
             isCentered={isCentered}
         >
             <AlertDialogOverlay>
-            <AlertDialogContent backgroundColor={bgColor}>
-                <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                    {AppName}
-                </AlertDialogHeader>
+                <AlertDialogContent backgroundColor={bgColor}>
+                    <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                        {AppName}
+                    </AlertDialogHeader>
 
-                <AlertDialogBody>
-                    {bodyContent}
-                </AlertDialogBody>
-                
-                <AlertDialogFooter>
-                <Button ref={confirmRef as any} onClick={() => onClose(true)}>
-                    {closeText}
-                </Button>
-                <Button colorScheme='red' onClick={() => onConfirm()} ml={3}>
-                    {confirmText}
-                </Button>
-                </AlertDialogFooter>
+                    <AlertDialogBody>
+                        {bodyContent}
+                    </AlertDialogBody>
+                    
+                    <AlertDialogFooter>
+                    <Button ref={confirmRef as any} onClick={() => onClose(true)}>
+                        {closeText}
+                    </Button>
+                    <Button colorScheme='red' onClick={() => onConfirm()} ml={3}>
+                        {confirmText}
+                    </Button>
+                    </AlertDialogFooter>
             </AlertDialogContent>
             </AlertDialogOverlay>
         </AlertDialog>

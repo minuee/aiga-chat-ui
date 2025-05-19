@@ -11,14 +11,8 @@ type DepWindowProps = {
     closeWindowPortal: (isOpen: boolean) => void;
 };
 
-const DepWindow = ({
-    windowSrc = "",
-    title,
-    width = 600,
-    height = 600,
-    children,
-    closeWindowPortal,
-  }: DepWindowProps) => {
+const DepWindow = ({ windowSrc = "",title,width = 600,height = 600,children,closeWindowPortal }: DepWindowProps) => {
+  
     const externalWindow = useRef<Window | null>(null);
     const containerEl = useRef(document.createElement("div"));
   

@@ -1,10 +1,7 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { 
-    Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Divider,FormControl,FormLabel,Input,
-    useToast,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,useColorModeValue
-} from '@chakra-ui/react';
+import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Divider,FormControl,FormLabel,Input,useToast,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,useColorModeValue } from '@chakra-ui/react';
 import mConstants from '@/utils/constants';
 import RequestForm from '@/components/modal/RequestForm';
 import EntireForm from '@/components/modal/EntireForm';
@@ -83,7 +80,6 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     */
     setLoginUserInfo(false,'',true,'',"Guest");
     setIsOpenLogoutModal(false)
-
   }
 
   if ( isLoading ) {
@@ -223,6 +219,5 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     )
   }
 }
-
 
 export default ProfileSettingModal;

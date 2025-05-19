@@ -1,11 +1,10 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Box,Flex,Drawer,DrawerBody,Text,useColorModeValue,DrawerOverlay,useDisclosure,DrawerContent,DrawerCloseButton } from '@chakra-ui/react';
+import { Box,Drawer,DrawerBody,useColorModeValue,DrawerOverlay,DrawerContent,DrawerCloseButton } from '@chakra-ui/react';
 
 import { renderThumb,renderTrack,renderView } from '@/components/scrollbar/Scrollbar';
 import { Scrollbars } from 'react-custom-scrollbars-2';
-
 import HeadTitle from './Title';
 import LoginScreen from '@/components/signup/LoginScreen';
 import JoinScreen from '@/components/signup/JoinScreen';

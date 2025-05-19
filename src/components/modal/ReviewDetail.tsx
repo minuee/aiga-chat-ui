@@ -60,7 +60,6 @@ function ReviewModal(props: ReviewModalProps) {
             <Text fontSize={'1.5em'}>솔직한 리뷰를 남겨주세요</Text>
           </Box>
         </Flex>
-     
         <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} padding={'0 10px'} mt={5}>
           <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}  width={'98%'} minHeight={'80px'} mb={5}>
             <Box flex={1} display={'flex'} justifyContent={'center'} alignItems={'center'}>
@@ -88,7 +87,6 @@ function ReviewModal(props: ReviewModalProps) {
               />
             </Box>
           </Box>
-
           <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}  width={'98%'} minHeight={'80px'} mb={5}>
             <Box flex={1} display={'flex'} justifyContent={'center'} alignItems={'center'}>
               <Icon as={MdDiversity1} color={'green.600'} fontSize={'30px'} />
@@ -102,7 +100,6 @@ function ReviewModal(props: ReviewModalProps) {
               />
             </Box>
           </Box>
-
           <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}  width={'98%'} minHeight={'80px'} mb={5}>
             <Box flex={1} display={'flex'} justifyContent={'center'} alignItems={'center'}>
               <Icon as={MdDiversity1} color={'green.600'} fontSize={'30px'} />
@@ -169,6 +166,5 @@ function ReviewModal(props: ReviewModalProps) {
     )
   }
 }
-
 
 export default ReviewModal;

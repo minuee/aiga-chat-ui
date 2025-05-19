@@ -45,7 +45,6 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle }:HistoryItemP
                 isClosable: true,
             })
         }, 1000);
-      
     }
 
     return (
@@ -77,7 +76,6 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle }:HistoryItemP
                     {content}
                 </Text>
             }
-            
             
             { 
                 !editMode && (

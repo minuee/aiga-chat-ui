@@ -30,10 +30,7 @@ function ChatScreenModal(props: ChatModalProps) {
   let menuColor = useColorModeValue('gray.400', 'white');
   // this is for the rest of the collapses
   let variantChange = '0.2s linear';
-  let shadow = useColorModeValue(
-    '14px 17px 40px 4px rgba(112, 144, 176, 0.08)',
-    'unset',
-  );
+  let shadow = useColorModeValue('14px 17px 40px 4px rgba(112, 144, 176, 0.08)','unset');
   // Chakra Color Mode
   let sidebarBg = useColorModeValue('white', 'navy.800');
   let sidebarRadius = '14px';

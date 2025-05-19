@@ -27,7 +27,7 @@ const SelectDoctor = ({
     if (flexRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = flexRef.current;
       // 스크롤이 끝에 도달했는지 확인
-      if (( scrollLeft + clientWidth +100 ) >= scrollWidth) {
+      if ( ( scrollLeft + clientWidth +100 ) >= scrollWidth ) {
         setShowGradient(false);
       } else {
         setShowGradient(true);
@@ -80,58 +80,26 @@ const SelectDoctor = ({
         ref={flexRef} 
       >
         <Box mr={5} boxSize={200}  flexShrink="0" onClick={() => onSendButton("data",1)} cursor={'pointer'}>
-          <NextImage
-            width="200"
-            height="200"
-            src={sampleDoctor1}
-            alt={'doctor1'}
-          />
+          <NextImage width="200" height="200" src={sampleDoctor1} alt={'doctor1'} />
         </Box>
         <Box mr={5} boxSize={200}  flexShrink="0" onClick={() => onSendButton("data",2)} cursor={'pointer'}>
-          <NextImage
-            width="200"
-            height="200"
-            src={sampleDoctor2}
-            alt={'doctor1'}
-          />
+          <NextImage width="200" height="200" src={sampleDoctor2} alt={'doctor1'} />
         </Box>
         <Box mr={5} boxSize={200} flexShrink="0" onClick={() => onSendButton("data",1)} cursor={'pointer'}>
-          <NextImage
-            width="200"
-            height="200"
-            src={sampleDoctor2}
-            alt={'doctor1'}
-          />
+          <NextImage width="200" height="200" src={sampleDoctor2} alt={'doctor1'} />
         </Box>
         <Box mr={5} boxSize={200} flexShrink="0" onClick={() => onSendButton('data',2)} cursor={'pointer'}>
-          <NextImage
-            width="200"
-            height="200"
-            src={sampleDoctor2}
-            alt={'doctor1'}
-          />
+          <NextImage width="200" height="200" src={sampleDoctor2} alt={'doctor1'} />
         </Box>
         <Box mr={5} boxSize={200} flexShrink="0" onClick={() => onSendButton('data', 1)} cursor={'pointer'}>
-          <NextImage
-            width="200"
-            height="200"
-            src={sampleDoctor2}
-            alt={'doctor1'}
-          />
+          <NextImage width="200" height="200" src={sampleDoctor2} alt={'doctor1'}/>
         </Box>
         <Box  boxSize={200} flexShrink="0" onClick={() => onSendButton('data', 2)} cursor={'pointer'}>
-          <NextImage
-            width="200"
-            height="200"
-            src={sampleDoctor3}
-            alt={'doctor1'}
-          />
+          <NextImage width="200" height="200" src={sampleDoctor3} alt={'doctor1'} />
         </Box>
       </Flex>
       <Flex pl={2}>
-        <Button size={'sm'} colorScheme="blue" onClick={() => setIsOpenModal(true)}>
-          전체보기
-        </Button>
+        <Button size={'sm'} colorScheme="blue" onClick={() => setIsOpenModal(true)}>전체보기</Button>
       </Flex>
       {
           isOpenModal && (

@@ -28,7 +28,6 @@ export default function Index() {
 
   return (
     <PageLayout title="AIGA Chatbot">
-      
       <Box display={'flex'} justifyContent={'center'}>
         <Box
           pt={{ base: '60px', md: '100px' }}
@@ -61,15 +60,14 @@ export default function Index() {
           >
             <SubPage />
           </Box>
-          <Box 
+          {/* <Box 
             display={{base : 'none', lg:'block'}}
             width={'100%'}
           >
             <Footer />
-          </Box>
-          </Box>
+          </Box> */}
         </Box>
+      </Box>
     </PageLayout>
   )
 }
-

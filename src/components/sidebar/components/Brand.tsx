@@ -1,8 +1,6 @@
 'use client';
 // Chakra imports
 import { Flex, useColorModeValue,Text } from '@chakra-ui/react';
-
-import { HorizonLogo,AigaLog } from '@/components/icons/Icons';
 import { HSeparator } from '@/components/separator/Separator';
 import mConstants from '@/utils/constants';
 

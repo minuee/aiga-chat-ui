@@ -9,7 +9,6 @@ export interface ReviewModalProps extends PropsWithChildren {
   setClose : () => void;
   onHandleEntire : (data:any) => void;
 }
-const limintView = 3
 
 function ReviewModal(props: ReviewModalProps) {
 

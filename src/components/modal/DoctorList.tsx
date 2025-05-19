@@ -81,7 +81,6 @@ function DoctorListModal(props: DoctorListModalProps) {
     setTimeout(() => {
       setIsLoading(false);
     }, 1000);
-
   }, [isOpen]);
 
   React.useEffect(() => {
@@ -96,7 +95,6 @@ function DoctorListModal(props: DoctorListModalProps) {
     }catch(e){
       console.log("location eror",e)
     }
-
   }, [location]);
 
   const makeBgColor = (sortType:string = 'all') => {

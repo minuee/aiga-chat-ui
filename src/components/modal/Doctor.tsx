@@ -19,8 +19,10 @@ import RequestDoctor from '@/components/modal/RequestDoctor';
 export interface DoctorModalProps extends PropsWithChildren {
   data : any;
 }
-const limintView = 3
+
+const limintView = 3;
 function DoctorModal(props: DoctorModalProps) {
+
   const { data } = props;
   const [isLoading, setIsLoading] = React.useState(true);
   const [isOpenReview, setIsOpenReview] = React.useState(false);
@@ -122,7 +124,6 @@ function DoctorModal(props: DoctorModalProps) {
           </Box>
         </Flex>
 
-
         <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} padding={'0 10px'} mt={5}>
           <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
             <Text fontWeight={'bold'} color={'green.600'}>AI 소셜리뷰</Text>
@@ -147,7 +148,6 @@ function DoctorModal(props: DoctorModalProps) {
               </Popover>
             </Box>
           </Box>
-          
           <Divider orientation='horizontal' my={2}/>
           <SimpleGrid spacing={3} templateColumns='repeat(2, 1fr)'>
             <Card>
@@ -157,7 +157,6 @@ function DoctorModal(props: DoctorModalProps) {
               <CardBody>
                 <Text>친절•배려</Text>
               </CardBody>
-              
             </Card>
             <Card>
               <CardHeader>
@@ -166,7 +165,6 @@ function DoctorModal(props: DoctorModalProps) {
               <CardBody>
                 <Text>치료 만족도</Text>
               </CardBody>
-            
             </Card>
             <Card>
               <CardHeader>
@@ -175,7 +173,6 @@ function DoctorModal(props: DoctorModalProps) {
               <CardBody>
                 <Text>쉽고 명쾌한 설명</Text>
               </CardBody>
-            
             </Card>
             <Card>
               <CardHeader>
@@ -184,7 +181,6 @@ function DoctorModal(props: DoctorModalProps) {
               <CardBody>
                 <Text>추천 여부</Text>
               </CardBody>
-              
             </Card>
           </SimpleGrid>
         </Flex>
@@ -343,7 +339,7 @@ function DoctorModal(props: DoctorModalProps) {
                     setClose={() => setIsOpenRequestModal(false)}
                     onHandleRegistReview={(data:any) => onHandleRequestDoctor(data)}
                     doctorId={'1'}
-                   />
+                  />
                 </ModalBody>
               </ModalContent>
             </Modal>

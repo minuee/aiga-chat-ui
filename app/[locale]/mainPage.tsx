@@ -15,10 +15,8 @@ import { SessionProvider } from "next-auth/react";
 function RootLayout({ children }: { children: ReactNode }) {
   
   const pathname = usePathname();
-  
   const { isOpen, onOpen, onClose } = useDisclosure();
   
-
   return (
       <>
         <AppWrappers>
@@ -87,6 +85,5 @@ function RootLayout({ children }: { children: ReactNode }) {
       </>
   );
 }
-
 
 export default RootLayout;
