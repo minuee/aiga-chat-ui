@@ -32,13 +32,13 @@ const Welcome = ({
       </Flex>
       <Flex pl="40px" pt="10px">
         <Stack direction='row' spacing={4}>
-          <Button rightIcon={<MdPerson />} colorScheme='teal' variant='outline' onClick={() => onSendButton('본인')}>
+          <Button rightIcon={<MdPerson />} colorScheme='teal' variant='outline' onClick={() => onSendButton('본인')} id="button_type_self">
             본인
           </Button>
-          <Button rightIcon={<MdPerson />} colorScheme='teal' variant='outline' onClick={() => onSendButton('가족')}>
+          <Button rightIcon={<MdPerson />} colorScheme='teal' variant='outline' onClick={() => onSendButton('가족')} id="button_type_family">
             가족
           </Button>
-          <Button rightIcon={<MdPerson />} colorScheme='teal' variant='outline' onClick={() => onSendButton('아이')}>
+          <Button rightIcon={<MdPerson />} colorScheme='teal' variant='outline' onClick={() => onSendButton('아이')} id="button_type_child">
             아이
           </Button>
         </Stack>

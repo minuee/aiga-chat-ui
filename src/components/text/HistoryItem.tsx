@@ -61,12 +61,13 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle }:HistoryItemP
                         value={inputs.content}
                         onChange={(e) => setInputs({...inputs, content: e.target.value})}
                         color={textColor}
+                        id="input_title"
                     />
                     <Flex flexDirection={'row'} justifyContent={'flex-end'} gap={2} mt={2}>
-                        <Button size='sm' variant={'solid'} colorScheme='blue' onClick={() => {onHandleUpdateTitle(inputs);setEditMode(false)}}>
+                        <Button size='sm' variant={'solid'} colorScheme='blue' onClick={() => {onHandleUpdateTitle(inputs);setEditMode(false)}} id="button_save">
                             저장
                         </Button>
-                        <Button size='sm' variant={'solid'} colorScheme='red' onClick={() => setEditMode(false)}>
+                        <Button size='sm' variant={'solid'} colorScheme='red' onClick={() => setEditMode(false)} id="button_cancel">
                             취소
                         </Button>
                     </Flex>
@@ -89,13 +90,13 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle }:HistoryItemP
                                 <PopoverArrow />
                                 <PopoverBody>
                                     <Flex flexDirection={'column'} alignItems={'flex-start'} gap={2}>
-                                        <Button leftIcon={<Icon as={MdOutlineEdit} />} size='sm' onClick={() => setEditMode(true)}>
+                                        <Button leftIcon={<Icon as={MdOutlineEdit} />} size='sm' onClick={() => setEditMode(true)} id="button_change_name">
                                             이름변경
                                         </Button>
-                                        <Button leftIcon={<Icon as={MdOutlineShare} />} size='sm' onClick={() => setIsOpenShare(true)}>
+                                        {/* <Button leftIcon={<Icon as={MdOutlineShare} />} size='sm' onClick={() => setIsOpenShare(true)} id="button_share">
                                             공유하기
-                                        </Button>
-                                        <Button leftIcon={<Icon as={MdOutlineDelete} />} size='sm' onClick={onOpen} color={'red'}>  
+                                        </Button> */}
+                                        <Button leftIcon={<Icon as={MdOutlineDelete} />} size='sm' onClick={onOpen} color={'red'} id="button_remove">  
                                             삭제하기
                                         </Button>
                                     </Flex>
@@ -134,7 +135,7 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle }:HistoryItemP
                                     value={inputs.shareLink} 
                                     onChange={(e) => console.log("cloick")} 
                                     color={textColor}
-
+                                    id="input_link"
                                 />
                             </Flex>
                         }

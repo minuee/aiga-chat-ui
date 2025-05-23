@@ -144,6 +144,7 @@ function ReviewModal(props: ReviewModalProps) {
                 borderRadius={'10px'}
                 onClick={() => onHandleRegistReview(inputs)}
                 isDisabled={(functions.isEmpty(inputs.comment) || (inputs.comment && inputs.comment.length < 50)) ? true : false}
+                id="button_regist"
               >
                 등록
               </Button>
@@ -155,6 +156,7 @@ function ReviewModal(props: ReviewModalProps) {
                 borderRadius={'10px'}
                 onClick={() => onHandleRegistReview(inputs)}
                 isDisabled={(functions.isEmpty(inputs.comment) || (inputs.comment && inputs.comment.length < 50)) ? true : false}
+                id="button_modify"
               >
                 수정
               </Button>

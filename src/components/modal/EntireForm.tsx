@@ -69,6 +69,7 @@ function ReviewModal(props: ReviewModalProps) {
               borderRadius={'10px'}
               onClick={() => onHandleEntire(inputs)}
               isDisabled={(inputs.isAgree ? false : true)}
+              id="button_entire"
             >
               탈퇴하기
             </Button>

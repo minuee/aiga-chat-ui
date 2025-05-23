@@ -107,6 +107,7 @@ function SidebarContent(props: SidebarContent) {
             maxWidth={`${mConstants.modalMaxWidth-50}px`} 
             borderRadius={'10px'}
             onClick={onOpen}
+            id="button_new_dialig"
           >
             새 대화 
           </Button>
@@ -181,6 +182,7 @@ function SidebarContent(props: SidebarContent) {
           minW="34px"
           justifyContent={'center'}
           alignItems="center"
+          id="button_logout"
         >
           <Icon as={FiLogOut} width="16px" height="16px" color="inherit" />
         </Button>

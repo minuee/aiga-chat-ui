@@ -55,6 +55,7 @@ export function SearchBar(props: {
         _placeholder={{ color: 'gray.500', fontSize: '14px' }}
         borderRadius={borderRadius ? borderRadius : '30px'}
         placeholder={placeholder ? placeholder : 'Search'}
+        id="input_search"
       />
     </InputGroup>
   );

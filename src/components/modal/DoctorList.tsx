@@ -321,7 +321,7 @@ function DoctorListModal(props: DoctorListModalProps) {
                   />
                 </ModalBody>
                {/*  <ModalFooter>
-                  <Button onClick={() => setIsOpenDoctorModal(false)}>Close</Button>
+                  <Button onClick={() => setIsOpenDoctorModal(false)} id="button_close">Close</Button>
                 </ModalFooter> */}
               </ModalContent>
             </Modal>

@@ -99,7 +99,7 @@ const SelectDoctor = ({
         </Box>
       </Flex>
       <Flex pl={2}>
-        <Button size={'sm'} colorScheme="blue" onClick={() => setIsOpenModal(true)}>전체보기</Button>
+        <Button size={'sm'} colorScheme="blue" onClick={() => setIsOpenModal(true)} id="button_all">전체보기</Button>
       </Flex>
       {
           isOpenModal && (

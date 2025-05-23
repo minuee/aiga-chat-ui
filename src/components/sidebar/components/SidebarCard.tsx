@@ -52,6 +52,7 @@ export default function SidebarDocs() {
           minW="185px"
           mx="auto"
           borderRadius="45px"
+          id="button_pro"
         >
           Get started with PRO
         </Button>

@@ -96,7 +96,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} padding={'0 10px'} mt={5}>
           <Box display={'flex'} flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'} minHeight={'50px'} width={'98%'}>
             <Text fontSize={'14px'} fontWeight={'bold'}>minuee@kormedi.com</Text>
-            <Button colorScheme='blue' variant='solid' size={'sm'} onClick={() => setIsOpenLogoutModal(true)}>
+            <Button colorScheme='blue' variant='solid' size={'sm'} onClick={() => setIsOpenLogoutModal(true)} id="buttin_logout">
               로그아웃
             </Button>
           </Box>
@@ -112,11 +112,12 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                   value={inputs.nickname}
                   placeholder='닉네임을 입력해주세요 (필수)' 
                   onChange={(e) => setInputs({...inputs, nickname: e.target.value})}
+                  id="input_nickname"
                 />
               </FormControl>
             </Box>              
             <Box mt={5} display={'flex'} justifyContent={'center'}>
-              <Button colorScheme='blue' variant='solid' size={'md'} width={'50%'} minWidth={'100px'} borderRadius={'5px'} onClick={() => onHandleSave()}>
+              <Button colorScheme='blue' variant='solid' size={'md'} width={'50%'} minWidth={'100px'} borderRadius={'5px'} onClick={() => onHandleSave()} id="button_save">
                 저장
               </Button>
             </Box>

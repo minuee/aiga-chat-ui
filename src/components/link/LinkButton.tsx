@@ -12,7 +12,7 @@ export default function LinkButton({
 }: ChakraAndNextProps) {
   return (
     <Link href={href} passHref prefetch={prefetch}>
-      <Button as="a" variant="a" {...props}>
+      <Button as="a" variant="a" {...props} id="buttin_link">
         {children}
       </Button>
     </Link>

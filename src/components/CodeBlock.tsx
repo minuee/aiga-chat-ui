@@ -34,6 +34,7 @@ export const CodeBlock: FC<Props> = ({
           navigator.clipboard.writeText(code);
           setCopyText('Copied!');
         }}
+        id="button_copy"
       >
         {copyText}
       </button> 

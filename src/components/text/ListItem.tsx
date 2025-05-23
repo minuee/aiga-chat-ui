@@ -39,6 +39,7 @@ const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 }:L
                         colorScheme="slate"
                         textDecoration="underline"
                         onClick={handleToggle}
+                        id="button_toggle"
                     >
                         {!expandedCount ? '감추기' : '더 보기'}
                     </Button>

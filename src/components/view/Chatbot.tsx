@@ -563,8 +563,8 @@ export default function ChatBot() {
                   bg: 'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)',
                 },
               }}
-             
               isLoading={loading ? true : false}
+              id="butto_stop"
             >
               {
                 isReceiving

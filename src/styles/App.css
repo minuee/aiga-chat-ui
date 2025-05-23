@@ -2,11 +2,14 @@
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@200;300;400;500;600;700;800&display=swap');
 */
-
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
 
 body {
   font-family: 'Noto Sans KR', sans-serif;
+  -webkit-text-size-adjust : none;  /* 크롬, 사파리, 오페라 신버전 */
+  -ms-text-size-adjust : none;  /* IE */
+  -moz-text-size-adjust : none;  /* 파이어폭스 */
+  -o-text-size-adjust : none;  /* 오페라 구버전 */
 }
 
 option {
@@ -49,4 +52,35 @@ html {
 @-ms-keyframes fadeIn {
   0% { opacity: 0; }
   100% { opacity: 1; }
+}
+
+
+
+/* react-quill */
+.ql-align-center {
+  text-align: center !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ql-align-left {
+  text-align: left !important;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.ql-align-right {
+  text-align: right !important;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.ql-align-justify {
+  text-align: justify !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

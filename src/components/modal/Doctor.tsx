@@ -75,6 +75,7 @@ function DoctorModal(props: DoctorModalProps) {
             width={'183px'} 
             borderRadius={'10px'}
             onClick={() => window.open('https://www.snubh.org/member/login.do?prevURI=/reserve/onlineReserve.do')}
+            id="button_online"
           >
             온라인 예약
           </Button>
@@ -85,6 +86,7 @@ function DoctorModal(props: DoctorModalProps) {
               width={'183px'} 
               borderRadius={'10px'}
               onClick={() => window.open('tel:01062880183')}
+              id="button_tel"
             >
               전화 예약
             </Button>
@@ -280,6 +282,7 @@ function DoctorModal(props: DoctorModalProps) {
               width={'99%'} 
               borderRadius={'10px'}
               onClick={() => setIsOpenReview(true)}
+              id="button_review"
             >
               리뷰쓰기
             </Button>

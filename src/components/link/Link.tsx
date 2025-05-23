@@ -13,7 +13,7 @@ type LinkProps = ButtonProps & NextLinkProps & AddLinkProps;
 function Link({ href, children, ...props }: LinkProps) {
   return (
     <NextLink href={href} passHref legacyBehavior target={props?.target ? props.target : '_self'}>
-      <Button as="a" variant="a" {...props}>
+      <Button as="a" variant="a" {...props} id="buttin_link">
         {children}
       </Button>
     </NextLink>

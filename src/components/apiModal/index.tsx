@@ -62,6 +62,7 @@ function APIModal(props: { setApiKey: any; sidebar?: boolean }) {
           borderRadius={'45px'}
           mt="8px"
           minH="40px"
+          id="button_setkey"
         >
           Set API Key
         </Button>
@@ -75,6 +76,7 @@ function APIModal(props: { setApiKey: any; sidebar?: boolean }) {
           _focus={{ bg: 'none' }}
           _selected={{ bg: 'none' }}
           bg="none !important"
+          id="buttin_lock"
         >
           <Icon w="18px" h="18px" as={MdLock} color={navbarIcon} />
         </Button>
@@ -122,8 +124,10 @@ function APIModal(props: { setApiKey: any; sidebar?: boolean }) {
                   placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
                   onChange={handleChange}
                   value={inputCode}
+                  id="input_api"
                 />
                 <Button
+                  id="button_savekey"
                   variant="chakraLinear"
                   py="20px"
                   px="16px"

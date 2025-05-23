@@ -81,7 +81,7 @@ function LoginScreen(props: LoginScreenProps) {
                     pointerEvents="none"
                     children={<CFaUserAlt color="gray.300" />}
                   />
-                  <Input type="email" placeholder="email address" name="email" />
+                  <Input type="email" placeholder="email address" name="email" id="input_email" />
                 </InputGroup>
               </FormControl>
               <FormControl>
@@ -95,6 +95,7 @@ function LoginScreen(props: LoginScreenProps) {
                     name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
+                    id="input_password"
                   />
                   <InputRightElement width="4.5rem">
                     <Button h="1.75rem" size="sm" onClick={handleShowClick}>
@@ -111,7 +112,7 @@ function LoginScreen(props: LoginScreenProps) {
               </Button>
               <Divider orientation='horizontal' />
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} onClick={() => onClickJoin('aiga')}>
-                <Button leftIcon={<MdCoPresent />} colorScheme='blue' variant='outline' width={'183px'} borderRadius={'10px'}>
+                <Button leftIcon={<MdCoPresent />} colorScheme='blue' variant='outline' width={'183px'} borderRadius={'10px'} id="button_join">
                   AIGA 회원가입
                 </Button>
                 </Box>

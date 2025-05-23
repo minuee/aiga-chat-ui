@@ -128,6 +128,7 @@ function ReviewModal(props: ReviewModalProps) {
               borderRadius={'10px'}
               onClick={() => onHandleEntire(inputs)}
               isDisabled={(functions.isEmpty(inputs.comment) || (inputs.comment && inputs.comment.length < 50)) ? true : false}
+              id="buttin_send"
             >
               제출하기
             </Button>

@@ -23,19 +23,19 @@ const SelectType = ({
     >
       <Flex pl="40px" pt="10px">
         <Stack direction='row' spacing={4}>
-          <Button rightIcon={<Md13Mp />} colorScheme='teal' variant='outline' onClick={() => onSendButton('system_text')}>
+          <Button rightIcon={<Md13Mp />} colorScheme='teal' variant='outline' onClick={() => onSendButton('system_text')} id="button_type_text">
             텍스트
           </Button>
-          <Button rightIcon={<MdEarbuds />} colorScheme='teal' variant='outline' onClick={() => onSendButton('system_doctors')}>
+          <Button rightIcon={<MdEarbuds />} colorScheme='teal' variant='outline' onClick={() => onSendButton('system_doctors')} id="button_type_doctors">
             의사추천
           </Button>
-          <Button rightIcon={<MdHub />} colorScheme='teal' variant='outline' onClick={() => onSendButton('system_list')}>
+          <Button rightIcon={<MdHub />} colorScheme='teal' variant='outline' onClick={() => onSendButton('system_list')} id="button_type_list">
             병명안내
           </Button>
-          <Button rightIcon={<MdFamilyRestroom />} colorScheme='teal' variant='outline' onClick={() => onSendButton('system_select')}>
+          <Button rightIcon={<MdFamilyRestroom />} colorScheme='teal' variant='outline' onClick={() => onSendButton('system_select')} id="button_type_select">
             주체선택
           </Button>
-          <Button rightIcon={<MdGridView />} colorScheme='teal' variant='outline' onClick={() => onSendButton('system_image')}>
+          <Button rightIcon={<MdGridView />} colorScheme='teal' variant='outline' onClick={() => onSendButton('system_image')} id="button_type_image">
             그림선택
           </Button>
         </Stack>

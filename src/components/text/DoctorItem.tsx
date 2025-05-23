@@ -40,6 +40,7 @@ const DoctorList = ({ data, onSendDoctorButton }:DoctorListProps) => {
                             value={data?.doctor_name || ''}
                             placeholder='의사명' 
                             readOnly
+                            id="input_doctorname"
                         />
                         </FormControl>
                     </Box>              
@@ -53,6 +54,7 @@ const DoctorList = ({ data, onSendDoctorButton }:DoctorListProps) => {
                             value={data?.hospitalName}
                             placeholder='병원명' 
                             readOnly
+                            id="input_hospital"
                         />
                         </FormControl>
                     </Box> 
@@ -66,6 +68,7 @@ const DoctorList = ({ data, onSendDoctorButton }:DoctorListProps) => {
                             value={data?.depthName}
                             placeholder='진료과' 
                             readOnly
+                            id="input_deptname"
                         />
                         </FormControl>
                     </Box> 
@@ -79,6 +82,7 @@ const DoctorList = ({ data, onSendDoctorButton }:DoctorListProps) => {
                             value={data?.speciality}
                             placeholder='진료과목' 
                             readOnly
+                            id="input_speciality"
                         />
                         </FormControl>
                     </Box> 

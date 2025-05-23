@@ -61,6 +61,7 @@ function ReviewModal(props: ReviewModalProps) {
                 type="text" 
                 placeholder='수정요청자 이름을 입력해주세요 (필수)' 
                 onChange={(e) => setInputs({...inputs, req_name: e.target.value})}
+                id="input_reqName"
               />
             </FormControl>
           </Box>              
@@ -71,6 +72,7 @@ function ReviewModal(props: ReviewModalProps) {
                 type="text" 
                 placeholder='연락받으실 연락처 또는 이메일을 입력해주세요 (선택)' 
                 onChange={(e) => setInputs({...inputs, req_phone: e.target.value})}
+                id="input_contact_email"
               />
             </FormControl>
           </Box> 
@@ -116,6 +118,7 @@ function ReviewModal(props: ReviewModalProps) {
               borderRadius={'10px'}
               onClick={() => onHandleRegistReview(inputs)}
               isDisabled={(functions.isEmpty(inputs.comment) || (inputs.comment && inputs.comment.length < 10)) ? true : false}
+              id="button_regist"
             >
               등록
             </Button>

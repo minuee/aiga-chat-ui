@@ -35,10 +35,10 @@ const Alert = ({ AppName, bodyContent, isOpen, onClose, onConfirm, closeText, co
                     </AlertDialogBody>
                     
                     <AlertDialogFooter>
-                    <Button ref={confirmRef as any} onClick={() => onClose(true)}>
+                    <Button ref={confirmRef as any} onClick={() => onClose(true)} id="button_close">
                         {closeText}
                     </Button>
-                    <Button colorScheme='red' onClick={() => onConfirm()} ml={3}>
+                    <Button colorScheme='red' onClick={() => onConfirm()} ml={3} id="button_confirm">
                         {confirmText}
                     </Button>
                     </AlertDialogFooter>
