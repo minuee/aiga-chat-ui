@@ -129,8 +129,6 @@ function DoctorListModal(props: DoctorListModalProps) {
     }
   }
 
- 
-
   if ( isLoading ) {
     return (
       <Box padding='6' boxShadow='lg' bg={skeletonColor}>
@@ -331,6 +329,5 @@ function DoctorListModal(props: DoctorListModalProps) {
     )
   }
 }
-
 
 export default DoctorListModal;

@@ -107,6 +107,7 @@ function ReviewModal(props: ReviewModalProps) {
                 size={'sm'} 
                 isInvalid={!functions.isEmpty(inputs.req_comment)}
                 placeholder='수정요청 및 기타 문의사항을 입력해주세요 (필수, 최소 10자이상)'
+                id={"textarea_content"}
               />
             </Box>
           </Box>

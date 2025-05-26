@@ -57,6 +57,7 @@ function ReviewModal(props: ReviewModalProps) {
                 size={'sm'} 
                 isInvalid={!functions.isEmpty(inputs.comment)}
                 placeholder='문의 내용을 자세하게 남겨주시면 빠른 답변에 도움이 됩니다.'
+                id={"textarea_content"}
               />
             </Box>
             <Text fontSize={'14px'} fontWeight={'bold'}>

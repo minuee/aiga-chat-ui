@@ -272,7 +272,15 @@ function DoctorModal(props: DoctorModalProps) {
             <Text fontSize={'13px'}>닉네임</Text>
             <Text fontSize={'12px'} color={'gray.500'}>YYYY.MM.DD</Text>
             <Box>
-              <Textarea readOnly variant={'outline'} value={'리뷰 내용'} isDisabled resize={'none'}  size={'sm'} />
+              <Textarea 
+                readOnly 
+                variant={'outline'} 
+                value={'리뷰 내용'} 
+                isDisabled 
+                resize={'none'}  
+                size={'sm'} 
+                id={"textarea_content"}
+              />
             </Box>
           </Box>
           <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}  width={'98%'} mt={5}>

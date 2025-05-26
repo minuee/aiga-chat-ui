@@ -131,6 +131,7 @@ function ReviewModal(props: ReviewModalProps) {
                 size={'sm'} 
                 isInvalid={!functions.isEmpty(inputs.comment)}
                 placeholder='리뷰는 최소 50자 이상이어야 합니다. 욕설, 비방, 무의미한 반복적인 글귀는 삭제될 수 있습니다.'
+                id={"textarea_content"}
               />
             </Box>
           </Box>

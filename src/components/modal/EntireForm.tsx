@@ -1,16 +1,16 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Divider,Icon,Textarea,Checkbox,Card,useColorModeValue,CardBody,Stack,StackDivider,Heading} from '@chakra-ui/react';
+import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Checkbox,useColorModeValue} from '@chakra-ui/react';
 import mConstants from '@/utils/constants';
 
-export interface ReviewModalProps extends PropsWithChildren {
+export interface EntireModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
   onHandleEntire : (data:any) => void;
 }
 
-function ReviewModal(props: ReviewModalProps) {
+function EntireModal(props: EntireModalProps) {
 
   const { isOpen, setClose, onHandleEntire } = props;
   const [isLoading, setIsLoading] = React.useState(true);
@@ -80,5 +80,4 @@ function ReviewModal(props: ReviewModalProps) {
   }
 }
 
-
-export default ReviewModal;
+export default EntireModal;

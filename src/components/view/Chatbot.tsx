@@ -545,6 +545,7 @@ export default function ChatBot() {
               onChange={handleChange}
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
+              id={"textarea_content"}
             />
             <Button
               variant="primary"

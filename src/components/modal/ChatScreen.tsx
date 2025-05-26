@@ -78,5 +78,4 @@ function ChatScreenModal(props: ChatModalProps) {
   );
 }
 
-
 export default ChatScreenModal;
