@@ -13,10 +13,6 @@ export async function middleware(request: NextRequest) {
 	const accessToken = request.cookies.get('accessToken');
   const response = handleI18nRouting(request); // NextResponse 객체 반환됨
 
-  console.log('accessToken', accessToken)
-  console.log('requestHeaders', request.nextUrl.pathname);
-  console.log('viewport', viewport, isBot);
-
   // 기존 응답 객체의 헤더에 추가 정보 설정
   response.headers.set('x-current-path', request.nextUrl.pathname);
   response.cookies.set('x-current-path', request.nextUrl.pathname);

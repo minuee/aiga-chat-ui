@@ -149,6 +149,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
         w="max-content"
         onClick={toggleColorMode}
         id="button_toggle_mode"
+        name="button_toggle_mode"
       >
         <Icon
           me="10px"
