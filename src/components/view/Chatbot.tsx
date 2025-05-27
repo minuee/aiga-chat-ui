@@ -145,7 +145,8 @@ export default function ChatBot() {
     }
     setInputCode('')
 
-    const url = 'http://localhost:9999/api/v1/chat';
+    const BaseAPI = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const url = `${BaseAPI}/chat`;
  
     const payload = {
       "user_id": "minuee",
@@ -255,7 +256,9 @@ export default function ChatBot() {
     setOutputCode((prevCode: any[]) => [...prevCode, { ismode: "me", msg: inputCodeText }]);
     setInputCode('')
 
-    const response = await fetch('http://localhost:9999/api/v1/see',{credentials: 'include'});
+    const BaseAPI = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const response = await fetch(`${BaseAPI}/see`,{credentials: 'include'});
+    
     const reader = response?.body?.getReader();
 
     const decoder = new TextDecoder();
