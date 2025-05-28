@@ -1,10 +1,10 @@
 module.exports = {
     apps: [
       {
-        name: "aiga-admin",
+        name: "aiga-web",
         script: "node_modules/next/dist/bin/next",
         args: "start --port 3000",
-        instances: 2,
+        instances: 1,
         exec_mode: "cluster",
         wait_ready: true, // Node앱으로 부터 앱이 실행되었다는 신호를 받기위해 기다리겠다는 것 "ready"
         listen_timeout: 50000, // 앱 실행신호까지 기다릴 최대시간 ms단위 50초
@@ -17,7 +17,7 @@ module.exports = {
         // 운영환경 설정 실행시 --env production 옵션으로 지정할 수 있다.
         env_production: {
           NODE_ENV: "production",
-          PORT: "8080",
+          PORT: "3000",
         },
       },
     ],
