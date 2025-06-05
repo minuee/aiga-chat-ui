@@ -11,6 +11,7 @@ import JoinScreen from '@/components/signup/JoinScreen';
 import functions from '@/utils/functions';
 import mConstants from '@/utils/constants';
 
+import * as AuthService from "@/services/member/index";
 export interface LoginModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
@@ -35,10 +36,23 @@ function LoginModal(props: LoginModalProps) {
     }, 2000);
   }, [isOpen]);
   
-  const onClickJoin = (str:string) => {
+  const onClickJoin = async(str:string) => {
     setLoginForm({
       socialType : str
     });
+
+    try{
+      if ( !functions.isEmpty(str) ) {
+        const res:any = await AuthService.getAuth({ joinType : str});
+        console.log("res of onClickJoin",res)
+        if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
+          
+        }          
+      }
+    }catch(e:any){
+      console.log("error of getNewSessionID",e)
+    }
+
   }
 
   const setClcikClose = (str:string) => {
@@ -87,7 +101,7 @@ function LoginModal(props: LoginModalProps) {
             >
               <Box width='calc( 100% - 20px)' padding='10px' height='100%'>
                 {
-                  (  ['naver','kakao','aiga'].includes(loginForm.socialType) ) 
+                  (  ['aiga'].includes(loginForm.socialType) ) 
                   ?
                   (
                     <JoinScreen
@@ -99,6 +113,7 @@ function LoginModal(props: LoginModalProps) {
                   (
                     <LoginScreen
                       onClickJoin={onClickJoin}
+                      onClcikClose={setClcikClose}
                     />
                   )
                 }

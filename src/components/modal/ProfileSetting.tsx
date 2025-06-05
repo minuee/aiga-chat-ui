@@ -7,8 +7,10 @@ import RequestForm from '@/components/modal/RequestForm';
 import EntireForm from '@/components/modal/EntireForm';
 import Alert from '@/components/alert/Alert';
 import NoticerModal  from '@/components/modal/Notice';
+import functions from '@/utils/functions';
 //로그인 전역상태
 import UserStateStore from '@/store/userStore';
+import * as RequestService from "@/services/request/index";
 
 export interface ProfileSettingModalProps extends PropsWithChildren {
   isOpen : boolean;
@@ -21,6 +23,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   const setLoginUserInfo = UserStateStore((state) => state.setUserState);
   const { nickName, ...userInfo } = UserStateStore(state => state);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [isReceiving, setReceiving] = React.useState(false);
   const [isOpenLogoutModal, setIsOpenLogoutModal] = React.useState(false);
   const [isOpenRequestModal, setIsOpenRequestModal] = React.useState(false);
   const [isOpenEntireModal, setIsOpenEntireModal] = React.useState(false);
@@ -33,7 +36,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   const textColor = useColorModeValue('black', 'gray.700');
   const colorBtnColor = useColorModeValue('black', 'white');
   const [inputs, setInputs] = React.useState<any>({
-    nickname: ''
+    nickName: ''
   });
 
   React.useEffect(() => {
@@ -46,13 +49,53 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     }, 1000);
   }, [isOpen]);
 
-  const onHandleSave = () => {
-    toast({
-      title: "이미 사용중인 닉네임입니다.",
-      position: 'top-right',
-      status: 'info',
-      isClosable: true,
-    });
+  const onHandleSave = async() => {
+    console.log("inputs", inputs)
+    try{
+      if ( !functions.isEmpty(inputs?.nickName) ) {
+        setReceiving(true)
+        const res:any = await RequestService.setNickname(inputs.nickName);
+        console.log("res of setNickname",res)
+        if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
+          setIsOpenRequestModal(false);
+          setReceiving(false);
+          toast({
+            title: res?.message || "정상적으로 변경 되었습니다.",
+            position: 'top-right',
+            status: 'info',
+            isClosable: true,
+          });
+        }          
+      }
+    }catch(e:any){
+      setReceiving(false)
+      console.log("error of getNewSessionID",e)
+    }
+  }
+
+  const onHandleRequestAction = async(datas: any) => {
+    console.log("datas", datas)
+    try{
+      if ( !functions.isEmpty(datas?.title) && !functions.isEmpty(datas?.content) ) {
+        setReceiving(true)
+        const res:any = await RequestService.setRequest(datas);
+        console.log("res of setRequest",res)
+        if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
+          setIsOpenRequestModal(false);
+          setReceiving(false);
+          toast({
+            title: res?.message || "정상적으로 처리 되었습니다.",
+            position: 'top-right',
+            status: 'info',
+            isClosable: true,
+          });
+        }          
+      }
+    }catch(e:any){
+      setReceiving(false)
+      console.log("error of getNewSessionID",e)
+    }
+
   }
 
   const onHandleEntireAction = (inputs: any) => {
@@ -78,7 +121,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       joinType:string;
       nickName : string);
     */
-    setLoginUserInfo(false,'',true,'',"Guest");
+    setLoginUserInfo(false,'',true,'',"Guest",0,0);
     setIsOpenLogoutModal(false)
   }
 
@@ -108,11 +151,11 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                 <Input 
                   type="text" 
                   isRequired
-                  name='nickname'
-                  value={inputs.nickname}
+                  name='nickName'
+                  value={inputs.nickName}
                   placeholder='닉네임을 입력해주세요 (필수)' 
-                  onChange={(e) => setInputs({...inputs, nickname: e.target.value})}
-                  id="input_nickname"
+                  onChange={(e) => setInputs({...inputs, nickName: e.target.value})}
+                  id="input_nickName"
                 />
               </FormControl>
             </Box>              
@@ -161,7 +204,8 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                   <RequestForm
                     isOpen={isOpenRequestModal}
                     setClose={() => setIsOpenRequestModal(false)}
-                    onHandleEntire={(inputs) => onHandleEntireAction(inputs)}
+                    onHandleRequest={(inputs) => onHandleRequestAction(inputs)}
+                    isReceiving={isReceiving}
                   />
                 </ModalBody>
               </ModalContent>

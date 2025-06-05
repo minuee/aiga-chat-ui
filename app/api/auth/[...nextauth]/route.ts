@@ -9,6 +9,9 @@ import NaverProvider from "next-auth/providers/naver";
 
 import { Session } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
+
+
+
 const authOptions: any = {
   providers: [
     CredentialsProvider({

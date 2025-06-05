@@ -7,9 +7,9 @@ import MessageBoxChat from '@/components/MessageBox';
 import { ChatBody, OpenAIModel } from '@/types/types';
 import { 
     Box,Button,Flex,Icon,Textarea,Text,useColorModeValue,Drawer,DrawerOverlay,DrawerContent,DrawerBody,DrawerCloseButton,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,
-    ModalCloseButton,useToast
+    ModalCloseButton,useToast,SkeletonText
 } from '@chakra-ui/react';
-import { useEffect, useState,useRef } from 'react';
+import { useEffect, useState,useRef,useCallback } from 'react';
 import Image from "next/image";
 import { MdOutlineArrowDownward, MdFitbit, MdInfoOutline, MdPerson } from 'react-icons/md';
 import DoctorDetail  from '@/components/modal/Doctor';
@@ -17,15 +17,17 @@ import SelectBody  from '@/components/msgType/SelectBody';
 import SelectDoctor  from '@/components/msgType/SelectDoctor';
 import SelectName  from '@/components/msgType/SelectName';
 import Welcome  from '@/components/msgType/Welcome';
+import MotionWelcome  from '@/components/msgType/MotionWelcome';
 import Processing  from '@/components/msgType/Processing';
 
 import SelectType  from '@/components/msgType/SelectType';
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
 import LoadingBar from "@/assets/icons/loading.gif";
 import HeadTitle from '@/components/modal/Title';
 import mConstants from '@/utils/constants';
 //새창열기 전역상태
 import NewChatStateStore from '@/store/newChatStore';
+import * as ChatService from "@/services/chat/index";
 
 export default function ChatBot() {
   const t = useTranslations('Messages');
@@ -46,7 +48,7 @@ export default function ChatBot() {
   const [loading, setLoading] = useState<boolean>(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollBottomRef = useRef<HTMLDivElement>(null);
-
+  const [isLoading, setIsLoading] = useState(true);
   // Loading state
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
   const [isOpenDoctorDrawer, setIsOpenDoctorDrawer] = useState<boolean>(false);
@@ -67,9 +69,35 @@ export default function ChatBot() {
   const textColor = useColorModeValue('navy.700', 'white');
   const placeholderColor = useColorModeValue({ color: 'gray.500' },{ color: 'gray' });
   
-  const isSystemText = [
-    "system_text","system_doctors","system_list","system_select","system_image"
-  ]
+  const isSystemText = ["system_text","system_doctors","system_list","system_select","system_image"];
+
+  const [chatSessionId, setChatSessionId] = useState<string>('');
+
+  useEffect(() => {
+    if ( functions.isEmpty(chatSessionId) ) {
+      //getNewSessionID()
+      setTimeout(() => {
+        setIsLoading(false)
+      }, 1000);
+    }
+    return () => setChatSessionId('');
+  }, []);
+
+  const getNewSessionID =  async() => {
+    try{
+      console.log("chatSessionId",chatSessionId)
+      if ( functions.isEmpty(chatSessionId) ) {
+        const res:any = await ChatService.getChatNewSession();
+        console.log("res of getNewSessionID",res)
+        if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
+          setIsLoading(false)
+          setChatSessionId(res?.data?.session_id)
+        }          
+      }
+    }catch(e:any){
+      console.log("error of getNewSessionID",e)
+    }
+  }
 
   useEffect(() => {
     if ( !isAccessFirst ) {
@@ -81,6 +109,7 @@ export default function ChatBot() {
   useEffect(() => {
     if ( isNewChat && outputCode.length > 0 ) {
       // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
+      getNewSessionID()
       setOutputCode([]);
       setTimeout(() => {
         setNewChatOpen(false);
@@ -145,7 +174,7 @@ export default function ChatBot() {
     }
     setInputCode('')
 
-    const BaseAPI = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const BaseAPI = process.env.NEXT_PUBLIC_ADMIN_API_BASE_URL;
     const url = `${BaseAPI}/chat`;
  
     const payload = {
@@ -256,11 +285,10 @@ export default function ChatBot() {
     setOutputCode((prevCode: any[]) => [...prevCode, { ismode: "me", msg: inputCodeText }]);
     setInputCode('')
 
-    const BaseAPI = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const BaseAPI = process.env.NEXT_PUBLIC_ADMIN_API_BASE_URL;
     const response = await fetch(`${BaseAPI}/see`,{credentials: 'include'});
-    
-    const reader = response?.body?.getReader();
 
+    const reader = response?.body?.getReader();
     const decoder = new TextDecoder();
     
     let streamData:string = "";
@@ -305,6 +333,22 @@ export default function ChatBot() {
     }
   }
 
+  if (isLoading) {
+    return (
+      <Flex
+        w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
+        maxWidth={{ base: '100%', md: `${mConstants.desktopMinWidth-30}px` }}
+        height={'100%'}
+        padding={"10px"}
+        direction="column"
+        position="relative"
+      >
+        <Flex direction="column" mx="auto" w={'100%'} height={'100%'} justifyContent={'center'} alignItems={'center'}>
+          <SkeletonText mt='4' noOfLines={10} spacing='4' skeletonHeight='2' />
+        </Flex>
+      </Flex>
+    )
+   }
   return (
     <Flex
       w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
@@ -325,9 +369,12 @@ export default function ChatBot() {
           ref={scrollRef}
         >
           <Box>
-            <Welcome 
+            {/* <Welcome 
               msg={`${t("welcome_msg",{app_name:"AIGA"})}`}
               onSendButton={onSendButton}
+            /> */}
+            <MotionWelcome 
+              msg={`AIGA`}
             />
           </Box>
           <Box>
@@ -473,12 +520,7 @@ export default function ChatBot() {
                 alignItems={'center'}
                 onClick={()=> scrollToBottom()}
               >
-                <Icon
-                  as={MdOutlineArrowDownward}
-                  width="40px"
-                  height="40px"
-                  color={navbarIcon}
-                />
+                <Icon as={MdOutlineArrowDownward} width="40px" height="40px" color={navbarIcon} />
               </Box>
             )
           }

@@ -1,3 +1,5 @@
+export const apiSuccessCode = [200,201,202,203,300,301,302]
+
 export const sungwonjungThumb = [
   {
     idx : 1,
@@ -32,6 +34,7 @@ const contrants  = {
   mobileHeaderHeight: 60,
   modalMaxWidth : 540,
   desktopMinWidth : 768,
+  apiSuccessCode
 }
 
 export default contrants;

@@ -7,6 +7,8 @@ import { MdCoPresent } from "react-icons/md";
 // chakra imports
 import { Box,Flex,Text,Heading,Input,Button,InputGroup,Stack,InputLeftElement,chakra,Divider,Link,Avatar,FormControl,FormHelperText,InputRightElement,Spinner,useToast } from '@chakra-ui/react';
 import { FaUserAlt, FaLock } from "react-icons/fa";
+import UserStateStore from '@/store/userStore';
+import ConfigInfoStore from '@/store/configStore';
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -16,12 +18,14 @@ const geolocationOptions = {
   maximumAge: 1000 * 3600 * 24,
 }
 import functions from '@/utils/functions';
+import * as mCookie from "@/utils/cookies";
 
 import KakaoButtom from "@/assets/images/login/kakao_login.png";
 import NaverButtom from "@/assets/images/login/naver_login.png";
 
 export interface LoginScreenProps extends PropsWithChildren {
   onClickJoin  : (str:string) => void;
+  onClcikClose : (str:string) => void;
 }
 
 function LoginScreen(props: LoginScreenProps) {
@@ -30,6 +34,8 @@ function LoginScreen(props: LoginScreenProps) {
   const [showPassword, setShowPassword] = React.useState(false);
   const toast = useToast();
   const { location, error } = useGeoLocation(geolocationOptions)
+  const setLoginUserInfo = UserStateStore((state) => state.setUserState);
+  const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
 
   const handleShowClick = () => setShowPassword(!showPassword);
   const handleSubmit = async (e:any) => {
@@ -39,18 +45,39 @@ function LoginScreen(props: LoginScreenProps) {
     setTimeout(async () => {
       const user_email = e.target.email.value;
       const user_password = e.target.password.value;
+
+      const locale = mCookie.getCookie('currentLocale'); 
       if ( !functions.isEmpty(user_email) && !functions.isEmpty(user_password) ) {
-        const result:any = await signIn('aiga_credentials', { 
+        setLoginUserInfo(
+          true,
+          user_email,
+          false,
+          'aiga',
+          '아이가',
+          userMaxToken,
+          userRetryLimitSec
+        )
+        setLoading(false);
+        props.onClcikClose('');
+        /* const result:any = await signIn('credentials', { 
           user_email,
           user_password,
-          //callbackUrl: '/chat', // 로그인 성공 후 리다이렉션 할 URL
+          callbackUrl: `/${locale || 'ko'}/chat`, // 로그인 성공 후 리다이렉션 할 URL
           redirect: false,
         });
         console.log('result',result);
         setLoading(false)
         if (result?.ok) {
           // 로그인 성공 처리
-          
+          setLoginUserInfo(
+            true,
+            user_email,
+            false,
+            'aiga',
+            '아이가',
+            userMaxToken,
+            userRetryLimitSec
+          )
           // 사용자에게 오류 메시지 표시 등 추가 처리
         } else {
           toast({
@@ -62,7 +89,7 @@ function LoginScreen(props: LoginScreenProps) {
           // 로그인 실패시 
           console.log(result.error);
           // 예: router.push('/chat');
-        }
+        } */
       }
     }, 1500)
   };
@@ -103,9 +130,9 @@ function LoginScreen(props: LoginScreenProps) {
                     </Button>
                   </InputRightElement>
                 </InputGroup>
-                <FormHelperText textAlign="right">
+                {/* <FormHelperText textAlign="right">
                   <Link>forgot password?</Link>
-                </FormHelperText>
+                </FormHelperText> */}
               </FormControl>
               <Button borderRadius={0} type="submit" variant="solid" colorScheme="teal" width="full">
                 {isLoading ? <Spinner size='xs' /> : "Login"}

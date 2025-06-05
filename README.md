@@ -225,3 +225,5 @@ For open source projects, say how it is licensed.
 
 ## Project status
 If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+
+{"message":"성공적으로 로그인 인증이 완료되었습니다.","statusCode":200,"data":{"user":{"user_id":"uid_ebf18c19-a57e-49a0-acbd-30dd635844a5","sns_type":"kakao","sns_id":"4291885223","email":"minuee47@gmail.com","nickname":"노성남","profile_img":"http://k.kakaocdn.net/dn/JtoEt/btsNpPXtydu/BEfaJiGKIBGnoOgmTnJpH0/img_640x640.jpg","regist_date":"2025-06-05T07:46:52.061Z","unregist_date":null,"createdAt":"2025-06-05T07:46:52.061Z","updatedAt":null},"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidWlkX2ViZjE4YzE5LWE1N2UtNDlhMC1hY2JkLTMwZGQ2MzU4NDRhNSIsInNuc190eXBlIjoia2FrYW8iLCJzbnNfaWQiOiI0MjkxODg1MjIzIiwiaWF0IjoxNzQ5MTA5NjEyLCJleHAiOjE3NDkxOTYwMTJ9.p7hlsd2YRcJdNu6OJrIoDhEydUiDEeEtBXTz9YMBEsY"}}

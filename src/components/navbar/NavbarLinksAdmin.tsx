@@ -12,13 +12,23 @@ import LoginModal  from '@/components/modal/LoginForm';
 import routes from '@/routes';
 import ProfileSetting from '@/components/modal/ProfileSetting';
 import mConstants from '@/utils/constants';
+import Alert from '@/components/alert/Alert';
+import UserStateStore from '@/store/userStore';
+import ConfigInfoStore from '@/store/configStore';
+import NewChatStateStore from '@/store/newChatStore';
+import functions from '@/utils/functions';
 
 export default function HeaderLinks(props: {secondary: boolean;}) {
 
   const { secondary } = props;
   const { colorMode, toggleColorMode } = useColorMode();
+  const { userId, ...userInfo } = UserStateStore(state => state);
+  const setLoginUserInfo = UserStateStore((state) => state.setUserState);
+  const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
+  const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
   const toast = useToast();
   // Loading state
+  const [isOpenLogoutModal, setIsOpenLogoutModal] = React.useState(false);
   const [isOpenNoticeModal, setIsOpenNoticeModal] = React.useState<boolean>(false);
   const [isOpenLoginModal, setIsOpenLoginModal] = React.useState<boolean>(false);
   const [isOpenSetupModal, setIsOpenSetupModal] = React.useState<boolean>(false);
@@ -120,6 +130,20 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
     });
   }
 
+  const onHandleLogout = () => {
+    setLoginUserInfo(
+      false,
+      '',
+      true,
+      '',
+      '손님',
+      guestMaxToken,
+      guestRetryLimitSec
+    )
+    setNewChatOpen(true)
+    setIsOpenLogoutModal(false)
+  }
+
   return (
     <Flex
       zIndex="100"
@@ -171,7 +195,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
           />
           <Center top={0} left={0} position={'absolute'} w={'100%'} h={'100%'}>
             <Text fontSize={'xs'} fontWeight="bold" color={'white'}>
-              성남
+              { functions.isEmpty(userId) ? "손님" : userInfo?.nickName }
             </Text>
           </Center>
         </MenuButton>
@@ -195,7 +219,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
               fontWeight="700"
               color={textColor}
             >
-              👋&nbsp; Hey, 성남
+              👋&nbsp; Hey, { functions.isEmpty(userId) ? "손님" : userInfo?.nickName }
             </Text>
           </Flex>
           <Flex flexDirection="column" p="10px">
@@ -206,6 +230,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
               borderRadius="8px"
               px="14px"
               onClick={()=> setIsOpenSetupModal(!isOpenSetupModal)}
+              display={ functions.isEmpty(userId) ? 'none' : 'block'}
             >
               <Text fontWeight="500" fontSize="sm">
                 Profile Settings
@@ -242,6 +267,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
               borderRadius="8px"
               px="14px"
               onClick={()=> setIsOpenLoginModal(!isOpenLoginModal)}
+              display={ functions.isEmpty(userId) ? 'block' : 'none'}
             >
               <Text fontWeight="500" fontSize="sm">
                 Log In
@@ -253,6 +279,8 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
               color="red.400"
               borderRadius="8px"
               px="14px"
+              display={ functions.isEmpty(userId) ? 'none' : 'block'}
+              onClick={()=> setIsOpenLogoutModal(true)}
             >
               <Text fontWeight="500" fontSize="sm">
                 Log out
@@ -301,6 +329,20 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
               </ModalBody>
             </ModalContent>
           </Modal>
+        )
+      }
+
+      {        
+        isOpenLogoutModal && (
+          <Alert 
+            AppName='AIGA'
+            bodyContent='로그아웃 하시겠습니까? 기존대화는 초기화됩니다.'
+            isOpen={isOpenLogoutModal}
+            onClose={(bool) => setIsOpenLogoutModal(false)}
+            onConfirm={() => onHandleLogout()}
+            closeText='취소'
+            confirmText='확인'
+          />
         )
       }
     </Flex>

@@ -6,20 +6,23 @@ import type { NextRequest } from 'next/server'
 //const handleI18nRouting = createMiddleware(routing);
 
 export async function middleware(request: NextRequest) {
-	// 요청 헤더에서 로그인 여부를 확인할 수 있도록 쿠키
-    const requestHeaders = new Headers(request.headers);
-    const accessToken = request.cookies.get('accessToken');
-    console.log('accessToken',accessToken)
-    requestHeaders.set('x-current-path"', request.nextUrl.pathname);
-    console.log('requestHeaders')
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      }
-    });
-    //return handleI18nRouting(request);
-
-    
+  const response = NextResponse.next();
+  // 요청 헤더에서 로그인 여부를 확인할 수 있도록 쿠키
+  const requestHeaders = new Headers(request.headers);
+  const accessToken = request.cookies.get('accessToken');
+  console.log('accessToken',accessToken)
+  requestHeaders.set('x-current-path"', request.nextUrl.pathname);
+  console.log('requestHeaders')
+  // Add CORS headers
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    }
+  });
+  //return handleI18nRouting(request)  
 }
 export const config = {
   matcher: [

@@ -1,22 +1,28 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Textarea,Checkbox,Card,useColorModeValue,CardBody,Stack,StackDivider,Heading} from '@chakra-ui/react';
+import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Textarea,Checkbox,Card,useColorModeValue,CardBody,Stack,StackDivider,Heading,FormControl,FormLabel,Input} from '@chakra-ui/react';
 import functions from '@/utils/functions';
 import Link from '@/components/link/Link';
+import Alert from '@/components/alert/Alert';
+import NextImage from 'next/legacy/image';
+import { loadingImage } from "@/components/icons/IconImage"
 
 export interface ReviewModalProps extends PropsWithChildren {
+  isReceiving : boolean;
   isOpen : boolean;
   setClose : () => void;
-  onHandleEntire : (data:any) => void;
+  onHandleRequest : (data:any) => void;
 }
 
 function ReviewModal(props: ReviewModalProps) {
 
-  const { isOpen, setClose, onHandleEntire } = props;
+  const { isOpen, setClose, onHandleRequest ,isReceiving} = props;
   const [isLoading, setIsLoading] = React.useState(true);
+  const [isOpenLogoutModal, setIsOpenLogoutModal] = React.useState(false);
   const [inputs, setInputs] = React.useState<any>({
-    comment: null,
+    title:null,
+    content: null,
     isAgree : false,
   });
   const bgColor = useColorModeValue('blue', 'white');
@@ -42,21 +48,47 @@ function ReviewModal(props: ReviewModalProps) {
     return (
       <>
         <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} padding={'0 10px'} mt={5}> 
+          {
+            isReceiving && (
+              <Flex position='absolute' left={0} top={0} width='100%' height='100%' display={'flex'} justifyContent={'center'}  backgroundColor={'#000000'} opacity={0.7} zIndex={100}>
+                <Box padding='6' boxShadow='lg' width={"300px"} height={"calc( 100vh / 2 )"} display={'flex'} flexDirection={'column'}  justifyContent={'center'} alignItems={'center'}>
+                  <NextImage
+                      width="100"
+                      height="100"
+                      src={loadingImage}
+                      alt={'doctor1'}
+                  />
+                  <Text color="#ffffff">등록중...</Text>
+                </Box>
+              </Flex>
+            )
+          }
           <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'98%'}>
             <Text fontSize={'12px'} color={textColor2}>
                 서비스 이용 중 궁금하신  점이나 개선 의견을 보내주세요
             </Text>
             <Box my={2}>
+              <FormControl variant="floatingLabel">
+                <Input 
+                  type="text" 
+                  placeholder='제목을 입력해주세요(필수)' 
+                  onChange={(e) => setInputs({...inputs, title: e.target.value})}
+                  id="input_title"
+                  sx={{borderRadius:5}}
+                />
+              </FormControl>
+            </Box>
+            <Box my={2}>
               <Textarea 
                 variant={'outline'} 
                 value={inputs.doctorReview} 
-                onChange={(e) => setInputs({...inputs, comment: e.target.value})} 
+                onChange={(e) => setInputs({...inputs, content: e.target.value})} 
                 resize={'none'}  
                 isRequired
                 minH={'150px'}
                 size={'sm'} 
-                isInvalid={!functions.isEmpty(inputs.comment)}
-                placeholder='문의 내용을 자세하게 남겨주시면 빠른 답변에 도움이 됩니다.'
+                isInvalid={!functions.isEmpty(inputs.content)}
+                placeholder='문의 내용을 자세하게 남겨주시면 빠른 답변에 도움이 됩니다.(최소 10자이상)'
                 id={"textarea_content"}
               />
             </Box>
@@ -127,8 +159,8 @@ function ReviewModal(props: ReviewModalProps) {
               variant='solid' 
               width={'99%'} 
               borderRadius={'10px'}
-              onClick={() => onHandleEntire(inputs)}
-              isDisabled={(functions.isEmpty(inputs.comment) || (inputs.comment && inputs.comment.length < 50)) ? true : false}
+              onClick={() => setIsOpenLogoutModal(true)}
+              isDisabled={(functions.isEmpty(inputs.content) || (inputs.content && inputs.content.length < 10)) ? true : false}
               id="buttin_send"
             >
               제출하기
@@ -136,6 +168,19 @@ function ReviewModal(props: ReviewModalProps) {
           </Box>
         </Flex>
         <Box height={'100px'} />
+        {
+          isOpenLogoutModal && (
+            <Alert 
+              AppName='AIGA'
+              bodyContent='제출 하시겠습니까?'
+              isOpen={isOpenLogoutModal}
+              onClose={(bool) => setIsOpenLogoutModal(false)}
+              onConfirm={() => {onHandleRequest(inputs);setIsOpenLogoutModal(false)}}
+              closeText='취소'
+              confirmText='확인'
+            />
+          )
+        }
       </>
     )
   }

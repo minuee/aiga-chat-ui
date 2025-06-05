@@ -20,6 +20,25 @@ option {
 html {
   --vh: 1vh;
 }
+.opening_wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10vmin;
+}
+.opening_box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111;
+  width: 40vmin;
+  height: 20vmin;
+  font-size: 8vmin;
+  color: #fff;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
 
 .fade-in-image {
   animation: fadeIn 3s;

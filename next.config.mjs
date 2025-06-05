@@ -53,3 +53,21 @@ skipWaiting: true: 새로운 서비스 워커가 설치되자마자 이전 버�
 customWorkerDir: 'worker': 커스텀 서비스 워커 폴더를 지정
 
 */
+
+/* 
+const config = {
+  ...withPWA(withNextIntl(nextConfig)),
+  async rewrites() {
+    if (process.env.NODE_ENV == null) return [];
+    if (process.env.NODE_ENV !== 'development') return [];
+
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/:path*`,
+      },
+    ];
+  },
+};
+
+export default config; */

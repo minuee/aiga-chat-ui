@@ -14,7 +14,7 @@ self.addEventListener("install", function () {
       badge: 'img/badge.png',
       vibrate: [200, 100, 200],
       data: {
-        url: 'https://kormedi.com',
+        url: 'https://aigadev.kormedi.com',
       },
     };
     event.waitUntil(self.registration.showNotification('푸시 알림', options));

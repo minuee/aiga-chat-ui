@@ -4,26 +4,67 @@ import React, { Children } from 'react';
 import Head from 'next/head';
 import PageLayout from '@/components/layout/PageLayout';
 import SubPage from '@/components/view/Chatbot';
-import { Box, useDisclosure } from '@chakra-ui/react';
+import { Box, SkeletonCircle, SkeletonText, useDisclosure } from '@chakra-ui/react';
 import { usePathname } from 'next/navigation';
 import routes from '@/routes';
 import { getActiveRoute, getActiveNavbar } from '@/utils/navigation';
 import Footer from '@/components/footer/FooterAdmin';
 import Navbar from '@/components/navbar/NavbarAdmin';
 import mConstants from '@/utils/constants';
+import UserStateStore from '@/store/userStore';
+import ConfigInfoStore from '@/store/configStore';
+
+import * as CommonService from "@/services/common/index";
+import functions from '@/utils/functions';
 
 export default function Index() {
 
   const pathname = usePathname();
+  const { userId, ...userInfo } = UserStateStore(state => state);
+  const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
+  const setConfigInfoStore = ConfigInfoStore((state) => state.setConfigInfoStore);
   const [isClient, setIsClient] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const getConfigData = React.useCallback(
+    async() => {
+      try{
+        const res:any = await CommonService.getCommonConfig();
+        console.log("res of getCommonConfig",res)
+        if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
+          setIsLoading(false)
+          setConfigInfoStore(
+            functions.isEmpty(res?.data?.config?.user_max_token) ? 0 : parseInt(res?.data?.config?.user_max_token),
+            functions.isEmpty(res?.data?.config?.user_retry_limit_sec) ? 0 : parseInt(res?.data?.config?.user_retry_limit_sec),
+            functions.isEmpty(res?.data?.config?.guest_max_token) ? 0 : parseInt(res?.data?.config?.guest_max_token),
+            functions.isEmpty(res?.data?.config?.guest_retry_limit_sec) ? 0 : parseInt(res?.data?.config?.guest_retry_limit_sec)
+          )
+        }else{
+          setConfigInfoStore(0,0,0,0)
+        }          
+      }catch(e:any){
+        console.log("error of getCommonConfig",e)
+        setConfigInfoStore(0,0,0,0)
+      }
+    },[userId,userInfo?.userMaxToken,userInfo?.userRetryLimitSec]
+  );
+
+  React.useEffect(() => {
+    console.log("useEffect")
+    getConfigData()
+  }, [getConfigData]);
 
   React.useEffect(() => {
     setIsClient(true);
   }, []);
 
-  if (!isClient) {
-    return null; // 또는 로딩 스피너를 표시할 수 있습니다.
+  if (isLoading) {
+   return (
+    <Box padding='6' boxShadow='lg' bg={'white'}>
+      <SkeletonCircle size='10' />
+    </Box>
+   )
   }
 
   return (
