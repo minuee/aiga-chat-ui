@@ -20,17 +20,17 @@ export function getDoctorList(props: PaginationProps): ApiResponse<any> {
 } */
 
 export function getCommonConfig(): any {
-   try{
-    const res:any =  api.get(`/config`)
-    .then((response) => {
-        return response?.data;
-    }).catch((error) => {
-        console.log("eeeee",error)
-        return null;
-    });
-    return res;
+    try{
+        const res:any =  api.get(`/config`)
+        .then((response) => {
+            return response?.data;
+        }).catch((error) => {
+            console.log("eeeee",error)
+            return null;
+        });
+        return res;
    }catch(error){
-    console.log("eeeee",error)
-    return null;   
+        console.log("eeeee",error)
+        return null;   
    }
 }

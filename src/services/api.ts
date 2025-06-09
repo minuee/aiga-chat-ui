@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import * as mCookie from "@/utils/cookies";
+import mConstants from '@/utils/constants';
 
 export type ApiResponse<T> = Promise<AxiosResponse<T>>;
 type State = 'true' | 'false';
@@ -21,7 +22,8 @@ axios.interceptors.request.use(
 );
 
 axios.interceptors.request.use((config) => {
-  const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidWlkX2ViZjE4YzE5LWE1N2UtNDlhMC1hY2JkLTMwZGQ2MzU4NDRhNSIsInNuc190eXBlIjoia2FrYW8iLCJzbnNfaWQiOiI0MjkxODg1MjIzIiwiaWF0IjoxNzQ5MTA5NjEyLCJleHAiOjE3NDkxOTYwMTJ9.p7hlsd2YRcJdNu6OJrIoDhEydUiDEeEtBXTz9YMBEsY';//mCookie.getCookie('accessToken');
+  const accessToken = mCookie.getCookie('accessToken');//'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidWlkX2ViZjE4YzE5LWE1N2UtNDlhMC1hY2JkLTMwZGQ2MzU4NDRhNSIsInNuc190eXBlIjoia2FrYW8iLCJzbnNfaWQiOiI0MjkxODg1MjIzIiwiaWF0IjoxNzQ5NDQ5NzE1LCJleHAiOjE3NDk1MzYxMTV9.Jjl5ii20ZYvq0nUXf8bDGnSjnrJghpFQI0hgefdHCzo';
+  //mCookie.getCookie('accessToken');
   console.log("accessToken axios",accessToken)
   config.headers['Authorization'] = `Bearer ${accessToken}` 
   return config
@@ -29,7 +31,7 @@ axios.interceptors.request.use((config) => {
 
 axios.interceptors.response.use(
   res => {
-    if (res.status === 200) {
+    if (  mConstants.apiSuccessCode.includes(res?.status)) {
       if (res.data.state === 'false') {
       }
     }else{

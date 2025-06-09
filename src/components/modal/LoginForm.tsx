@@ -43,11 +43,8 @@ function LoginModal(props: LoginModalProps) {
 
     try{
       if ( !functions.isEmpty(str) ) {
-        const res:any = await AuthService.getAuth({ joinType : str});
-        console.log("res of onClickJoin",res)
-        if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
-          
-        }          
+        const res:any = await AuthService.getAuthOrigin({ joinType : str});
+        console.log("res of onClickJoin",res)         
       }
     }catch(e:any){
       console.log("error of getNewSessionID",e)

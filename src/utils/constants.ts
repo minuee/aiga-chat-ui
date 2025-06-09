@@ -32,8 +32,8 @@ const contrants  = {
   headerHeight: 56,
   mobileSidebarWidth: 0,
   mobileHeaderHeight: 60,
-  modalMaxWidth : 540,
-  desktopMinWidth : 768,
+  modalMaxWidth : 640,
+  desktopMinWidth : 640,
   apiSuccessCode
 }
 
