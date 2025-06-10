@@ -34,6 +34,7 @@ const contrants  = {
   mobileHeaderHeight: 60,
   modalMaxWidth : 640,
   desktopMinWidth : 640,
+  nickNameAbleString : /^[가-힣a-zA-Z0-9_]+$/,
   apiSuccessCode
 }
 

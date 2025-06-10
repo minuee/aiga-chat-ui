@@ -1,13 +1,14 @@
 'use client';
 /* eslint-disable */
 // Chakra Imports
-import { Box,Flex,useColorModeValue } from '@chakra-ui/react';
+import { Box,Flex,useColorMode,useColorModeValue,Icon,Text,Button } from '@chakra-ui/react';
 import { useState, useEffect,useRef } from 'react';
-import AdminNavbarLinks from './NavbarLinksAdmin';
+import NavbarLinks from './NavbarLinks';
 import { isWindowAvailable } from '@/utils/navigation';
 import Image from 'next/image';
 import LogoImage from "@/assets/images/logo.png";
 import mConstants from '@/utils/constants';
+
 //새창열기 전역상태
 import NewChatStateStore from '@/store/newChatStore';
 
@@ -18,6 +19,7 @@ export default function AdminNavbar(props: {
   onOpen: (...args: any[]) => any;
 }) {
   const [scrolled, setScrolled] = useState(false);
+  const { colorMode, toggleColorMode } = useColorMode();
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
   const confirmRef = useRef();
   useEffect(() => {
@@ -31,13 +33,15 @@ export default function AdminNavbar(props: {
   const { secondary, brandText } = props;
 
   // Here are all the props that may change depending on navbar's type or state.(secondary, variant, scrolled)
+  const navbarIcon = useColorModeValue('gray.500', 'gray.500');
   let mainText = useColorModeValue('navy.700', 'white');
   let secondaryText = useColorModeValue('gray.700', 'white');
   let navbarPosition = 'fixed' as const;
   let navbarFilter = 'none';
   let navbarBackdrop = 'blur(20px)';
   let navbarShadow = 'none';
-  let navbarBg = useColorModeValue('rgba(244, 247, 254, 0.2)','rgba(11,20,55,0.5)');
+  const basicColor = useColorModeValue('white', 'white');
+  let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
   let navbarBorder = 'transparent';
   let secondaryMargin = '0px';
   let gap = '0px';
@@ -56,68 +60,49 @@ export default function AdminNavbar(props: {
       position={navbarPosition}
       boxShadow={navbarShadow}
       bg={navbarBg}
-      borderColor={navbarBorder}
-      filter={navbarFilter}
-      backdropFilter={navbarBackdrop}
-      backgroundPosition="center"
-      backgroundSize="cover"
-      borderRadius="10px"
-      borderWidth="1.5px"
-      borderStyle="solid"
-      transitionDelay="0s, 0s, 0s, 0s"
-      transitionDuration=" 0.25s, 0.25s, 0.25s, 0s"
-      transition-property="box-shadow, background-color, filter, border"
-      transitionTimingFunction="linear, linear, linear, linear"
-      alignItems={{ xl: 'center' }}
-      display={secondary ? 'block' : 'flex'}
-      minH="75px"
+      //borderColor={navbarBorder}
+      //filter={navbarFilter}
+      //backdropFilter={navbarBackdrop}
+      //backgroundPosition="center"
+      //backgroundSize="cover"
+      //borderRadius="10px"
+      //borderWidth="1.5px"
+      //borderStyle="solid"
+  
+      display={'flex'}
+      minH="60px"
       justifyContent={{ xl: 'center' }}
-      lineHeight="25.6px"
-      mx="auto"
-      mt={secondaryMargin}
-      pb="8px"
-      px={{ base: '8px',md: '10px',}}
-      ps={{ base: '8px',md: '12px',}}
-      pt="8px"
-      top={{ base: '10px', md: '10x', xl: '10px' }}
-      width={{base:'100%',md: `${mConstants.desktopMinWidth-2}px`}}
+      top={0}
+      width={{base:'100%',md: `${mConstants.desktopMinWidth}px`}}
+      maxW={'640px'}
     >
       <Flex
         w={{base:'100%',md:`${mConstants.desktopMinWidth}px`}}
         flexDirection={'row'}
         //flexDirection={{ base: 'row', sm: 'column' , md: 'row' , lg: 'row'}}
         alignItems={{ xl: 'center' }}
-        mb={gap}
       >
-        <Box mb={{ base: '8px', md: '0px' }} >
-          {/* <Link
-            color={mainText}
-            href="#"
-            bg="inherit"
-            borderRadius="inherit"
-            fontWeight="bold"
-            fontSize="34px"
-            p="0px"
-            _hover={{ color: { mainText } }}
-            _active={{
-              bg: 'inherit',
-              transform: 'none',
-              borderColor: 'transparent',
-            }}
-            _focus={{
-              boxShadow: 'none',
-            }}
-          >
-            {brandText}
-          </Link> */}
+        <Box display={'flex'} flex={1} pl={"10px"} alignItems={'center'}>
           <Image 
             src={LogoImage}
             alt="Aiga Logo"
-            style={{width:'100px',objectFit: 'contain',maxWidth:"100px"}}
+            style={{width:'70px',objectFit: 'contain'}}
           />
+          {/* <Icon as={MdOutlineArrowBack} width="25px" height="25px" color={basicColor} />
+          <Icons.AigaWelcomeIcon h="40px" w="60px" color={basicColor} /> */}
         </Box>
-        <Box ms="auto" w={{ sm: '100%', md: 'auto' }} maxW="160px" >
-          <AdminNavbarLinks secondary={props.secondary} />
+        <Box display={'flex'} flex={1} pl={"10px"} alignItems={'center'} justifyContent={'center'}>
+          <Text fontSize={'17px'} color={basicColor} fontWeight={'bold'}>AIGA</Text>
+        </Box>
+        <Box display={'flex'} flex={1} alignItems={'center'} justifyContent={'flex-end'} pr="10px">
+          <NavbarLinks secondary={props.secondary} />
+          {/*
+          <Icon as={MdOutlineMenu} width="24px" height="24px" color={basicColor} />
+          <Box display={'flex'} minW={'52px'} height={'28px'} justifyContent={'center'} alignItems={'center'} bg={navbarIcon} borderRadius={'5px'}>  
+            <Text fontSize={'17px'} color={basicColor}>
+              로그인
+            </Text>
+          </Box> */}
         </Box>
       </Flex>
     </Box>

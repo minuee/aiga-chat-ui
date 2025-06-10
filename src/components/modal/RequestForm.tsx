@@ -64,10 +64,10 @@ function ReviewModal(props: ReviewModalProps) {
             )
           }
           <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'98%'}>
-            <Text fontSize={'12px'} color={textColor2}>
+            <Text fontSize={'17px'} color={textColor2}>
                 서비스 이용 중 궁금하신  점이나 개선 의견을 보내주세요
             </Text>
-            <Box my={2}>
+            {/* <Box my={2}>
               <FormControl variant="floatingLabel">
                 <Input 
                   type="text" 
@@ -77,7 +77,7 @@ function ReviewModal(props: ReviewModalProps) {
                   sx={{borderRadius:5}}
                 />
               </FormControl>
-            </Box>
+            </Box> */}
             <Box my={2}>
               <Textarea 
                 variant={'outline'} 
@@ -92,11 +92,24 @@ function ReviewModal(props: ReviewModalProps) {
                 id={"textarea_content"}
               />
             </Box>
+            <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}  width={'98%'} mt={2} mb={5}>
+              <Button 
+                colorScheme='blue' 
+                variant='solid' 
+                width={'100%'} 
+                borderRadius={'10px'}
+                onClick={() => setIsOpenLogoutModal(true)}
+                isDisabled={(functions.isEmpty(inputs.content) || (inputs.content && inputs.content.length < 10)) ? true : false}
+                id="buttin_send"
+              >
+                제출하기
+              </Button>
+            </Box>
             <Text fontSize={'14px'} fontWeight={'bold'}>
                 안내 사항
             </Text>
             <Text fontSize={'12px'} color={textColor2}>
-                산업안전보건법에 따라 고객 응대 근로자 보호조치를 하고 있으며, 모든 문의는 기록으로 남습니다.
+            • 산업안전보건법에 따라 고객 응대 근로자 보호조치를 하고 있으며, 모든 문의는 기록으로 남습니다.
             </Text>
           </Box>
           <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'98%'} mt={5}>
@@ -153,19 +166,7 @@ function ReviewModal(props: ReviewModalProps) {
               </Text>
             </Box>
           </Box>
-          <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}  width={'98%'} mt={5}>
-            <Button 
-              colorScheme='blue' 
-              variant='solid' 
-              width={'99%'} 
-              borderRadius={'10px'}
-              onClick={() => setIsOpenLogoutModal(true)}
-              isDisabled={(functions.isEmpty(inputs.content) || (inputs.content && inputs.content.length < 10)) ? true : false}
-              id="buttin_send"
-            >
-              제출하기
-            </Button>
-          </Box>
+          
         </Flex>
         <Box height={'100px'} />
         {

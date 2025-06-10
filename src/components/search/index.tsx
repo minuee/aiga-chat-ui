@@ -56,8 +56,6 @@ export function SearchBar(props: {
           md: '270px',
           lg: '530px',
           xl: '660px',
-          '2xl': '860px',
-          '3xl': '860px',
         }}
         maxW="100%"
         variant="search"

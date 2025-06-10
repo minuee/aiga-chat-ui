@@ -9,7 +9,7 @@ import {
  } from '@chakra-ui/react';
 
 import Image from 'next/image';
-import { MdInfoOutline,MdEdit } from 'react-icons/md';
+import { MdInfoOutline,MdEdit,MdArrowBack } from 'react-icons/md';
 import ProgressBar from '@/components/fields/ProgressBar';
 import ListItem from '@/components/text/ListItem';
 import DoctorAvatar from "@/assets/images/avatar0.png";
@@ -33,7 +33,7 @@ function DoctorModal(props: DoctorModalProps) {
   const sidebarBackgroundColor = useColorModeValue('white', 'gray.700');
   const starColor = useColorModeValue('#0000ff', '#ffffff');
   const skeletonColor = useColorModeValue('white', 'navy.700');
-
+  let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
   React.useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
@@ -313,8 +313,20 @@ function DoctorModal(props: DoctorModalProps) {
             >
               <ModalOverlay />
               <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
-                <ModalHeader>{"의사 리뷰"}</ModalHeader>
-                <ModalCloseButton />
+                <ModalHeader bg={navbarBg}>
+                <Flex flexDirection={'row'}>
+                  <Box flex={1} display={'flex'} alignItems={'center'} onClick={() => setIsOpenReview(false)} cursor={'pointer'}>
+                    <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
+                  </Box>
+                  <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'center'}>
+                    <Text color={'white'}>리뷰 작성</Text>
+                  </Box>
+                  <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'flex-end'}>
+                   
+                  </Box>
+                </Flex>
+              </ModalHeader>
+               {/*  <ModalCloseButton /> */}
                 <ModalBody overflowY="auto" maxH="100vh">
                   <ReviewDetail
                     isOpen={isOpenReview}

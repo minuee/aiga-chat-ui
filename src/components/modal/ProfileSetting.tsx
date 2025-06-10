@@ -1,7 +1,7 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Divider,FormControl,FormLabel,Input,useToast,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,useColorModeValue } from '@chakra-ui/react';
+import { Icon,Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Divider,FormControl,FormLabel,Input,useToast,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,useColorModeValue } from '@chakra-ui/react';
 import mConstants from '@/utils/constants';
 import RequestForm from '@/components/modal/RequestForm';
 import EntireForm from '@/components/modal/EntireForm';
@@ -11,6 +11,15 @@ import functions from '@/utils/functions';
 //로그인 전역상태
 import UserStateStore from '@/store/userStore';
 import * as RequestService from "@/services/request/index";
+import { MdOutlineSettings,MdArrowBack,MdLogout } from 'react-icons/md';
+import avatar4 from '/public/img/avatars/myphoto.jpeg';
+import { NextAvatar } from '@/components/image/Avatar';
+import Image from 'next/image';
+import IconNotice from "@/assets/icons/icon_notice.png";
+import IconPolicy from "@/assets/icons/icon_policy.png";
+import IconPerson from "@/assets/icons/icon_person.png";
+import IconRequest from "@/assets/icons/icon_request.png";
+import IconDetail from "@/assets/icons/BiChevronRight.png";
 
 export interface ProfileSettingModalProps extends PropsWithChildren {
   isOpen : boolean;
@@ -35,6 +44,9 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   const skeletonColor = useColorModeValue('white', 'gray.700');
   const textColor = useColorModeValue('black', 'gray.700');
   const colorBtnColor = useColorModeValue('black', 'white');
+  const buttonBgColor = useColorModeValue('#2b8fff', 'white');
+  const buttonTextColor = useColorModeValue('white', '#2b8fff');
+  let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
   const [inputs, setInputs] = React.useState<any>({
     nickName: ''
   });
@@ -125,6 +137,15 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     setIsOpenLogoutModal(false)
   }
 
+  const onHandleNickname = ( str: string ) => {
+    console.log("onHandleNickname",str)
+    if ( str == "" ) {
+      setInputs({...inputs, nickName: str }) 
+    }else if ( mConstants.nickNameAbleString.test(str)) { 
+      setInputs({...inputs, nickName: str }) 
+    }
+  }
+
   if ( isLoading ) {
     return (
       <Box padding='6' boxShadow='lg' bg={skeletonColor}>
@@ -136,37 +157,135 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
 
     return (
       <>
-        <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} padding={'0 10px'} mt={5}>
-          <Box display={'flex'} flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'} minHeight={'50px'} width={'98%'}>
-            <Text fontSize={'14px'} fontWeight={'bold'}>minuee@kormedi.com</Text>
-            <Button colorScheme='blue' variant='solid' size={'sm'} onClick={() => setIsOpenLogoutModal(true)} id="buttin_logout">
+        <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} mt={5}>
+          <Flex flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'} minHeight={'50px'} width={'100%'}>
+            <Box flex={5} display={'flex'} flexDirection={'row'} alignItems={'center'}>
+              <NextAvatar h="48px" w="48px" src={avatar4} me="10px" />
+              <Text fontSize={'17px'} fontWeight={'bold'}>minuee@kormedi.com</Text>
+            </Box>
+            {/* <Button colorScheme='blue' variant='solid' size={'sm'} onClick={() => setIsOpenLogoutModal(true)} id="buttin_logout">
               로그아웃
-            </Button>
-          </Box>
-          <Divider orientation='horizontal' my={2}/>
-          <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'}  my={5}>
-            <Box>
+            </Button> */}
+            <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} onClick={() => setIsOpenLogoutModal(true)}>
+              <Icon as={MdLogout} width="20px" height="20px" color="inherit" />
+            </Box>
+          </Flex>
+          
+          <Flex display={'flex'} flexDirection={'column'} minHeight={'50px'}  my={5} bg='#fafbfd' borderRadius={'10px'}>
+            <Box padding="20px">
               <FormControl variant="floatingLabel">
-                <FormLabel>닉네임<span style={{color: 'red'}}>*</span></FormLabel>
+                <FormLabel>닉네임<span style={{color: 'red'}}>(필수)</span></FormLabel>
                 <Input 
                   type="text" 
                   isRequired
                   name='nickName'
                   value={inputs.nickName}
-                  placeholder='닉네임을 입력해주세요 (필수)' 
-                  onChange={(e) => setInputs({...inputs, nickName: e.target.value})}
+                  placeholder='닉네임을 입력해주세요' 
+                  onChange={(e) => onHandleNickname(e.target.value)}
                   id="input_nickName"
+                  bgColor='#ffffff'
                 />
+                <FormLabel fontSize={'13px'} color="#7f879b" mt={2}>
+                최소 2자, 최대 10자(한글,영문,숫자,밑줄(_)만 가능
+                </FormLabel>
               </FormControl>
             </Box>              
-            <Box mt={5} display={'flex'} justifyContent={'center'}>
-              <Button colorScheme='blue' variant='solid' size={'md'} width={'50%'} minWidth={'100px'} borderRadius={'5px'} onClick={() => onHandleSave()} id="button_save">
-                저장
+            <Box display={'flex'} justifyContent={'center'} pb="20px">
+              <Button 
+                colorScheme='blue' 
+                bgColor={inputs.nickName?.length < 2 ? "#ccc" : buttonBgColor}
+                color={buttonTextColor}
+                variant='solid' 
+                size={'md'} 
+                width={'98px'} minWidth={'98px'} 
+                borderRadius={'5px'} 
+                onClick={() => onHandleSave()} 
+                id="button_save"
+              >
+                저장하기
               </Button>
             </Box>
           </Flex>
-          <Divider orientation='horizontal' my={2}/>
-          <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} mt={5}>
+          <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} bg='#fafbfd' borderRadius={'10px'}>
+            <Box padding="20px">
+              <FormControl variant="floatingLabel">
+                <FormLabel>고객지원</FormLabel>
+              </FormControl>
+            </Box>              
+            <Flex justifyContent={'center'} flexDirection={'column'} pb="20px">
+              <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px">
+                <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => setIsOpenNoticeModal(true)} cursor={'pointer'}>
+                  <Image 
+                    src={IconNotice}
+                    alt="IconNotice"
+                    style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
+                  />
+                  <Text fontSize={'15px'} ml={2}>공지사항</Text>
+                </Box>
+                <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => setIsOpenNoticeModal(true)} cursor={'pointer'}>
+                  <Image 
+                    src={IconDetail}
+                    alt="IconDetail"
+                    style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
+                  />
+                </Box>
+              </Box>
+              <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={2}>
+                <Box display={'flex'} alignItems={'center'} flex={5} >
+                  <Image 
+                    src={IconPolicy}
+                    alt="IconPolicy"
+                    style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
+                  />
+                  <Text fontSize={'15px'} ml={2}>이용약관</Text>
+                </Box>
+                <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1}>
+                  <Image 
+                    src={IconDetail}
+                    alt="IconDetail"
+                    style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
+                  />
+                </Box>
+              </Box>
+              <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={2}>
+                <Box display={'flex'} alignItems={'center'} flex={5} >
+                  <Image 
+                    src={IconPerson}
+                    alt="IconPerson"
+                    style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
+                  />
+                  <Text fontSize={'15px'} ml={2}>개인정보 처리방침</Text>
+                </Box>
+                <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1}>
+                  <Image 
+                    src={IconDetail}
+                    alt="IconDetail"
+                    style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
+                  />
+                </Box>
+              </Box>
+              <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={2}>
+                <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => setIsOpenRequestModal(true)} cursor={'pointer'}>
+                  <Image 
+                    src={IconRequest}
+                    alt="IconRequest"
+                    style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
+                  />
+                  <Text fontSize={'15px'} ml={2}>의견 보내기</Text>
+                </Box>
+                <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => setIsOpenRequestModal(true)} cursor={'pointer'}>
+                  <Image 
+                    src={IconDetail}
+                    alt="IconDetail"
+                    style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
+                  />
+                </Box>
+              </Box>
+              
+            </Flex>
+          </Flex>
+          
+          {/* <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} mt={5}>
             <Text fontSize={'16px'} fontWeight={'bold'}>고객지원</Text>
             <Box my={2}>
               <Box onClick={() => setIsOpenNoticeModal(true)} cursor={'pointer'}>
@@ -178,9 +297,20 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                 <Text fontSize={'14px'} fontWeight={'normal'} lineHeight={'2em'}>의견 보내기</Text>
               </Box>
             </Box>
-          </Flex>
-          <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} mt={5} onClick={() => setIsOpenEntireModal(true)} cursor={'pointer'}>
-            <Text fontSize={'13px'} fontWeight={'normal'} textDecoration={'underline'}>탈퇴하기</Text>
+          </Flex> */}
+          <Flex 
+            display={'flex'} 
+            height={'50px'} 
+            width="100%"
+            position={'fixed'}
+            right={0}
+            bottom={0}
+            justifyContent={'flex-end'}
+            onClick={() => setIsOpenEntireModal(true)} 
+            cursor={'pointer'}
+            pr="20px"
+          >
+            <Text fontSize={'17px'} fontWeight={'normal'} textDecoration={'underline'} color='#5c5e69'>탈퇴하기</Text>
           </Flex>
         </Flex>
         <Box height={'100px'} />
@@ -198,8 +328,20 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
             >
               <ModalOverlay />
               <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
-                <ModalHeader borderBottom={'1px solid #e0e0e0'}>{"의견 보내기"}</ModalHeader>
-                <ModalCloseButton color={colorBtnColor} />
+              <ModalHeader bg={navbarBg}>
+                <Flex flexDirection={'row'}>
+                  <Box flex={1} display={'flex'} alignItems={'center'} onClick={() => setIsOpenRequestModal(false)} cursor={'pointer'}>
+                    <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
+                  </Box>
+                  <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'center'}>
+                    <Text color={'white'}>의견 보내기</Text>
+                  </Box>
+                  <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'flex-end'}>
+                   
+                  </Box>
+                </Flex>
+              </ModalHeader>
+                {/* <ModalCloseButton color={colorBtnColor} /> */}
                 <ModalBody overflowY="auto" maxH="100vh">
                   <RequestForm
                     isOpen={isOpenRequestModal}
@@ -226,8 +368,20 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
             >
               <ModalOverlay />
               <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
-                <ModalHeader borderBottom={'1px solid #e0e0e0'}>{"탈퇴하기"}</ModalHeader>
-                <ModalCloseButton color={colorBtnColor} />
+              <ModalHeader bg={navbarBg}>
+                <Flex flexDirection={'row'}>
+                  <Box flex={1} display={'flex'} alignItems={'center'} onClick={() => setIsOpenEntireModal(false)} cursor={'pointer'}>
+                    <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
+                  </Box>
+                  <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'center'}>
+                    <Text color={'white'}>회원탈퇴</Text>
+                  </Box>
+                  <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'flex-end'}>
+                   
+                  </Box>
+                </Flex>
+              </ModalHeader>
+               {/*  <ModalCloseButton color={colorBtnColor} /> */}
                 <ModalBody overflowY="auto" maxH="100vh">
                   <EntireForm
                     isOpen={isOpenEntireModal}

@@ -8,7 +8,7 @@ import Header from '@/components/header/MainHeader';
 import * as mConst from "@/utils/constants";
 import QuickRight from "@/components/sidebar/QuickRight";
 import {useTranslations} from 'next-intl';
-
+import mConstants from '@/utils/constants';
 import MainBgImage from "@/assets/images/etc/bg_1.png";
 import MainBgImage2 from "@/assets/images/etc/bg_2.png";
 import MiniMiddle12F from "@/assets/images/etc/mini_middle_12f.png";
@@ -97,9 +97,9 @@ export default function MainPage() {
   }
 
   return (
-    <Box sx={styles.wrapper} minWidth={{base:'100%', md:'1600px'}} minHeight={{base:'100%', md:'100vh'}} >
+    <Box sx={styles.wrapper} minWidth={{base:'100%', md:`${mConstants.desktopMinWidth}px` }} minHeight={{base:'100%', md:'100vh'}} >
       <Header />
-      <Box sx={styles.outerWrap} minWidth={{base:'100%', md:'1600px'}} minHeight={{base:'100%', md:'100vh'}}>
+      <Box sx={styles.outerWrap} minWidth={{base:'100%', md:`${mConstants.desktopMinWidth}px` }} minHeight={{base:'100%', md:'100vh'}}>
         <Box sx={styles.quickWrap}>
           <QuickRight />
         </Box>
@@ -116,7 +116,7 @@ export default function MainPage() {
             }} */
           />
         </Stack>
-        <Box sx={styles.contentWrapper} minWidth={{base:'100%', md:'1600px'}} height='calc( 100vh - 200px )'>
+        <Box sx={styles.contentWrapper} minWidth={{base:'100%', md:`${mConstants.desktopMinWidth}px` }} height='calc( 100vh - 200px )'>
           <Text variant="sourceHanSans" sx={{color:'#fff',fontSize:'48px',lineHeight:'3em'}}>
             {activeIndex%2 == 0 ? t('title') : '병원추천 AIGA'}
           </Text>
@@ -137,8 +137,8 @@ export default function MainPage() {
           }
           </Text>
         </Box>
-        <Box sx={styles.miniWrapper} minWidth={{base:'100%', md:'1600px'}} ref={elementRef} >
-          <Box sx={styles.miniInsideWrapper} minWidth={{base:'100%', md:'850px'}} >
+        <Box sx={styles.miniWrapper} minWidth={{base:'100%', md:`${mConstants.desktopMinWidth}px` }} ref={elementRef} >
+          <Box sx={styles.miniInsideWrapper} minWidth={{base:'100%', md:`${mConstants.desktopMinWidth}px`}} >
             {
               mConst.sungwonjungThumb.map((item:any,index:number) => {
                 return (

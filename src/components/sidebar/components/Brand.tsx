@@ -1,24 +1,30 @@
 'use client';
 // Chakra imports
 import { Flex, useColorModeValue,Text } from '@chakra-ui/react';
-import { HSeparator } from '@/components/separator/Separator';
+
 import mConstants from '@/utils/constants';
+import Image from 'next/image';
+import LogoImage from "@/assets/images/logo.png";
 
 export function SidebarBrand() {
   //   Chakra color mode
   let logoColor = useColorModeValue('navy.700', 'white');
 
   return (
-    <Flex alignItems="flex-start" flexDirection="column">
+    <Flex alignItems="flex-start" justifyContent={'center'} flexDirection="column" height={'50px'} pl="20px">
       {/* <AigaLog h="26px" w="146px" my="30px" color={logoColor} /> */}
-      <Text
+      {/* <Text
         color={logoColor}
         fontWeight="500"
         fontSize="xl"
       >
         AIGA 의사추천 
-      </Text>
-      <HSeparator mt="20px" mb="20px" w="100%" maxW={`${mConstants.modalMaxWidth-10}px`} />
+      </Text> */}
+      <Image 
+          src={LogoImage}
+          alt="Aiga Logo"
+          style={{width:'76px',objectFit: 'contain'}}
+        />
     </Flex>
   );
 }

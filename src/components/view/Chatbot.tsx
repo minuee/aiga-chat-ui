@@ -7,7 +7,7 @@ import MessageBoxChat from '@/components/MessageBox';
 import { ChatBody, OpenAIModel } from '@/types/types';
 import { 
     Box,Button,Flex,Icon,Textarea,Text,useColorModeValue,Drawer,DrawerOverlay,DrawerContent,DrawerBody,DrawerCloseButton,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,
-    ModalCloseButton,useToast,SkeletonText
+    ModalCloseButton,useToast,SkeletonText,useColorMode
 } from '@chakra-ui/react';
 import { useEffect, useState,useRef,useCallback } from 'react';
 import Image from "next/image";
@@ -17,7 +17,7 @@ import SelectBody  from '@/components/msgType/SelectBody';
 import SelectDoctor  from '@/components/msgType/SelectDoctor';
 import SelectName  from '@/components/msgType/SelectName';
 import Welcome  from '@/components/msgType/Welcome';
-import MotionWelcome  from '@/components/msgType/MotionWelcome';
+import MotionWelcome,{MotionWelcomeImage}  from '@/components/msgType/MotionWelcome';
 import Processing  from '@/components/msgType/Processing';
 
 import SelectType  from '@/components/msgType/SelectType';
@@ -28,11 +28,14 @@ import mConstants from '@/utils/constants';
 //새창열기 전역상태
 import NewChatStateStore from '@/store/newChatStore';
 import * as ChatService from "@/services/chat/index";
+import SendButtonOff from "@/assets/icons/send_btn_off.png";
+import SendButtonOn from "@/assets/icons/send_btn_on.png";
 
 export default function ChatBot() {
   const t = useTranslations('Messages');
   // 세션 상태 확인
   const { data: session, status } = useSession();
+  const { colorMode, toggleColorMode } = useColorMode();
   // Input States
   const [isFocus, setIsFocus] = useState<boolean>(false);
   const [isAccessFirst, setAccessFirst] = useState<boolean>(false);
@@ -54,6 +57,7 @@ export default function ChatBot() {
   const [isOpenDoctorDrawer, setIsOpenDoctorDrawer] = useState<boolean>(false);
   const [isOpenReview, setIsOpenReview] = useState<boolean>(false);
   const navbarIcon = useColorModeValue('gray.500', 'white');
+  const infoIcon = useColorModeValue('#f94848', 'white');
   const isNewChat = NewChatStateStore(state => state.isNew);
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
   const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
@@ -336,7 +340,7 @@ export default function ChatBot() {
   if (isLoading) {
     return (
       <Flex
-        w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
+        w={{ base: '100%',md: `${mConstants.desktopMinWidth}px` }}
         maxWidth={{ base: '100%', md: `${mConstants.desktopMinWidth-30}px` }}
         height={'100%'}
         padding={"10px"}
@@ -351,30 +355,59 @@ export default function ChatBot() {
    }
   return (
     <Flex
+      top={"35px"}
       w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
-      maxWidth={{ base: '100%', md: `${mConstants.desktopMinWidth-30}px` }}
+      maxWidth={'640px'}
       padding={"10px"}
       direction="column"
       position="relative"
     >
-      <Flex direction="column" mx="auto" w={'100%'} overflowY='scroll' minH="calc(100vh - 100px)">
+      <Flex 
+        direction="column" 
+        mx="auto" 
+        w={'100%'} 
+        overflowY='scroll' 
+        //minH="calc(100vh - 100px)"
+      >
         <Flex
           direction="column"
           w="100%"
-          maxH="calc(100vh - 200px)" /* 여기가 하단 스크롤 영역 영향 받음 */
+          maxH="calc(100vh - 100px)" /* 여기가 하단 스크롤 영역 영향 받음 */
+          minH="calc(100vh - 100px)"
           overflowY='auto'
           mx="auto"
           display={outputCode ? 'flex' : 'none'}
           mb={'auto'}
           ref={scrollRef}
         >
-          <Box>
+          <Box 
+            display={outputCode?.length == 0 ? 'flex' : 'none'}
+            flexDirection={'column'}
+            justifyContent={'center'}
+            alignItems={'center'}
+            paddingTop={{base : "70px", md : "60px"}}
+          >
             {/* <Welcome 
               msg={`${t("welcome_msg",{app_name:"AIGA"})}`}
               onSendButton={onSendButton}
             /> */}
+            <MotionWelcomeImage
+              pt="20px"
+            />
             <MotionWelcome 
-              msg={`AIGA`}
+              msg={`안녕하세요!`}
+              pt="20px"
+              classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
+            />
+            <MotionWelcome 
+              msg={`맞춤형 의사추천 챗봇 AIGA입니다.`}
+              pt="10px"
+              classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
+            />
+            <MotionWelcome 
+              msg={`어디가 아프거나 불편하신가요?`}
+              pt="10px"
+              classNames="opening_box_gray"
             />
           </Box>
           <Box>
@@ -511,7 +544,7 @@ export default function ChatBot() {
               <Box
                 position={'absolute'}
                 right="10px"
-                bottom={{base : "100px", md:"150px"}}
+                bottom={{base : "100px", md:"50px"}}
                 width="50px"
                 height={"50px"}
                 zIndex={10}
@@ -550,6 +583,7 @@ export default function ChatBot() {
         >
           <Box 
             w={{ base: '100%', md: `${mConstants.desktopMinWidth-10}px` }}
+            maxWidth={'640px'}
             position={'relative'}
             display={'flex'} 
             flexDirection={'row'}
@@ -565,52 +599,45 @@ export default function ChatBot() {
               alignItems={'center'}
             >
               <Box display='flex' alignItems='center' gap='5px' width={"90%"}>
-                <Icon as={MdInfoOutline} width="20px" height="20px" color={navbarIcon} />
+                <Icon as={MdInfoOutline} width="20px" height="20px" color={infoIcon} />
                 <Text fontSize='0.8rem' color='gray.500' lineHeight={'0.8rem'}>
-                  AIGA는 의료행위가 아니며 또한 실수 할 수 있습니다. 그 어떠한 책임도 안집니다. 
+                  AIGA는 실수를 할 수 있습니다. 본 AI서비스는 의료행위가 아니며 답변에 어떠한 책임도 지지 않습니다.
                 </Text>
               </Box>
             </Box>
             <Textarea
-              minH="40px"
+              minH="50px"
+              //minH="unset"
+              resize="vertical"
               h="100%"
-              maxH="55px"
+              maxH="100px"
               border="1px solid"
               borderColor={borderColor}
+              bg={isFocus ? 'transparent' :'#f4f6fa'}
               readOnly={isReceiving}
-              borderRadius="15px"
-              me="10px"
+              borderRadius="25px"
+              //me="10px"
               fontSize="sm"
               fontWeight="500"
               _focus={{ borderColor: 'none' }}
               color={inputColor}
               _placeholder={placeholderColor}
               value={inputCode}
-              placeholder="Type your message here..."
+              placeholder="메시지 입력"
               onChange={handleChange}
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
               id={"textarea_content"}
             />
-            <Button
-              variant="primary"
-              py="20px"
-              px="16px"
-              fontSize="sm"
-              borderRadius="15px"
-              ms="auto"
-              w={{ base: '160px', md: '210px' }}
-              h="54px"
-              _hover={{
-                boxShadow:
-                  '0px 21px 27px -10px rgba(96, 60, 255, 0.48) !important',
-                bg: 'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%) !important',
-                _disabled: {
-                  bg: 'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)',
-                },
-              }}
-              isLoading={loading ? true : false}
-              id="butto_stop"
+            <Box 
+              display={'flex'} 
+              position={'absolute'}
+              bottom={'0px'}
+              right={'10px'}
+              w={'55px'}
+              height={'55px'}
+              justifyContent={'flex-end'}
+              alignItems={'center'}
             >
               {
                 isReceiving
@@ -618,9 +645,9 @@ export default function ChatBot() {
                 <Box onClick={() => onHandleStopRequest()}>
                   <Image src={LoadingBar} alt="LoadingBar" style={{width:'30px', height:'30px'}} /> 
                 </Box>
-                
                 :
                 <Box
+                  zIndex={444}
                   onClick={() => { 
                     if ( !isReceiving ) {
                       handleTranslate(inputCode);
@@ -636,10 +663,24 @@ export default function ChatBot() {
                     }
                   }}
                 >
-                  <Text>전송</Text>
+                  {
+                    isFocus 
+                    ?
+                    <Image 
+                      src={SendButtonOn}
+                      alt="send"
+                      style={{width:'32px',objectFit: 'contain'}}
+                    />
+                    :
+                    <Image 
+                      src={SendButtonOff}
+                      alt="send"
+                      style={{width:'32px',objectFit: 'contain'}}
+                    />
+                  }
                 </Box>
               }
-            </Button>
+            </Box>
           </Box>
         </Flex>
         {

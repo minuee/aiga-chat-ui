@@ -1,6 +1,5 @@
 import React from 'react';
 import { TypeAnimation } from 'react-type-animation';
-import { useColorMode } from '@chakra-ui/react';
 type TypeAnimationProps = {
     msg: string;
 };

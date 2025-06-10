@@ -40,7 +40,7 @@ function NoticerModal(props: NoticerModalProps) {
       <Drawer
         isOpen={isOpen}
         onClose={setClose}
-        placement={'left'}
+        placement={'end'}
       >
         <DrawerOverlay />
         <DrawerContent

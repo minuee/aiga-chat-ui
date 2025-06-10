@@ -9,11 +9,11 @@ type Props = {
 export default function PageLayout({children, title}: Props) {
   return (
     <>
-        <AppWrappers>
-            <SessionProvider>
-                {children}
-            </SessionProvider>
-        </AppWrappers>
+      <AppWrappers>
+          <SessionProvider>
+              {children}
+          </SessionProvider>
+      </AppWrappers>
     </>
   );
 }

@@ -1,5 +1,7 @@
 import React from 'react';
-import { Slider,SliderTrack,SliderFilledTrack,SliderThumb,SliderMark, } from '@chakra-ui/react';
+import { Slider,SliderTrack,SliderFilledTrack,SliderThumb,SliderMark,Icon } from '@chakra-ui/react';
+import { MdOutlineStarPurple500 } from 'react-icons/md';
+
 type SliderProps = {
     data: any;
     setInputs: (value:any) => void;
@@ -9,11 +11,19 @@ const labelStylesStart = {
   mt: '2',
   ml: '0',
   fontSize: 'sm',
+  color:'#7F879B'
+}
+const labelStylesMiddle = {
+  mt: '2',
+  ml: '1',
+  fontSize: 'sm',
+  color:'#7F879B'
 }
 const labelStylesEnd = {
   mt: '2',
   ml: '-2.5',
   fontSize: 'sm',
+  color:'#7F879B'
 }
 
 const SliderScreen = ({ data, setInputs }:SliderProps) => {
@@ -36,6 +46,18 @@ const SliderScreen = ({ data, setInputs }:SliderProps) => {
           <SliderMark value={0} {...labelStylesStart}>
             0
           </SliderMark>
+          <SliderMark value={1} {...labelStylesMiddle}>
+            1
+          </SliderMark>
+          <SliderMark value={2} {...labelStylesMiddle}>
+            2
+          </SliderMark>
+          <SliderMark value={3} {...labelStylesMiddle}>
+            3
+          </SliderMark>
+          <SliderMark value={4} {...labelStylesMiddle}>
+            4
+          </SliderMark>
           <SliderMark value={5} {...labelStylesEnd}>
             5
           </SliderMark>
@@ -45,7 +67,7 @@ const SliderScreen = ({ data, setInputs }:SliderProps) => {
             bg='blue.500'
             color='white'
             mt='3'
-            ml='-3'
+            ml='-2'
             w='6'
             fontSize={'13px'}
             display={showTooltip ? 'block' : 'none'}
@@ -53,9 +75,13 @@ const SliderScreen = ({ data, setInputs }:SliderProps) => {
             {data}
           </SliderMark>
         <SliderTrack>
-          <SliderFilledTrack />
+          <SliderFilledTrack 
+            bgColor="#97E2D1"
+          />
         </SliderTrack>
-        <SliderThumb bg={'blue.500'} />
+        <SliderThumb bg={'white'} boxSize={7}>
+          <Icon color='gold' as={MdOutlineStarPurple500}  />
+        </SliderThumb>
       </Slider>
     </>
   )

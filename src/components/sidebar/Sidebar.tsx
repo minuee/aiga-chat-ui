@@ -2,15 +2,14 @@
 import React, { PropsWithChildren } from 'react';
 
 // chakra imports
-import { Box,Flex,Drawer,DrawerBody,Icon,useColorModeValue,DrawerOverlay,useDisclosure,DrawerContent,DrawerCloseButton } from '@chakra-ui/react';
+import { Box,Flex,Text,Drawer,DrawerBody,Icon,useColorModeValue,DrawerOverlay,useDisclosure,DrawerContent,DrawerCloseButton } from '@chakra-ui/react';
 import Content from '@/components/sidebar/components/Content';
 import { renderThumb,renderTrack,renderView } from '@/components/scrollbar/Scrollbar';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 import mConstants from '@/utils/constants';
-import { IoMenuOutline } from 'react-icons/io5';
 import { IRoute } from '@/types/navigation';
 import { isWindowAvailable } from '@/utils/navigation';
-
+import { MdOutlineArrowBack,MdOutlineReorder,MdTableRows,MdOutlineMenu } from "react-icons/md";
 export interface SidebarProps extends PropsWithChildren {
   routes: IRoute[];
   [x: string]: any;
@@ -22,6 +21,7 @@ function Sidebar(props: SidebarProps) {
   let shadow = useColorModeValue( '14px 17px 40px 4px rgba(112, 144, 176, 0.08)','unset' );
   // Chakra Color Mode
   let sidebarBg = useColorModeValue('white', 'navy.800');
+  
   let sidebarRadius = '14px';
   let sidebarMargins = '0px';
   // SIDEBAR
@@ -31,7 +31,7 @@ function Sidebar(props: SidebarProps) {
         bg={sidebarBg}
         transition={variantChange}
         w="100%"
-        maxW={`${mConstants.modalMaxWidth-10}px`}
+        maxW={`${mConstants.modalMaxWidth}px`}
         ms={{ sm: '16px' }}
         my={{ sm: '16px' }}
         h="calc(100vh - 32px)"
@@ -61,23 +61,23 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
   let menuColor = useColorModeValue('gray.400', 'white');
   // // SIDEBAR
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const basicColor = useColorModeValue('white', 'white');
+  const navbarIcon = useColorModeValue('#2b8fff', 'gray.500');
   const { routes } = props;
   return (
     <Flex 
       //display={{ sm: 'flex', xl: 'none' }} 
       alignItems="center"
     >
-      <Flex w="max-content" h="max-content" onClick={onOpen}>
-        <Icon
-          as={IoMenuOutline}
-          color={menuColor}
-          my="auto"
-          w="20px"
-          h="20px"
-          me="10px"
-          _hover={{ cursor: 'pointer' }}
-        />
+      <Flex w="max-content" h="max-content"  alignItems={'center'}>
+        <Box onClick={onOpen} alignItems={'center'} display={'flex'} cursor={'pointer'}>
+          <Icon as={MdOutlineMenu} width="24px" height="24px" color={basicColor} />
+        </Box>
+        <Box display={'flex'} minW={'52px'} height={'28px'} justifyContent={'center'} alignItems={'center'} bg={navbarIcon} borderRadius={'5px'}>  
+          <Text fontSize={'17px'} color={basicColor}>
+            로그인
+          </Text>
+        </Box>
       </Flex>
       <Drawer
         isOpen={isOpen}
@@ -91,7 +91,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
         <DrawerOverlay />
         <DrawerContent
           w="100%"
-          maxW={`${mConstants.modalMaxWidth-10}px`} 
+          maxW={`${mConstants.modalMaxWidth}px`} 
           bg={sidebarBackgroundColor}
         >
           <DrawerCloseButton

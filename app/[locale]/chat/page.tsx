@@ -8,8 +8,7 @@ import { Box, SkeletonCircle, SkeletonText, useDisclosure } from '@chakra-ui/rea
 import { usePathname } from 'next/navigation';
 import routes from '@/routes';
 import { getActiveRoute, getActiveNavbar } from '@/utils/navigation';
-import Footer from '@/components/footer/FooterAdmin';
-import Navbar from '@/components/navbar/NavbarAdmin';
+import Navbar from '@/components/navbar/Navbar';
 import mConstants from '@/utils/constants';
 import UserStateStore from '@/store/userStore';
 import ConfigInfoStore from '@/store/configStore';
@@ -69,24 +68,26 @@ export default function Index() {
 
   return (
     <PageLayout title="AIGA Chatbot">
-      <Box display={'flex'} justifyContent={'center'}>
+      <Box display={'flex'} justifyContent={'center'} >
+        
         <Box
-          pt={{ base: '60px', md: '100px' }}
+          //pt={{ base: '60px', md: '100px' }}
           minHeight="100vh"
           height="100%"
           overflow="hidden" /* 여기가 중요 */
           position="relative"
           maxHeight="100%"
-          w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
-          maxWidth={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
-          transition="all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1)"
-          transitionDuration=".2s, .2s, .35s"
-          transitionProperty="top, bottom, width"
-          transitionTimingFunction="linear, linear, ease"
-          borderLeft={'1px solid #e0e0e0'}
-          borderRight={'1px solid #e0e0e0'}
+          //width='640px'
+          w={{ base: '100%', md : `${mConstants.desktopMinWidth}px`  }}
+          maxW={'640px'}
+          //transition="all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1)"
+          //transitionDuration=".2s, .2s, .35s"
+          //transitionProperty="top, bottom, width"
+          //transitionTimingFunction="linear, linear, ease"
+          //borderLeft={'1px solid #e0e0e0'}
+          //borderRight={'1px solid #e0e0e0'}
         >
-          <Box>
+          <Box  width='640px'>
             <Navbar
               onOpen={onOpen}
               logoText={'AIGA Beta'}
@@ -97,7 +98,8 @@ export default function Index() {
           <Box
             display={'flex'}
             alignItems={'center'}
-            p={{ base: '20px', lg: '20px' }}
+            p={'20px'}
+           
           >
             <SubPage />
           </Box>

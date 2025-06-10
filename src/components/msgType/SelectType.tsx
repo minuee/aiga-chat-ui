@@ -21,7 +21,7 @@ const SelectType = ({
       width={'auto'}
       overflowX={'auto'}
     >
-      <Flex pl="40px" pt="10px">
+      <Flex pl="0px" pt="10px">
         <Stack direction='row' spacing={4}>
           <Button rightIcon={<Md13Mp />} colorScheme='teal' variant='outline' onClick={() => onSendButton('system_text')} id="button_type_text">
             텍스트
