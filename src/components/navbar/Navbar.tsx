@@ -74,7 +74,7 @@ export default function AdminNavbar(props: {
       justifyContent={{ xl: 'center' }}
       top={0}
       width={{base:'100%',md: `${mConstants.desktopMinWidth}px`}}
-      maxW={'640px'}
+      maxW={`${mConstants.desktopMinWidth}px` }
     >
       <Flex
         w={{base:'100%',md:`${mConstants.desktopMinWidth}px`}}
@@ -82,7 +82,7 @@ export default function AdminNavbar(props: {
         //flexDirection={{ base: 'row', sm: 'column' , md: 'row' , lg: 'row'}}
         alignItems={{ xl: 'center' }}
       >
-        <Box display={'flex'} flex={1} pl={"10px"} alignItems={'center'}>
+        <Box display={'flex'} flex={1} pl={"20px"} alignItems={'center'}>
           <Image 
             src={LogoImage}
             alt="Aiga Logo"

@@ -11,8 +11,10 @@ import { globalStyles } from './styles';
 
 const breakpoints = {
   base: '0em',
-  sm: '30em',
-  md: '40em',
+  //'mobile': '30em',
+  sm: '350px',
+  sm2 : '400px',
+  md: '640px',
   lg: '62em',
   xl: '80em',
   '2xl': '96em',
@@ -20,7 +22,6 @@ const breakpoints = {
 
 
 export default extendTheme(
-  breakpoints,
   globalStyles,
   badgeStyles, // badge styles
   buttonStyles, // button styles
@@ -31,6 +32,7 @@ export default extendTheme(
   switchStyles, // switch styles
   CardComponent, // card component
   {
+    breakpoints,
     fonts: {
       heading: `'Heading Font Name', sans-serif`,
       body: `'Body Font Name', sans-serif`,

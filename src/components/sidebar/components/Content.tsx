@@ -13,10 +13,14 @@ import React, { useRef } from 'react';
 import { PropsWithChildren } from 'react';
 import { IRoute } from '@/types/navigation';
 import { FiLogOut } from 'react-icons/fi';
-import { MdOutlineSettings,MdArrowBack,MdLogout } from 'react-icons/md';
+import { MdOutlineSettings,MdArrowBack,MdOutlineClose } from 'react-icons/md';
 import mConstants from '@/utils/constants';
+import * as history from '@/utils/history';
+import { usePathname, useRouter } from 'next/navigation';
+import * as mCookie from "@/utils/cookies";
 //새창열기 전역상태
 import NewChatStateStore from '@/store/newChatStore';
+import { ModalMypageStore } from '@/store/modalStore';
 import HistoryItem from '@/components/text/HistoryItem';
 
 const mockupHistoryData = [
@@ -50,8 +54,11 @@ interface SidebarContent extends PropsWithChildren {
 function SidebarContent(props: SidebarContent) {
   const { onParentClose } = props;  
   const [ isLoading, setIsLoading] = React.useState(true);
-  const [isOpenSetupModal, setIsOpenSetupModal] = React.useState<boolean>(false);
-
+  const { isOpenSetupModal } = ModalMypageStore(state => state);
+  const setIsOpenSetupModal = ModalMypageStore((state) => state.setIsOpenSetupModal);
+  const pathname = usePathname();
+  const router = useRouter();
+  const pathnameRef = React.useRef(pathname);
   const [historyData, setHistoryData] = React.useState(mockupHistoryData);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const textColor = useColorModeValue('navy.700', 'white');
@@ -91,6 +98,21 @@ function SidebarContent(props: SidebarContent) {
     });
     setHistoryData(newHistoryData);
   } 
+
+  const onSendProfileButton = async(  ) => {
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_10}`);
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`)
+    setIsOpenSetupModal(true);
+  }
+
+  const fn_close_modal_mypage = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenSetupModal(false);
+    router.replace(`/${locale}/chat#drawer_history`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname','drawer_history')
+    }, 200);
+  }
 
   // SIDEBAR
   return (
@@ -219,7 +241,7 @@ function SidebarContent(props: SidebarContent) {
               justifyContent={'center'}
               alignItems="center"
               color={iconColor}
-              onClick={()=> setIsOpenSetupModal(true)}
+              onClick={()=> onSendProfileButton()}
             >
               <Box display={'flex'} justifyContent={'center'} >
                 <Icon as={MdOutlineSettings} width="20px" height="20px" color="inherit" />
@@ -242,7 +264,7 @@ function SidebarContent(props: SidebarContent) {
           >
             <ModalOverlay />
             <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000} margin={0} padding={0}>
-              <ModalHeader bg={navbarBg}>
+              {/* <ModalHeader bg={navbarBg}>
                 <Flex flexDirection={'row'}>
                   <Box flex={1} display={'flex'} alignItems={'center'} onClick={() => setIsOpenSetupModal(false)} cursor={'pointer'}>
                     <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
@@ -254,11 +276,49 @@ function SidebarContent(props: SidebarContent) {
                    
                   </Box>
                 </Flex>
+              </ModalHeader> */}
+              <ModalHeader bg={navbarBg}>
+                <Flex flexDirection={'row'}>
+                  <Box 
+                    flex={1} 
+                    display={{base :'flex', md:'none'}} 
+                    alignItems={'center'} 
+                    onClick={() => fn_close_modal_mypage()} 
+                    cursor={'pointer'}
+                  >
+                    <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
+                  </Box>
+                  <Box 
+                    flex={3} 
+                    display={{base :'none', md:'flex'}} 
+                    alignItems={'center'} 
+                    >
+                    <Text color={'white'} noOfLines={1}>마이페이지</Text>
+                  </Box>
+                  <Box 
+                    flex={3} 
+                    display={{base :'flex', md:'none'}} 
+                    alignItems={'center'} 
+                    justifyContent={'flex-end'}
+                  >
+                    <Text color={'white'} noOfLines={1}>마이페이지</Text>
+                  </Box>
+                  <Box 
+                    flex={1} 
+                    display={{base :'none', md:'flex'}} 
+                    justifyContent={'flex-end'}
+                    alignItems={'center'} 
+                    onClick={() => fn_close_modal_mypage()} 
+                    cursor={'pointer'}
+                    >
+                    <Icon as={MdOutlineClose} width="30px" height="30px" color="white" />
+                  </Box>
+                </Flex>
               </ModalHeader>
               <ModalBody overflowY="auto" maxH="100vh">
                 <ProfileSetting
                   isOpen={isOpenSetupModal}
-                  setClose={() => setIsOpenSetupModal(false)}
+                  setClose={() => fn_close_modal_mypage()}
                 />
               </ModalBody>
             </ModalContent>

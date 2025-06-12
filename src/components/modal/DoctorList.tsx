@@ -3,15 +3,25 @@ import React, { PropsWithChildren } from 'react';
 // chakra imports
 import { 
   Box,Flex,Text,SkeletonCircle,SkeletonText,Tag,TagLabel, useColorModeValue,Stack,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,Icon,
-  Popover,PopoverTrigger,PopoverContent,PopoverHeader,PopoverArrow,PopoverBody,
+  Popover,PopoverTrigger,PopoverContent,PopoverHeader,PopoverArrow,PopoverBody,TagLeftIcon,
 } from '@chakra-ui/react';
+import * as history from '@/utils/history';
+import { usePathname, useRouter } from 'next/navigation';
+import * as mCookie from "@/utils/cookies";
 import DoctorItems from "@/components/text/DoctorItem";
 import NextImage from 'next/legacy/image';
 import functions from '@/utils/functions';
 import { useGeoLocation } from '@/hooks/useGeoLocation';
 import mConstants from '@/utils/constants';
 import DoctorDetail  from '@/components/modal/Doctor';
-import { MdArrowBack } from 'react-icons/md';
+import { ModalDoctorDetailStore,DoctorFromListStore } from '@/store/modalStore';
+
+import { MdArrowBack,MdInsertEmoticon,MdOutlineClose } from 'react-icons/md';
+import { TbBook2 } from "react-icons/tb";
+import { BsGeoAlt } from "react-icons/bs";
+import Image from 'next/image';
+import IconSearch from "@/assets/icons/img-search.png";
+
 const geolocationOptions = {
   enableHighAccuracy: true,
   timeout: 1000 * 10,
@@ -54,11 +64,19 @@ export interface DoctorListModalProps extends PropsWithChildren {
 }
 
 function DoctorListModal(props: DoctorListModalProps) {
+  
   const { isOpen, setClose, doctorData } = props;
+  const pathname = usePathname();
+  const router = useRouter();
+  const pathnameRef = React.useRef(pathname);
+
+  const { isOpenDoctorModal } = ModalDoctorDetailStore(state => state);
+  const setIsOpenDoctorModal = ModalDoctorDetailStore((state) => state.setOpenDoctorDetailModal);
+  const { isFromDoctorDepth2 } = DoctorFromListStore(state => state);
+  const setFromDoctorDepth2 = DoctorFromListStore((state) => state.setFromDoctorDepth2);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isReLoading, setIsReLoading] = React.useState(false);
   const [selectedDoctor, setSelectedDoctor] = React.useState<any>(null);
-  const [isOpenDoctorModal, setIsOpenDoctorModal] = React.useState<boolean>(false);
   const [inputs, setInputs] = React.useState<any>({
     sortType : 'all',
     latitude : null,
@@ -70,12 +88,28 @@ function DoctorListModal(props: DoctorListModalProps) {
   const { location, error } = useGeoLocation(geolocationOptions)
   const skeletonColor = useColorModeValue('white', 'gray.700');
   const textColor = useColorModeValue('white', 'navy.700')
-  const tabSelectedBgColor = useColorModeValue('green', 'green')
-  const tabDefaultBgColor = useColorModeValue('gray', 'white');
+  const tabSelectedBgColor = useColorModeValue('blue.100', 'green')
+  const tabDefaultBgColor = useColorModeValue('gray.300', 'white');
+  const tabSelectedTextColor = useColorModeValue('white', 'white')
+  const tabDefaultTextColor = useColorModeValue('gray.500', 'white');
   const haederBgColor = useColorModeValue('white', 'navy.700');
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
   const textColor2 = useColorModeValue('black', 'gray.700');
+  let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
+  const flexRef = React.useRef<HTMLDivElement>(null);
 
+  const handleScroll = () => {
+    if (flexRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = flexRef.current;
+      // 스크롤이 끝에 도달했는지 확인
+      if ( ( scrollLeft + clientWidth +100 ) >= scrollWidth ) {
+        setShowGradient(false);
+      } else {
+        setShowGradient(true);
+      }
+    }
+  };
+  
   React.useEffect(() => {
     setDoctors(mockupDoctors)
     setTimeout(() => {
@@ -105,6 +139,14 @@ function DoctorListModal(props: DoctorListModalProps) {
     }
   }
 
+  const makeTextColor = (sortType:string = 'all') => {
+    if ( sortType == inputs.sortType ) {
+      return tabSelectedTextColor;
+    }else{
+      return tabDefaultTextColor
+    }
+  }
+
   const onHandleSortChange  = ( sortType:string) => {
     if ( sortType !== inputs.sortType ) {
       setIsReLoading(true);
@@ -129,6 +171,35 @@ function DoctorListModal(props: DoctorListModalProps) {
     }
   }
 
+  React.useEffect(() => {
+    const flexElement = flexRef.current;
+    if (flexElement) {
+      flexElement.addEventListener('scroll', handleScroll);
+    }
+    return () => {
+      if (flexElement) {
+        flexElement.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []);
+
+  const fn_close_modal_doctor_detail = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenDoctorModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_1}`);
+    setTimeout(() => {
+      setFromDoctorDepth2(false)
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_1}`)
+    }, 200);
+  }
+
+  const onSendDoctorButton = async( data : any ) => {
+    setSelectedDoctor(data);
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_2_2}`);
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2_2}`)
+    setFromDoctorDepth2(true)
+    setIsOpenDoctorModal(true);
+  }
   if ( isLoading ) {
     return (
       <Box padding='6' boxShadow='lg' bg={skeletonColor}>
@@ -140,10 +211,10 @@ function DoctorListModal(props: DoctorListModalProps) {
 
     return (
       <>
-        <Flex display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'20px'}>
+        <Flex flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'20px'}>
           {
             isReLoading && (
-              <Flex position='absolute' left={0} top={0} width='100%' height='100%' display={'flex'} justifyContent={'center'}  backgroundColor={'#000000'} opacity={0.7} zIndex="100">
+              <Flex position='absolute' left={0} top={0} width='100%' height='100%'  justifyContent={'center'}  backgroundColor={'#000000'} opacity={0.7} zIndex="100">
                 <Box padding='6' boxShadow='lg' width={"300px"} height={"calc( 100vh / 2 )"} display={'flex'} flexDirection={'column'}  justifyContent={'center'} alignItems={'center'}>
                   <NextImage
                       width="100"
@@ -157,7 +228,7 @@ function DoctorListModal(props: DoctorListModalProps) {
             )
           }
           <Stack
-            position='absolute' left={"20px"} top={"60px"} width="96%"
+            position='absolute' left={"0"} top={"65px"} width="100%"
             sx={{
               '&::after': {
                 content: showGradient ? '""' : 'none', 
@@ -171,9 +242,9 @@ function DoctorListModal(props: DoctorListModalProps) {
               },
             }}
           >
-            <Box 
-              display={"flex"}
-              width={"calc( 100% - 40px)"} 
+            <Flex 
+              width={"100%"} 
+              padding="15px 20px"
               flexDirection={'row'} alignItems={'center'} 
               fontSize={'14px'} minHeight={"40px"} 
               borderBottom={"1px solid #ccc"} zIndex={1000} 
@@ -181,18 +252,19 @@ function DoctorListModal(props: DoctorListModalProps) {
               opacity={ isReLoading ? 0.7 : 1}
               overflowX={'auto'} 
               whiteSpace="nowrap"
+              ref={flexRef} 
             >
               <Tag
                 size={'lg'}
                 borderRadius='full'
                 px={5}
                 variant='solid'
-                colorScheme={makeBgColor('all')}
+                bg={makeBgColor('all')}
                 onClick={() => onHandleSortChange('all')}
                 cursor={'pointer'}
                 flexShrink="0"
               >
-                <TagLabel color={textColor}>
+                <TagLabel color={makeTextColor('all')}>
                   전체
                 </TagLabel>
               </Tag>
@@ -202,12 +274,27 @@ function DoctorListModal(props: DoctorListModalProps) {
                 px={5}
                 ml={2}
                 variant='solid'
-                colorScheme={makeBgColor('score')}
+                bg={makeBgColor('experience')}
+                onClick={() => onHandleSortChange('experience')}
+                cursor={'pointer'}
+                flexShrink="0"
+              >
+                <TagLeftIcon boxSize='17px' as={MdInsertEmoticon} color={makeTextColor('experience')} />
+                <TagLabel color={makeTextColor('experience')}>환자 경험</TagLabel>
+              </Tag>
+              <Tag
+                size={'lg'}
+                borderRadius='full'
+                px={5}
+                ml={2}
+                variant='solid'
+                bg={makeBgColor('score')}
                 onClick={() => onHandleSortChange('score')}
                 cursor={'pointer'}
                 flexShrink="0"
               >
-                <TagLabel color={textColor}>평점순</TagLabel>
+                <TagLeftIcon boxSize='17px' as={TbBook2} color={makeTextColor('score')} />
+                <TagLabel color={makeTextColor('score')}>논문 스코어</TagLabel>
               </Tag>
               {
                 ( functions.isEmpty(inputs.latitude) && functions.isEmpty(inputs.longitude) ) ? 
@@ -218,12 +305,13 @@ function DoctorListModal(props: DoctorListModalProps) {
                     px={5}
                     ml={2}
                     variant='solid'
-                    colorScheme={makeBgColor('distance')}
+                    bg={makeBgColor('distance')}
                     onClick={() => onHandleSortChange('distance')}
                     cursor={'pointer'}
                     flexShrink="0"
                   >
-                    <TagLabel color={textColor}>거리순</TagLabel>
+                    <TagLeftIcon boxSize='17px' as={BsGeoAlt} color={makeTextColor('distance')} />
+                    <TagLabel color={makeTextColor('distance')}>거리순</TagLabel>
                   </Tag>
                 )
                 :
@@ -234,16 +322,17 @@ function DoctorListModal(props: DoctorListModalProps) {
                     px={5}
                     ml={2}
                     variant='solid'
-                    colorScheme={makeBgColor('distance')}
+                    bg={makeBgColor('distance')}
                     onClick={() => console.log("dddd")}
                     cursor={'pointer'}
                     flexShrink="0"
                   >
+                    <TagLeftIcon boxSize='17px' as={BsGeoAlt} color={makeTextColor('distance')} />
                     <TagLabel color={textColor}>
                     <Box display={'flex'} alignItems={'center'} ml={2} cursor={'pointer'}>
                       <Popover placement='top-start'>
                         <PopoverTrigger>
-                          <Text color={haederBgColor} >거리순<span style={{color: 'red'}}>*</span></Text>
+                          <Text color={makeTextColor('distance')}>거리순<span style={{color: 'red'}}>*</span></Text>
                         </PopoverTrigger>
                         <PopoverContent bg={'white'}>
                           <PopoverHeader 
@@ -251,13 +340,13 @@ function DoctorListModal(props: DoctorListModalProps) {
                             backgroundColor={'gray.100'}
                             color={textColor2}
                           >
-                            <Text color={textColor2} fontSize={"13px"}>설명</Text>
+                            <Text color={textColor2} fontSize={"15px"}>안내</Text>
                           </PopoverHeader>
                           <PopoverArrow />
                           <PopoverBody width={"100%"}>
                             <Text 
                               color={textColor2} 
-                              fontSize={"12px"}
+                              fontSize={"13px"}
                               isTruncated // 긴 텍스트를 말줄임 처리
                               noOfLines={2} // 또는 여러 줄로 제한하고 싶을 경우
                               wordBreak="break-word" // 단어 단위 줄바꿈
@@ -274,42 +363,79 @@ function DoctorListModal(props: DoctorListModalProps) {
                 )
               }
               <Tag width="40px" border="0px" backgroundColor={"transparent"}></Tag>
-            </Box>
+            </Flex>
           </Stack>
         </Flex>
-
-        <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'}  pt={5} overflowY={'auto'}>
+        <Flex display={'flex'} flexDirection={'column'} minHeight={'200px'}  pt={10} overflowY={'auto'} justifyContent={'center'} alignItems={'center'}>
+          <Image 
+            src={IconSearch}
+            alt="IconSearch"
+            style={{width:'26px',objectFit: 'contain',maxWidth:"26px"}}
+          />
+          <Box display={'flex'} justifyContent={'center'} alignItems={'center'} mt="20px">
+            <Text color='#7F879B' fontSize={'17px'}>조회된 결과가 없습니다.</Text>
+          </Box>
+        </Flex>
+        <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'}  pt={10} overflowY={'auto'}>
           {
             doctors.map((item:any,index:number) => {
               return (
                 <Box key={index}>
                   <DoctorItems
                     data={item}
-                    onSendDoctorButton={(data,ismode)=>{setSelectedDoctor(data);setIsOpenDoctorModal(true)}}
+                    onSendDoctorButton={(data,ismode)=>{onSendDoctorButton(data);}}
                   />
                 </Box>
               )
             })
           }
         </Flex>
-        <Box height={'100px'} />
+        <Box height={'50px'} />
         {
           isOpenDoctorModal && (
             <Modal
-              onClose={() => setIsOpenDoctorModal(false)}
+              onClose={() => fn_close_modal_doctor_detail()}
               isOpen={isOpenDoctorModal}
               scrollBehavior={'inside'}
               size={'full'}
             >
               <ModalOverlay />
               <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1}>
-                <ModalHeader>
+                <ModalHeader bg={navbarBg}>
                   <Flex flexDirection={'row'}>
-                    <Box flex={1} display={'flex'} alignItems={'center'} onClick={() => setIsOpenDoctorModal(false)} cursor={'pointer'}>
-                      <Icon as={MdArrowBack} width="20px" height="20px" color="inherit" />
+                    <Box 
+                      flex={1} 
+                      display={{base :'flex', md:'none'}} 
+                      alignItems={'center'} 
+                      onClick={() => fn_close_modal_doctor_detail()} 
+                      cursor={'pointer'}
+                    >
+                      <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
                     </Box>
-                    <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'flex-end'}>
-                      <Text>{"{{의사명}}"} 프로필</Text>
+                    <Box 
+                      flex={3} 
+                      display={{base :'none', md:'flex'}} 
+                      alignItems={'center'} 
+                     >
+                      <Text color={'white'} noOfLines={1}>{"{의사명} 교수"}</Text>
+                    </Box>
+                    <Box 
+                      flex={3} 
+                      display={{base :'flex', md:'none'}} 
+                      alignItems={'center'} 
+                      justifyContent={'flex-end'}
+                    >
+                      <Text color={'white'} noOfLines={1}>{"{의사명} 교수"}</Text>
+                    </Box>
+                    <Box 
+                      flex={1} 
+                      display={{base :'none', md:'flex'}} 
+                      justifyContent={'flex-end'}
+                      alignItems={'center'} 
+                      onClick={() => fn_close_modal_doctor_detail()} 
+                      cursor={'pointer'}
+                     >
+                      <Icon as={MdOutlineClose} width="30px" height="30px" color="white" />
                     </Box>
                   </Flex>
                 </ModalHeader>
@@ -318,9 +444,6 @@ function DoctorListModal(props: DoctorListModalProps) {
                     data={selectedDoctor}
                   />
                 </ModalBody>
-               {/*  <ModalFooter>
-                  <Button onClick={() => setIsOpenDoctorModal(false)} id="button_close">Close</Button>
-                </ModalFooter> */}
               </ModalContent>
             </Modal>
           )

@@ -13,12 +13,11 @@ const SelectType = ({
   return (
     <Flex 
       w="100%" 
-      mt="10px" 
+      maxWidth={"600px"}
+      mt="50px" 
       flexDirection={'column'}
       justifyContent={'center'}
       alignItems={"flex-start"}
-      minWidth={'100%'}
-      width={'auto'}
       overflowX={'auto'}
     >
       <Flex pl="0px" pt="10px">

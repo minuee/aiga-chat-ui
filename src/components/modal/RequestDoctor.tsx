@@ -49,12 +49,12 @@ function ReviewModal(props: ReviewModalProps) {
       <>
         <Flex display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'20px'}>
           <Box flex={3} flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} padding={'0 10px'} fontSize={'14px'}>
-            <Text fontSize={'1em'}>의사 프로필에 수정이 필요한 내용을 알려주세요</Text>
+            <Text fontSize={'13px'} color="#7F879B">의사 프로필에 수정이 필요한 내용을 알려주세요</Text>
           </Box>
         </Flex>
        
-        <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} padding={'0 10px'} mt={5}>
-          <Box>
+        <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} padding={'0 10px'} mt={3}>
+         {/*  <Box>
             <FormControl variant="floatingLabel">
               <FormLabel>이름<span style={{color: 'red'}}>*</span></FormLabel>
               <Input 
@@ -94,16 +94,15 @@ function ReviewModal(props: ReviewModalProps) {
               </RadioGroup>
             </FormControl>
           </Box>   
-          <Divider orientation='horizontal' my={2}/>
+          <Divider orientation='horizontal' my={2}/> */}
           <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'98%'}>
-            <Text fontSize={'14px'} fontWeight={'bold'}>수정요청사항</Text>
             <Box mt={1}>
               <Textarea 
                 variant={'outline'} 
                 value={inputs.req_comment || ''} 
                 onChange={(e) => setInputs({...inputs, req_comment: e.target.value})} 
                 resize={'none'}  
-                minH={'150px'}
+                minH={'200px'}
                 size={'sm'} 
                 isInvalid={!functions.isEmpty(inputs.req_comment)}
                 placeholder='수정요청 및 기타 문의사항을 입력해주세요 (필수, 최소 10자이상)'
@@ -118,14 +117,25 @@ function ReviewModal(props: ReviewModalProps) {
               width={'99%'} 
               borderRadius={'10px'}
               onClick={() => onHandleRegistReview(inputs)}
-              isDisabled={(functions.isEmpty(inputs.comment) || (inputs.comment && inputs.comment.length < 10)) ? true : false}
+              isDisabled={(functions.isEmpty(inputs.req_comment) || (inputs.req_comment && inputs.req_comment.length < 10)) ? true : false}
               id="button_regist"
             >
-              등록
+              제출하기
             </Button>
           </Box>
+          <Flex display={'flex'} flexDirection={'column'} justifyContent={'center'}  minHeight={'20px'} mt={10}>
+            <Box flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} padding={'0 10px'}>
+              <Text fontSize={'15px'} color="#7F879B" fontWeight={'bold'}>안내 사항</Text>
+            </Box>
+            <Box flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} padding={'0 10px'}>
+              <Text fontSize={'15px'} color="#7F879B" >• 산업안전보건법에 따라 고객 응대 근로자 보호조치를 시행하고 있으며 모든 문의는 기록으로 남습니다.</Text>
+            </Box>
+            <Box flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} padding={'0 10px'}>
+              <Text fontSize={'15px'} color="#7F879B" >• 본 요청은 비회원도 개인정보 제공 없이 제출하실 수 있으므로 이름, 연락처, 주민등록 번호 등 개인을 식별 할 수 있는 정보는 입력하지 마십시오.</Text>
+            </Box>
+          </Flex>
         </Flex>
-        <Box height={'100px'} />
+        <Box height={'50px'} />
       </>
     )
   }

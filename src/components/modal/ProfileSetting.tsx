@@ -6,12 +6,17 @@ import mConstants from '@/utils/constants';
 import RequestForm from '@/components/modal/RequestForm';
 import EntireForm from '@/components/modal/EntireForm';
 import Alert from '@/components/alert/Alert';
-import NoticerModal  from '@/components/modal/Notice';
+import NoticerModal  from '@/components/modal/NoticeList';
 import functions from '@/utils/functions';
 //로그인 전역상태
 import UserStateStore from '@/store/userStore';
 import * as RequestService from "@/services/request/index";
-import { MdOutlineSettings,MdArrowBack,MdLogout } from 'react-icons/md';
+import { MdOutlineClose,MdArrowBack,MdLogout } from 'react-icons/md';
+import { ModalMypageNoticeStore,ModalMypageRequestStore,ModalMypageEntireStore } from '@/store/modalStore';
+import * as history from '@/utils/history';
+import { usePathname, useRouter } from 'next/navigation';
+import * as mCookie from "@/utils/cookies";
+import { SkeletonDefaultMixed } from "@/components/fields/LoadingBar";
 import avatar4 from '/public/img/avatars/myphoto.jpeg';
 import { NextAvatar } from '@/components/image/Avatar';
 import Image from 'next/image';
@@ -29,21 +34,31 @@ export interface ProfileSettingModalProps extends PropsWithChildren {
 function ProfileSettingModal(props: ProfileSettingModalProps) {
   const { isOpen, setClose } = props;
 
+  const pathname = usePathname();
+  const router = useRouter();
+  const pathnameRef = React.useRef(pathname);
   const setLoginUserInfo = UserStateStore((state) => state.setUserState);
   const { nickName, ...userInfo } = UserStateStore(state => state);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isReceiving, setReceiving] = React.useState(false);
   const [isOpenLogoutModal, setIsOpenLogoutModal] = React.useState(false);
-  const [isOpenRequestModal, setIsOpenRequestModal] = React.useState(false);
-  const [isOpenEntireModal, setIsOpenEntireModal] = React.useState(false);
-  const [isOpenNoticeModal, setIsOpenNoticeModal] = React.useState<boolean>(false);
+
+  
+  const { isOpenNoticeListModal } = ModalMypageNoticeStore(state => state);
+  const setIsOpenNoticeListModal = ModalMypageNoticeStore((state) => state.setIsOpenNoticeListModal);
+  const { isOpenMypageRequestModal } = ModalMypageRequestStore(state => state);
+  const setIsOpenMypageRequestModal = ModalMypageRequestStore((state) => state.setIsOpenMypageRequestModal);
+  const { isOpenEntireModal } = ModalMypageEntireStore(state => state);
+  const setIsOpenEntireModal = ModalMypageEntireStore((state) => state.setIsOpenEntireModal);
+
+
   const reviewBtnRef = React.useRef<any>();
   const entireBtnRef = React.useRef<any>();
+  const noticeBtnRef = React.useRef<any>();
+
   const toast = useToast();
   const sidebarBackgroundColor = useColorModeValue('white', 'gray.700');
   const skeletonColor = useColorModeValue('white', 'gray.700');
-  const textColor = useColorModeValue('black', 'gray.700');
-  const colorBtnColor = useColorModeValue('black', 'white');
   const buttonBgColor = useColorModeValue('#2b8fff', 'white');
   const buttonTextColor = useColorModeValue('white', '#2b8fff');
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
@@ -69,7 +84,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         const res:any = await RequestService.setNickname(inputs.nickName);
         console.log("res of setNickname",res)
         if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
-          setIsOpenRequestModal(false);
+          setIsOpenMypageRequestModal(false);
           setReceiving(false);
           toast({
             title: res?.message || "정상적으로 변경 되었습니다.",
@@ -93,7 +108,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         const res:any = await RequestService.setRequest(datas);
         console.log("res of setRequest",res)
         if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
-          setIsOpenRequestModal(false);
+          setIsOpenMypageRequestModal(false);
           setReceiving(false);
           toast({
             title: res?.message || "정상적으로 처리 되었습니다.",
@@ -107,7 +122,6 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       setReceiving(false)
       console.log("error of getNewSessionID",e)
     }
-
   }
 
   const onHandleEntireAction = (inputs: any) => {
@@ -146,12 +160,59 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     }
   }
 
+  const onSendNoticeListButton = async(  ) => {
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_5}`);
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_5}`)
+    setIsOpenNoticeListModal(true);
+  }
+
+  const fn_close_modal_mypage_notice = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenNoticeListModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_10}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`)
+    }, 200);
+  }
+
+  const onSendMyPageRequestButton = async(  ) => {
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_6}`);
+    console.log("pathname onSendMyPageRequestButton",pathnameRef.current)
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_6}`)
+    setIsOpenMypageRequestModal(true);
+  }
+
+  const fn_close_modal_mypage_request = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenMypageRequestModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_10}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`)
+    }, 200);
+  }
+
+  const onSendMyPageEntireButton = async(  ) => {
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_7}`);
+    console.log("pathname onSendMyPageRequestButton",pathnameRef.current)
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_7}`)
+    setIsOpenEntireModal(true);
+  }
+
+  const fn_close_modal_mypage_entire = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenEntireModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_10}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`)
+    }, 200);
+  }
+
   if ( isLoading ) {
     return (
-      <Box padding='6' boxShadow='lg' bg={skeletonColor}>
-        <SkeletonCircle size='10' />
-        <SkeletonText mt='4' noOfLines={4} spacing='4' skeletonHeight='2' />
-      </Box>
+      <SkeletonDefaultMixed
+        isOpen={isLoading}
+        lineNum={4}
+      />
     )
   }else{
 
@@ -163,9 +224,6 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               <NextAvatar h="48px" w="48px" src={avatar4} me="10px" />
               <Text fontSize={'17px'} fontWeight={'bold'}>minuee@kormedi.com</Text>
             </Box>
-            {/* <Button colorScheme='blue' variant='solid' size={'sm'} onClick={() => setIsOpenLogoutModal(true)} id="buttin_logout">
-              로그아웃
-            </Button> */}
             <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} onClick={() => setIsOpenLogoutModal(true)}>
               <Icon as={MdLogout} width="20px" height="20px" color="inherit" />
             </Box>
@@ -214,7 +272,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
             </Box>              
             <Flex justifyContent={'center'} flexDirection={'column'} pb="20px">
               <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px">
-                <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => setIsOpenNoticeModal(true)} cursor={'pointer'}>
+                <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => onSendNoticeListButton()} cursor={'pointer'}>
                   <Image 
                     src={IconNotice}
                     alt="IconNotice"
@@ -222,7 +280,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                   />
                   <Text fontSize={'15px'} ml={2}>공지사항</Text>
                 </Box>
-                <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => setIsOpenNoticeModal(true)} cursor={'pointer'}>
+                <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => onSendNoticeListButton()} cursor={'pointer'}>
                   <Image 
                     src={IconDetail}
                     alt="IconDetail"
@@ -230,7 +288,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                   />
                 </Box>
               </Box>
-              <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={2}>
+              <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
                 <Box display={'flex'} alignItems={'center'} flex={5} >
                   <Image 
                     src={IconPolicy}
@@ -247,7 +305,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                   />
                 </Box>
               </Box>
-              <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={2}>
+              <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
                 <Box display={'flex'} alignItems={'center'} flex={5} >
                   <Image 
                     src={IconPerson}
@@ -264,8 +322,8 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                   />
                 </Box>
               </Box>
-              <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={2}>
-                <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => setIsOpenRequestModal(true)} cursor={'pointer'}>
+              <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
+                <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => onSendMyPageRequestButton()} cursor={'pointer'}>
                   <Image 
                     src={IconRequest}
                     alt="IconRequest"
@@ -273,7 +331,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                   />
                   <Text fontSize={'15px'} ml={2}>의견 보내기</Text>
                 </Box>
-                <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => setIsOpenRequestModal(true)} cursor={'pointer'}>
+                <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => onSendMyPageRequestButton()} cursor={'pointer'}>
                   <Image 
                     src={IconDetail}
                     alt="IconDetail"
@@ -284,29 +342,16 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               
             </Flex>
           </Flex>
-          
-          {/* <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} mt={5}>
-            <Text fontSize={'16px'} fontWeight={'bold'}>고객지원</Text>
-            <Box my={2}>
-              <Box onClick={() => setIsOpenNoticeModal(true)} cursor={'pointer'}>
-                <Text fontSize={'14px'} fontWeight={'normal'} lineHeight={'2em'}>공지사항</Text>
-              </Box>
-              <Text fontSize={'14px'} fontWeight={'normal'} lineHeight={'2em'}>이용약관</Text>
-              <Text fontSize={'14px'} fontWeight={'normal'} lineHeight={'2em'}>개인정보 처리방침</Text>
-              <Box onClick={() => setIsOpenRequestModal(true)} cursor={'pointer'}>
-                <Text fontSize={'14px'} fontWeight={'normal'} lineHeight={'2em'}>의견 보내기</Text>
-              </Box>
-            </Box>
-          </Flex> */}
+
           <Flex 
             display={'flex'} 
             height={'50px'} 
             width="100%"
-            position={'fixed'}
+            position={'absolute'}
             right={0}
             bottom={0}
             justifyContent={'flex-end'}
-            onClick={() => setIsOpenEntireModal(true)} 
+            onClick={() => onSendMyPageEntireButton()} 
             cursor={'pointer'}
             pr="20px"
           >
@@ -315,11 +360,11 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         </Flex>
         <Box height={'100px'} />
         {
-          isOpenRequestModal && (   
+          isOpenMypageRequestModal && (   
             <Modal
-              onClose={() => setIsOpenRequestModal(false)}
+              onClose={() => fn_close_modal_mypage_request()}
               finalFocusRef={reviewBtnRef}
-              isOpen={isOpenRequestModal}
+              isOpen={isOpenMypageRequestModal}
               scrollBehavior={'inside'}
               blockScrollOnMount={false}
               preserveScrollBarGap={true}
@@ -329,23 +374,48 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               <ModalOverlay />
               <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
               <ModalHeader bg={navbarBg}>
-                <Flex flexDirection={'row'}>
-                  <Box flex={1} display={'flex'} alignItems={'center'} onClick={() => setIsOpenRequestModal(false)} cursor={'pointer'}>
-                    <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
-                  </Box>
-                  <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'center'}>
-                    <Text color={'white'}>의견 보내기</Text>
-                  </Box>
-                  <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'flex-end'}>
-                   
-                  </Box>
-                </Flex>
-              </ModalHeader>
+                  <Flex flexDirection={'row'}>
+                    <Box 
+                      flex={1} 
+                      display={{base :'flex', md:'none'}} 
+                      alignItems={'center'} 
+                      onClick={() => fn_close_modal_mypage_request()} 
+                      cursor={'pointer'}
+                    >
+                      <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
+                    </Box>
+                    <Box 
+                      flex={3} 
+                      display={{base :'none', md:'flex'}} 
+                      alignItems={'center'} 
+                      >
+                      <Text color={'white'} noOfLines={1}>의견 보내기</Text>
+                    </Box>
+                    <Box 
+                      flex={3} 
+                      display={{base :'flex', md:'none'}} 
+                      alignItems={'center'} 
+                      justifyContent={'flex-end'}
+                    >
+                      <Text color={'white'} noOfLines={1}>의견 보내기</Text>
+                    </Box>
+                    <Box 
+                      flex={1} 
+                      display={{base :'none', md:'flex'}} 
+                      justifyContent={'flex-end'}
+                      alignItems={'center'} 
+                      onClick={() => fn_close_modal_mypage_request()} 
+                      cursor={'pointer'}
+                      >
+                      <Icon as={MdOutlineClose} width="30px" height="30px" color="white" />
+                    </Box>
+                  </Flex>
+                </ModalHeader>
                 {/* <ModalCloseButton color={colorBtnColor} /> */}
                 <ModalBody overflowY="auto" maxH="100vh">
                   <RequestForm
-                    isOpen={isOpenRequestModal}
-                    setClose={() => setIsOpenRequestModal(false)}
+                    isOpen={isOpenMypageRequestModal}
+                    setClose={() => fn_close_modal_mypage_request()}
                     onHandleRequest={(inputs) => onHandleRequestAction(inputs)}
                     isReceiving={isReceiving}
                   />
@@ -357,7 +427,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         {
           isOpenEntireModal && (   
             <Modal
-              onClose={() => setIsOpenEntireModal(false)}
+              onClose={() => fn_close_modal_mypage_entire()}
               finalFocusRef={entireBtnRef}
               isOpen={isOpenEntireModal}
               scrollBehavior={'inside'}
@@ -369,23 +439,47 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               <ModalOverlay />
               <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
               <ModalHeader bg={navbarBg}>
-                <Flex flexDirection={'row'}>
-                  <Box flex={1} display={'flex'} alignItems={'center'} onClick={() => setIsOpenEntireModal(false)} cursor={'pointer'}>
-                    <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
-                  </Box>
-                  <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'center'}>
-                    <Text color={'white'}>회원탈퇴</Text>
-                  </Box>
-                  <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'flex-end'}>
-                   
-                  </Box>
-                </Flex>
-              </ModalHeader>
-               {/*  <ModalCloseButton color={colorBtnColor} /> */}
+                  <Flex flexDirection={'row'}>
+                    <Box 
+                      flex={1} 
+                      display={{base :'flex', md:'none'}} 
+                      alignItems={'center'} 
+                      onClick={() => fn_close_modal_mypage_entire()} 
+                      cursor={'pointer'}
+                    >
+                      <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
+                    </Box>
+                    <Box 
+                      flex={3} 
+                      display={{base :'none', md:'flex'}} 
+                      alignItems={'center'} 
+                      >
+                      <Text color={'white'} noOfLines={1}>회원탈퇴</Text>
+                    </Box>
+                    <Box 
+                      flex={3} 
+                      display={{base :'flex', md:'none'}} 
+                      alignItems={'center'} 
+                      justifyContent={'flex-end'}
+                    >
+                      <Text color={'white'} noOfLines={1}>회원탈퇴</Text>
+                    </Box>
+                    <Box 
+                      flex={1} 
+                      display={{base :'none', md:'flex'}} 
+                      justifyContent={'flex-end'}
+                      alignItems={'center'} 
+                      onClick={() => fn_close_modal_mypage_entire()} 
+                      cursor={'pointer'}
+                      >
+                      <Icon as={MdOutlineClose} width="30px" height="30px" color="white" />
+                    </Box>
+                  </Flex>
+                </ModalHeader>
                 <ModalBody overflowY="auto" maxH="100vh">
                   <EntireForm
                     isOpen={isOpenEntireModal}
-                    setClose={() => setIsOpenEntireModal(false)}
+                    setClose={() => fn_close_modal_mypage_entire()}
                     onHandleEntire={(inputs) => onHandleEntireAction(inputs)}
                   />
                 </ModalBody>
@@ -407,11 +501,65 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
           )
         }
         {
-          isOpenNoticeModal && (
-            <NoticerModal
-              isOpen={isOpenNoticeModal}
-              setClose={() => setIsOpenNoticeModal(false)}
-            />
+          isOpenNoticeListModal && (
+            <Modal
+              onClose={() => fn_close_modal_mypage_notice()}
+              finalFocusRef={noticeBtnRef}
+              isOpen={isOpenNoticeListModal}
+              scrollBehavior={'inside'}
+              blockScrollOnMount={false}
+              preserveScrollBarGap={true}
+              trapFocus={false}
+              size={'full'}
+            >
+              <ModalOverlay />
+              <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
+                <ModalHeader bg={navbarBg}>
+                  <Flex flexDirection={'row'}>
+                    <Box 
+                      flex={1} 
+                      display={{base :'flex', md:'none'}} 
+                      alignItems={'center'} 
+                      onClick={() => fn_close_modal_mypage_notice()} 
+                      cursor={'pointer'}
+                    >
+                      <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
+                    </Box>
+                    <Box 
+                      flex={3} 
+                      display={{base :'none', md:'flex'}} 
+                      alignItems={'center'} 
+                      >
+                      <Text color={'white'} noOfLines={1}>공지사항</Text>
+                    </Box>
+                    <Box 
+                      flex={3} 
+                      display={{base :'flex', md:'none'}} 
+                      alignItems={'center'} 
+                      justifyContent={'flex-end'}
+                    >
+                      <Text color={'white'} noOfLines={1}>공지사항</Text>
+                    </Box>
+                    <Box 
+                      flex={1} 
+                      display={{base :'none', md:'flex'}} 
+                      justifyContent={'flex-end'}
+                      alignItems={'center'} 
+                      onClick={() => fn_close_modal_mypage_notice()} 
+                      cursor={'pointer'}
+                      >
+                      <Icon as={MdOutlineClose} width="30px" height="30px" color="white" />
+                    </Box>
+                  </Flex>
+                </ModalHeader>
+                <ModalBody overflowY="auto" maxH="100vh">
+                  <NoticerModal
+                    isOpen={isOpenNoticeListModal}
+                    setClose={() => fn_close_modal_mypage_notice()}
+                  />
+                </ModalBody>
+              </ModalContent>
+            </Modal>
           )
         }
       </>

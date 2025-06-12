@@ -1,42 +1,46 @@
 'use client';
 /*eslint-disable*/
-import { signIn, signOut, useSession } from "next-auth/react";
 import customfetch from '@/utils/customfetch';
 import functions from '@/utils/functions';
 import MessageBoxChat from '@/components/MessageBox';
-import { ChatBody, OpenAIModel } from '@/types/types';
-import { 
-    Box,Button,Flex,Icon,Textarea,Text,useColorModeValue,Drawer,DrawerOverlay,DrawerContent,DrawerBody,DrawerCloseButton,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,
-    ModalCloseButton,useToast,SkeletonText,useColorMode
-} from '@chakra-ui/react';
-import { useEffect, useState,useRef,useCallback } from 'react';
+import * as history from '@/utils/history';
+import { usePathname, useRouter } from 'next/navigation';
+import * as mCookie from "@/utils/cookies";
+import { Box,Flex,Icon,Textarea,Text,useColorModeValue,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,useToast,useColorMode } from '@chakra-ui/react';
+import ResizeTextarea from "react-textarea-autosize";
+import { useEffect, useState,useRef } from 'react';
 import Image from "next/image";
-import { MdOutlineArrowDownward, MdFitbit, MdInfoOutline, MdPerson } from 'react-icons/md';
+import { MdOutlineArrowDownward, MdFitbit, MdPerson,MdOutlineClose,MdArrowBack } from 'react-icons/md';
 import DoctorDetail  from '@/components/modal/Doctor';
 import SelectBody  from '@/components/msgType/SelectBody';
 import SelectDoctor  from '@/components/msgType/SelectDoctor';
 import SelectName  from '@/components/msgType/SelectName';
 import Welcome  from '@/components/msgType/Welcome';
+import { ChatDisable,ChatWarningInfo }  from '@/components/msgType/ChatOptionView';
 import MotionWelcome,{MotionWelcomeImage}  from '@/components/msgType/MotionWelcome';
 import Processing  from '@/components/msgType/Processing';
+import SkeletonDefaultText from "@/components/fields/LoadingBar";
 
 import SelectType  from '@/components/msgType/SelectType';
 import { useTranslations } from 'next-intl';
 import LoadingBar from "@/assets/icons/loading.gif";
-import HeadTitle from '@/components/modal/Title';
 import mConstants from '@/utils/constants';
 //새창열기 전역상태
 import NewChatStateStore from '@/store/newChatStore';
+import historyStore from '@/store/historyStore';
+import { ModalDoctorDetailStore,ModalDoctorReviewStore,ModalDoctorRequestStore,ModalDoctorListStore,DrawerHistoryStore,ModalMypageStore,ModalMypageNoticeStore,ModalMypageRequestStore,ModalMypageEntireStore } from '@/store/modalStore';
+
 import * as ChatService from "@/services/chat/index";
 import SendButtonOff from "@/assets/icons/send_btn_off.png";
 import SendButtonOn from "@/assets/icons/send_btn_on.png";
 
 export default function ChatBot() {
   const t = useTranslations('Messages');
-  // 세션 상태 확인
-  const { data: session, status } = useSession();
   const { colorMode, toggleColorMode } = useColorMode();
   // Input States
+  const pathname = usePathname();
+  const router = useRouter();
+  const pathnameRef = useRef(pathname);
   const [isFocus, setIsFocus] = useState<boolean>(false);
   const [isAccessFirst, setAccessFirst] = useState<boolean>(false);
   const [inputCode, setInputCode] = useState<string>('');
@@ -46,33 +50,41 @@ export default function ChatBot() {
   // Response message
   const [outputCode, setOutputCode] = useState<any>([]);
   // ChatGPT model
-  const [model, setModel] = useState<OpenAIModel>('gpt-3.5-turbo');
+  const [isChatDisabled, setChatDisabled] = useState<any>({
+    isState :  true,
+    isAlertMsg : false 
+  });
   // Loading state
   const [loading, setLoading] = useState<boolean>(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollBottomRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentLocale, setCurrentLocale] = useState('ko');
   // Loading state
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
-  const [isOpenDoctorDrawer, setIsOpenDoctorDrawer] = useState<boolean>(false);
-  const [isOpenReview, setIsOpenReview] = useState<boolean>(false);
   const navbarIcon = useColorModeValue('gray.500', 'white');
-  const infoIcon = useColorModeValue('#f94848', 'white');
   const isNewChat = NewChatStateStore(state => state.isNew);
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
+  const setCurrentPathname = historyStore((state) => state.setCurrentPathname);
+  const setIsOpenReview = ModalDoctorReviewStore((state) => state.setModalState);
+  const setIsOpenRequestModal = ModalDoctorRequestStore((state) => state.setModalState);
+  const setOpenDoctorListModal = ModalDoctorListStore((state) => state.setOpenDoctorListModal);
+  const setIsOpenDoctorDetailModal = ModalDoctorDetailStore((state) => state.setOpenDoctorDetailModal);
+  const setOpenHistoryDrawer = DrawerHistoryStore((state) => state.setOpenHistoryDrawer);
+  const setIsOpenSetupModal = ModalMypageStore((state) => state.setIsOpenSetupModal);
+  const setIsOpenNoticeListModal = ModalMypageNoticeStore((state) => state.setIsOpenNoticeListModal);
+  const setIsOpenMypageRequestModal = ModalMypageRequestStore((state) => state.setIsOpenMypageRequestModal);
+  const setIsOpenEntireModal = ModalMypageEntireStore((state) => state.setIsOpenEntireModal);
+
   const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
   const borderColor = useColorModeValue('gray.200', 'gray');
   const inputColor = useColorModeValue('navy.700', 'white');
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
-  const iconColor = useColorModeValue('brand.500', 'white');
-  const bgIcon = useColorModeValue( 'linear-gradient(180deg, #FBFBFF 0%, #CACAFF 100%)','whiteAlpha.200' );
   const brandColor = useColorModeValue('brand.500', 'white');
   const themeColor = useColorModeValue('white', 'navy.900');
-  const gray = useColorModeValue('gray.500', 'white');
-  const buttonShadow = useColorModeValue('14px 27px 45px rgba(112, 144, 176, 0.2)','none');
   const textColor = useColorModeValue('navy.700', 'white');
   const placeholderColor = useColorModeValue({ color: 'gray.500' },{ color: 'gray' });
-  
+  let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
   const isSystemText = ["system_text","system_doctors","system_list","system_select","system_image"];
 
   const [chatSessionId, setChatSessionId] = useState<string>('');
@@ -87,12 +99,177 @@ export default function ChatBot() {
     return () => setChatSessionId('');
   }, []);
 
+  useEffect(() => {
+    pathnameRef.current = pathname; // 항상 최신값 유지
+  }, [pathname]);
+
+
+  const fn_close_modal_doctor_detail = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenDoctorModal(false);
+    router.replace(`/${locale}/chat`);
+    setTimeout(() => {
+      setCurrentPathname('');
+      mCookie.setCookie('currentPathname','')
+    }, 200);
+  }
+  const fn_close_modal_doctor_detail2 = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenDoctorDetailModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_1}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_1}`);
+    }, 200);
+  }
+  const fn_close_modal_doctor_review = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenReview(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_2}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2}`)  
+    }, 200);
+  }
+
+  const fn_close_modal_doctor_review2 = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenReview(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_2_2}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2_2}`)  
+    }, 200);
+  }
+  const fn_close_modal_doctor_request = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenRequestModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_2}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2}`)
+    }, 200);
+  }
+
+  const fn_close_modal_doctor_list = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setOpenDoctorListModal(false);
+    router.replace(`/${locale}/chat`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname','');
+    }, 200);
+  }
+
+
+
+  const fn_close_drawer_history = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setOpenHistoryDrawer(false);
+    router.replace(`/${locale}/chat`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname','') ;
+    }, 200);
+  }
+
+  const fn_close_modal_mypage = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenSetupModal(false);
+    router.replace(`/${locale}/chat#drawer_history`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname','drawer_history');
+    }, 200);
+  }
+
+  const fn_close_modal_notice_list = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenNoticeListModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_10}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`);
+    }, 200);
+  }
+
+  const fn_close_modal_mypage_request = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenMypageRequestModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_10}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`);
+    }, 200);
+  }
+
+  const fn_close_modal_mypage_entire = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenEntireModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_10}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`) 
+    }, 200);
+  }
+
+  useEffect(() => {
+    const handlePopState = async(event: PopStateEvent) => {
+      const currentPathname = await mCookie.getCookie('currentPathname')
+      const currentPath = pathnameRef.current;
+      // 특정 경로에서만 모달 닫기 또는 리디렉션 처리
+      switch(currentPathname) {
+        case `${mConstants.pathname_modal_2}`:
+        case '' : 
+            event.preventDefault(); // 기본 뒤로가기 방지
+            fn_close_modal_doctor_detail2();
+            fn_close_modal_doctor_detail();
+          break;
+        case `${mConstants.pathname_modal_3}` :
+          event.preventDefault(); // 기본 뒤로가기 방지
+          fn_close_modal_doctor_review()
+          break;
+        case `${mConstants.pathname_modal_3_2}` :
+          event.preventDefault(); // 기본 뒤로가기 방지
+          fn_close_modal_doctor_review2()
+          break;
+        case `${mConstants.pathname_modal_4}` : 
+          event.preventDefault(); // 기본 뒤로가기 방지
+          fn_close_modal_doctor_request();
+          break;
+        case `${mConstants.pathname_modal_1}` :
+          event.preventDefault(); // 기본 뒤로가기 방지
+          fn_close_modal_doctor_list();
+          break;
+        case `${mConstants.pathname_modal_2_2}` :
+          event.preventDefault(); // 기본 뒤로가기 방지
+          fn_close_modal_doctor_detail();
+          fn_close_modal_doctor_detail2();
+          break;
+        case 'drawer_history' :
+          event.preventDefault(); // 기본 뒤로가기 방지
+          fn_close_drawer_history()
+          break;
+        case 'modal_mypage_profile' : 
+          event.preventDefault(); // 기본 뒤로가기 방지
+          fn_close_modal_mypage();
+          break;
+        case `${mConstants.pathname_modal_5}` : 
+          event.preventDefault(); // 기본 뒤로가기 방지
+          fn_close_modal_notice_list();
+          break;
+        case `${mConstants.pathname_modal_6}` : 
+          event.preventDefault(); // 기본 뒤로가기 방지
+          fn_close_modal_mypage_request();
+          break;
+        case `${mConstants.pathname_modal_7}` : 
+          event.preventDefault(); // 기본 뒤로가기 방지
+          fn_close_modal_mypage_entire();
+          break;
+        default : 
+          event.preventDefault(); // 기본 뒤로가기 방지
+      }
+    };
+    // popstate는 브라우저 뒤로가기, Android 백버튼에서 동작함
+    window.addEventListener('popstate', handlePopState);
+
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []); // ✅ 한 번만 등록
+
   const getNewSessionID =  async() => {
     try{
-      console.log("chatSessionId",chatSessionId)
       if ( functions.isEmpty(chatSessionId) ) {
         const res:any = await ChatService.getChatNewSession();
-        console.log("res of getNewSessionID",res)
         if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
           setIsLoading(false)
           setChatSessionId(res?.data?.session_id)
@@ -115,11 +292,26 @@ export default function ChatBot() {
       // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
       getNewSessionID()
       setOutputCode([]);
+      setChatDisabled({
+        isState : true,
+        isAlertMsg : false
+      })
+      setCurrentPathname('')
+      mCookie.setCookie('currentPathname','')
       setTimeout(() => {
         setNewChatOpen(false);
       }, 1000);
     }
   }, [isNewChat]);
+
+  useEffect(() => {
+    if ( outputCode.length == 4 ) {
+      setChatDisabled({
+        isState : false,
+        isAlertMsg : false
+      })
+    }
+  }, [outputCode]);
   
   useEffect(() => {
     const el = scrollRef.current;
@@ -249,7 +441,6 @@ export default function ChatBot() {
     return () => clearTimeout(timeout);
   }, [outputCode]);
 
-
   const handleChange = (Event: any) => {
     setInputCode(Event.target.value);
   };
@@ -263,13 +454,11 @@ export default function ChatBot() {
   }
 
   const onSendDoctorButton = async( data : any,isType : number) => {
-    setIsOpenReview(false);
-    setSelectedDoctor(data)
-    if ( isType == 1 ) {
-      setIsOpenDoctorModal(true);
-    }else{
-      setIsOpenDoctorDrawer(true);
-    }
+    setSelectedDoctor(data);
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_2}`);
+    setCurrentPathname(`${mConstants.pathname_modal_2}`)
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2}`)
+    setIsOpenDoctorModal(true);
   }
 
   const onSendNameButton = async( str : string) => {
@@ -279,114 +468,26 @@ export default function ChatBot() {
   const onSendTypeButton = async( typeString : string ) => {
     if ( !isReceiving ) await handleTranslate(typeString);
   }
-
-  const handleTranslate_get = async( isText:any = '') => {
-
-    if ( functions.isEmpty(inputCode) && functions.isEmpty(isText) ) return;
-    setReceiving(true);
-    const msgLen = parseInt(outputCode.length+1);
-    const inputCodeText = inputCode || isText;
-    setOutputCode((prevCode: any[]) => [...prevCode, { ismode: "me", msg: inputCodeText }]);
-    setInputCode('')
-
-    const BaseAPI = process.env.NEXT_PUBLIC_ADMIN_API_BASE_URL;
-    const response = await fetch(`${BaseAPI}/see`,{credentials: 'include'});
-
-    const reader = response?.body?.getReader();
-    const decoder = new TextDecoder();
-    
-    let streamData:string = "";
-    while (true) {
-      const { value, done } : any = await reader?.read();
-    
-      if (done) {
-        setLoading(false);
-        setReceiving(false);
-        console.log('🔚 스트림 종료됨');
-        break;
-      }
-    
-      const chunk = decoder.decode(value, { stream: true });
-      console.log('📥 받은 메시지:', chunk);
-     
-      if ( chunk ) {
-        streamData = streamData.concat(chunk);
-      }else{
-        console.error('data가 null입니다. getReader를 호출할 수 없습니다.');
-      }
-     
-      setOutputCode((prevCode: any[]) => {
-       
-        const newArray = [...prevCode];
-        const lastIndex = msgLen;
-        if ( !newArray[lastIndex]?.msg ) {
-          newArray[lastIndex] = {
-            ismode : 'server',
-            msg:chunk,
-          };
-        }else{
-          const tmpMsg = prevCode[lastIndex].msg;
-          newArray[lastIndex] = {
-            ...prevCode[lastIndex],
-            msg: tmpMsg.concat(chunk)
-          };
-        }
-        
-        return newArray;
-      });
-    }
-  }
-
+  
   if (isLoading) {
     return (
-      <Flex
-        w={{ base: '100%',md: `${mConstants.desktopMinWidth}px` }}
-        maxWidth={{ base: '100%', md: `${mConstants.desktopMinWidth-30}px` }}
-        height={'100%'}
-        padding={"10px"}
-        direction="column"
-        position="relative"
-      >
-        <Flex direction="column" mx="auto" w={'100%'} height={'100%'} justifyContent={'center'} alignItems={'center'}>
-          <SkeletonText mt='4' noOfLines={10} spacing='4' skeletonHeight='2' />
-        </Flex>
-      </Flex>
+      <SkeletonDefaultText isOpen={isLoading} lineNum={10} />
     )
-   }
+  }
   return (
-    <Flex
-      top={"35px"}
-      w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
-      maxWidth={'640px'}
-      padding={"10px"}
-      direction="column"
-      position="relative"
-    >
-      <Flex 
-        direction="column" 
-        mx="auto" 
-        w={'100%'} 
-        overflowY='scroll' 
-        //minH="calc(100vh - 100px)"
-      >
+    <Flex top={"35px"} w={'100%'} maxWidth={`${mConstants.desktopMinWidth}px`} direction="column" position="relative">
+      <Flex direction="column" w={'100%'} maxWidth={`${mConstants.desktopMinWidth}px`} overflowY='scroll'>
         <Flex
           direction="column"
           w="100%"
+          maxWidth={`${mConstants.desktopMinWidth}px` }
           maxH="calc(100vh - 100px)" /* 여기가 하단 스크롤 영역 영향 받음 */
           minH="calc(100vh - 100px)"
           overflowY='auto'
-          mx="auto"
           display={outputCode ? 'flex' : 'none'}
-          mb={'auto'}
           ref={scrollRef}
         >
-          <Box 
-            display={outputCode?.length == 0 ? 'flex' : 'none'}
-            flexDirection={'column'}
-            justifyContent={'center'}
-            alignItems={'center'}
-            paddingTop={{base : "70px", md : "60px"}}
-          >
+          <Box display={outputCode?.length == 0 ? 'flex' : 'none'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}  paddingTop={{base : "70px", md : "60px"}}>
             {/* <Welcome 
               msg={`${t("welcome_msg",{app_name:"AIGA"})}`}
               onSendButton={onSendButton}
@@ -420,36 +521,12 @@ export default function ChatBot() {
               if ( element.ismode == 'me') {
                 return (
                   <Flex w="100%" align={'center'} mb="10px"  mt="5px" key={element.id} justifyContent='flex-end'>
-                    <Flex
-                      p="10px"
-                      border="1px solid"
-                      borderColor={borderColor}
-                      borderRadius="14px"
-                      w="auto"
-                      zIndex={'2'}
-                    >
-                      <Text
-                        color={textColor}
-                        fontWeight="600"
-                        fontSize={{ base: 'sm', md: 'md' }}
-                        lineHeight={{ base: '24px', md: '26px' }}
-                        whiteSpace="pre-line"
-                      >
+                    <Flex p="10px" border="1px solid" borderColor={borderColor} borderRadius="14px" w="auto" zIndex={2}>
+                      <Text color={textColor} fontWeight="600" fontSize={{ base: 'sm', md: 'md' }} lineHeight={{ base:'24px',md:'26px'}} whiteSpace="pre-line">
                         {element?.msg}
                       </Text>
                     </Flex>
-                    <Flex
-                      borderRadius="full"
-                      justify="center"
-                      align="center"
-                      bg={'transparent'}
-                      border="1px solid"
-                      borderColor={borderColor}
-                      ms="10px"
-                      h="40px"
-                      minH="40px"
-                      minW="40px"
-                    >
+                    <Flex borderRadius="full" justify="center" align="center" bg={'transparent'} border="1px solid" borderColor={borderColor} ms="10px" h="40px" minH="40px" minW="40px">
                       <Icon as={MdPerson} width="20px" height="20px" color={brandColor} />
                     </Flex>
                   </Flex>
@@ -529,16 +606,7 @@ export default function ChatBot() {
               }
             })
           }
-          {
-            isReceiving && (
-              <Box>
-                <Processing 
-                  msg="증상 분석중"
-                />
-              </Box>
-            )
-          }
-          
+          { isReceiving && ( <Box><Processing  msg="증상 분석중" /></Box> ) }
           { isShowScroll &&  
             (
               <Box
@@ -559,13 +627,6 @@ export default function ChatBot() {
           }
           <Box ref={scrollBottomRef} h="1px" pb={"30px"} />
         </Flex>
-        {/* Chat Input */}
-        {/* <Flex
-          ms={{ base: '0px', xl: '60px' }}
-          mt="20px"
-          maxH="60px"
-          justifySelf={'flex-end'}
-        > */}
         <Flex
           position="fixed"          // ✅ 고정 위치
           bottom="0"                // ✅ 화면 하단에 붙임
@@ -582,42 +643,36 @@ export default function ChatBot() {
           //alignItems={'center'}
         >
           <Box 
-            w={{ base: '100%', md: `${mConstants.desktopMinWidth-10}px` }}
-            maxWidth={'640px'}
+            w={{ base: '100%', md: `${mConstants.desktopMinWidth-20}px` }}
+            maxWidth={`${mConstants.desktopMinWidth}px` }
             position={'relative'}
             display={'flex'} 
             flexDirection={'row'}
           >
-            <Box 
-              display={isFocus ? 'flex' : 'none'} 
-              position={'absolute'}
-              top={{base : '-40px', md : '-30px'}}
-              left={'0'}
-              w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
-              height={'30px'}
-              justifyContent={'center'}
-              alignItems={'center'}
-            >
-              <Box display='flex' alignItems='center' gap='5px' width={"90%"}>
-                <Icon as={MdInfoOutline} width="20px" height="20px" color={infoIcon} />
-                <Text fontSize='0.8rem' color='gray.500' lineHeight={'0.8rem'}>
-                  AIGA는 실수를 할 수 있습니다. 본 AI서비스는 의료행위가 아니며 답변에 어떠한 책임도 지지 않습니다.
-                </Text>
-              </Box>
-            </Box>
+            {
+              ( !isChatDisabled?.isState && !isChatDisabled?.isAlertMsg ) && (
+                <ChatDisable
+                  isChatDisabled={isChatDisabled}
+                  setChatDisabled={setChatDisabled}
+                />
+              )
+            }
+            { isFocus && ( <ChatWarningInfo /> )}
             <Textarea
               minH="50px"
               //minH="unset"
-              resize="vertical"
+              resize="none"
+              as={ResizeTextarea}
               h="100%"
-              maxH="100px"
+              maxH="120px"
               border="1px solid"
               borderColor={borderColor}
               bg={isFocus ? 'transparent' :'#f4f6fa'}
               readOnly={isReceiving}
-              borderRadius="25px"
+              borderRadius="20px"
+              lineHeight={"140%"}
               //me="10px"
-              fontSize="sm"
+              fontSize="md"
               fontWeight="500"
               _focus={{ borderColor: 'none' }}
               color={inputColor}
@@ -628,17 +683,9 @@ export default function ChatBot() {
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
               id={"textarea_content"}
+              disabled={!isChatDisabled?.isState}
             />
-            <Box 
-              display={'flex'} 
-              position={'absolute'}
-              bottom={'0px'}
-              right={'10px'}
-              w={'55px'}
-              height={'55px'}
-              justifyContent={'flex-end'}
-              alignItems={'center'}
-            >
+            <Box display={'flex'} position={'absolute'} bottom={'-2px'} right={'10px'} w={'55px'} height={'55px'} justifyContent={'flex-end'} alignItems={'center'}>
               {
                 isReceiving
                 ?
@@ -666,17 +713,9 @@ export default function ChatBot() {
                   {
                     isFocus 
                     ?
-                    <Image 
-                      src={SendButtonOn}
-                      alt="send"
-                      style={{width:'32px',objectFit: 'contain'}}
-                    />
+                    <Image src={SendButtonOn} alt="send" style={{width:'32px',objectFit: 'contain'}} />
                     :
-                    <Image 
-                      src={SendButtonOff}
-                      alt="send"
-                      style={{width:'32px',objectFit: 'contain'}}
-                    />
+                    <Image src={SendButtonOff} alt="send" style={{width:'32px',objectFit: 'contain'}} />
                   }
                 </Box>
               }
@@ -684,49 +723,34 @@ export default function ChatBot() {
           </Box>
         </Flex>
         {
-          isOpenDoctorDrawer && (
-            <Box display={ isOpenReview ? 'none' : 'block'} position="fixed" minH="100%">
-              <Drawer
-                isOpen={isOpenDoctorDrawer}
-                onClose={() => setIsOpenDoctorDrawer(false)}
-                placement={'left'}
-              >
-                <DrawerOverlay />
-                <DrawerContent
-                  w="100%"
-                  maxW={`${mConstants.modalMaxWidth}px`}
-                  borderRadius="0px"
-                  bg={sidebarBackgroundColor}
-                >
-                  <HeadTitle title={"의사명 프로필"}/>
-                  <DrawerCloseButton
-                    zIndex="3"
-                    onClick={() => setIsOpenDoctorDrawer(false)}
-                    _focus={{ boxShadow: 'none' }}
-                    _hover={{ boxShadow: 'none' }}
-                  />
-                  <DrawerBody maxW={`${mConstants.modalMaxWidth}px`} px="10px" pb="0">
-                    <DoctorDetail
-                      data={selectedDoctor}
-                    />
-                  </DrawerBody>
-                </DrawerContent>
-              </Drawer>
-            </Box>
-          )
-        }
-        {
           isOpenDoctorModal && (
             <Modal
-              onClose={() => setIsOpenDoctorModal(false)}
+              onClose={() => fn_close_modal_doctor_detail()}
               isOpen={isOpenDoctorModal}
               scrollBehavior={'inside'}
               size={'full'}
             >
               <ModalOverlay />
               <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1}>
-                <ModalHeader>{"의사명 프로필"}</ModalHeader>
-                <ModalCloseButton />
+                <ModalHeader bg={navbarBg}>
+                  <Flex flexDirection={'row'}>
+                    <Box flex={1} display={{base :'flex', md:'none'}} alignItems={'center'}  onClick={() => fn_close_modal_doctor_detail()} cursor={'pointer'}>
+                      <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
+                    </Box>
+                    <Box flex={3} display={{base :'none', md:'flex'}}  alignItems={'center'} >
+                      <Text color={'white'} noOfLines={1}>{"{의사명} 교수"}</Text>
+                    </Box>
+                    <Box flex={3} display={{base :'flex', md:'none'}} alignItems={'center'} justifyContent={'flex-end'}>
+                      <Text color={'white'} noOfLines={1}>{"{의사명} 교수"}</Text>
+                    </Box>
+                    <Box 
+                      flex={1} display={{base :'none', md:'flex'}} justifyContent={'flex-end'} alignItems={'center'}  cursor={'pointer'}
+                      onClick={() => fn_close_modal_doctor_detail()} 
+                     >
+                      <Icon as={MdOutlineClose} width="30px" height="30px" color="white" />
+                    </Box>
+                  </Flex>
+                </ModalHeader>
                 <ModalBody >
                   <DoctorDetail
                     data={selectedDoctor}

@@ -23,7 +23,7 @@ export default function AppWrappers({ children }: { children: ReactNode }) {
   })
   return (
     // <NoSSR>
-    <ChakraProvider theme={theme}>{children}</ChakraProvider>
+      <ChakraProvider theme={theme}>{children}</ChakraProvider>
     // </NoSSR>
   );
 }

@@ -35,7 +35,19 @@ const contrants  = {
   modalMaxWidth : 640,
   desktopMinWidth : 640,
   nickNameAbleString : /^[가-힣a-zA-Z0-9_]+$/,
-  apiSuccessCode
+  apiSuccessCode,
+  pathname_modal_1 : "modal_doctor_list",
+  pathname_modal_2 : "modal_doctor_detail",
+  pathname_modal_2_2 : "modal_doctor_detail2",
+  pathname_modal_3 : "modal_doctor_review",
+  pathname_modal_3_2 : "modal_doctor_review2",
+  pathname_modal_4 : "modal_doctor_request",
+  pathname_modal_5 : "modal_mypage_notice",
+  pathname_modal_6 : "modal_mypage_request",
+  pathname_modal_7 : "modal_mypage_entire",
+  pathname_modal_8 : "modal_mypage_use_yakwan",
+  pathname_modal_9 : "modal_mypage_use_policy",
+  pathname_modal_10 : 'modal_mypage_profile'
 }
 
 export default contrants;

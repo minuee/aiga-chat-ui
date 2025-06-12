@@ -17,7 +17,7 @@ const MotionWelcome = ({
 
   const textColor = useColorModeValue('navy.700', 'white')
   return (
-    <Flex w="100%" flexDirection={'column'} pt={pt}>
+    <Flex flexDirection={'column'} pt={pt}>
       <div className="opening_wrap">
         <motion.div
           className={classNames}
@@ -43,7 +43,7 @@ export const MotionWelcomeImage = ({
 const textColor = useColorModeValue('navy.700', 'white')
 
 return (
-  <Flex w="100%" flexDirection={'column'} pt={pt}>
+  <Flex flexDirection={'column'} pt={pt}>
     <div className="opening_wrap">
       <motion.div
         className={'opening_wrap'}

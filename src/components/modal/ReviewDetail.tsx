@@ -219,7 +219,7 @@ function ReviewModal(props: ReviewModalProps) {
               isDisabled={(functions.isEmpty(inputs.comment) || (inputs.comment && inputs.comment.length < 50)) ? true : false}
               id="button_modify"
             >
-              수정
+              수정하기
             </Button>
           }
         </Box>

@@ -4,7 +4,7 @@ import React, { Children } from 'react';
 import Head from 'next/head';
 import PageLayout from '@/components/layout/PageLayout';
 import SubPage from '@/components/view/Chatbot';
-import { Box, SkeletonCircle, SkeletonText, useDisclosure } from '@chakra-ui/react';
+import { Box, SkeletonCircle, useDisclosure } from '@chakra-ui/react';
 import { usePathname } from 'next/navigation';
 import routes from '@/routes';
 import { getActiveRoute, getActiveNavbar } from '@/utils/navigation';
@@ -69,7 +69,6 @@ export default function Index() {
   return (
     <PageLayout title="AIGA Chatbot">
       <Box display={'flex'} justifyContent={'center'} >
-        
         <Box
           //pt={{ base: '60px', md: '100px' }}
           minHeight="100vh"
@@ -79,7 +78,7 @@ export default function Index() {
           maxHeight="100%"
           //width='640px'
           w={{ base: '100%', md : `${mConstants.desktopMinWidth}px`  }}
-          maxW={'640px'}
+          maxW={`${mConstants.desktopMinWidth}px` }
           //transition="all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1)"
           //transitionDuration=".2s, .2s, .35s"
           //transitionProperty="top, bottom, width"
@@ -87,7 +86,10 @@ export default function Index() {
           //borderLeft={'1px solid #e0e0e0'}
           //borderRight={'1px solid #e0e0e0'}
         >
-          <Box  width='640px'>
+          <Box  
+            width="100%"
+            maxWidth={`${mConstants.desktopMinWidth}px`}
+          >
             <Navbar
               onOpen={onOpen}
               logoText={'AIGA Beta'}
@@ -98,8 +100,10 @@ export default function Index() {
           <Box
             display={'flex'}
             alignItems={'center'}
-            p={'20px'}
-           
+            px={'20px'}
+            width="100%"
+            maxWidth={`${mConstants.desktopMinWidth}px`}
+            overflow={'hidden'}
           >
             <SubPage />
           </Box>
