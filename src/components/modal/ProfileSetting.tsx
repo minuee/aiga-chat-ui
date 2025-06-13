@@ -177,7 +177,6 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
 
   const onSendMyPageRequestButton = async(  ) => {
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_6}`);
-    console.log("pathname onSendMyPageRequestButton",pathnameRef.current)
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_6}`)
     setIsOpenMypageRequestModal(true);
   }
@@ -193,7 +192,6 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
 
   const onSendMyPageEntireButton = async(  ) => {
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_7}`);
-    console.log("pathname onSendMyPageRequestButton",pathnameRef.current)
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_7}`)
     setIsOpenEntireModal(true);
   }

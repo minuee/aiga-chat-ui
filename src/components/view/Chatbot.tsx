@@ -170,9 +170,9 @@ export default function ChatBot() {
   const fn_close_modal_mypage = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenSetupModal(false);
-    router.replace(`/${locale}/chat#drawer_history`);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_20}`);
     setTimeout(() => {
-      mCookie.setCookie('currentPathname','drawer_history');
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_20}`);
     }, 200);
   }
 
@@ -236,11 +236,11 @@ export default function ChatBot() {
           fn_close_modal_doctor_detail();
           fn_close_modal_doctor_detail2();
           break;
-        case 'drawer_history' :
+        case `${mConstants.pathname_modal_20}` :
           event.preventDefault(); // 기본 뒤로가기 방지
           fn_close_drawer_history()
           break;
-        case 'modal_mypage_profile' : 
+        case `${mConstants.pathname_modal_10}` : 
           event.preventDefault(); // 기본 뒤로가기 방지
           fn_close_modal_mypage();
           break;
@@ -305,7 +305,7 @@ export default function ChatBot() {
   }, [isNewChat]);
 
   useEffect(() => {
-    if ( outputCode.length == 4 ) {
+    if ( outputCode.length == mConstants.limitToken ) {
       setChatDisabled({
         isState : false,
         isAlertMsg : false

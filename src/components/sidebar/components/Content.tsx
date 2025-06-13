@@ -108,9 +108,9 @@ function SidebarContent(props: SidebarContent) {
   const fn_close_modal_mypage = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenSetupModal(false);
-    router.replace(`/${locale}/chat#drawer_history`);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_20}`);
     setTimeout(() => {
-      mCookie.setCookie('currentPathname','drawer_history')
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_20}`)
     }, 200);
   }
 

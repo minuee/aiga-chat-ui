@@ -334,18 +334,18 @@ function DoctorListModal(props: DoctorListModalProps) {
                         <PopoverTrigger>
                           <Text color={makeTextColor('distance')}>거리순<span style={{color: 'red'}}>*</span></Text>
                         </PopoverTrigger>
-                        <PopoverContent bg={'white'}>
+                        <PopoverContent color='white' bg='#212127' borderColor='#212127'>
                           <PopoverHeader 
                             fontWeight='semibold'
-                            backgroundColor={'gray.100'}
-                            color={textColor2}
+                            bg='#212127'
+                            color={textColor}
                           >
-                            <Text color={textColor2} fontSize={"15px"}>안내</Text>
+                            <Text color={textColor} fontSize={"15px"}>안내</Text>
                           </PopoverHeader>
-                          <PopoverArrow />
+                          <PopoverArrow bg='#212127' />
                           <PopoverBody width={"100%"}>
                             <Text 
-                              color={textColor2} 
+                              color={textColor} 
                               fontSize={"13px"}
                               isTruncated // 긴 텍스트를 말줄임 처리
                               noOfLines={2} // 또는 여러 줄로 제한하고 싶을 경우
@@ -366,16 +366,20 @@ function DoctorListModal(props: DoctorListModalProps) {
             </Flex>
           </Stack>
         </Flex>
-        <Flex display={'flex'} flexDirection={'column'} minHeight={'200px'}  pt={10} overflowY={'auto'} justifyContent={'center'} alignItems={'center'}>
-          <Image 
-            src={IconSearch}
-            alt="IconSearch"
-            style={{width:'26px',objectFit: 'contain',maxWidth:"26px"}}
-          />
-          <Box display={'flex'} justifyContent={'center'} alignItems={'center'} mt="20px">
-            <Text color='#7F879B' fontSize={'17px'}>조회된 결과가 없습니다.</Text>
-          </Box>
-        </Flex>
+        {
+          doctors?.length == 0 && (
+          <Flex display={'flex'} flexDirection={'column'} minHeight={'200px'}  pt={10} overflowY={'auto'} justifyContent={'center'} alignItems={'center'}>
+            <Image 
+              src={IconSearch}
+              alt="IconSearch"
+              style={{width:'26px',objectFit: 'contain',maxWidth:"26px"}}
+            />
+            <Box display={'flex'} justifyContent={'center'} alignItems={'center'} mt="20px">
+              <Text color='#7F879B' fontSize={'17px'}>조회된 결과가 없습니다.</Text>
+            </Box>
+          </Flex>
+          )
+        }
         <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'}  pt={10} overflowY={'auto'}>
           {
             doctors.map((item:any,index:number) => {

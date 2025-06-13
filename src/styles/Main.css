@@ -24,18 +24,23 @@ nav {
 
 .nav-container {
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
 }
 
 .logo {
+    flex:1;
     font-size: 1.8rem;
     font-weight: bold;
     color: #667eea;
 }
 
 .nav-links {
+    flex:4;
     display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
     list-style: none;
     gap: 2rem;
 }
@@ -69,7 +74,7 @@ nav {
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="grad1"><stop offset="0%" stop-color="rgba(255,255,255,0.08)"/><stop offset="100%" stop-color="transparent"/></radialGradient><radialGradient id="grad2"><stop offset="0%" stop-color="rgba(255,255,255,0.05)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><circle cx="150" cy="200" r="4" fill="white" opacity="0.6"/><circle cx="850" cy="150" r="3" fill="white" opacity="0.4"/><circle cx="300" cy="100" r="2" fill="white" opacity="0.5"/><circle cx="700" cy="250" r="3" fill="white" opacity="0.3"/><circle cx="200" cy="350" r="80" fill="url(%23grad1)"/><circle cx="800" cy="400" r="60" fill="url(%23grad2)"/><circle cx="500" cy="150" r="100" fill="url(%23grad1)"/><path d="M120 180 L140 180 M130 170 L130 190 M820 120 L840 120 M830 110 L830 130 M680 220 L700 220 M690 210 L690 230" stroke="white" stroke-width="2" opacity="0.4"/><rect x="180" y="320" width="8" height="20" rx="4" fill="white" opacity="0.3"/><rect x="190" y="325" width="8" height="10" rx="4" fill="white" opacity="0.3"/><rect x="770" y="380" width="6" height="15" rx="3" fill="white" opacity="0.25"/><rect x="778" y="385" width="6" height="8" rx="3" fill="white" opacity="0.25"/><circle cx="250" cy="450" r="2" fill="white" opacity="0.4"/><circle cx="750" cy="500" r="2" fill="white" opacity="0.3"/><circle cx="450" cy="80" r="1.5" fill="white" opacity="0.5"/><path d="M480 200 C485 195, 495 195, 500 200 C505 205, 495 205, 480 200 Z" fill="white" opacity="0.2"/><path d="M220 280 C225 275, 235 275, 240 280 C245 285, 235 285, 220 280 Z" fill="white" opacity="0.15"/></svg>') no-repeat center center;
+    background-color: navy;
     background-size: cover;
     opacity: 0.6;
 }
@@ -957,6 +962,7 @@ footer {
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
 }
 
+
 .chat-btn-icon {
     color: white;
     font-size: 1.8rem;
@@ -974,6 +980,11 @@ footer {
     }
 }
 
+.chat-toggle-wrapper:hover .floating-message {
+    opacity: 1;
+    visibility: visible;
+}
+
 .floating-message {
     position: fixed;
     bottom: 90px;
@@ -983,9 +994,11 @@ footer {
     padding: 15px 20px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.15);
     z-index: 999;
-    max-width: 250px;
+    max-width: 350px;
     animation: fadeInBounce 1s ease-out, floatPulse 3s ease-in-out infinite 2s;
     border: 1px solid #e2e8f0;
+    opacity: 0;
+    visibility: hidden;
 }
 
 .bubble-content {
@@ -1004,6 +1017,7 @@ footer {
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
     border-top: 8px solid white;
+    cursor: pointer;
 }
 
 .bubble-arrow::before {
@@ -1016,7 +1030,12 @@ footer {
     border-left: 9px solid transparent;
     border-right: 9px solid transparent;
     border-top: 9px solid #e2e8f0;
+    cursor: pointer;
 }
+
+.bubble-link {
+    display: inline-block; /* div 감쌀 수 있게 */
+  }
 
 @keyframes fadeInBounce {
     0% {
@@ -1044,10 +1063,7 @@ footer {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .nav-links {
-        display: none;
-    }
-
+    
     .hero h1 {
         font-size: 2.5rem;
     }
@@ -1123,6 +1139,8 @@ footer {
         max-width: 200px;
         font-size: 0.85rem;
     }
+
+
 
     .chatbot-preview {
         width: calc(100vw - 40px);

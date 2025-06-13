@@ -27,7 +27,7 @@ const contrants  = {
   popDetailSizeRule3 : '80%',//  멀티뷰 최소너비 이상일때 너비 비율
   popDetailSizeRule4 : '700px',// 싱글뷰 기준 너비
   rightFixedWidth : '550px',
-  highrightOrderCount : 100000, //주문조회리스트 하이라이트 기준주문금액
+  limitToken : 10, //주문조회리스트 하이라이트 기준주문금액
   sidebarWidth: 86,
   headerHeight: 56,
   mobileSidebarWidth: 0,
@@ -47,7 +47,8 @@ const contrants  = {
   pathname_modal_7 : "modal_mypage_entire",
   pathname_modal_8 : "modal_mypage_use_yakwan",
   pathname_modal_9 : "modal_mypage_use_policy",
-  pathname_modal_10 : 'modal_mypage_profile'
+  pathname_modal_10 : 'modal_mypage_profile',
+  pathname_modal_20 : 'drawer_history'
 }
 
 export default contrants;

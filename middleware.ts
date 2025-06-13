@@ -1,6 +1,5 @@
 import { NextResponse,userAgent } from 'next/server'
 import type { NextRequest } from 'next/server'
-
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./src/i18n/routing";
 const handleI18nRouting = createMiddleware(routing);
@@ -10,8 +9,14 @@ export async function middleware(request: NextRequest) {
   const { device,isBot } = userAgent(request);
   const pathname = request.nextUrl.pathname;
   const viewport = device.type || 'desktop';
-	const accessToken = request.cookies.get('accessToken');
+	const accessToken = request.cookies.get('refresh_token');
+  console.log('accessToken middleware',accessToken)
+  //const refreshToken = mCookie.getCookie('refresh_token');
+  //console.log('refreshToken middleware',refreshToken)
   const response = handleI18nRouting(request); // NextResponse 객체 반환됨
+
+
+  
 
   // 기존 응답 객체의 헤더에 추가 정보 설정
   response.headers.set('x-current-path', request.nextUrl.pathname);

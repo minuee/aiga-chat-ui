@@ -1,5 +1,6 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
+import axios from 'axios';
 
 // chakra imports
 import { Box,Flex,Text,Drawer,DrawerBody,Icon,useColorModeValue,DrawerOverlay,useDisclosure,DrawerContent,DrawerCloseButton } from '@chakra-ui/react';
@@ -14,6 +15,7 @@ import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
 import { DrawerHistoryStore } from '@/store/modalStore';
+import LoginModal  from '@/components/modal/LoginForm';
 
 export interface SidebarProps extends PropsWithChildren {
   routes: IRoute[];
@@ -66,6 +68,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
+  const [isOpenLoginModal, setIsOpenLoginModal] = React.useState<boolean>(false);
   let sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
   let menuColor = useColorModeValue('gray.400', 'white');
   // // SIDEBAR
@@ -77,8 +80,8 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
   const { routes } = props;
 
   const onSendHistoryButton = async( gubun = "") => {
-    history.push(`${pathnameRef?.current}#drawer_history`);
-    mCookie.setCookie('currentPathname','drawer_history')   
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_20}`);
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_20}`)   
     setOpenHistoryDrawer(true);
   }
 
@@ -91,6 +94,24 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
     }, 200);
   }
 
+  const handleKakaoLogin = async () => {
+    const response = await axios.get('/auth/kakao', {
+      withCredentials: true,
+    });
+    console.log("handleKakaoLogin",response.data)
+    const kakaoUrl = response.data.url;
+    //window.location.href = kakaoUrl;
+   /*  try {
+      const response = await axios.get('/auth/kakao', {
+        withCredentials: true,
+      });
+      const kakaoUrl = response.data.url;
+      window.location.href = kakaoUrl;
+    } catch (err) {
+      console.error('카카오 로그인 에러:', err);
+    } */
+  };
+
   return (
     <Flex 
       //display={{ sm: 'flex', xl: 'none' }} 
@@ -100,7 +121,11 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
         <Box onClick={() => onSendHistoryButton()} alignItems={'center'} display={'flex'} cursor={'pointer'}>
           <Icon as={MdOutlineMenu} width="24px" height="24px" color={basicColor} />
         </Box>
-        <Box display={'flex'} minW={'52px'} height={'28px'} justifyContent={'center'} alignItems={'center'} bg={navbarIcon} borderRadius={'5px'}>  
+        <Box 
+          display={'flex'} minW={'52px'} height={'28px'} justifyContent={'center'} alignItems={'center'} bg={navbarIcon} borderRadius={'5px'}
+          onClick={()=> setIsOpenLoginModal(!isOpenLoginModal)}
+          //onClick={()=>handleKakaoLogin()}
+        >  
           <Text fontSize={'17px'} color={basicColor}>
             로그인
           </Text>
@@ -148,6 +173,15 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
           </DrawerBody>
         </DrawerContent>
       </Drawer>
+
+      {
+        isOpenLoginModal && (
+          <LoginModal
+            isOpen={isOpenLoginModal}
+            setClose={() => setIsOpenLoginModal(false)}
+          />
+        )
+      }
     </Flex>
   );
 }

@@ -1,12 +1,13 @@
 'use client';
 import React, { Children } from 'react';
+import {Link} from '@/i18n/routing';
 import '@/styles/Main.css';
 
 export default function MainPage() {
   
   return (
     <>
-    <nav>
+    <div>
         <div className="container">
             <div className="nav-container">
                 <div className="logo">AIGA</div>
@@ -18,7 +19,7 @@ export default function MainPage() {
                 </ul>
             </div>
         </div>
-    </nav>
+    </div>
 
 
     <section className="hero" id="home">
@@ -367,16 +368,29 @@ export default function MainPage() {
             <button disabled>전송</button>
         </div>
     </div>
-
+    <div className="chat-toggle-wrapper">
     <button className="chat-toggle-btn" title="AI 챗봇 미리보기">
+        <Link
+            href="/chat"
+            target='_blank'
+            className="bubble-link"
+        >
         <div className="chat-btn-icon">🩺</div>
+        </Link>
     </button>
 
     <div className="floating-message" id="floating-message">
+        
         <div className="bubble-content">
+            <Link
+                href="/chat"
+                target='_blank'
+            >
             질환별 맞춤형 AI의사 추천서비스 AIGA를 써보세요.
+            </Link>
         </div>
-        <div className="bubble-arrow"></div>
+        <div className="bubble-arrow" />
+    </div>
     </div>
     </>
   )
