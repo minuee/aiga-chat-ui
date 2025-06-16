@@ -29,11 +29,9 @@ const Alert = ({ AppName, bodyContent, isOpen, onClose, onConfirm, closeText, co
                     <AlertDialogHeader fontSize='lg' fontWeight='bold'>
                         {AppName}
                     </AlertDialogHeader>
-
                     <AlertDialogBody>
                         {bodyContent}
                     </AlertDialogBody>
-                    
                     <AlertDialogFooter>
                     <Button ref={confirmRef as any} onClick={() => onClose(true)} id="button_close">
                         {closeText}
@@ -42,7 +40,7 @@ const Alert = ({ AppName, bodyContent, isOpen, onClose, onConfirm, closeText, co
                         {confirmText}
                     </Button>
                     </AlertDialogFooter>
-            </AlertDialogContent>
+                </AlertDialogContent>
             </AlertDialogOverlay>
         </AlertDialog>
     )

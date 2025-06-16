@@ -28,7 +28,10 @@ import mConstants from '@/utils/constants';
 //새창열기 전역상태
 import NewChatStateStore from '@/store/newChatStore';
 import historyStore from '@/store/historyStore';
-import { ModalDoctorDetailStore,ModalDoctorReviewStore,ModalDoctorRequestStore,ModalDoctorListStore,DrawerHistoryStore,ModalMypageStore,ModalMypageNoticeStore,ModalMypageRequestStore,ModalMypageEntireStore } from '@/store/modalStore';
+import { 
+  ModalDoctorDetailStore,ModalDoctorReviewStore,ModalDoctorRequestStore,ModalDoctorListStore,DrawerHistoryStore,ModalMypageStore,ModalMypageNoticeStore,
+  ModalMypageRequestStore,ModalMypageEntireStore,ModalMypagePolicyStore,ModalMypageYakwanStore,ModalSignupStoreStore
+ } from '@/store/modalStore';
 
 import * as ChatService from "@/services/chat/index";
 import SendButtonOff from "@/assets/icons/send_btn_off.png";
@@ -75,6 +78,9 @@ export default function ChatBot() {
   const setIsOpenNoticeListModal = ModalMypageNoticeStore((state) => state.setIsOpenNoticeListModal);
   const setIsOpenMypageRequestModal = ModalMypageRequestStore((state) => state.setIsOpenMypageRequestModal);
   const setIsOpenEntireModal = ModalMypageEntireStore((state) => state.setIsOpenEntireModal);
+  const setIsOpenPolicyModal = ModalMypagePolicyStore((state) => state.setIsOpenPolicyModal);
+  const setIsOpenYakwanModal = ModalMypageYakwanStore((state) => state.setIsOpenYakwanModal);
+  const setIsOpenSignupModal = ModalSignupStoreStore((state) => state.setIsOpenSignupModal);
 
   const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
   const borderColor = useColorModeValue('gray.200', 'gray');
@@ -103,7 +109,6 @@ export default function ChatBot() {
     pathnameRef.current = pathname; // 항상 최신값 유지
   }, [pathname]);
 
-
   const fn_close_modal_doctor_detail = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenDoctorModal(false);
@@ -113,6 +118,7 @@ export default function ChatBot() {
       mCookie.setCookie('currentPathname','')
     }, 200);
   }
+
   const fn_close_modal_doctor_detail2 = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenDoctorDetailModal(false);
@@ -121,6 +127,7 @@ export default function ChatBot() {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_1}`);
     }, 200);
   }
+
   const fn_close_modal_doctor_review = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenReview(false);
@@ -138,6 +145,7 @@ export default function ChatBot() {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2_2}`)  
     }, 200);
   }
+
   const fn_close_modal_doctor_request = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenRequestModal(false);
@@ -155,8 +163,6 @@ export default function ChatBot() {
       mCookie.setCookie('currentPathname','');
     }, 200);
   }
-
-
 
   const fn_close_drawer_history = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
@@ -203,61 +209,100 @@ export default function ChatBot() {
     }, 200);
   }
 
+  const fn_close_modal_mypage_policy = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenPolicyModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_10}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`) 
+    }, 200);
+  }
+
+  const fn_close_modal_mypage_yakwan = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenYakwanModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_10}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`) 
+    }, 200);
+  }
+
+  const fn_close_modal_user_login = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenSignupModal(false);
+    router.replace(`/${locale}/chat`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname','')
+    }, 200);
+  }
+
   useEffect(() => {
     const handlePopState = async(event: PopStateEvent) => {
       const currentPathname = await mCookie.getCookie('currentPathname')
       const currentPath = pathnameRef.current;
       // 특정 경로에서만 모달 닫기 또는 리디렉션 처리
       switch(currentPathname) {
-        case `${mConstants.pathname_modal_2}`:
-        case '' : 
-            event.preventDefault(); // 기본 뒤로가기 방지
-            fn_close_modal_doctor_detail2();
-            fn_close_modal_doctor_detail();
-          break;
-        case `${mConstants.pathname_modal_3}` :
-          event.preventDefault(); // 기본 뒤로가기 방지
-          fn_close_modal_doctor_review()
-          break;
-        case `${mConstants.pathname_modal_3_2}` :
-          event.preventDefault(); // 기본 뒤로가기 방지
-          fn_close_modal_doctor_review2()
-          break;
-        case `${mConstants.pathname_modal_4}` : 
-          event.preventDefault(); // 기본 뒤로가기 방지
-          fn_close_modal_doctor_request();
-          break;
         case `${mConstants.pathname_modal_1}` :
-          event.preventDefault(); // 기본 뒤로가기 방지
+          event.preventDefault(); // modal_doctor_list 기본 뒤로가기 방지 
           fn_close_modal_doctor_list();
           break;
+        case `${mConstants.pathname_modal_2}`:
+        case '' : 
+          event.preventDefault(); // modal_doctor_detail 기본 뒤로가기 방지
+          fn_close_modal_doctor_detail2();
+          fn_close_modal_doctor_detail();
+          break;
         case `${mConstants.pathname_modal_2_2}` :
-          event.preventDefault(); // 기본 뒤로가기 방지
+          event.preventDefault(); // modal_doctor_detail2 기본 뒤로가기 방지
           fn_close_modal_doctor_detail();
           fn_close_modal_doctor_detail2();
           break;
+        case `${mConstants.pathname_modal_3}` :
+          event.preventDefault(); // modal_doctor_review 기본 뒤로가기 방지
+          fn_close_modal_doctor_review()
+          break;
+        case `${mConstants.pathname_modal_3_2}` :
+          event.preventDefault(); // modal_doctor_review2 기본 뒤로가기 방지
+          fn_close_modal_doctor_review2()
+          break;
+        case `${mConstants.pathname_modal_4}` : 
+          event.preventDefault(); // modal_doctor_request 기본 뒤로가기 방지
+          fn_close_modal_doctor_request();
+          break;
         case `${mConstants.pathname_modal_20}` :
-          event.preventDefault(); // 기본 뒤로가기 방지
+          event.preventDefault(); // drawer_history 기본 뒤로가기 방지
           fn_close_drawer_history()
           break;
+        case `${mConstants.pathname_modal_21}` :
+          event.preventDefault(); // drawer_signup 기본 뒤로가기 방지
+          fn_close_modal_user_login()
+          break;
         case `${mConstants.pathname_modal_10}` : 
-          event.preventDefault(); // 기본 뒤로가기 방지
+          event.preventDefault(); // modal_mypage_profile 기본 뒤로가기 방지
           fn_close_modal_mypage();
           break;
         case `${mConstants.pathname_modal_5}` : 
-          event.preventDefault(); // 기본 뒤로가기 방지
+          event.preventDefault(); // modal_mypage_notice 기본 뒤로가기 방지
           fn_close_modal_notice_list();
           break;
         case `${mConstants.pathname_modal_6}` : 
-          event.preventDefault(); // 기본 뒤로가기 방지
+          event.preventDefault(); // modal_mypage_request 기본 뒤로가기 방지
           fn_close_modal_mypage_request();
           break;
         case `${mConstants.pathname_modal_7}` : 
-          event.preventDefault(); // 기본 뒤로가기 방지
+          event.preventDefault(); // modal_mypage_entire 기본 뒤로가기 방지
           fn_close_modal_mypage_entire();
           break;
+        case `${mConstants.pathname_modal_8}` : 
+          event.preventDefault(); // modal_mypage_use_yakwan 기본 뒤로가기 방지
+          fn_close_modal_mypage_yakwan();
+          break;
+        case `${mConstants.pathname_modal_9}` : 
+          event.preventDefault(); // modal_mypage_use_policy 기본 뒤로가기 방지
+          fn_close_modal_mypage_policy();
+          break;
         default : 
-          event.preventDefault(); // 기본 뒤로가기 방지
+          event.preventDefault(); // 무조건 기본 뒤로가기 방지 - 챗봇은 기본 루트 페이지이기 때문에 
       }
     };
     // popstate는 브라우저 뒤로가기, Android 백버튼에서 동작함

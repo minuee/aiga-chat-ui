@@ -53,10 +53,10 @@ function ReviewModal(props: ReviewModalProps) {
               <Flex position='absolute' left={0} top={0} width='100%' height='100%' display={'flex'} justifyContent={'center'}  backgroundColor={'#000000'} opacity={0.7} zIndex={100}>
                 <Box padding='6' boxShadow='lg' width={"300px"} height={"calc( 100vh / 2 )"} display={'flex'} flexDirection={'column'}  justifyContent={'center'} alignItems={'center'}>
                   <NextImage
-                      width="100"
-                      height="100"
-                      src={loadingImage}
-                      alt={'doctor1'}
+                    width="100"
+                    height="100"
+                    src={loadingImage}
+                    alt={'doctor1'}
                   />
                   <Text color="#ffffff">등록중...</Text>
                 </Box>

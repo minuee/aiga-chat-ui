@@ -155,7 +155,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
       flexWrap={secondary ? { base: 'wrap', md: 'nowrap' } : 'unset'}
       p="10px"
     >
-      <Button
+      {/* <Button
         value={"dark-mode"}
         aria-label=''
         aria-labelledby='nonexistent'
@@ -177,7 +177,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
           color={navbarIcon}
           as={colorMode === 'light' ? IoMdMoon : IoMdSunny}
         />
-      </Button>
+      </Button> */}
       <SidebarResponsive routes={routes} />
       
       {
@@ -222,7 +222,6 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
           </Modal>
         )
       }
-
       {        
         isOpenLogoutModal && (
           <Alert 

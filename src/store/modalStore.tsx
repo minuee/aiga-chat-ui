@@ -158,7 +158,6 @@ export const DrawerHistoryStore = create<DrawerHistoryStoreState>()(
     )
 );
 
-
 interface ModalMypageStoreState {
     isOpenSetupModal : boolean;
     setIsOpenSetupModal: (isOpenSetupModal: boolean) => void;
@@ -255,6 +254,85 @@ export const ModalMypageEntireStore = create<ModalMypageEntireStoreState>()(
             }),
             { 
                 name: 'ModalMypageEntireStore',
+                storage: createJSONStorage(() => localStorage),
+                onRehydrateStorage: () => (state:any) => {
+                    state?.set({ hasHydrated: true });
+                }
+            }
+        )
+    )
+);
+
+
+interface ModalMypagePolicyStoreState {
+    isOpenPolicyModal : boolean;
+    setIsOpenPolicyModal: (isOpenPolicyModal: boolean) => void;
+}
+
+export const ModalMypagePolicyStore = create<ModalMypagePolicyStoreState>()(
+    devtools(
+        persist(
+            (set) => ({
+                isOpenPolicyModal: false,
+                setIsOpenPolicyModal: (isOpenPolicyModal:boolean) => {
+                    set({isOpenPolicyModal});
+                },
+                hasHydrated: false,
+            }),
+            { 
+                name: 'ModalMypagePolicyStore',
+                storage: createJSONStorage(() => localStorage),
+                onRehydrateStorage: () => (state:any) => {
+                    state?.set({ hasHydrated: true });
+                }
+            }
+        )
+    )
+);
+
+interface ModalMypageYakwanStoreState {
+    isOpenYakwanModal : boolean;
+    setIsOpenYakwanModal: (isOpenYakwanModal: boolean) => void;
+}
+
+export const ModalMypageYakwanStore = create<ModalMypageYakwanStoreState>()(
+    devtools(
+        persist(
+            (set) => ({
+                isOpenYakwanModal: false,
+                setIsOpenYakwanModal: (isOpenYakwanModal:boolean) => {
+                    set({isOpenYakwanModal});
+                },
+                hasHydrated: false,
+            }),
+            { 
+                name: 'ModalMypageYakwanStore',
+                storage: createJSONStorage(() => localStorage),
+                onRehydrateStorage: () => (state:any) => {
+                    state?.set({ hasHydrated: true });
+                }
+            }
+        )
+    )
+);
+
+interface ModalSignupStoreState {
+    isOpenLoginModal : boolean;
+    setIsOpenSignupModal: (isOpenLoginModal: boolean) => void;
+}
+
+export const ModalSignupStoreStore = create<ModalSignupStoreState>()(
+    devtools(
+        persist(
+            (set) => ({
+                isOpenLoginModal: false,
+                setIsOpenSignupModal: (isOpenLoginModal:boolean) => {
+                    set({isOpenLoginModal});
+                },
+                hasHydrated: false,
+            }),
+            { 
+                name: 'ModalSignupStoreStore',
                 storage: createJSONStorage(() => localStorage),
                 onRehydrateStorage: () => (state:any) => {
                     state?.set({ hasHydrated: true });

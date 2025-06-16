@@ -48,7 +48,8 @@ const contrants  = {
   pathname_modal_8 : "modal_mypage_use_yakwan",
   pathname_modal_9 : "modal_mypage_use_policy",
   pathname_modal_10 : 'modal_mypage_profile',
-  pathname_modal_20 : 'drawer_history'
+  pathname_modal_20 : 'drawer_history',
+  pathname_modal_21 : 'drawer_signup'
 }
 
 export default contrants;

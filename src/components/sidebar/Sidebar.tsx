@@ -3,19 +3,19 @@ import React, { PropsWithChildren } from 'react';
 import axios from 'axios';
 
 // chakra imports
-import { Box,Flex,Text,Drawer,DrawerBody,Icon,useColorModeValue,DrawerOverlay,useDisclosure,DrawerContent,DrawerCloseButton } from '@chakra-ui/react';
+import { Box,Flex,Text,Drawer,DrawerBody,Icon,useColorModeValue,DrawerOverlay,DrawerContent,DrawerCloseButton } from '@chakra-ui/react';
 import Content from '@/components/sidebar/components/Content';
 import { renderThumb,renderTrack,renderView } from '@/components/scrollbar/Scrollbar';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 import mConstants from '@/utils/constants';
 import { IRoute } from '@/types/navigation';
 import { isWindowAvailable } from '@/utils/navigation';
-import { MdOutlineMenu } from "react-icons/md";
+import { MdOutlineMenu,MdOutlineClose } from "react-icons/md";
 import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
-import { DrawerHistoryStore } from '@/store/modalStore';
-import LoginModal  from '@/components/modal/LoginForm';
+import { DrawerHistoryStore,ModalSignupStoreStore } from '@/store/modalStore';
+import LoginModal  from '@/components/modal/SignUpScreen';
 
 export interface SidebarProps extends PropsWithChildren {
   routes: IRoute[];
@@ -28,7 +28,8 @@ function Sidebar(props: SidebarProps) {
   let shadow = useColorModeValue( '14px 17px 40px 4px rgba(112, 144, 176, 0.08)','unset' );
   // Chakra Color Mode
   let sidebarBg = useColorModeValue('white', 'navy.800');
-  
+ 
+
   let sidebarRadius = '14px';
   let sidebarMargins = '0px';
   // SIDEBAR
@@ -68,13 +69,16 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
-  const [isOpenLoginModal, setIsOpenLoginModal] = React.useState<boolean>(false);
+  //const [isOpenLoginModal, setIsOpenLoginModal] = React.useState<boolean>(false);
   let sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
   let menuColor = useColorModeValue('gray.400', 'white');
   // // SIDEBAR
   //const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpenHistoryDrawer } = DrawerHistoryStore(state => state);
   const setOpenHistoryDrawer = DrawerHistoryStore((state) => state.setOpenHistoryDrawer);
+  const { isOpenLoginModal } = ModalSignupStoreStore(state => state);
+  const setIsOpenSignupModal = ModalSignupStoreStore((state) => state.setIsOpenSignupModal);
+  const oopsColor = useColorModeValue('#111111', 'white');
   const basicColor = useColorModeValue('white', 'white');
   const navbarIcon = useColorModeValue('#2b8fff', 'gray.500');
   const { routes } = props;
@@ -112,6 +116,21 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
     } */
   };
 
+  const fn_close_modal_user_login = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenSignupModal(false);
+    router.replace(`/${locale}/chat`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname','')
+    }, 200);
+  }
+
+  const onSendsignupButton = async() => {
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_21}`);
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_21}`)
+    setIsOpenSignupModal(true);
+  }
+
   return (
     <Flex 
       //display={{ sm: 'flex', xl: 'none' }} 
@@ -123,7 +142,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
         </Box>
         <Box 
           display={'flex'} minW={'52px'} height={'28px'} justifyContent={'center'} alignItems={'center'} bg={navbarIcon} borderRadius={'5px'}
-          onClick={()=> setIsOpenLoginModal(!isOpenLoginModal)}
+          cursor='pointer' onClick={()=> onSendsignupButton()}
           //onClick={()=>handleKakaoLogin()}
         >  
           <Text fontSize={'17px'} color={basicColor}>
@@ -174,14 +193,69 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
         </DrawerContent>
       </Drawer>
 
-      {
+     {/*  {
         isOpenLoginModal && (
           <LoginModal
             isOpen={isOpenLoginModal}
             setClose={() => setIsOpenLoginModal(false)}
           />
         )
-      }
+      } */}
+      {
+
+        <Drawer
+          isOpen={isOpenLoginModal}
+          onClose={ () => fn_close_modal_user_login()}
+          placement={'bottom'}
+        >
+          <DrawerOverlay />
+          <DrawerContent
+            w="100%"
+            height={{base:"60vh", md:"60vh"}}
+            maxW={`${mConstants.modalMaxWidth}px`}
+            //bg={sidebarBackgroundColor}
+            borderTopLeftRadius={"10px"}
+            borderTopRightRadius={"10px"}
+            alignItems={'center'}
+          > 
+           {/*  <DrawerCloseButton
+              zIndex="3"
+              onClick={ () => fn_close_modal_user_login()}
+              _focus={{ boxShadow: 'none' }}
+              _hover={{ boxShadow: 'none' }}
+              
+            />
+             */}
+            <DrawerBody 
+              w="100%" 
+              maxW={`${mConstants.modalMaxWidth-20}px`} 
+              height="100%" 
+              backgroundColor="white"
+              borderTopLeftRadius={"10px"}
+              borderTopRightRadius={"10px"}
+              position={'relative'}
+            >
+              <Flex 
+                position={'absolute'}
+                top={0}
+                right={0}
+                width="50px"
+                height={'50px'}
+                justifyContent={'center'}
+                alignItems={'center'}
+                onClick={() => fn_close_modal_user_login()}
+                cursor={'pointer'}
+              >
+                <Icon as={MdOutlineClose} width="20px" height="20px" color={oopsColor} />
+              </Flex>
+              <LoginModal
+                isOpen={isOpenLoginModal}
+                setClose={() => fn_close_modal_user_login()}
+              />
+            </DrawerBody>
+            </DrawerContent>
+          </Drawer>
+        }
     </Flex>
   );
 }

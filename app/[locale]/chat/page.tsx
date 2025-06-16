@@ -86,10 +86,7 @@ export default function Index() {
           //borderLeft={'1px solid #e0e0e0'}
           //borderRight={'1px solid #e0e0e0'}
         >
-          <Box  
-            width="100%"
-            maxWidth={`${mConstants.desktopMinWidth}px`}
-          >
+          <Box width="100%" maxWidth={`${mConstants.desktopMinWidth}px`}>
             <Navbar
               onOpen={onOpen}
               logoText={'AIGA Beta'}

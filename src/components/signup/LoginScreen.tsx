@@ -10,6 +10,10 @@ import { FaUserAlt, FaLock } from "react-icons/fa";
 import UserStateStore from '@/store/userStore';
 import ConfigInfoStore from '@/store/configStore';
 
+import BaseImage from "@/assets/images/img-login.png";
+import IconKakao from "@/assets/icons/ico-kakao.png";
+import IconNaver from "@/assets/icons/ico-naver.png";
+
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
 const geolocationOptions = {
@@ -26,10 +30,11 @@ import NaverButtom from "@/assets/images/login/naver_login.png";
 export interface LoginScreenProps extends PropsWithChildren {
   onClickJoin  : (str:string) => void;
   onClcikClose : (str:string) => void;
+  isProduction : boolean
 }
 
 function LoginScreen(props: LoginScreenProps) {
-  const { onClickJoin } = props;
+  const { onClickJoin,isProduction = false } = props;
   const [ isLoading, setLoading] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const toast = useToast();
@@ -93,6 +98,45 @@ function LoginScreen(props: LoginScreenProps) {
       }
     }, 1500)
   };
+
+  if ( isProduction ) {
+    return (
+      <Flex flexDirection="column" width="100%" height="100%" justifyContent="flex-start" alignItems="center">
+        <Stack flexDir="column" pt="10" mb="2" width="100%" height="100%" justifyContent="center" alignItems="center">
+          <Box display={'flex'} flexDirection={'column'} flex={2} alignItems={'center'}>
+            <Text color="#17191D" fontSize={"21px"} fontWeight={'bold'} lineHeight={"150%"}>AIGA 로그인</Text>
+            <Text color="#7F879B" fontSize={"16px"} lineHeight={"200%"}>SNS 계정으로 편리하게 AIGA를 시작하세요</Text>
+            <Image 
+                src={BaseImage}
+                alt="BaseImage"
+                style={{width:'200px',objectFit: 'contain',maxWidth:"200px"}}
+            />
+          </Box>
+          
+          <Box display='flex' flex={1} flexDirection={'column'} w={"100%"} minW={"100%"} justifyContent={'flex-end'}> 
+              <Box display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'center'} onClick={() => onClickJoin('kakao')} bg='#F9DF32' py="10px" mb="10px">
+                <Image 
+                  src={IconKakao}  
+                  alt="kakao" 
+                  style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
+                /> 
+                <Text color="#212127" fontSize={"16px"} pl="10px">카카오톡 로그인</Text>
+              </Box>
+              <Box display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'center'} onClick={() => onClickJoin('naver')} bg='#1EC800' py="10px">
+                <Image 
+                  src={IconNaver}  
+                  alt="naver" 
+                  style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
+                /> 
+                <Text color="#ffffff" fontSize={"16px"} pl="10px">네이버 로그인</Text>
+              </Box>
+    
+           
+          </Box>
+        </Stack>
+      </Flex>       
+    );
+  }
   // SIDEBAR
   return (
     <Flex flexDirection="column" width="100%" height="100%" backgroundColor="gray.200" justifyContent="flex-start" alignItems="center">
@@ -161,7 +205,7 @@ function LoginScreen(props: LoginScreenProps) {
           </form>
         </Box>
       </Stack>
-      <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
+      <Box display={isProduction ? 'none' : 'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
         <Text>{`위도 : ${location?.latitude}`}</Text>
         <Text>{`경도 : ${location?.longitude}`}</Text>
       </Box>

@@ -1,13 +1,10 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Box,Drawer,DrawerBody,useColorModeValue,DrawerOverlay,DrawerContent,DrawerCloseButton,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody } from '@chakra-ui/react';
+import { Flex,useColorModeValue ,useToast} from '@chakra-ui/react';
 import * as mCookie from "@/utils/cookies";
 import axios from 'axios';
-import { renderThumb,renderTrack,renderView } from '@/components/scrollbar/Scrollbar';
-import { Scrollbars } from 'react-custom-scrollbars-2';
-import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
-import HeadTitle from './Title';
+
 import LoginScreen from '@/components/signup/LoginScreen';
 import JoinScreen from '@/components/signup/JoinScreen';
 import functions from '@/utils/functions';
@@ -15,13 +12,12 @@ import mConstants from '@/utils/constants';
 import { usePathname, useRouter } from 'next/navigation';
 import * as AuthService from "@/services/member/index";
 
-
 export interface LoginModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
 }
 
- interface loginFormProps {
+interface loginFormProps {
   socialType : string;
 }
 
@@ -31,7 +27,7 @@ function LoginModal(props: LoginModalProps) {
   const [ loginForm, setLoginForm] = React.useState<loginFormProps>({
     socialType : ''
   });
-
+  const toast = useToast();
   const [isModalOpen, setModalOpen] = React.useState(false);
   const [loginUrl, setLoginUrl] = React.useState('');
   const [userInfo, setUserInfo] = React.useState(null);
@@ -43,8 +39,6 @@ function LoginModal(props: LoginModalProps) {
       setLoading(false)
     }, 2000);
   }, [isOpen]);
-
-
 
   const onClickJoin666 = async () => {
     try {
@@ -72,6 +66,16 @@ function LoginModal(props: LoginModalProps) {
   };
   
   const onClickJoin = (str:string) => {
+
+    toast({
+      title: 'AIGA',
+      position: 'top-right',
+      description: '현재 작업중입니다. ',
+      status: 'info',
+      duration: 2000,
+      isClosable: true,
+    });
+    return;
 
     const accessToken = mCookie.getCookie('refresh_token');
     console.log("refresh_token",accessToken)
@@ -168,84 +172,30 @@ function LoginModal(props: LoginModalProps) {
   }
 
   return (
-    <Box display={{ base: 'block', xl: 'block' }} position="fixed" minH="100%">
-      <Drawer
-        isOpen={isOpen}
-        onClose={ () => setClcikClose(loginForm.socialType)}
-        placement={'left'}
-      >
-        <DrawerOverlay />
-        <DrawerContent
-          w="100%"
-          maxW={`${mConstants.modalMaxWidth}px`}
-         /*  ms={{
-            sm: '16px',
-          }}
-          my={{
-            sm: '16px',
-          }} */
-          //borderRadius="16px"
-          bg={sidebarBackgroundColor}
-        >
-          <HeadTitle title={(loginForm.socialType === 'kakao' || loginForm.socialType === 'naver' || loginForm.socialType === 'aiga') ? "회원가입" : "로그인"} />
-          <DrawerCloseButton
-            zIndex="3"
-            onClick={ () => setClcikClose(loginForm.socialType)}
-            _focus={{ boxShadow: 'none' }}
-            _hover={{ boxShadow: 'none' }}
-          />
-          <DrawerBody maxW={`${mConstants.modalMaxWidth}px`} px="0rem" pb="10" height="100%" backgroundColor="white">
-            
-            <Scrollbars
-              universal={true}
-              autoHide
-              renderTrackVertical={renderTrack}
-              renderThumbVertical={renderThumb}
-              renderView={renderView}
-            >
-              <Box width='calc( 100% - 20px)' padding='10px' height='100%'>
-                {
-                  (  ['aiga'].includes(loginForm.socialType) ) 
-                  ?
-                  (
-                    <JoinScreen
-                      socialType={loginForm.socialType}
-                      onClickJoin={onClickJoin}
-                    />
-                  )
-                  : 
-                  (
-                    <LoginScreen
-                      onClickJoin={onClickJoin}
-                      onClcikClose={setClcikClose}
-                      isProduction={false}
-                    />
-                  )
-                }
-              </Box>
-            </Scrollbars>
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
-      <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} isCentered size="xl">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>카카오 로그인</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            {loginUrl && (
-              <iframe
-                src={loginUrl}
-                width="100%"
-                height="500px"
-                title="Kakao Login"
-                style={{ border: 'none' }}
-              ></iframe>
-            )}
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-    </Box>
+  
+        <Flex w="100%" maxW={`${mConstants.modalMaxWidth}px`} padding='10px' height='100%' alignItems={'center'} >
+          {
+            (  ['aiga'].includes(loginForm.socialType) ) 
+            ?
+            (
+              <JoinScreen
+                socialType={loginForm.socialType}
+                onClickJoin={onClickJoin}
+              />
+            )
+            : 
+            (
+              <LoginScreen
+                onClickJoin={onClickJoin}
+                onClcikClose={setClcikClose}
+                isProduction={true}
+              />
+            )
+          }
+        </Flex>
+   
+          
+ 
   );
 }
 

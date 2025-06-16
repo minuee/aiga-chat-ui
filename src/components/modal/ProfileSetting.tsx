@@ -12,7 +12,7 @@ import functions from '@/utils/functions';
 import UserStateStore from '@/store/userStore';
 import * as RequestService from "@/services/request/index";
 import { MdOutlineClose,MdArrowBack,MdLogout } from 'react-icons/md';
-import { ModalMypageNoticeStore,ModalMypageRequestStore,ModalMypageEntireStore } from '@/store/modalStore';
+import { ModalMypageNoticeStore,ModalMypageRequestStore,ModalMypageEntireStore,ModalMypagePolicyStore,ModalMypageYakwanStore } from '@/store/modalStore';
 import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
@@ -50,11 +50,19 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   const setIsOpenMypageRequestModal = ModalMypageRequestStore((state) => state.setIsOpenMypageRequestModal);
   const { isOpenEntireModal } = ModalMypageEntireStore(state => state);
   const setIsOpenEntireModal = ModalMypageEntireStore((state) => state.setIsOpenEntireModal);
+  const { isOpenPolicyModal } = ModalMypagePolicyStore(state => state);
+  const setIsOpenPolicyModal = ModalMypagePolicyStore((state) => state.setIsOpenPolicyModal);
+  const { isOpenYakwanModal } = ModalMypageYakwanStore(state => state);
+  const setIsOpenYakwanModal = ModalMypageYakwanStore((state) => state.setIsOpenYakwanModal);
 
+
+  setIsOpenYakwanModal
 
   const reviewBtnRef = React.useRef<any>();
   const entireBtnRef = React.useRef<any>();
   const noticeBtnRef = React.useRef<any>();
+  const policyBtnRef = React.useRef<any>();
+  const yakwanBtnRef = React.useRef<any>();
 
   const toast = useToast();
   const sidebarBackgroundColor = useColorModeValue('white', 'gray.700');
@@ -205,6 +213,36 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     }, 200);
   }
 
+  const onSendMypagePolicyButton = async(  ) => {
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_9}`);
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_9}`)
+    setIsOpenPolicyModal(true);
+  }
+
+  const fn_close_modal_mypage_policy = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenPolicyModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_10}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`)
+    }, 200);
+  }
+
+  const onSendMypageYakwanButton = async(  ) => {
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_8}`);
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_8}`)
+    setIsOpenYakwanModal(true);
+  }
+
+  const fn_close_modal_mypage_yakwan = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenYakwanModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_10}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`)
+    }, 200);
+  }
+
   if ( isLoading ) {
     return (
       <SkeletonDefaultMixed
@@ -287,7 +325,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                 </Box>
               </Box>
               <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
-                <Box display={'flex'} alignItems={'center'} flex={5} >
+                <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => onSendMypageYakwanButton()} cursor={'pointer'}>
                   <Image 
                     src={IconPolicy}
                     alt="IconPolicy"
@@ -295,7 +333,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                   />
                   <Text fontSize={'15px'} ml={2}>이용약관</Text>
                 </Box>
-                <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1}>
+                <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => onSendMypageYakwanButton()} cursor={'pointer'}>
                   <Image 
                     src={IconDetail}
                     alt="IconDetail"
@@ -304,7 +342,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                 </Box>
               </Box>
               <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
-                <Box display={'flex'} alignItems={'center'} flex={5} >
+                <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => onSendMypagePolicyButton()} cursor={'pointer'}>
                   <Image 
                     src={IconPerson}
                     alt="IconPerson"
@@ -312,7 +350,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                   />
                   <Text fontSize={'15px'} ml={2}>개인정보 처리방침</Text>
                 </Box>
-                <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1}>
+                <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => onSendMypagePolicyButton()} cursor={'pointer'}>
                   <Image 
                     src={IconDetail}
                     alt="IconDetail"
@@ -555,6 +593,124 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                     isOpen={isOpenNoticeListModal}
                     setClose={() => fn_close_modal_mypage_notice()}
                   />
+                </ModalBody>
+              </ModalContent>
+            </Modal>
+          )
+        }
+        {
+          isOpenPolicyModal && (
+            <Modal
+              onClose={() => fn_close_modal_mypage_policy()}
+              finalFocusRef={policyBtnRef}
+              isOpen={isOpenPolicyModal}
+              scrollBehavior={'inside'}
+              blockScrollOnMount={false}
+              preserveScrollBarGap={true}
+              trapFocus={false}
+              size={'full'}
+            >
+              <ModalOverlay />
+              <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
+                <ModalHeader bg={navbarBg}>
+                  <Flex flexDirection={'row'}>
+                    <Box 
+                      flex={1} 
+                      display={{base :'flex', md:'none'}} 
+                      alignItems={'center'} 
+                      onClick={() => fn_close_modal_mypage_policy()} 
+                      cursor={'pointer'}
+                    >
+                      <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
+                    </Box>
+                    <Box 
+                      flex={3} 
+                      display={{base :'none', md:'flex'}} 
+                      alignItems={'center'} 
+                      >
+                      <Text color={'white'} noOfLines={1}>개인정보 처리방침</Text>
+                    </Box>
+                    <Box 
+                      flex={3} 
+                      display={{base :'flex', md:'none'}} 
+                      alignItems={'center'} 
+                      justifyContent={'flex-end'}
+                    >
+                      <Text color={'white'} noOfLines={1}>개인정보 처리방침</Text>
+                    </Box>
+                    <Box 
+                      flex={1} 
+                      display={{base :'none', md:'flex'}} 
+                      justifyContent={'flex-end'}
+                      alignItems={'center'} 
+                      onClick={() => fn_close_modal_mypage_policy()} 
+                      cursor={'pointer'}
+                      >
+                      <Icon as={MdOutlineClose} width="30px" height="30px" color="white" />
+                    </Box>
+                  </Flex>
+                </ModalHeader>
+                <ModalBody overflowY="auto" maxH="100vh">
+                  <Text>준비중...</Text>
+                </ModalBody>
+              </ModalContent>
+            </Modal>
+          )
+        }
+        {
+          isOpenYakwanModal && (
+            <Modal
+              onClose={() => fn_close_modal_mypage_yakwan()}
+              finalFocusRef={yakwanBtnRef}
+              isOpen={isOpenYakwanModal}
+              scrollBehavior={'inside'}
+              blockScrollOnMount={false}
+              preserveScrollBarGap={true}
+              trapFocus={false}
+              size={'full'}
+            >
+              <ModalOverlay />
+              <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
+                <ModalHeader bg={navbarBg}>
+                  <Flex flexDirection={'row'}>
+                    <Box 
+                      flex={1} 
+                      display={{base :'flex', md:'none'}} 
+                      alignItems={'center'} 
+                      onClick={() => fn_close_modal_mypage_yakwan()} 
+                      cursor={'pointer'}
+                    >
+                      <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
+                    </Box>
+                    <Box 
+                      flex={3} 
+                      display={{base :'none', md:'flex'}} 
+                      alignItems={'center'} 
+                      >
+                      <Text color={'white'} noOfLines={1}>이용약관</Text>
+                    </Box>
+                    <Box 
+                      flex={3} 
+                      display={{base :'flex', md:'none'}} 
+                      alignItems={'center'} 
+                      justifyContent={'flex-end'}
+                    >
+                      <Text color={'white'} noOfLines={1}>이용약관</Text>
+                    </Box>
+                    <Box 
+                      flex={1} 
+                      display={{base :'none', md:'flex'}} 
+                      justifyContent={'flex-end'}
+                      alignItems={'center'} 
+                      onClick={() => fn_close_modal_mypage_yakwan()} 
+                      cursor={'pointer'}
+                      >
+                      <Icon as={MdOutlineClose} width="30px" height="30px" color="white" />
+                    </Box>
+                  </Flex>
+                </ModalHeader>
+                <ModalBody overflowY="auto" maxH="100vh">
+                  <Text>준비중...</Text>
                 </ModalBody>
               </ModalContent>
             </Modal>
