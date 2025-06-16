@@ -2,7 +2,6 @@
 import React, { PropsWithChildren } from 'react';
 import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
 // chakra imports
-import { Rating } from 'react-simple-star-rating';
 import { 
   Box,Flex,Button,useColorModeValue,Text,SkeletonCircle,SkeletonText,Divider,Card,CardHeader,CardBody,Heading,Icon,Popover,PopoverTrigger,PopoverContent,PopoverHeader,PopoverArrow,
   PopoverBody,SimpleGrid,Textarea,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,Portal
@@ -17,6 +16,9 @@ import { BiPhone } from "react-icons/bi";
 import ProgressBar from '@/components/fields/ProgressBar';
 import ListItem from '@/components/text/ListItem';
 import UsePreventRefresh from "@/hooks/usePreventRefresh";
+import { Rating } from 'react-simple-star-rating';
+import NewRating from "@/components/icons/newStar"
+import functions from '@/utils/functions';
 
 import DoctorAvatar from "@/assets/images/thumb_dr_basic.png";
 import IconInfo from "@/assets/icons/ico-document.png";
@@ -67,13 +69,12 @@ function DoctorModal(props: DoctorModalProps) {
     }, 600);
   }, [data]);
 
-  const onHandleRegistReview = (data:any) => {
-    console.log('data', data);
+  const onHandleRegistReview = () => {
+    console.log("onHandleRegistReview")
     fn_close_modal_doctor_review();
   }
 
   const onHandleRequestDoctor = (data:any) => {
-    console.log('data', data);
     fn_close_modal_doctor_request();
   }
 
@@ -88,6 +89,7 @@ function DoctorModal(props: DoctorModalProps) {
 
 
   const onSendDoctorReviewButton = async( gubun = "") => {
+    if ( !functions.isEmpty(gubun)) setReviewData({doctor_id : gubun})
     if ( isFromDoctorDepth2 ) {//true이면 list > detail
       history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_3_2}`);
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_3_2}`)   
@@ -107,20 +109,17 @@ function DoctorModal(props: DoctorModalProps) {
       router.replace(`/${locale}/chat#${mConstants.pathname_modal_2}`);
       setTimeout(() => {
         mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2}`)  
-        console.log("pathname clear")
       }, 200);
     }else{
       router.replace(`/${locale}/chat#${mConstants.pathname_modal_2_2}`);
       setTimeout(() => {
         mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2_2}`)  
-        console.log("pathname clear")
       }, 200);
     }
   }
 
   const onSendDoctorRequestButton = async( gubun = "") => {
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_4}`);
-    console.log("pathname onSendDoctorButton",pathnameRef.current)
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_4}`)   
     setIsOpenRequestModal(true);
   }
@@ -342,10 +341,13 @@ function DoctorModal(props: DoctorModalProps) {
               mb={{base : 4, sm2 : 0}}
             >
               <Flex flex={1}>
-                <Text fontSize={'40px'} color={'#000000'} fontWeight={'bold'}>5.0</Text>
+                <Text fontSize={'40px'} color={'#000000'} fontWeight={'bold'}>4.5</Text>
               </Flex>
               <Flex flex={1} >
-                <Rating initialValue={4.0} readonly size={20} fillColor={starColor} SVGstyle={{ display: 'inline' }} />
+                {/* <Rating initialValue={4.5} readonly size={20} fillColor={starColor} SVGstyle={{ display: 'inline' }} /> */}
+                <NewRating 
+                  rating={4.5}
+                />
               </Flex>
             </Box>
             <Box flex={2} display={'flex'} flexDirection={'column'}  alignItems={'center'} justifyContent={'flex-end'} width={{base : '100%', sm2:'auto'}}>
@@ -491,7 +493,7 @@ function DoctorModal(props: DoctorModalProps) {
                   <ReviewDetail
                     isOpen={isOpenReview}
                     setClose={() => fn_close_modal_doctor_review()}
-                    onHandleRegistReview={(data:any) => onHandleRegistReview(data)}
+                    onHandleRegistReview={() => onHandleRegistReview()}
                     reviewData={reviewData}
                   />
                 </ModalBody>
@@ -520,8 +522,8 @@ function DoctorModal(props: DoctorModalProps) {
                   <RequestDoctor
                     isOpen={isOpenRequestModal}
                     setClose={() => fn_close_modal_doctor_request()}
-                    onHandleRegistReview={(data:any) => onHandleRequestDoctor(data)}
-                    doctorId={'1'}
+                    onHandleDoctorRequestRegist={(data:any) => onHandleRequestDoctor(data)}
+                    doctor_id={1}
                   />
                 </ModalBody>
               </ModalContent>

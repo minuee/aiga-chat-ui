@@ -86,7 +86,6 @@ function JoinScreen(props: JoinScreenProps) {
   }
 
   const handleRegist = () => {
-    console.log(inputs);
     onClose();
     setLoading(true);
     setTimeout(() => {

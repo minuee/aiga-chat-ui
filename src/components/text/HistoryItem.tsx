@@ -26,7 +26,6 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle }:HistoryItemP
     const bgColor = useColorModeValue('white', 'navy.700');
     const moreColor = useColorModeValue('gray.500', 'whiteAlpha.300');
     const onHandleDeleteHistory = () => {
-        console.log('onHandleDeleteHistory');
         onDeleteHistory(data.historyId);
     }
 
@@ -35,7 +34,6 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle }:HistoryItemP
     }, [data?.historyId]);
 
     const onHandleShareHistory = () => {
-        console.log('onHandleShareHistory');
         navigator.clipboard.writeText(inputs.shareLink);
         setTimeout(() => {
             toast({

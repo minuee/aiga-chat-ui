@@ -57,7 +57,6 @@ const SelectDoctor = ({  onSendButton  }: SelectDoctorProps) => {
 
   const onSendDoctorListButton = async( gubun = "") => {
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_1}`);
-    console.log("pathname onSendDoctorButton",pathnameRef.current)
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_1}`)   
     setOpenDoctorListModal(true);
   }
@@ -67,8 +66,7 @@ const SelectDoctor = ({  onSendButton  }: SelectDoctorProps) => {
     setOpenDoctorListModal(false);
     router.replace(`/${locale}/chat`);
     setTimeout(() => {
-      mCookie.setCookie('currentPathname','')  
-      console.log("pathname clear")
+      mCookie.setCookie('currentPathname','') 
     }, 200);
   }
 

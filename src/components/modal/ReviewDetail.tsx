@@ -1,55 +1,128 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Icon,Textarea, useColorModeValue } from '@chakra-ui/react';
-import { MdDiversity1,MdOutlineStarPurple500 } from 'react-icons/md';
+import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,useToast,Textarea, useColorModeValue } from '@chakra-ui/react';
+import NextImage from 'next/legacy/image';
 import Slider from '@/components/text/Slider';
 import functions from '@/utils/functions';
 import Image from 'next/image';
+import mConstants from '@/utils/constants';
+import * as DoctorService from "@/services/doctor/index";
+
 import ImageEntire from "@/assets/images/img-entire.png";
 import IconVote1 from "@/assets/icons/vote_1.png";
 import IconVote2 from "@/assets/icons/vote_2.png";
 import IconVote3 from "@/assets/icons/vote_3.png";
 import IconVote4 from "@/assets/icons/vote_4.png";
+import { loadingImage } from "@/components/icons/IconImage"
 
 export interface ReviewModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
-  onHandleRegistReview : (data:any) => void;
+  onHandleRegistReview : () => void;
   reviewData : any;
 }
 
 function ReviewModal(props: ReviewModalProps) {
   const { isOpen, setClose, onHandleRegistReview, reviewData } = props;
+  const toast = useToast();
   const [isLoading, setIsLoading] = React.useState(true);
+  const [isReceiving, setReceiving] = React.useState(false);
   const skeletonColor = useColorModeValue('white', 'gray.700');
   const textColor2 = useColorModeValue('black', 'white');
   const buttonBgColor = useColorModeValue('#2b8fff', 'white');
   const [inputs, setInputs] = React.useState<any>({
-    doctorId: '',
-    comment: null,
-    ratingKind : 0,
-    ratingTreatment : 0,
-    ratingDialog : 0,
-    ratingRecommend : 0,
+    doctor_id: 1,
+    content: null,
+    kindness_score : 0,
+    satisfaction_score : 0,
+    explaination_score : 0,
+    recommand_score : 0,
   });
 
   React.useEffect(() => {
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+   
 
-    if( !functions.isEmpty(reviewData?.doctorId) ){
-      setInputs({
-        doctorId: reviewData?.doctorId,
-        comment: reviewData?.comment,
-        ratingKind: reviewData?.ratingKind,
-        ratingTreatment: reviewData?.ratingTreatment,
-        ratingDialog: reviewData?.ratingDialog,
-        ratingRecommend: reviewData?.ratingRecommend,
-      });
+    if( !functions.isEmpty(reviewData?.doctor_id) ){
+      getReviewData(reviewData?.doctor_id)
+      /* setInputs({
+        doctor_id: reviewData?.doctor_id,
+        content: reviewData?.content,
+        kindness_score: reviewData?.kindness_score,
+        satisfaction_score: reviewData?.satisfaction_score,
+        explaination_score: reviewData?.explaination_score,
+        recommand_score: reviewData?.recommand_score,
+      }); */
+    }else{
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
     }
   }, [isOpen]);
+
+  const getReviewData = async(did:any) => {
+    const res:any = await DoctorService.getReviewData(did);
+    console.log("onHandleRegistReview res",res)
+    if ( !functions.isEmpty(res.data?.review?.review_id)) {
+      const rData = res?.data?.review;
+      setInputs({
+        doctor_id: rData?.doctor_id,
+        content: rData?.content,
+        kindness_score: rData?.kindness_score,
+        satisfaction_score: rData?.satisfaction_score,
+        explaination_score: rData?.explaination_score,
+        recommand_score: rData?.recommand_score,
+        review_id : rData?.review_id
+      });
+      setIsLoading(false);
+    }else{
+      toast({
+        title: "조회중 오류가 발생하였습니다.",
+        position: 'top-right',
+        status: 'info',
+        isClosable: true,
+      });
+      setTimeout(() => {
+        onHandleRegistReview();
+        setIsLoading(false);
+      }, 1000);
+    }
+  }
+
+  /* isRegist if true 등록 else 수정 */
+  const onHandleReviewRegist = async(data:any, isRegist:boolean = true) => {
+    try{
+      console.log("onHandleRegistReview",data)
+      if ( !functions.isEmpty(data?.doctor_id) ) {
+        setReceiving(true)
+        const res:any = await DoctorService.setReviewData(data,isRegist);
+        console.log("onHandleRegistReview res",res)
+        if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
+          toast({
+            title: isRegist ? "정상적으로 등록되었습니다." : "정상적으로 수정되었습니다.",
+            position: 'top-right',
+            status: 'info',
+            isClosable: true,
+          });
+          setTimeout(() => {
+            onHandleRegistReview();
+            setReceiving(false);
+          }, 1000);
+        }else{
+          toast({
+            title: isRegist ? "등록중 오류가 발생하였습니다." : "수정중 오류가 발생하였습니다.",
+            position: 'top-right',
+            status: 'info',
+            isClosable: true,
+          });
+          setReceiving(false);
+        }       
+      }
+    }catch(e:any){
+      setReceiving(false)
+      console.log("error of getNewSessionID",e)
+    }
+  }
 
   if ( isLoading ) {
     return (
@@ -62,6 +135,21 @@ function ReviewModal(props: ReviewModalProps) {
 
     return (
       <>
+      {
+          isReceiving && (
+            <Flex position='absolute' left={0} top={0} width='100%' height='100%'  justifyContent={'center'}  backgroundColor={'#000000'} opacity={0.7} zIndex="100">
+              <Box padding='6' boxShadow='lg' width={"300px"} height={"calc( 100vh / 2 )"} display={'flex'} flexDirection={'column'}  justifyContent={'center'} alignItems={'center'}>
+                <NextImage
+                    width="100"
+                    height="100"
+                    src={loadingImage}
+                    alt={'doctor1'}
+                />
+                <Text color="#ffffff">Data Processing!!!</Text>
+              </Box>
+            </Flex>
+          )
+        }
         <Flex display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'20px'}>
           <Flex  justifyContent={'center'} minHeight={'50px'} width={'98%'} mt={5}>
             <Box flex={3} pr={'20px'}> 
@@ -96,8 +184,8 @@ function ReviewModal(props: ReviewModalProps) {
             </Flex>
             <Box width={'100%'} my="5px" padding="10px">
               <Slider
-                data={inputs.ratingKind} 
-                setInputs={(value) => setInputs({...inputs, ratingKind: value})} 
+                data={inputs.kindness_score} 
+                setInputs={(value) => setInputs({...inputs, kindness_score: value})} 
               />
             </Box>
           </Box>
@@ -118,8 +206,8 @@ function ReviewModal(props: ReviewModalProps) {
             </Flex>
             <Box width={'100%'} my="5px" padding="10px">
               <Slider
-                data={inputs.ratingTreatment} 
-                setInputs={(value) => setInputs({...inputs, ratingTreatment: value})} 
+                data={inputs.satisfaction_score} 
+                setInputs={(value) => setInputs({...inputs, satisfaction_score: value})} 
               />
             </Box>
           </Box>
@@ -139,8 +227,8 @@ function ReviewModal(props: ReviewModalProps) {
             </Flex>
             <Box width={'100%'} my="5px" padding="10px">
               <Slider
-                data={inputs.ratingDialog} 
-                setInputs={(value) => setInputs({...inputs, ratingDialog: value})} 
+                data={inputs.explaination_score} 
+                setInputs={(value) => setInputs({...inputs, explaination_score: value})} 
               />
             </Box>
           </Box>
@@ -160,8 +248,8 @@ function ReviewModal(props: ReviewModalProps) {
             </Flex>
             <Box width={'100%'} my="5px" padding="10px">
               <Slider
-                data={inputs.ratingRecommend} 
-                setInputs={(value) => setInputs({...inputs, ratingRecommend: value})} 
+                data={inputs.recommand_score} 
+                setInputs={(value) => setInputs({...inputs, recommand_score: value})} 
               />
             </Box>
           </Box>
@@ -179,15 +267,15 @@ function ReviewModal(props: ReviewModalProps) {
           <Box mt={2}>
             <Textarea 
               variant={'outline'} 
-              value={inputs.doctorReview} 
-              onChange={(e) => setInputs({...inputs, comment: e.target.value})} 
+              value={inputs.content} 
+              onChange={(e) => setInputs({...inputs, content: e.target.value})} 
               resize={'none'}  
               isRequired
               minH={'150px'}
               size={'sm'} 
               bg='white'
               borderRadius={"10px"}
-              isInvalid={!functions.isEmpty(inputs.comment)}
+              isInvalid={!functions.isEmpty(inputs.content)}
               placeholder='리뷰는 최소 50자 이상이어야 합니다. 욕설, 비방, 무의미한 반복적인 글귀는 삭제될 수 있습니다.'
               id={"textarea_content"}
             />
@@ -195,15 +283,15 @@ function ReviewModal(props: ReviewModalProps) {
         </Flex>
         <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}  width={'100%'} mt={5}>
           {
-            functions.isEmpty(inputs.doctorId) ?
+            functions.isEmpty(inputs.doctor_id) ?
             <Button 
               colorScheme='blue' 
-              bgColor={(functions.isEmpty(inputs.comment) || (inputs.comment && inputs.comment.length < 50)) ?  "#ccc" : buttonBgColor}
+              bgColor={(functions.isEmpty(inputs.content) || (inputs.content && inputs.content.length < 50)) ?  "#ccc" : buttonBgColor}
               variant='solid' 
               width={'99%'} 
               borderRadius={'10px'}
-              onClick={() => onHandleRegistReview(inputs)}
-              isDisabled={(functions.isEmpty(inputs.comment) || (inputs.comment && inputs.comment.length < 50)) ? true : false}
+              onClick={() => onHandleReviewRegist(inputs,true)}
+              isDisabled={(functions.isEmpty(inputs.content) || (inputs.content && inputs.content.length < 50)) ? true : false}
               id="button_regist"
             >
               저장하기
@@ -211,12 +299,12 @@ function ReviewModal(props: ReviewModalProps) {
             :
             <Button 
               colorScheme='blue' 
-              bgColor={(functions.isEmpty(inputs.comment) || (inputs.comment && inputs.comment.length < 50)) ?  "#ccc" : buttonBgColor}
+              bgColor={(functions.isEmpty(inputs.content) || (inputs.content && inputs.content.length < 50)) ?  "#ccc" : buttonBgColor}
               variant='solid' 
               width={'99%'} 
               borderRadius={'10px'}
-              onClick={() => onHandleRegistReview(inputs)}
-              isDisabled={(functions.isEmpty(inputs.comment) || (inputs.comment && inputs.comment.length < 50)) ? true : false}
+              onClick={() => onHandleReviewRegist(inputs,false)}
+              isDisabled={(functions.isEmpty(inputs.content) || (inputs.content && inputs.content.length < 50)) ? true : false}
               id="button_modify"
             >
               수정하기

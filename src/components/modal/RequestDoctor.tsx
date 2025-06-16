@@ -4,15 +4,15 @@ import React, { PropsWithChildren } from 'react';
 import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Divider,Textarea,Input, FormControl, FormLabel, RadioGroup, Radio, Stack, useColorModeValue } from '@chakra-ui/react';
 import functions from '@/utils/functions';
 
-export interface ReviewModalProps extends PropsWithChildren {
+export interface DoctorRequestModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
-  onHandleRegistReview : (data:any) => void;
-  doctorId : string;
+  onHandleDoctorRequestRegist : (data:any) => void;
+  doctorId : any;
 }
 
-function ReviewModal(props: ReviewModalProps) {
-  const { isOpen, setClose, onHandleRegistReview, doctorId } = props;
+function DoctorRequestModal(props: DoctorRequestModalProps) {
+  const { isOpen, setClose, onHandleDoctorRequestRegist, doctorId } = props;
   const [isLoading, setIsLoading] = React.useState(true);  
   const skeletonColor = useColorModeValue('white', 'gray.700');
   const [inputs, setInputs] = React.useState<any>({
@@ -116,7 +116,7 @@ function ReviewModal(props: ReviewModalProps) {
               variant='solid' 
               width={'99%'} 
               borderRadius={'10px'}
-              onClick={() => onHandleRegistReview(inputs)}
+              onClick={() => onHandleDoctorRequestRegist(inputs)}
               isDisabled={(functions.isEmpty(inputs.req_comment) || (inputs.req_comment && inputs.req_comment.length < 10)) ? true : false}
               id="button_regist"
             >
@@ -141,4 +141,4 @@ function ReviewModal(props: ReviewModalProps) {
   }
 }
 
-export default ReviewModal;
+export default DoctorRequestModal;

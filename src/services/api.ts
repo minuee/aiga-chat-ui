@@ -22,7 +22,7 @@ axios.interceptors.request.use(
 );
 
 axios.interceptors.request.use((config) => {
-  const accessToken = mCookie.getCookie('refresh_token');//'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidWlkX2ViZjE4YzE5LWE1N2UtNDlhMC1hY2JkLTMwZGQ2MzU4NDRhNSIsInNuc190eXBlIjoia2FrYW8iLCJzbnNfaWQiOiI0MjkxODg1MjIzIiwiaWF0IjoxNzQ5NDQ5NzE1LCJleHAiOjE3NDk1MzYxMTV9.Jjl5ii20ZYvq0nUXf8bDGnSjnrJghpFQI0hgefdHCzo';
+  const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidWlkX2ViZjE4YzE5LWE1N2UtNDlhMC1hY2JkLTMwZGQ2MzU4NDRhNSIsInNuc190eXBlIjoia2FrYW8iLCJzbnNfaWQiOiI0MjkxODg1MjIzIiwiaWF0IjoxNzUwMDYwNTkyLCJleHAiOjE3NTAxNDY5OTJ9.10FyPGPAdg3x7bjKQLIF2xqlhC-GSG7Dv570rwR1PjE';
   //mCookie.getCookie('refresh_token');
   console.log("refresh_token axios",accessToken)
   config.headers['Authorization'] = `Bearer ${accessToken}` 

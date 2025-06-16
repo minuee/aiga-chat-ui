@@ -102,7 +102,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
     const response = await axios.get('/auth/kakao', {
       withCredentials: true,
     });
-    console.log("handleKakaoLogin",response.data)
+
     const kakaoUrl = response.data.url;
     //window.location.href = kakaoUrl;
    /*  try {

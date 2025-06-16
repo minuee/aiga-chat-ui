@@ -85,12 +85,10 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   }, [isOpen]);
 
   const onHandleSave = async() => {
-    console.log("inputs", inputs)
     try{
       if ( !functions.isEmpty(inputs?.nickName) ) {
         setReceiving(true)
         const res:any = await RequestService.setNickname(inputs.nickName);
-        console.log("res of setNickname",res)
         if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
           setIsOpenMypageRequestModal(false);
           setReceiving(false);
@@ -109,12 +107,10 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   }
 
   const onHandleRequestAction = async(datas: any) => {
-    console.log("datas", datas)
     try{
       if ( !functions.isEmpty(datas?.title) && !functions.isEmpty(datas?.content) ) {
         setReceiving(true)
         const res:any = await RequestService.setRequest(datas);
-        console.log("res of setRequest",res)
         if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
           setIsOpenMypageRequestModal(false);
           setReceiving(false);
@@ -128,7 +124,6 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       }
     }catch(e:any){
       setReceiving(false)
-      console.log("error of getNewSessionID",e)
     }
   }
 
@@ -160,7 +155,6 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   }
 
   const onHandleNickname = ( str: string ) => {
-    console.log("onHandleNickname",str)
     if ( str == "" ) {
       setInputs({...inputs, nickName: str }) 
     }else if ( mConstants.nickNameAbleString.test(str)) { 

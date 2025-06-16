@@ -30,7 +30,6 @@ export default function Index() {
     async() => {
       try{
         const res:any = await CommonService.getCommonConfig();
-        console.log("res of getCommonConfig",res)
         if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
           setIsLoading(false)
           setConfigInfoStore(
@@ -43,14 +42,12 @@ export default function Index() {
           setConfigInfoStore(0,0,0,0)
         }          
       }catch(e:any){
-        console.log("error of getCommonConfig",e)
         setConfigInfoStore(0,0,0,0)
       }
     },[userId,userInfo?.userMaxToken,userInfo?.userRetryLimitSec]
   );
 
   React.useEffect(() => {
-    console.log("useEffect")
     getConfigData()
   }, [getConfigData]);
 

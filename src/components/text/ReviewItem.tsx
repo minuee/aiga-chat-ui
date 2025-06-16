@@ -32,7 +32,7 @@ const ReviewItem = ({ data, onHandleDetail }:ReivewItemProps) => {
                         <PopoverArrow />
                         <PopoverBody>
                             <Flex flexDirection={'column'} alignItems={'flex-start'} gap={2}>
-                                <Button leftIcon={<Icon as={MdOutlineEdit} />} size='sm' onClick={() => onHandleDetail(null)} id="button_change_name">
+                                <Button leftIcon={<Icon as={MdOutlineEdit} />} size='sm' onClick={() => onHandleDetail(1)} id="button_change_name">
                                     수정하기
                                 </Button>
                                 {/* <Button leftIcon={<Icon as={MdOutlineShare} />} size='sm' onClick={() => setIsOpenShare(true)} id="button_share">
