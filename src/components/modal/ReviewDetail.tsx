@@ -9,12 +9,14 @@ import Image from 'next/image';
 import mConstants from '@/utils/constants';
 import * as DoctorService from "@/services/doctor/index";
 
+
 import ImageEntire from "@/assets/images/img-entire.png";
 import IconVote1 from "@/assets/icons/vote_1.png";
 import IconVote2 from "@/assets/icons/vote_2.png";
 import IconVote3 from "@/assets/icons/vote_3.png";
 import IconVote4 from "@/assets/icons/vote_4.png";
-import { loadingImage } from "@/components/icons/IconImage"
+import Alert from '@/components/alert/CustomAlert';
+import { loadingImage,iconAlertModify,iconAlertReview } from "@/components/icons/IconImage"
 
 export interface ReviewModalProps extends PropsWithChildren {
   isOpen : boolean;
@@ -28,6 +30,7 @@ function ReviewModal(props: ReviewModalProps) {
   const toast = useToast();
   const [isLoading, setIsLoading] = React.useState(true);
   const [isReceiving, setReceiving] = React.useState(false);
+  const [isOpenAlert, setOpenAlert] = React.useState(false);  
   const skeletonColor = useColorModeValue('white', 'gray.700');
   const textColor2 = useColorModeValue('black', 'white');
   const buttonBgColor = useColorModeValue('#2b8fff', 'white');
@@ -98,16 +101,8 @@ function ReviewModal(props: ReviewModalProps) {
         const res:any = await DoctorService.setReviewData(data,isRegist);
         console.log("onHandleRegistReview res",res)
         if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
-          toast({
-            title: isRegist ? "정상적으로 등록되었습니다." : "정상적으로 수정되었습니다.",
-            position: 'top-right',
-            status: 'info',
-            isClosable: true,
-          });
-          setTimeout(() => {
-            onHandleRegistReview();
-            setReceiving(false);
-          }, 1000);
+          setOpenAlert(true)
+          setReceiving(false);
         }else{
           toast({
             title: isRegist ? "등록중 오류가 발생하였습니다." : "수정중 오류가 발생하였습니다.",
@@ -124,6 +119,10 @@ function ReviewModal(props: ReviewModalProps) {
     }
   }
 
+  const onHandleAlertConfirm = () => {
+    onHandleRegistReview()
+  }
+
   if ( isLoading ) {
     return (
       <Box padding='6' boxShadow='lg' bg={skeletonColor}>
@@ -135,7 +134,7 @@ function ReviewModal(props: ReviewModalProps) {
 
     return (
       <>
-      {
+        {
           isReceiving && (
             <Flex position='absolute' left={0} top={0} width='100%' height='100%'  justifyContent={'center'}  backgroundColor={'#000000'} opacity={0.7} zIndex="100">
               <Box padding='6' boxShadow='lg' width={"300px"} height={"calc( 100vh / 2 )"} display={'flex'} flexDirection={'column'}  justifyContent={'center'} alignItems={'center'}>
@@ -267,7 +266,7 @@ function ReviewModal(props: ReviewModalProps) {
           <Box mt={2}>
             <Textarea 
               variant={'outline'} 
-              value={inputs.content} 
+              value={inputs.content ?? ''} 
               onChange={(e) => setInputs({...inputs, content: e.target.value})} 
               resize={'none'}  
               isRequired
@@ -283,7 +282,7 @@ function ReviewModal(props: ReviewModalProps) {
         </Flex>
         <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}  width={'100%'} mt={5}>
           {
-            functions.isEmpty(inputs.doctor_id) ?
+            functions.isEmpty(inputs.review_id) ?
             <Button 
               colorScheme='blue' 
               bgColor={(functions.isEmpty(inputs.content) || (inputs.content && inputs.content.length < 50)) ?  "#ccc" : buttonBgColor}
@@ -312,7 +311,48 @@ function ReviewModal(props: ReviewModalProps) {
           }
         </Box>
 
-        <Box height={'100px'} />
+        <Box height={'50px'} />
+        {
+          isOpenAlert && (
+            <Alert 
+              isShowAppname={false}
+              AppName='AIGA'
+              bodyContent={
+                <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} py="20px">
+                  <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"120px"}>
+                    <NextImage
+                      width="106"
+                      height="90"
+                      src={functions.isEmpty(inputs.review_id) ? iconAlertReview :  iconAlertModify}
+                      alt={'doctor1'}
+                    />
+                  </Box>
+                  <Box width={"100%"}  display={functions.isEmpty(inputs.review_id) ? 'flex' : 'none'} justifyContent={'center'} alignItems={'center'} minHeight={"50px"}>
+                    <Text fontSize={'18px'} color="#212127" fontWeight={'bold'}>소중한 리뷰 감사합니다!</Text>
+                  </Box>
+                  <Box width={"100%"}  display={functions.isEmpty(inputs.review_id) ? 'flex' : 'none'} justifyContent={'center'} alignItems={'center'} minHeight={"60px"}>
+                    <Text fontSize={'17px'} color="#212127">작성해주신 리뷰는 다른 분들에게 큰 도움이 되며 더 나은 서비스를 제공하는 데 활용됩니다.</Text>
+                  </Box>
+                  <Box width={"100%"}  display={!functions.isEmpty(inputs.review_id) ? 'flex' : 'none'} justifyContent={'center'} alignItems={'center'} minHeight={"60px"}>
+                    <Text fontSize={'17px'} color="#212127">리뷰 수정이 완료되었습니다.</Text>
+                  </Box>
+                </Flex>
+              }
+              isOpen={isOpenAlert}
+              onClose={() => setOpenAlert(false)}
+              onConfirm={() => onHandleAlertConfirm()}
+              closeText='취소'
+              confirmText='확인'
+              footerContent={
+                <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} py="20px" width={"100%"}>
+                  <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#2B8FFF" borderRadius={'6px'} onClick={() => onHandleAlertConfirm()} cursor={'pointer'}>
+                    <Text fontSize={'16px'} color="#ffffff" fontWeight={'bold'}>확인</Text>
+                  </Box>
+                </Flex>
+              }
+            />
+          )
+        }
       </>
     )
   }

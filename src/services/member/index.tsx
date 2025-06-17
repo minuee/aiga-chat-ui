@@ -77,3 +77,77 @@ export const handleKakaoLogin3 = async (props: MemberAuthProps) => {
         console.error('handleKakaoLogin 카카오 로그인 에러:', error);
     }
 };
+
+interface SetNickNamerops {
+    reqData: any;
+}
+
+export function setNickname(reqData: SetNickNamerops): any {
+    try{
+        console.log("accessToken setRequest",reqData)
+        const res:any =  api.patch(`/users/nickname`,{nickname : reqData})
+        .then((response) => {
+             return response?.data;
+        }).catch((error) => {
+             console.log("eeeee",error)
+            return null;
+        });
+        return res;
+    }catch(error){
+        console.log("eeeee",error)
+        return null;   
+    }
+ }
+
+export function setSignupAgree(): any {
+    try{
+        console.log("apidata setSignupAgree")
+        const res:any =  api.get(`/users/agreement`)
+        .then((response) => {
+             return response?.data;
+        }).catch((error) => {
+             console.log("eeeee",error)
+            return null;
+        });
+        return res;
+    }catch(error){
+        console.log("eeeee",error)
+        return null;   
+    }
+ }
+
+ export function setMemberEntire(): any {
+    try{
+        console.log("apidata setMemberEntire")
+        const res:any =  api.get(`/users/unregist`)
+        .then((response) => {
+             return response?.data;
+        }).catch((error) => {
+             console.log("eeeee",error)
+            return null;
+        });
+        return res;
+    }catch(error){
+        console.log("eeeee",error)
+        return null;   
+    }
+ }
+
+ export function setMemberLogout(): any {
+    try{
+        console.log("apidata setMemberLogout")
+        const res:any =  api.get(`/auth/logout`)
+        .then((response) => {
+             return response?.data;
+        }).catch((error) => {
+             console.log("eeeee",error)
+            return null;
+        });
+        return res;
+    }catch(error){
+        console.log("eeeee",error)
+        return null;   
+    }
+ }
+
+ 

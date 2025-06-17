@@ -28,6 +28,7 @@
     "@uiw/codemirror-theme-tokyo-night": "^4.19.11",
     "@uiw/react-codemirror": "^4.19.11",
     "axios": "^1.9.0",
+    "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
     "endent": "^2.1.0",
     "eventsource-parser": "^1.0.0",

@@ -6,20 +6,27 @@ import mConstants from '@/utils/constants';
 import RequestForm from '@/components/modal/RequestForm';
 import EntireForm from '@/components/modal/EntireForm';
 import Alert from '@/components/alert/Alert';
+import CustomAlert from '@/components/alert/CustomAlert';
 import NoticerModal  from '@/components/modal/NoticeList';
 import functions from '@/utils/functions';
+import NextImage from 'next/legacy/image';
+import * as RequestService from "@/services/request/index";
+import * as MemberService from "@/services/member/index";
+
 //로그인 전역상태
 import UserStateStore from '@/store/userStore';
-import * as RequestService from "@/services/request/index";
-import { MdOutlineClose,MdArrowBack,MdLogout } from 'react-icons/md';
+import NewChatStateStore from '@/store/newChatStore';
+import ConfigInfoStore from '@/store/configStore';
 import { ModalMypageNoticeStore,ModalMypageRequestStore,ModalMypageEntireStore,ModalMypagePolicyStore,ModalMypageYakwanStore } from '@/store/modalStore';
 import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
 import { SkeletonDefaultMixed } from "@/components/fields/LoadingBar";
-import avatar4 from '/public/img/avatars/myphoto.jpeg';
+import defaultProfile from '@/assets/images/avatar0.png';
 import { NextAvatar } from '@/components/image/Avatar';
 import Image from 'next/image';
+import { MdOutlineClose,MdArrowBack,MdLogout } from 'react-icons/md';
+import { iconAlertEntire } from "@/components/icons/IconImage"
 import IconNotice from "@/assets/icons/icon_notice.png";
 import IconPolicy from "@/assets/icons/icon_policy.png";
 import IconPerson from "@/assets/icons/icon_person.png";
@@ -29,21 +36,22 @@ import IconDetail from "@/assets/icons/BiChevronRight.png";
 export interface ProfileSettingModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
+  setLogout : () => void;
 }
 
 function ProfileSettingModal(props: ProfileSettingModalProps) {
-  const { isOpen, setClose } = props;
+  const { isOpen, setClose,setLogout } = props;
 
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
   const setLoginUserInfo = UserStateStore((state) => state.setUserState);
-  const { nickName, ...userInfo } = UserStateStore(state => state);
+  const { ...userBaseInfo } = UserStateStore(state => state);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isReceiving, setReceiving] = React.useState(false);
   const [isOpenLogoutModal, setIsOpenLogoutModal] = React.useState(false);
-
-  
+  const [isOpenAlert, setOpenAlert] = React.useState(false);  
+  const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
   const { isOpenNoticeListModal } = ModalMypageNoticeStore(state => state);
   const setIsOpenNoticeListModal = ModalMypageNoticeStore((state) => state.setIsOpenNoticeListModal);
   const { isOpenMypageRequestModal } = ModalMypageRequestStore(state => state);
@@ -54,9 +62,8 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   const setIsOpenPolicyModal = ModalMypagePolicyStore((state) => state.setIsOpenPolicyModal);
   const { isOpenYakwanModal } = ModalMypageYakwanStore(state => state);
   const setIsOpenYakwanModal = ModalMypageYakwanStore((state) => state.setIsOpenYakwanModal);
+  const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
 
-
-  setIsOpenYakwanModal
 
   const reviewBtnRef = React.useRef<any>();
   const entireBtnRef = React.useRef<any>();
@@ -69,6 +76,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   const skeletonColor = useColorModeValue('white', 'gray.700');
   const buttonBgColor = useColorModeValue('#2b8fff', 'white');
   const buttonTextColor = useColorModeValue('white', '#2b8fff');
+  const textColor = useColorModeValue('navy.700', 'white');
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
   const [inputs, setInputs] = React.useState<any>({
     nickName: ''
@@ -78,7 +86,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     setTimeout(() => {
       setInputs({
         ...inputs,
-        nickName : nickName
+        nickName : userBaseInfo?.nickName
       })
       setIsLoading(false);
     }, 1000);
@@ -88,15 +96,20 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     try{
       if ( !functions.isEmpty(inputs?.nickName) ) {
         setReceiving(true)
-        const res:any = await RequestService.setNickname(inputs.nickName);
+        const res:any = await MemberService.setNickname(inputs.nickName);
         if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
           setIsOpenMypageRequestModal(false);
+          setLoginUserInfo({
+            ...userBaseInfo,
+            nickName : inputs.nickName
+          })
           setReceiving(false);
           toast({
             title: res?.message || "정상적으로 변경 되었습니다.",
             position: 'top-right',
             status: 'info',
             isClosable: true,
+            duration:1500
           });
         }          
       }
@@ -127,31 +140,89 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     }
   }
 
-  const onHandleEntireAction = (inputs: any) => {
-    toast({
-      title: "이용해 주셔서 감사합니다. 정상적으로 탈퇴처리 되었습니다.",
-      position: 'top-right',
-      status: 'info',
-      isClosable: true,
-    });
-    setIsOpenEntireModal(false);
-    /* global logout */
-    setIsOpenLogoutModal(false)
+  const onHandleEntireAction = async(inputs: any) => {
+
+    try{
+      if ( !functions.isEmpty(userBaseInfo?.userId) ) {
+        setReceiving(true)
+        const res:any = await MemberService.setMemberEntire();
+        if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
+          setOpenAlert(true)
+          setReceiving(false);
+          
+        }else{
+          toast({
+            title: res?.message || "처리중 오류가 발생하였습니다. 잠시후에 다시 이용해주십시요",
+            position: 'top-right',
+            status: 'info',
+            isClosable: true,
+            duration:1500
+          });
+          setReceiving(false);
+        }        
+      }
+    }catch(e:any){
+      setReceiving(false)
+      console.log("error of getNewSessionID",e)
+    }
   }
 
-  const onHandleLogout = () => {
+  const onHandleAlertConfirm = () => {
+    onHandleLogout();
+
+  }
+
+  const onHandleLogout = async() => {
+    try{
+      if ( !functions.isEmpty(userBaseInfo?.userId) ) {
+        setReceiving(true)
+        const res:any = await MemberService.setMemberLogout();
+        if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
+          onHandleLogoutAction(); 
+        }else{
+          toast({
+            title: res?.message || "처리중 오류가 발생하였습니다.",
+            position: 'top-right',
+            status: 'info',
+            isClosable: true,
+            duration:1500
+          });
+        }        
+      }
+    }catch(e:any){
+      setReceiving(false)
+      console.log("error of getNewSessionID",e)
+    }
+  }
+
+  const onHandleLogoutAction = () => {
     /* 여기서 전체 로그아웃을 처리한다 
     1. 세션제거
     2. Global State null 처리
-    setLoginUserInfo(
-      isState : boolean;
-      userId: string;
-      isGuest:boolean;
-      joinType:string;
-      nickName : string);
     */
-    setLoginUserInfo(false,'',true,'',"Guest",0,0);
+    setLoginUserInfo({
+      isState : false, //isState
+      sns_id: '', //sns_id
+      email : '', //email
+      profileImage : '', //profileImage
+      agreement : false, //agreement
+      registDate : '', //registDate
+      unregistDate : '',//unregistDate
+      updatedDate : '',//updatedDate
+      userId :  "Guest",//userId
+      isGuest : true, //isGuest
+      joinType : '',//joinType
+      nickName : '',//nickName
+      userMaxToken :guestMaxToken,//userMaxToken
+      userRetryLimitSec : guestRetryLimitSec//userRetryLimitSec
+    });
+    mCookie.removeCookie(mConstants.apiTokenName)
     setIsOpenLogoutModal(false)
+    setLogout();
+    setNewChatOpen(false);
+    setTimeout(() => {
+      setNewChatOpen(true);
+    }, 100);
   }
 
   const onHandleNickname = ( str: string ) => {
@@ -251,10 +322,27 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} mt={5}>
           <Flex flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'} minHeight={'50px'} width={'100%'}>
             <Box flex={5} display={'flex'} flexDirection={'row'} alignItems={'center'}>
-              <NextAvatar h="48px" w="48px" src={avatar4} me="10px" />
-              <Text fontSize={'17px'} fontWeight={'bold'}>minuee@kormedi.com</Text>
+            {
+              functions.isEmpty(userBaseInfo?.profileImage) 
+              ?
+              <NextAvatar h="48px" w="48px" src={defaultProfile} me="10px" />
+              :
+              <NextImage 
+                src={userBaseInfo?.profileImage}
+                alt="프로필이미지"
+                fill
+                style={{ borderRadius: '50%', objectFit: 'cover' }} 
+                width={34} 
+                height={34}
+              />
+            }
+              <Box pl="10px">
+                <Text color={textColor} fontSize="xs" fontWeight="600" me="10px">
+                  {userBaseInfo?.email}
+                </Text>
+              </Box>
             </Box>
-            <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} onClick={() => setIsOpenLogoutModal(true)}>
+            <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} onClick={() => setIsOpenLogoutModal(true)} cursor={'pointer'}>
               <Icon as={MdLogout} width="20px" height="20px" color="inherit" />
             </Box>
           </Flex>
@@ -708,6 +796,42 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                 </ModalBody>
               </ModalContent>
             </Modal>
+          )
+        }
+        {
+          isOpenAlert && (
+            <CustomAlert 
+              isShowAppname={false}
+              AppName='AIGA'
+              bodyContent={
+                <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} py="20px">
+                  <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"120px"}>
+                    <NextImage
+                      width="106"
+                      height="90"
+                      src={iconAlertEntire}
+                      alt={'doctor1'}
+                    />
+                  </Box>
+                  <Flex width={"100%"}  flexDirection={'column'} justifyContent={'center'} alignItems={'center'} minHeight={"60px"}>
+                    <Text fontSize={'17px'} color="#212127" lineHeight={'200%'}>회원 탈퇴가 완료되었습니다.</Text>
+                    <Text fontSize={'17px'} color="#212127"  lineHeight={'200%'}>24시간 이후 재가입 부탁드립니다.</Text>
+                  </Flex>
+                </Flex>
+              }
+              isOpen={isOpenAlert}
+              onClose={() => setOpenAlert(false)}
+              onConfirm={() => onHandleAlertConfirm()}
+              closeText='취소'
+              confirmText='확인'
+              footerContent={
+                <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} py="20px" width={"100%"}>
+                  <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#2B8FFF" borderRadius={'6px'} onClick={() => onHandleAlertConfirm()} cursor={'pointer'}>
+                    <Text fontSize={'16px'} color="#ffffff" fontWeight={'bold'}>확인</Text>
+                  </Box>
+                </Flex>
+              }
+            />
           )
         }
       </>

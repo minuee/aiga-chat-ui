@@ -1,17 +1,23 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Flex,useColorModeValue ,useToast} from '@chakra-ui/react';
+import { Flex,useColorModeValue ,useToast,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,Box,Icon,Text} from '@chakra-ui/react';
 import * as mCookie from "@/utils/cookies";
-import axios from 'axios';
-
+import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
+import * as history from '@/utils/history';
 import LoginScreen from '@/components/signup/LoginScreen';
 import JoinScreen from '@/components/signup/JoinScreen';
+import SignupAgree from "@/components/modal/SignupAgree";
 import functions from '@/utils/functions';
 import mConstants from '@/utils/constants';
 import { usePathname, useRouter } from 'next/navigation';
 import * as AuthService from "@/services/member/index";
-
+import { encryptToken } from "@/utils/secureToken";
+import UserStateStore from '@/store/userStore';
+import NewChatStateStore from '@/store/newChatStore';
+import ConfigInfoStore from '@/store/configStore';
+import { ModalSignupAgreeStoreStore,ModalSignupFinishStoreStore } from '@/store/modalStore';
+import { MdOutlineSettings,MdArrowBack,MdOutlineClose } from 'react-icons/md';
 export interface LoginModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
@@ -30,8 +36,23 @@ function LoginModal(props: LoginModalProps) {
   const toast = useToast();
   const [isModalOpen, setModalOpen] = React.useState(false);
   const [loginUrl, setLoginUrl] = React.useState('');
-  const [userInfo, setUserInfo] = React.useState(null);
+  //const [userInfo, setUserInfo] = React.useState(null);
+  const pathname = usePathname();
   const router = useRouter();
+  const pathnameRef = React.useRef(pathname);
+  const signupAgreeBtnRef = React.useRef<HTMLButtonElement>(null);
+
+  const setLoginUserInfo = UserStateStore((state) => state.setUserState);
+  const { nickName, ...userInfo } = UserStateStore(state => state);
+  const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
+
+  const { isOpenSignupAgreeModal } = ModalSignupAgreeStoreStore(state => state);
+  const setIsOpenSignupAgreeModal = ModalSignupAgreeStoreStore((state) => state.setIsOpenSignupAgreeModal);
+  const { isOpenSignupFinishModal } = ModalSignupFinishStoreStore(state => state);
+  const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
+
+
+  let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
   let sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
   
   React.useEffect(() => {
@@ -40,33 +61,34 @@ function LoginModal(props: LoginModalProps) {
     }, 2000);
   }, [isOpen]);
 
-  const onClickJoin666 = async () => {
-    try {
-      const response = await axios.get('/auth/kakao', {
-        withCredentials: true,
-      });
+  const fn_close_modal_signup_agree = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenSignupAgreeModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_21}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_21}`)
+    }, 200);
+  }
 
-      if (response.data?.user) {
-        // ✅ 이미 가입된 유저
-        setUserInfo(response.data.user);
-        console.log('사용자 정보:', response.data.user);
-      } else if (response.data?.url) {
-        // ✅ 미가입자 → 카카오 로그인 창 띄우기
-        setLoginUrl(response.data.url);
-        setModalOpen(true);
-      } else {
-        console.warn('예상하지 못한 응답:', response.data);
-      }
-    } catch (error) {
-      const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=95ad93cc72ddbfd346b51eb9464c9313&redirect_uri=https://aigadev.kormedi.com/api/auth/kakao/callback&response_type=code`;
-      setLoginUrl(kakaoAuthUrl);
-      setModalOpen(true);
-      console.error('카카오 로그인 오류:', error);
-    }
-  };
-  
+  const onSendSignupAgreeButton = async(  ) => {
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_11}`);
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_11}`);
+    setIsOpenSignupAgreeModal(true);
+  }
+
+  const fn_close_modal_signup_finish = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenSignupAgreeModal(false);
+    setClose();
+    router.replace(`/${locale}/chat`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',``)
+    }, 200);
+  }
+
   const onClickJoin = (str:string) => {
-
+    /* onSendSignupAgreeButton();
+    return;
     toast({
       title: 'AIGA',
       position: 'top-right',
@@ -76,93 +98,111 @@ function LoginModal(props: LoginModalProps) {
       isClosable: true,
     });
     return;
-
-    const accessToken = mCookie.getCookie('refresh_token');
-    console.log("refresh_token",accessToken)
+ */
+    console.log("apidata str",str)
     setLoginForm({
       socialType : str
     });
-    const screenWidth = window.screen.availWidth;
-    const screenHeight = window.screen.availHeight;
+  
+    const screenWidth = isMobileOnly ? window.screen.availWidth : 450;
+    const screenHeight = isMobileOnly ? window.screen.availHeight : 600;
     const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:9999';
     const popup = window.open(
       `${baseURL}/auth/${str}`, // Next.js에서 프록시된 백엔드 URL
       'SocialLogin',
-      `width=400,height=600`
+      `width=${screenWidth},height=${screenHeight}`
       //`width=${screenWidth},height=${screenHeight},left=0,top=0`
     );
 
     const interval = setInterval(async () => {
       if (popup?.closed) {
         clearInterval(interval);
-        console.log('팝업 닫힘 감지됨');
+        console.log('apidata 팝업 닫힘 감지됨');
       }
     }, 500);
 
-    const receiveMessage = (event: MessageEvent) => {
-      if ( event.origin !== 'https://aigadev.kormedi.com' && event.origin !== 'http://localhost:3000') {
-        console.warn('허용되지 않은 출처:', event.origin);
-        return;
-      }
-
-      const { target } = event.data;
-      console.log('카카오 로그인 완료, code:', target);
-
-      if (event.data.type === 'kakao-login-success') {
-        console.log('✅ 카카오 로그인 if 성공:', event.data.payload);
+    const receiveMessage = async(event: MessageEvent) => {
+      if ( !mConstants.apiAllowOriginCode.includes(event.origin) ) {
+        console.warn('apidata 허용되지 않은 출처:', event.origin);
         popup?.close();
         window.removeEventListener('message', receiveMessage);
-      }else{
-        console.log(`✅ 카카오 로그인 else 성공:`, event);
-        //popup?.close();
+        return;
+      }
+      console.log('apidata event.data.type',event.data.type);
+      if (event.data.type === 'kakao-auth') {
+        console.log('apidata ✅ 카카오 로그인 성공:', event.data.code?.data?.user);
+        const loginUserInfo = event?.data?.code?.data?.user;
+        const accessToken = event?.data?.code?.data?.access_token;
+        console.log('apidata accessToken',accessToken);
+        if ( loginUserInfo?.agreement ) { // 회원인상태
+          mCookie.setCookie(mConstants.apiTokenName, encryptToken(accessToken))
+          setLoginUserInfo({
+            isState : loginUserInfo?.agreement, //isState
+            sns_id : loginUserInfo?.sns_id, //sns_id
+            email : loginUserInfo?.email, //email
+            profileImage : loginUserInfo?.profile_img, //profileImage
+            agreement : loginUserInfo?.agreement, //agreement
+            registDate : loginUserInfo?.regist_date, //registDate
+            updatedDate : loginUserInfo?.updatedAt,//updatedDate
+            unregistDate : loginUserInfo?.unregist_date,//unregistDate
+            userId : loginUserInfo?.user_id,//userId
+            isGuest : false, //isGuest
+            joinType : loginUserInfo?.sns_type,//joinType
+            nickName : loginUserInfo?.nickname,//nickName
+            userMaxToken : userMaxToken,//userMaxToken
+            userRetryLimitSec :userRetryLimitSec//userRetryLimitSec
+          });
+          setNewChatOpen(false);
+          setTimeout(() => {
+            setNewChatOpen(true);
+          }, 100);
+          setClose();
+        }else{ // 동의안한상태
+          mCookie.setCookie(mConstants.apiTokenName, encryptToken(accessToken))
+          setLoginUserInfo({
+            isState : loginUserInfo?.agreement, //isState
+            sns_id : loginUserInfo?.sns_id, //sns_id
+            email : loginUserInfo?.email, //email
+            profileImage : loginUserInfo?.profile_img, //profileImage
+            agreement : loginUserInfo?.agreement, //agreement
+            registDate : loginUserInfo?.regist_date, //registDate
+            updatedDate : loginUserInfo?.updatedAt,//updatedDate
+            unregistDate : loginUserInfo?.unregist_date,//unregistDate
+            userId : loginUserInfo?.user_id,//userId
+            isGuest : true, //isGuest
+            joinType : loginUserInfo?.sns_type,//joinType
+            nickName : loginUserInfo?.nickname,//nickName
+            userMaxToken : guestMaxToken,//userMaxToken
+            userRetryLimitSec : guestRetryLimitSec //userRetryLimitSec
+          });
+          onSendSignupAgreeButton();
+        }
+        popup?.close();
         window.removeEventListener('message', receiveMessage);
+      }else if (event.data.type === 'naver-auth') {
+          console.log('apidata ✅ 네이버 로그인 if 성공:', event.data.payload);
+          popup?.close();
+          setNewChatOpen(false);
+          setTimeout(() => {
+            setNewChatOpen(true);
+          }, 100);
+          window.removeEventListener('message', receiveMessage);
+      }else{
+        console.log(`apidata ✅ 회원가입 실패 :`, event);
+        window.removeEventListener('message', receiveMessage);
+        toast({
+          title: 'AIGA',
+          position: 'top-right',
+          description: '회원가입/로그인중 오류가 발생하였습니다. 잠시뒤에 이용해주세요. ',
+          status: 'info',
+          duration: 2000,
+          isClosable: true,
+        });
       }
     };
     window.addEventListener('message', receiveMessage);
   };
 
-
-  const onClickJoin3333 = async(str:string) => {
-    setLoginForm({
-      socialType : str
-    });
-
-    try{
-      if ( !functions.isEmpty(str) ) {
-        const res:any = await AuthService.handleKakaoLogin({ joinType : str});
-        //console.log("res of onClickJoin",res)         
-      }
-    }catch(e:any){
-      //console.log("error of getNewSessionID",e)
-    }
-
-  }
-
-  const onClickJoin333 = async(str:string) => {
-    console.log("onClickJoin",str)
-    try {
-      const response = await axios.get('/auth/kakao', {
-        withCredentials: false,
-      });
-      console.log("response",response)
-      //const kakaoUrl = response.data.url;
-      router.push(response?.data?.url);
-    } catch (err) {
-      console.error('카카오 로그인 에러:', err);
-    }
-  };
-
-  const onClickJoin555 = async () => {
-    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=95ad93cc72ddbfd346b51eb9464c9313&redirect_uri=https://aigadev.kormedi.com/api/auth/kakao/callback&response_type=code`;
-    //window.location.href = kakaoAuthUrl;       //웹개발할때 숨쉬듯이 작성할 코드
-    //window.location.replace(kakaoAuthUrl);     // 이전 페이지로 못돌아감
-    window.open(kakaoAuthUrl); 
-
-    //const result = await router.push(kakaoAuthUrl);
-    //console.log('페이지 이동 완료:', result);
-    //window.location.href = kakaoAuthUrl;
-  };
-  
   const setClcikClose = (str:string) => {
     if(str === 'kakao' || str === 'naver' || str === 'aiga') {
       setLoginForm({socialType : ""});
@@ -173,29 +213,90 @@ function LoginModal(props: LoginModalProps) {
 
   return (
   
-        <Flex w="100%" maxW={`${mConstants.modalMaxWidth}px`} padding='10px' height='100%' alignItems={'center'} >
-          {
-            (  ['aiga'].includes(loginForm.socialType) ) 
-            ?
-            (
-              <JoinScreen
-                socialType={loginForm.socialType}
-                onClickJoin={onClickJoin}
-              />
-            )
-            : 
-            (
-              <LoginScreen
-                onClickJoin={onClickJoin}
-                onClcikClose={setClcikClose}
-                isProduction={true}
-              />
-            )
-          }
-        </Flex>
-   
-          
- 
+    <Flex w="100%" maxW={`${mConstants.modalMaxWidth}px`} padding='10px' height='100%' alignItems={'center'} >
+      {
+        (  ['aiga'].includes(loginForm.socialType) ) 
+        ?
+        (
+          <JoinScreen
+            socialType={loginForm.socialType}
+            onClickJoin={onClickJoin}
+          />
+        )
+        : 
+        (
+          <LoginScreen
+            onClickJoin={onClickJoin}
+            onClcikClose={setClcikClose}
+            isProduction={true}
+          />
+        )
+      }
+      {
+        isOpenSignupAgreeModal && (   
+          <Modal
+            onClose={() => fn_close_modal_signup_agree()}
+            finalFocusRef={signupAgreeBtnRef}
+            isOpen={isOpenSignupAgreeModal}
+            scrollBehavior={'inside'}
+            blockScrollOnMount={false}
+            preserveScrollBarGap={true}
+            trapFocus={false}
+            size={'full'} 
+          >
+            <ModalOverlay />
+            <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000} margin={0} padding={0}>
+              <ModalHeader bg={navbarBg} display={isOpenSignupFinishModal ? 'none' : 'block'}>
+                <Flex flexDirection={'row'}>
+                  <Box 
+                    flex={1} 
+                    display={{base :'flex', md:'none'}} 
+                    alignItems={'center'} 
+                    onClick={() => fn_close_modal_signup_agree()} 
+                    cursor={'pointer'}
+                  >
+                    <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
+                  </Box>
+                  <Box 
+                    flex={3} 
+                    display={{base :'none', md:'flex'}} 
+                    alignItems={'center'} 
+                    >
+                    <Text color={'white'} noOfLines={1}>이용동의</Text>
+                  </Box>
+                  <Box 
+                    flex={3} 
+                    display={{base :'flex', md:'none'}} 
+                    alignItems={'center'} 
+                    justifyContent={'flex-end'}
+                  >
+                    <Text color={'white'} noOfLines={1}>이용동의</Text>
+                  </Box>
+                  <Box 
+                    flex={1} 
+                    display={{base :'none', md:'flex'}} 
+                    justifyContent={'flex-end'}
+                    alignItems={'center'} 
+                    onClick={() => fn_close_modal_signup_agree()} 
+                    cursor={'pointer'}
+                    >
+                    <Icon as={MdOutlineClose} width="30px" height="30px" color="white" />
+                  </Box>
+                </Flex>
+              </ModalHeader>
+              <ModalBody overflowY="auto" maxH="100vh">
+                <SignupAgree
+                  userInfo={null}
+                  isOpen={isOpenSignupAgreeModal}
+                  setClose={() => fn_close_modal_signup_agree()}
+                  onHandleNextFinish={() => fn_close_modal_signup_finish()}
+                />
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        )
+      }
+    </Flex>
   );
 }
 

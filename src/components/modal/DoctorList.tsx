@@ -445,7 +445,7 @@ function DoctorListModal(props: DoctorListModalProps) {
                 </ModalHeader>
                 <ModalBody >
                   <DoctorDetail
-                    data={selectedDoctor}
+                    selected_doctor_id={selectedDoctor}
                   />
                 </ModalBody>
               </ModalContent>

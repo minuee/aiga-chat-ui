@@ -131,16 +131,26 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
   }
 
   const onHandleLogout = () => {
-    setLoginUserInfo(
-      false,
-      '',
-      true,
-      '',
-      '손님',
-      guestMaxToken,
-      guestRetryLimitSec
-    )
-    setNewChatOpen(true)
+    setLoginUserInfo({
+      isState : false, //isState
+      sns_id: '', //sns_id
+      email : '', //email
+      profileImage : '', //profileImage
+      agreement : false, //agreement
+      registDate : '', //registDate
+      unregistDate : '',//unregistDate
+      updatedDate : '',//updatedDate
+      userId :  "Guest",//userId
+      isGuest : true, //isGuest
+      joinType : '',//joinType
+      nickName : '',//nickName
+      userMaxToken :guestMaxToken,//userMaxToken
+      userRetryLimitSec : guestRetryLimitSec//userRetryLimitSec
+    });
+    setNewChatOpen(false);
+    setTimeout(() => {
+      setNewChatOpen(true);
+    }, 100);
     setIsOpenLogoutModal(false)
   }
 
@@ -216,6 +226,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
                 <ProfileSetting
                   isOpen={isOpenSetupModal}
                   setClose={() => setIsOpenSetupModal(false)}
+                  setLogout={() => onHandleLogout()}
                 />
               </ModalBody>
             </ModalContent>

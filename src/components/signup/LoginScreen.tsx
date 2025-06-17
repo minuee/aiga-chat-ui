@@ -46,57 +46,6 @@ function LoginScreen(props: LoginScreenProps) {
   const handleSubmit = async (e:any) => {
     e.preventDefault();
     toast.closeAll();
-    setLoading(true);
-    setTimeout(async () => {
-      const user_email = e.target.email.value;
-      const user_password = e.target.password.value;
-
-      const locale = mCookie.getCookie('currentLocale'); 
-      if ( !functions.isEmpty(user_email) && !functions.isEmpty(user_password) ) {
-        setLoginUserInfo(
-          true,
-          user_email,
-          false,
-          'aiga',
-          '아이가',
-          userMaxToken,
-          userRetryLimitSec
-        )
-        setLoading(false);
-        props.onClcikClose('');
-        /* const result:any = await signIn('credentials', { 
-          user_email,
-          user_password,
-          callbackUrl: `/${locale || 'ko'}/chat`, // 로그인 성공 후 리다이렉션 할 URL
-          redirect: false,
-        });
-        console.log('result',result);
-        setLoading(false)
-        if (result?.ok) {
-          // 로그인 성공 처리
-          setLoginUserInfo(
-            true,
-            user_email,
-            false,
-            'aiga',
-            '아이가',
-            userMaxToken,
-            userRetryLimitSec
-          )
-          // 사용자에게 오류 메시지 표시 등 추가 처리
-        } else {
-          toast({
-            title: "login Fail",
-            position: 'top-left',
-            status: 'info',
-            isClosable: true,
-          });
-          // 로그인 실패시 
-          console.log(result.error);
-          // 예: router.push('/chat');
-        } */
-      }
-    }, 1500)
   };
 
   if ( isProduction ) {
@@ -107,34 +56,32 @@ function LoginScreen(props: LoginScreenProps) {
             <Text color="#17191D" fontSize={"21px"} fontWeight={'bold'} lineHeight={"150%"}>AIGA 로그인</Text>
             <Text color="#7F879B" fontSize={"16px"} lineHeight={"200%"}>SNS 계정으로 편리하게 AIGA를 시작하세요</Text>
             <Image 
-                src={BaseImage}
-                alt="BaseImage"
-                style={{width:'200px',objectFit: 'contain',maxWidth:"200px"}}
+              src={BaseImage}
+              alt="BaseImage"
+              style={{width:'200px',objectFit: 'contain',maxWidth:"200px"}}
             />
           </Box>
           
           <Box display='flex' flex={1} flexDirection={'column'} w={"100%"} minW={"100%"} justifyContent={'flex-end'}> 
-              <Box display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'center'} onClick={() => onClickJoin('kakao')} bg='#F9DF32' py="10px" mb="10px">
-                <Image 
-                  src={IconKakao}  
-                  alt="kakao" 
-                  style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
-                /> 
-                <Text color="#212127" fontSize={"16px"} pl="10px">카카오톡 로그인</Text>
-              </Box>
-              <Box display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'center'} onClick={() => onClickJoin('naver')} bg='#1EC800' py="10px">
-                <Image 
-                  src={IconNaver}  
-                  alt="naver" 
-                  style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
-                /> 
-                <Text color="#ffffff" fontSize={"16px"} pl="10px">네이버 로그인</Text>
-              </Box>
-    
-           
+            <Box display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'center'} onClick={() => onClickJoin('kakao')} bg='#F9DF32' py="10px" mb="10px" cursor={'pointer'}>
+              <Image 
+                src={IconKakao}  
+                alt="kakao" 
+                style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
+              /> 
+              <Text color="#212127" fontSize={"16px"} pl="10px">카카오톡 로그인</Text>
+            </Box>
+            <Box display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'center'} onClick={() => onClickJoin('naver')} bg='#1EC800' py="10px"  cursor={'pointer'}>
+              <Image 
+                src={IconNaver}  
+                alt="naver" 
+                style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
+              /> 
+              <Text color="#ffffff" fontSize={"16px"} pl="10px">네이버 로그인</Text>
+            </Box>
           </Box>
         </Stack>
-      </Flex>       
+      </Flex>
     );
   }
   // SIDEBAR

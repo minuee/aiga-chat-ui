@@ -1,21 +1,22 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Box,Drawer,DrawerBody,useColorModeValue,DrawerOverlay,DrawerContent,DrawerCloseButton,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody } from '@chakra-ui/react';
+import { Icon,Flex,Text,Box,Drawer,DrawerBody,useColorModeValue,DrawerOverlay,DrawerContent,DrawerCloseButton,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody } from '@chakra-ui/react';
 import * as mCookie from "@/utils/cookies";
 import axios from 'axios';
 import { renderThumb,renderTrack,renderView } from '@/components/scrollbar/Scrollbar';
 import { Scrollbars } from 'react-custom-scrollbars-2';
-import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
+import * as history from '@/utils/history';
 import HeadTitle from './Title';
 import LoginScreen from '@/components/signup/LoginScreen';
 import JoinScreen from '@/components/signup/JoinScreen';
+import SignupAgree from "@/components/modal/SignupAgree";
 import functions from '@/utils/functions';
 import mConstants from '@/utils/constants';
 import { usePathname, useRouter } from 'next/navigation';
 import * as AuthService from "@/services/member/index";
-
-
+import { ModalSignupAgreeStoreStore } from '@/store/modalStore';
+import { MdOutlineSettings,MdArrowBack,MdOutlineClose } from 'react-icons/md';
 export interface LoginModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
@@ -35,7 +36,14 @@ function LoginModal(props: LoginModalProps) {
   const [isModalOpen, setModalOpen] = React.useState(false);
   const [loginUrl, setLoginUrl] = React.useState('');
   const [userInfo, setUserInfo] = React.useState(null);
+  const pathname = usePathname();
   const router = useRouter();
+  const pathnameRef = React.useRef(pathname);
+  let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
+  const signupAgreeBtnRef = React.useRef<HTMLButtonElement>(null);
+  const { isOpenSignupAgreeModal } = ModalSignupAgreeStoreStore(state => state);
+  const setIsOpenSignupAgreeModal = ModalSignupAgreeStoreStore((state) => state.setIsOpenSignupAgreeModal);
+
   let sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
   
   React.useEffect(() => {
@@ -44,7 +52,30 @@ function LoginModal(props: LoginModalProps) {
     }, 2000);
   }, [isOpen]);
 
+  const fn_close_modal_signup_agree = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenSignupAgreeModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_21}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_21}`)
+    }, 200);
+  }
 
+  const onSendSignupAgreeButton = async(  ) => {
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_11}`);
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_11}`);
+    setIsOpenSignupAgreeModal(true);
+  }
+
+  const fn_close_modal_signup_finish = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenSignupAgreeModal(false);
+    setClose();
+    router.replace(`/${locale}/chat`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',``)
+    }, 200);
+  }
 
   const onClickJoin666 = async () => {
     try {
@@ -72,7 +103,8 @@ function LoginModal(props: LoginModalProps) {
   };
   
   const onClickJoin = (str:string) => {
-
+    onSendSignupAgreeButton();
+    return;
     const accessToken = mCookie.getCookie('refresh_token');
     console.log("refresh_token",accessToken)
     setLoginForm({
@@ -245,6 +277,71 @@ function LoginModal(props: LoginModalProps) {
           </ModalBody>
         </ModalContent>
       </Modal>
+
+      {
+        isOpenSignupAgreeModal && (   
+          <Modal
+            onClose={() => fn_close_modal_signup_agree()}
+            finalFocusRef={signupAgreeBtnRef}
+            isOpen={isOpenSignupAgreeModal}
+            scrollBehavior={'inside'}
+            blockScrollOnMount={false}
+            preserveScrollBarGap={true}
+            trapFocus={false}
+            size={'full'} 
+          >
+            <ModalOverlay />
+            <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000} margin={0} padding={0}>
+              <ModalHeader bg={navbarBg}>
+                <Flex flexDirection={'row'}>
+                  <Box 
+                    flex={1} 
+                    display={{base :'flex', md:'none'}} 
+                    alignItems={'center'} 
+                    onClick={() => fn_close_modal_signup_agree()} 
+                    cursor={'pointer'}
+                  >
+                    <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
+                  </Box>
+                  <Box 
+                    flex={3} 
+                    display={{base :'none', md:'flex'}} 
+                    alignItems={'center'} 
+                    >
+                    <Text color={'white'} noOfLines={1}>이용동의</Text>
+                  </Box>
+                  <Box 
+                    flex={3} 
+                    display={{base :'flex', md:'none'}} 
+                    alignItems={'center'} 
+                    justifyContent={'flex-end'}
+                  >
+                    <Text color={'white'} noOfLines={1}>이용동의</Text>
+                  </Box>
+                  <Box 
+                    flex={1} 
+                    display={{base :'none', md:'flex'}} 
+                    justifyContent={'flex-end'}
+                    alignItems={'center'} 
+                    onClick={() => fn_close_modal_signup_agree()} 
+                    cursor={'pointer'}
+                    >
+                    <Icon as={MdOutlineClose} width="30px" height="30px" color="white" />
+                  </Box>
+                </Flex>
+              </ModalHeader>
+              <ModalBody overflowY="auto" maxH="100vh">
+                <SignupAgree
+                  userInfo={null}
+                  isOpen={isOpenSignupAgreeModal}
+                  setClose={() => fn_close_modal_signup_agree()}
+                  onHandleNextFinish={() => fn_close_modal_signup_finish()}
+                />
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        )
+      }
     </Box>
   );
 }

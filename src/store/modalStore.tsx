@@ -341,3 +341,55 @@ export const ModalSignupStoreStore = create<ModalSignupStoreState>()(
         )
     )
 );
+
+interface ModalSignupAgreeStoreState {
+    isOpenSignupAgreeModal : boolean;
+    setIsOpenSignupAgreeModal: (isOpenSignupAgreeModal: boolean) => void;
+}
+
+export const ModalSignupAgreeStoreStore = create<ModalSignupAgreeStoreState>()(
+    devtools(
+        persist(
+            (set) => ({
+                isOpenSignupAgreeModal: false,
+                setIsOpenSignupAgreeModal: (isOpenSignupAgreeModal:boolean) => {
+                    set({isOpenSignupAgreeModal});
+                },
+                hasHydrated: false,
+            }),
+            { 
+                name: 'ModalSignupAgreeStoreStore',
+                storage: createJSONStorage(() => localStorage),
+                onRehydrateStorage: () => (state:any) => {
+                    state?.set({ hasHydrated: true });
+                }
+            }
+        )
+    )
+);
+
+interface ModalSignupFinishStoreState {
+    isOpenSignupFinishModal : boolean;
+    setIsOpenSignupFinishModal: (isOpenSignupFinishModal: boolean) => void;
+}
+
+export const ModalSignupFinishStoreStore = create<ModalSignupFinishStoreState>()(
+    devtools(
+        persist(
+            (set) => ({
+                isOpenSignupFinishModal: false,
+                setIsOpenSignupFinishModal: (isOpenSignupFinishModal:boolean) => {
+                    set({isOpenSignupFinishModal});
+                },
+                hasHydrated: false,
+            }),
+            { 
+                name: 'ModalSignupFinishStoreStore',
+                storage: createJSONStorage(() => localStorage),
+                onRehydrateStorage: () => (state:any) => {
+                    state?.set({ hasHydrated: true });
+                }
+            }
+        )
+    )
+);

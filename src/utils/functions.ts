@@ -160,6 +160,11 @@ const functions = {
   serialFormat(val:any) {
     return val.toString().replace(/\B(?=(\d{4})+(?!\d))/g, "-");
   },
+  floatFormat(val:any) {
+    const num = parseFloat(val);
+    if (isNaN(num)) return 0;
+    return num.toFixed(1);
+  },
   passwordFormat(val:any) {
     return val.toString().replace(/./g, "*");
   },

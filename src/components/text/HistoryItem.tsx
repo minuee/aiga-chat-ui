@@ -5,7 +5,7 @@ import Alert from '@/components/alert/Alert';
 import mConstants from '@/utils/constants';
 type HistoryItemProps = {
     data: any;
-    onDeleteHistory: (historyId: number) => void;
+    onDeleteHistory: (session_id: string) => void;
     onHandleUpdateTitle: (inputs: any) => void;
 };
   
@@ -19,19 +19,19 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle }:HistoryItemP
     const [inputs, setInputs] = React.useState<any>({
         ...data,
         content: content,
-        shareLink : `https://aiga.kormedi.com/share/minuee/${data.historyId}`
+        shareLink : `https://aiga.kormedi.com/share/minuee/${data.session_id}`
     });
     const textColor = useColorModeValue('navy.700', 'white');
     const borderColor = useColorModeValue('gray.200', 'whiteAlpha.300');
     const bgColor = useColorModeValue('white', 'navy.700');
     const moreColor = useColorModeValue('gray.500', 'whiteAlpha.300');
     const onHandleDeleteHistory = () => {
-        onDeleteHistory(data.historyId);
+        onDeleteHistory(data.session_id);
     }
 
     React.useEffect(() => {
         setEditMode(false);
-    }, [data?.historyId]);
+    }, [data?.session_id]);
 
     const onHandleShareHistory = () => {
         navigator.clipboard.writeText(inputs.shareLink);

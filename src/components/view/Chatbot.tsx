@@ -26,11 +26,11 @@ import { useTranslations } from 'next-intl';
 import LoadingBar from "@/assets/icons/loading.gif";
 import mConstants from '@/utils/constants';
 //새창열기 전역상태
-import NewChatStateStore from '@/store/newChatStore';
+import NewChatStateStore,{ ChatSesseionIdStore } from '@/store/newChatStore';
 import historyStore from '@/store/historyStore';
 import { 
   ModalDoctorDetailStore,ModalDoctorReviewStore,ModalDoctorRequestStore,ModalDoctorListStore,DrawerHistoryStore,ModalMypageStore,ModalMypageNoticeStore,
-  ModalMypageRequestStore,ModalMypageEntireStore,ModalMypagePolicyStore,ModalMypageYakwanStore,ModalSignupStoreStore
+  ModalMypageRequestStore,ModalMypageEntireStore,ModalMypagePolicyStore,ModalMypageYakwanStore,ModalSignupStoreStore,ModalSignupAgreeStoreStore,DoctorFromListStore
  } from '@/store/modalStore';
 
 import * as ChatService from "@/services/chat/index";
@@ -40,6 +40,7 @@ import SendButtonOn from "@/assets/icons/send_btn_on.png";
 export default function ChatBot() {
   const t = useTranslations('Messages');
   const { colorMode, toggleColorMode } = useColorMode();
+  const alreadyInitialized = useRef(false);
   // Input States
   const pathname = usePathname();
   const router = useRouter();
@@ -66,8 +67,14 @@ export default function ChatBot() {
   // Loading state
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
   const navbarIcon = useColorModeValue('gray.500', 'white');
+
+  /* chat에 관련된 상태관리 */
   const isNewChat = NewChatStateStore(state => state.isNew);
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
+  const chatSessionId = ChatSesseionIdStore(state => state.chatSessionId);
+  const setChatSessionId = ChatSesseionIdStore((state) => state.setChatSessionId);
+
+  const { isFromDoctorDepth2 } = DoctorFromListStore(state => state);
   const setCurrentPathname = historyStore((state) => state.setCurrentPathname);
   const setIsOpenReview = ModalDoctorReviewStore((state) => state.setModalState);
   const setIsOpenRequestModal = ModalDoctorRequestStore((state) => state.setModalState);
@@ -80,7 +87,8 @@ export default function ChatBot() {
   const setIsOpenEntireModal = ModalMypageEntireStore((state) => state.setIsOpenEntireModal);
   const setIsOpenPolicyModal = ModalMypagePolicyStore((state) => state.setIsOpenPolicyModal);
   const setIsOpenYakwanModal = ModalMypageYakwanStore((state) => state.setIsOpenYakwanModal);
-  const setIsOpenSignupModal = ModalSignupStoreStore((state) => state.setIsOpenSignupModal);
+  const setIsOpenSignupModal = ModalSignupStoreStore((state) => state.setIsOpenSignupModal)
+  const setIsOpenSignupAgreeModal = ModalSignupAgreeStoreStore((state) => state.setIsOpenSignupAgreeModal)
 
   const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
   const borderColor = useColorModeValue('gray.200', 'gray');
@@ -93,16 +101,21 @@ export default function ChatBot() {
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
   const isSystemText = ["system_text","system_doctors","system_list","system_select","system_image"];
 
-  const [chatSessionId, setChatSessionId] = useState<string>('');
-
-  useEffect(() => {
+  /* useEffect(() => {
+    console.log("chatSessionId Top",chatSessionId)
     if ( functions.isEmpty(chatSessionId) ) {
-      //getNewSessionID()
-      setTimeout(() => {
-        setIsLoading(false)
-      }, 1000);
+      getNewSessionID();
     }
     return () => setChatSessionId('');
+  }, []); */
+
+  useEffect(() => {
+    console.log("chatSessionId Top",chatSessionId)
+    if (!alreadyInitialized.current) {
+      console.log('🔥 최초 1회만 실행');
+      getNewSessionID(); // ✅ 여기서만 실행됨
+      alreadyInitialized.current = true;
+    }
   }, []);
 
   useEffect(() => {
@@ -236,6 +249,33 @@ export default function ChatBot() {
     }, 200);
   }
 
+  const fn_close_modal_user_login2 = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenSignupModal(false);
+    if ( isFromDoctorDepth2 ) {
+      history.push(`/${locale}/chat#${mConstants.pathname_modal_3_2}`);
+      setTimeout(() => {
+        mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_3_2}`) 
+      }, 200);
+    }else{
+      history.push(`/${locale}/chat#${mConstants.pathname_modal_3}`);
+      setTimeout(() => {
+        mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_3}`)  
+      }, 200);
+    }
+    
+    
+  }
+
+  const fn_close_modal_signup_agree = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenSignupAgreeModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_21}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_21}`) 
+    }, 200);
+  }
+
   useEffect(() => {
     const handlePopState = async(event: PopStateEvent) => {
       const currentPathname = await mCookie.getCookie('currentPathname')
@@ -277,6 +317,10 @@ export default function ChatBot() {
           event.preventDefault(); // drawer_signup 기본 뒤로가기 방지
           fn_close_modal_user_login()
           break;
+        case `${mConstants.pathname_modal_21_2}` :
+          event.preventDefault(); // drawer_signup2 기본 뒤로가기 방지
+          fn_close_modal_user_login2()
+          break;
         case `${mConstants.pathname_modal_10}` : 
           event.preventDefault(); // modal_mypage_profile 기본 뒤로가기 방지
           fn_close_modal_mypage();
@@ -301,6 +345,10 @@ export default function ChatBot() {
           event.preventDefault(); // modal_mypage_use_policy 기본 뒤로가기 방지
           fn_close_modal_mypage_policy();
           break;
+        case `${mConstants.pathname_modal_11}` : 
+          event.preventDefault(); // modal_signup_agree 기본 뒤로가기 방지
+          fn_close_modal_signup_agree();
+          break;
         default : 
           event.preventDefault(); // 무조건 기본 뒤로가기 방지 - 챗봇은 기본 루트 페이지이기 때문에 
       }
@@ -313,26 +361,20 @@ export default function ChatBot() {
 
   const getNewSessionID =  async() => {
     try{
-      if ( functions.isEmpty(chatSessionId) ) {
-        const res:any = await ChatService.getChatNewSession();
-        if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
-          setIsLoading(false)
-          setChatSessionId(res?.data?.session_id)
-        }          
-      }
+      const res:any = await ChatService.getChatNewSession();
+      console.log("getNewSessionID",res.data)
+      if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
+        setIsLoading(false)
+        console.log("getNewSessionID res?.data?.session_id",res?.data?.session_id)
+        setChatSessionId(res?.data?.session_id?.session_id)
+      }          
     }catch(e:any){
-      console.log("error of getNewSessionID",e)
+      console.log("error of getNewSessionID",e);
     }
   }
 
   useEffect(() => {
-    if ( !isAccessFirst ) {
-      
-    }
-    return () => setAccessFirst(false);
-  }, [isAccessFirst]);
-
-  useEffect(() => {
+    console.log("chatbot.tsx ",isNewChat,outputCode.length)
     if ( isNewChat && outputCode.length > 0 ) {
       // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
       getNewSessionID()
@@ -349,14 +391,31 @@ export default function ChatBot() {
     }
   }, [isNewChat]);
 
+
+  /* 대화 불능 상태 컨트롤 */
   useEffect(() => {
-    if ( outputCode.length == mConstants.limitToken ) {
+    console.log('outputCode,chatSessionId chatSessionId',chatSessionId,outputCode.length, mConstants.userMaxToken)
+    if ( functions.isEmpty(chatSessionId) ) {
+      console.log('outputCode,chatSessionId chatSessionId if')
+      if ( functions.isEmpty(chatSessionId) ) {
+        setChatDisabled({
+          isState : false,
+          isAlertMsg : false,
+        })
+      }
+    }else if ( outputCode.length == mConstants.userMaxToken && !functions.isEmpty(chatSessionId)) {
+      console.log('outputCode,chatSessionId chatSessionId else')
       setChatDisabled({
         isState : false,
         isAlertMsg : false
       })
+    }else if (  outputCode.length < mConstants.userMaxToken && !functions.isEmpty(chatSessionId) ) {
+      setChatDisabled({
+        isState : true,
+        isAlertMsg : true
+      })
     }
-  }, [outputCode]);
+  }, [outputCode,chatSessionId]);
   
   useEffect(() => {
     const el = scrollRef.current;
@@ -695,7 +754,7 @@ export default function ChatBot() {
             flexDirection={'row'}
           >
             {
-              ( !isChatDisabled?.isState && !isChatDisabled?.isAlertMsg ) && (
+              ( !isChatDisabled?.isState && !isChatDisabled?.isAlertMsg && !functions.isEmpty(chatSessionId)) && (
                 <ChatDisable
                   isChatDisabled={isChatDisabled}
                   setChatDisabled={setChatDisabled}
@@ -728,7 +787,7 @@ export default function ChatBot() {
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
               id={"textarea_content"}
-              disabled={!isChatDisabled?.isState}
+              disabled={( !isChatDisabled?.isState || functions.isEmpty(chatSessionId) )}
             />
             <Box display={'flex'} position={'absolute'} bottom={'-2px'} right={'10px'} w={'55px'} height={'55px'} justifyContent={'flex-end'} alignItems={'center'}>
               {
@@ -798,7 +857,7 @@ export default function ChatBot() {
                 </ModalHeader>
                 <ModalBody >
                   <DoctorDetail
-                    data={selectedDoctor}
+                    selected_doctor_id={selectedDoctor}
                   />
                 </ModalBody>
               </ModalContent>

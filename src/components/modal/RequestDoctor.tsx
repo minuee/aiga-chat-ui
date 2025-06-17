@@ -1,26 +1,40 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Divider,Textarea,Input, FormControl, FormLabel, RadioGroup, Radio, Stack, useColorModeValue } from '@chakra-ui/react';
+import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Textarea,useColorModeValue,useToast } from '@chakra-ui/react';
+import { format } from 'date-fns';
 import functions from '@/utils/functions';
+import mConstants from '@/utils/constants';
+import Alert from '@/components/alert/CustomAlert';
+import NextImage from 'next/legacy/image';
+
+import * as DoctorService from "@/services/doctor/index";
+
+import { loadingImage,iconAlertModify } from "@/components/icons/IconImage"
+
 
 export interface DoctorRequestModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
   onHandleDoctorRequestRegist : (data:any) => void;
-  doctorId : any;
+  doctor_id : any;
 }
 
 function DoctorRequestModal(props: DoctorRequestModalProps) {
-  const { isOpen, setClose, onHandleDoctorRequestRegist, doctorId } = props;
+  
+  const { isOpen, setClose, onHandleDoctorRequestRegist, doctor_id } = props;
   const [isLoading, setIsLoading] = React.useState(true);  
+  const [isReceiving, setReceiving] = React.useState(false);
+  const [isOpenAlert, setOpenAlert] = React.useState(false);  
+  const toast = useToast();
+
   const skeletonColor = useColorModeValue('white', 'gray.700');
   const [inputs, setInputs] = React.useState<any>({
-    doctorId: '',
+    doctor_id: '',
     relation: null,
     req_name : null,
     req_phone : null,
-    req_comment : null,
+    content : null,
   });
 
   React.useEffect(() => {
@@ -28,13 +42,46 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
       setIsLoading(false);
     }, 1000);
 
-    if( !functions.isEmpty(doctorId) ){
+    if( !functions.isEmpty(doctor_id) ){
       setInputs({
         ...inputs,
-        doctorId: doctorId
+        doctor_id: doctor_id
       });
     }
   }, [isOpen]);
+
+
+  const onHandleAlertConfirm = () => {
+    onHandleDoctorRequestRegist(inputs)
+  }
+
+  const onSendDoctorRequestRegist = async(data:any) => {
+    try{
+      setReceiving(true)
+      const title = `홍길동 의사의 정보수정요청_${format(Date.now(), 'yyyy-MM-dd')}`
+      const res:any = await DoctorService.registModifyDoctorInfo(inputs.doctor_id,title,inputs?.content);
+      console.log('apidata onSendDoctorRequestRegist',res)
+      if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
+        setTimeout(() => {
+          setOpenAlert(true)
+          setReceiving(false);
+        }, 500);
+      }else{
+        toast({
+          title: 'AIGA',
+          position: 'top-right',
+          description: '등록중 에러가 발생하였습니다 잠시후 다시이용해주십시요',
+          status: 'info',
+          duration: 1500,
+          isClosable: true,
+        });
+      }
+      
+    }catch(e:any){
+      console.log("error of getNewSessionID",e)
+    }
+
+  } 
 
   if ( isLoading ) {
     return (
@@ -54,7 +101,21 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
         </Flex>
        
         <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} padding={'0 10px'} mt={3}>
-         {/*  <Box>
+          {
+            isReceiving && (
+              <Flex position='absolute' left={0} top={0} width='100%' height='100%'  justifyContent={'center'}  backgroundColor={'#000000'} opacity={0.7} zIndex="100">
+                <Box padding='6' boxShadow='lg' width={"300px"} height={"calc( 100vh / 2 )"} display={'flex'} flexDirection={'column'}  justifyContent={'center'} alignItems={'center'}>
+                  <NextImage
+                    width="100"
+                    height="100"
+                    src={loadingImage}
+                    alt={'doctor1'}
+                  />
+                </Box>
+              </Flex>
+            )
+          }
+          {/*  <Box>
             <FormControl variant="floatingLabel">
               <FormLabel>이름<span style={{color: 'red'}}>*</span></FormLabel>
               <Input 
@@ -99,12 +160,12 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
             <Box mt={1}>
               <Textarea 
                 variant={'outline'} 
-                value={inputs.req_comment || ''} 
-                onChange={(e) => setInputs({...inputs, req_comment: e.target.value})} 
+                value={inputs.content || ''} 
+                onChange={(e) => setInputs({...inputs, content: e.target.value})} 
                 resize={'none'}  
                 minH={'200px'}
                 size={'sm'} 
-                isInvalid={!functions.isEmpty(inputs.req_comment)}
+                isInvalid={!functions.isEmpty(inputs.content)}
                 placeholder='수정요청 및 기타 문의사항을 입력해주세요 (필수, 최소 10자이상)'
                 id={"textarea_content"}
               />
@@ -116,8 +177,8 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
               variant='solid' 
               width={'99%'} 
               borderRadius={'10px'}
-              onClick={() => onHandleDoctorRequestRegist(inputs)}
-              isDisabled={(functions.isEmpty(inputs.req_comment) || (inputs.req_comment && inputs.req_comment.length < 10)) ? true : false}
+              onClick={() => onSendDoctorRequestRegist(inputs)}
+              isDisabled={(functions.isEmpty(inputs.content) || (inputs.content && inputs.content.length < 10)) ? true : false}
               id="button_regist"
             >
               제출하기
@@ -136,6 +197,44 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
           </Flex>
         </Flex>
         <Box height={'50px'} />
+        {
+          isOpenAlert && (
+            <Alert 
+              isShowAppname={false}
+              AppName='AIGA'
+              bodyContent={
+                <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} py="20px">
+                  <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"120px"}>
+                    <NextImage
+                      width="106"
+                      height="90"
+                      src={iconAlertModify}
+                      alt={'doctor1'}
+                    />
+                  </Box>
+                  <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"50px"}>
+                    <Text fontSize={'18px'} color="#212127" fontWeight={'bold'}>소중한 의견 감사합니다!</Text>
+                  </Box>
+                  <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"60px"}>
+                    <Text fontSize={'17px'} color="#212127">의사 정보 수정 요청이 성공적으로 제출되었습니다. 검토 후 반영될 예정입니다.</Text>
+                  </Box>
+                </Flex>
+              }
+              isOpen={isOpenAlert}
+              onClose={() => setOpenAlert(false)}
+              onConfirm={() => onHandleAlertConfirm()}
+              closeText='취소'
+              confirmText='확인'
+              footerContent={
+                <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} py="20px" width={"100%"}>
+                  <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#2B8FFF" borderRadius={'6px'} onClick={() => onHandleAlertConfirm()} cursor={'pointer'}>
+                    <Text fontSize={'16px'} color="#ffffff" fontWeight={'bold'}>확인</Text>
+                  </Box>
+                </Flex>
+              }
+            />
+          )
+        }
       </>
     )
   }

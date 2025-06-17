@@ -57,7 +57,7 @@ export default function Index() {
 
   if (isLoading) {
    return (
-    <Box padding='6' boxShadow='lg' bg={'white'}>
+    <Box bg={'white'}>
       <SkeletonCircle size='10' />
     </Box>
    )

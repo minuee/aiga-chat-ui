@@ -11,11 +11,13 @@ import mConstants from '@/utils/constants';
 import { IRoute } from '@/types/navigation';
 import { isWindowAvailable } from '@/utils/navigation';
 import { MdOutlineMenu,MdOutlineClose } from "react-icons/md";
+import functions from "@/utils/functions";
 import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
 import { DrawerHistoryStore,ModalSignupStoreStore } from '@/store/modalStore';
 import LoginModal  from '@/components/modal/SignUpScreen';
+import UserStateStore from '@/store/userStore';
 
 export interface SidebarProps extends PropsWithChildren {
   routes: IRoute[];
@@ -66,6 +68,7 @@ function Sidebar(props: SidebarProps) {
 // FUNCTIONS
 export function SidebarResponsive(props: { routes: IRoute[] }) {
 
+  const { routes } = props;
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
@@ -81,12 +84,19 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
   const oopsColor = useColorModeValue('#111111', 'white');
   const basicColor = useColorModeValue('white', 'white');
   const navbarIcon = useColorModeValue('#2b8fff', 'gray.500');
-  const { routes } = props;
+  
 
-  const onSendHistoryButton = async( gubun = "") => {
+  const setLoginUserInfo = UserStateStore((state) => state.setUserState);
+  const { ...userBasicInfo } = UserStateStore(state => state);
+
+  const onSendHistoryButton = async() => {
+    setOpenHistoryDrawer(false);
+    console.log("onSendHistoryButton",isOpenHistoryDrawer)
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_20}`);
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_20}`)   
-    setOpenHistoryDrawer(true);
+    setTimeout(() => {
+      setOpenHistoryDrawer(true);
+    }, 60);
   }
 
   const fn_close_drawer_history = async() => {
@@ -97,24 +107,6 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
       mCookie.setCookie('currentPathname','')  
     }, 200);
   }
-
-  const handleKakaoLogin = async () => {
-    const response = await axios.get('/auth/kakao', {
-      withCredentials: true,
-    });
-
-    const kakaoUrl = response.data.url;
-    //window.location.href = kakaoUrl;
-   /*  try {
-      const response = await axios.get('/auth/kakao', {
-        withCredentials: true,
-      });
-      const kakaoUrl = response.data.url;
-      window.location.href = kakaoUrl;
-    } catch (err) {
-      console.error('카카오 로그인 에러:', err);
-    } */
-  };
 
   const fn_close_modal_user_login = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
@@ -137,18 +129,25 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
       alignItems="center"
     >
       <Flex w="max-content" h="max-content"  alignItems={'center'}>
-        <Box onClick={() => onSendHistoryButton()} alignItems={'center'} display={'flex'} cursor={'pointer'}>
-          <Icon as={MdOutlineMenu} width="24px" height="24px" color={basicColor} />
-        </Box>
-        <Box 
-          display={'flex'} minW={'52px'} height={'28px'} justifyContent={'center'} alignItems={'center'} bg={navbarIcon} borderRadius={'5px'}
-          cursor='pointer' onClick={()=> onSendsignupButton()}
-          //onClick={()=>handleKakaoLogin()}
-        >  
+        {
+          ( userBasicInfo?.isState && !functions.isEmpty(userBasicInfo?.userId) ) 
+          ?
+          <Box onClick={() => onSendHistoryButton()} alignItems={'center'} display={'flex'} cursor={'pointer'}>
+            <Icon as={MdOutlineMenu} width="24px" height="24px" color={basicColor} />
+          </Box>
+          :
+          <Box 
+            display={'flex'} minW={'52px'} height={'28px'} justifyContent={'center'} alignItems={'center'} bg={navbarIcon} borderRadius={'5px'}
+            cursor='pointer' onClick={()=> onSendsignupButton()}
+          >  
           <Text fontSize={'17px'} color={basicColor}>
             로그인
           </Text>
         </Box>
+
+        }
+       
+        
       </Flex>
       <Drawer
         isOpen={isOpenHistoryDrawer}
@@ -193,16 +192,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
         </DrawerContent>
       </Drawer>
 
-     {/*  {
-        isOpenLoginModal && (
-          <LoginModal
-            isOpen={isOpenLoginModal}
-            setClose={() => setIsOpenLoginModal(false)}
-          />
-        )
-      } */}
       {
-
         <Drawer
           isOpen={isOpenLoginModal}
           onClose={ () => fn_close_modal_user_login()}

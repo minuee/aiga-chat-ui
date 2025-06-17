@@ -3,51 +3,58 @@ import React, { PropsWithChildren } from 'react';
 import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
 // chakra imports
 import { 
-  Box,Flex,Button,useColorModeValue,Text,SkeletonCircle,SkeletonText,Divider,Card,CardHeader,CardBody,Heading,Icon,Popover,PopoverTrigger,PopoverContent,PopoverHeader,PopoverArrow,
-  PopoverBody,SimpleGrid,Textarea,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,Portal
+  Box,Flex,Button,useColorModeValue,Text,SkeletonCircle,SkeletonText,Divider,Icon,useToast,
+  Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,Portal
  } from '@chakra-ui/react';
 
+import NextImage from 'next/legacy/image';
+import Alert from '@/components/alert/CustomAlert';
+import * as DoctorService from "@/services/doctor/index";
 import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
 import Image from 'next/image';
-import { MdInfoOutline,MdOutlineClose,MdArrowBack,MdComputer } from 'react-icons/md';
+import { MdOutlineClose,MdArrowBack,MdComputer } from 'react-icons/md';
 import { BiPhone } from "react-icons/bi";
-import ProgressBar from '@/components/fields/ProgressBar';
 import ListItem from '@/components/text/ListItem';
+import DoctorReviews from '@/components/modal/DoctorReviews';
 import UsePreventRefresh from "@/hooks/usePreventRefresh";
-import { Rating } from 'react-simple-star-rating';
-import NewRating from "@/components/icons/newStar"
 import functions from '@/utils/functions';
 
 import DoctorAvatar from "@/assets/images/thumb_dr_basic.png";
 import IconInfo from "@/assets/icons/ico-document.png";
-import IconVote1 from "@/assets/icons/vote_1.png";
-import IconVote2 from "@/assets/icons/vote_2.png";
-import IconVote3 from "@/assets/icons/vote_3.png";
-import IconVote4 from "@/assets/icons/vote_4.png";
-
+import { iconAlertWarning } from "@/components/icons/IconImage"
 import mConstants from '@/utils/constants';
 import ReviewDetail from '@/components/modal/ReviewDetail';
 import RequestDoctor from '@/components/modal/RequestDoctor';
 
-import ReviewItem from "@/components/text/ReviewItem";
 import CustomText, { CustomBoldText } from "@/components/text/CustomText";
-import { ModalDoctorReviewStore,ModalDoctorRequestStore,DoctorFromListStore } from '@/store/modalStore';
+import { ModalDoctorReviewStore,ModalDoctorRequestStore,DoctorFromListStore,ModalSignupStoreStore } from '@/store/modalStore';
 
 export interface DoctorModalProps extends PropsWithChildren {
-  data : any;
+  selected_doctor_id : any;
 }
 
 const limintView = 3;
 function DoctorModal(props: DoctorModalProps) {
 
-  const { data } = props;
+  const { selected_doctor_id } = props;
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
+  const toast = useToast();
   const [isLoading, setIsLoading] = React.useState(true);
-  //const [isOpenReview, setIsOpenReview] = React.useState(false);
+  const [doctorBasicData, setDoctorBasicData] = React.useState<any>({
+    department : '',
+    description : '',
+    doctor_id : 0,
+    hospital : '',
+    name : '',
+    position : '',
+    profile_img : '',
+    contact : ''
+  });
+  const [isOpenAlert, setOpenAlert] = React.useState(false);  
   const [reviewData, setReviewData] = React.useState<any>(null);
   const formBtnRef = React.useRef<HTMLButtonElement>(null);
   const { isOpenReview } = ModalDoctorReviewStore(state => state);
@@ -56,6 +63,8 @@ function DoctorModal(props: DoctorModalProps) {
   const setIsOpenRequestModal = ModalDoctorRequestStore((state) => state.setModalState);
   const { isFromDoctorDepth2 } = DoctorFromListStore(state => state);
   const setFromDoctorDepth2 = DoctorFromListStore((state) => state.setFromDoctorDepth2);
+  const { isOpenLoginModal } = ModalSignupStoreStore(state => state);
+  const setIsOpenSignupModal = ModalSignupStoreStore((state) => state.setIsOpenSignupModal);
   const reviewBtnRef = React.useRef<HTMLButtonElement>(null);
   const sidebarBackgroundColor = useColorModeValue('white', 'gray.700');
   const starColor = useColorModeValue('gold', '#ffffff');
@@ -64,10 +73,8 @@ function DoctorModal(props: DoctorModalProps) {
 
   
   React.useEffect(() => {
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 600);
-  }, [data]);
+    getDoctorBasicData();
+  }, [selected_doctor_id]);
 
   const onHandleRegistReview = () => {
     console.log("onHandleRegistReview")
@@ -77,6 +84,28 @@ function DoctorModal(props: DoctorModalProps) {
   const onHandleRequestDoctor = (data:any) => {
     fn_close_modal_doctor_request();
   }
+
+  const getDoctorBasicData = async() => {
+    const res:any = await DoctorService.getDoctorBasicData(1);
+    console.log("apidata getDoctorBasicData",res)
+    if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
+      const rData = res?.data?.doctor;
+      setDoctorBasicData({...doctorBasicData,...rData});
+      setIsLoading(false);
+    }else{
+      toast({
+        title: "조회중 오류가 발생하였습니다.",
+        position: 'top-right',
+        status: 'info',
+        isClosable: true,
+      });
+      setTimeout(() => {
+        setDoctorBasicData(null);
+        setIsLoading(false);
+      }, 1000);
+    }
+  }
+
 
   const fn_close_modal_doctor_review = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
@@ -124,6 +153,26 @@ function DoctorModal(props: DoctorModalProps) {
     setIsOpenRequestModal(true);
   }
 
+  const onHandleAlertConfirm = () => {
+    setOpenAlert(false);
+    onSendsignupButton()
+  }
+
+  const fn_close_modal_user_login = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenSignupModal(false);
+    router.replace(`/${locale}/chat`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname','')
+    }, 200);
+  }
+
+  const onSendsignupButton = async() => {
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_21}`);
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_21}`)
+    setIsOpenSignupModal(true);
+  }
+
   if ( isLoading ) {
     return (
       <Box padding='6' boxShadow='lg' bg={skeletonColor}>
@@ -138,11 +187,14 @@ function DoctorModal(props: DoctorModalProps) {
         <UsePreventRefresh />
         <Flex display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'100px'} mt="20px">
           <Box flex={3} flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} fontSize={'15px'} pr='15px'>
-            <CustomBoldText fontSize={'15px'} color="#0AA464" >병원명</CustomBoldText>
+            <CustomBoldText fontSize={'15px'} color="#0AA464" >{doctorBasicData?.hospital}</CustomBoldText>
             <CustomBoldText fontSize={'24px'} color="#000000" lineHeight={"200%"}>
-              의사명 교수
+              {doctorBasicData?.name} {doctorBasicData?.position}
             </CustomBoldText>
             <Flex mt="2" flexShrink={1} flexWrap={'wrap'}>
+              <Box display={'flex'} padding="5px" bg="#DFF5ED" borderRadius={"4px"} gap="8px" mr="1" mt="1">
+                <CustomText fontSize={'13px'} color="#5C5E69">{doctorBasicData?.department}</CustomText>
+              </Box>
               <Box display={'flex'} padding="5px" bg="#EFF2F7" borderRadius={"4px"} gap="8px" mr="1" mt="1">
                 <CustomText fontSize={'13px'} color="#5C5E69">진료분야 1</CustomText>
               </Box>
@@ -176,7 +228,7 @@ function DoctorModal(props: DoctorModalProps) {
           <Box 
             display={'flex'} flex={1} justifyContent={'center'} alignItems={'center'} ml={1} 
             bg='#DFF2FF' borderRadius={'8px'} height={"50px"}
-            onClick={() => window.open('tel:01062880183')}
+            onClick={() => !functions.isEmpty(doctorBasicData?.contact) ? window.open(`tel:${doctorBasicData?.contact}`) : null}
             cursor={'pointer'}
           >
             <Icon as={BiPhone} color={'#2B8FFF'} />
@@ -232,181 +284,9 @@ function DoctorModal(props: DoctorModalProps) {
           </Flex>
         </Flex>
         
-        <Flex display={'flex'} flexDirection={'column'} bg="#FAFBFD" minHeight={'100px'} padding={'0 10px'} mt={5}>
-          <Box display={'flex'} flexDirection={'row'} alignItems={'center'} pt="10px">
-            <Text fontSize={"17px"} fontWeight={'bold'} color={'#0AA464'}>AI 소셜리뷰</Text>
-            <Box display={'flex'} alignItems={'center'} ml={2} cursor={'pointer'}>
-              <Popover placement='top-start'>
-                <PopoverTrigger>
-                  <Icon as={MdInfoOutline} color={'#7F879B'} size={"20px"} />
-                </PopoverTrigger>
-                <PopoverContent color='white' bg='#212127' borderColor='#212127'>
-                  <PopoverArrow bg='#212127' />
-                  <PopoverBody>
-                  소셜 리뷰와 진료 리뷰를 AI감성 분석한 종합점수
-                  </PopoverBody>
-                </PopoverContent>
-              </Popover>
-            </Box>
-          </Box>
-          <Divider orientation='horizontal' my={2}/>
-          <SimpleGrid spacing={3} templateColumns={{base : 'repeat(2, 1fr)' , sm : 'repeat(4, 1fr)'}}>
-            <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
-              <Box display='flex' justifyContent={'center'} alignItems={'center'} py="10px" minH={"50px"}>
-                <Image 
-                  src={IconVote1}
-                  alt="IconVote1"
-                  style={{width:'26px',objectFit: 'contain',maxWidth:"26px"}}
-                />
-              </Box>
-              <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} pb="10px">
-                <Text fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>친절 • 배려</Text>
-                <Text fontSize={'15px'} color='#212127' lineHeight={"150%"} fontWeight={'bold'}>4.5</Text>
-              </Box>
-            </Box>
-            <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
-              <Box display='flex' justifyContent={'center'} alignItems={'center'} py="10px" minH={"50px"}>
-                <Image 
-                  src={IconVote2}
-                  alt="IconVote2"
-                  style={{width:'26px',objectFit: 'contain',maxWidth:"26px"}}
-                />
-              </Box>
-              <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} pb="10px">
-                <Text fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>치료 만족</Text>
-                <Text fontSize={'15px'} color='#212127' lineHeight={"150%"} fontWeight={'bold'}>4.5</Text>
-              </Box>
-            </Box>
-            <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
-              <Box display='flex' justifyContent={'center'} alignItems={'center'} py="10px" minH={"50px"}>
-                <Image 
-                  src={IconVote3}
-                  alt="IconVote3"
-                  style={{width:'26px',objectFit: 'contain',maxWidth:"26px"}}
-                />
-              </Box>
-              <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} pb="10px">
-                <Text fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>쉬운 설명</Text>
-                <Text fontSize={'15px'} color='#212127' lineHeight={"150%"} fontWeight={'bold'}>4.5</Text>
-              </Box>
-            </Box>
-            <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
-              <Box display='flex' justifyContent={'center'} alignItems={'center'} py="10px" minH={"50px"}>
-                <Image 
-                  src={IconVote4}
-                  alt="IconVote4"
-                  style={{width:'26px',objectFit: 'contain',maxWidth:"26px"}}
-                />
-              </Box>
-              <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} pb="10px">
-                <Text fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>추천 의향</Text>
-                <Text fontSize={'15px'} color='#212127' lineHeight={"150%"} fontWeight={'bold'}>4.5</Text>
-              </Box>
-            </Box>
-          </SimpleGrid>
-        </Flex>
-        <Flex display={'flex'} flexDirection={'column'} bg={{base : "#FAFBFD", sm:'#FAFBFD'}}  minHeight={'100px'} padding={'0 10px'} mt={5}>
-          <Box display={'flex'} flexDirection={'row'} alignItems={'center'} pt="10px">
-            <Text fontWeight={'bold'} color={'green.600'}>AIGA 리뷰</Text>
-            <Box display={'flex'} alignItems={'center'} ml={2} cursor={'pointer'}>
-              <Popover placement='top-start'>
-                <PopoverTrigger>
-                  <Icon as={MdInfoOutline} color={'#7F879B'} size={"20px"} />
-                </PopoverTrigger>
-                <PopoverContent color='white' bg='#212127' borderColor='#212127'>
-                  <PopoverArrow bg='#212127' />
-                  <PopoverBody>
-                   유저가 직접 작성한 리뷰로 AI 종합평점에 반영됨
-                  </PopoverBody>
-                </PopoverContent>
-              </Popover>
-            </Box>
-          </Box>
-          <Divider orientation='horizontal' my={2}/>
-          <Flex 
-            flexDirection={{base : 'column', sm2 : "row"}} 
-            justifyContent={{base : 'space-evenly', sm2:'center'}} 
-            alignItems={{base : 'center', sm2:'center'}} 
-            minHeight={'100px'} 
-            width={'100%'}
-          >
-            <Box 
-              flex={1} 
-              display={'flex'} 
-              flexDirection={'column'} 
-              alignItems={'center'} 
-              justifyContent={'space-evenly'} 
-              height={'100%'} 
-              width={{base : '100%', sm2:'auto'}}
-              mb={{base : 4, sm2 : 0}}
-            >
-              <Flex flex={1}>
-                <Text fontSize={'40px'} color={'#000000'} fontWeight={'bold'}>4.5</Text>
-              </Flex>
-              <Flex flex={1} >
-                {/* <Rating initialValue={4.5} readonly size={20} fillColor={starColor} SVGstyle={{ display: 'inline' }} /> */}
-                <NewRating 
-                  rating={4.5}
-                />
-              </Flex>
-            </Box>
-            <Box flex={2} display={'flex'} flexDirection={'column'}  alignItems={'center'} justifyContent={'flex-end'} width={{base : '100%', sm2:'auto'}}>
-              <Box display={'flex'} flexDirection={'row'}  alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
-                <Box flex={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} pr={'15px'}>
-                  <Text fontSize={'13px'} color={'#5C5E69'}>친절•배려</Text>
-                </Box>
-                <Box flex={2}>
-                  <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={80} borderRadius={'1rem'} bg={'#EFF2F7'} />
-                </Box>
-                <Box flex={1} padding={'0 5px'}>
-                  <Text fontSize={'13px'} color='#1D73DC'>4.0</Text>
-                </Box>
-              </Box>
-              <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
-                <Box flex={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} pr={'15px'}>
-                  <Text fontSize={'13px'} color={'#5C5E69'}>치료 만족</Text>
-                </Box>
-                <Box flex={2}>
-                  <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={80} borderRadius={'1rem'} bg={'#EFF2F7'} />
-                </Box>
-                <Box flex={1} padding={'0 5px'}>
-                  <Text fontSize={'13px'} color='#1D73DC'>4.0</Text>
-                </Box>
-              </Box>
-              <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
-                <Box flex={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} pr={'15px'}>
-                  <Text fontSize={'13px'} color={'#5C5E69'}>쉬운 설명</Text>
-                </Box>
-                <Box flex={2}>
-                  <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={80} borderRadius={'1rem'} bg={'#EFF2F7'} />
-                </Box>
-                <Box flex={1} padding={'0 5px'}>
-                  <Text fontSize={'13px'} color='#1D73DC'>4.0</Text>
-                </Box>
-              </Box>
-              <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
-                <Box flex={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} pr={'15px'}>
-                  <Text fontSize={'13px'} color={'#5C5E69'}>추천 의향</Text>
-                </Box>
-                <Box flex={2}>
-                  <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={20} borderRadius={'1rem'} bg={'#EFF2F7'} />
-                </Box>
-                <Box flex={1} padding={'0 5px'}>
-                  <Text fontSize={'13px'} color='#1D73DC'>1.0</Text>
-                </Box>
-              </Box>
-            </Box>
-          </Flex>
-          
-          <ReviewItem
-            data={null}
-            onHandleDetail={(data:any) => onSendDoctorReviewButton(data)}
-          />
-          <ReviewItem
-            data={null}
-            onHandleDetail={(data:any) => onSendDoctorReviewButton(data)}
-          />
-        </Flex>
+        <DoctorReviews 
+          data={selected_doctor_id}
+        />
         <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}  width={'100%'} mt={5}>
           <Button 
             colorScheme='blue' 
@@ -414,7 +294,8 @@ function DoctorModal(props: DoctorModalProps) {
             height={'56px'}
             width={'100%'} 
             borderRadius={'10px'}
-            onClick={() => onSendDoctorReviewButton('')}
+            //onClick={() => onSendDoctorReviewButton('')}
+            onClick={()=>setOpenAlert(true)}
             id="button_review"
           >
             리뷰쓰기
@@ -452,37 +333,17 @@ function DoctorModal(props: DoctorModalProps) {
                 </ModalHeader> */}
                 <ModalHeader bg={navbarBg}>
                     <Flex flexDirection={'row'}>
-                      <Box 
-                        flex={1} 
-                        display={{base :'flex', md:'none'}} 
-                        alignItems={'center'} 
-                        onClick={() => fn_close_modal_doctor_review()} 
-                        cursor={'pointer'}
-                      >
+                      <Box flex={1} display={{base :'flex', md:'none'}} alignItems={'center'} onClick={() => fn_close_modal_doctor_review()} cursor={'pointer'} >
                         <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
                       </Box>
-                      <Box 
-                        flex={3} 
-                        display={{base :'none', md:'flex'}} 
-                        alignItems={'center'} 
-                      >
+                      <Box flex={3} display={{base :'none', md:'flex'}} alignItems={'center'} >
                         <Text color={'white'} noOfLines={1}>리뷰 작성</Text>
                       </Box>
-                      <Box 
-                        flex={3} 
-                        display={{base :'flex', md:'none'}} 
-                        alignItems={'center'} 
-                        justifyContent={'flex-end'}
-                      >
+                      <Box flex={3} display={{base :'flex', md:'none'}} alignItems={'center'} justifyContent={'flex-end'}>
                         <Text color={'white'} noOfLines={1}>리뷰 작성</Text>
                       </Box>
-                      <Box 
-                        flex={1} 
-                        display={{base :'none', md:'flex'}} 
-                        justifyContent={'flex-end'}
-                        alignItems={'center'} 
-                        onClick={() => fn_close_modal_doctor_review()} 
-                        cursor={'pointer'}
+                      <Box flex={1} display={{base :'none', md:'flex'}} justifyContent={'flex-end'} alignItems={'center'} 
+                        onClick={() => fn_close_modal_doctor_review()} cursor={'pointer'}
                       >
                         <Icon as={MdOutlineClose} width="30px" height="30px" color="white" />
                       </Box>
@@ -505,36 +366,68 @@ function DoctorModal(props: DoctorModalProps) {
         {
           isOpenRequestModal && (   
             <Portal> 
-            <Modal
-              onClose={() => fn_close_modal_doctor_request()}
-              finalFocusRef={reviewBtnRef}
-              isOpen={isOpenRequestModal}
-              scrollBehavior={'inside'}
-              blockScrollOnMount={false}
-              preserveScrollBarGap={true}
-              trapFocus={false}
-            >
-              <ModalOverlay />
-              <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
-                <ModalHeader>{"의사정보 수정 요청"}</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody overflowY="auto" maxH="100vh">
-                  <RequestDoctor
-                    isOpen={isOpenRequestModal}
-                    setClose={() => fn_close_modal_doctor_request()}
-                    onHandleDoctorRequestRegist={(data:any) => onHandleRequestDoctor(data)}
-                    doctor_id={1}
-                  />
-                </ModalBody>
-              </ModalContent>
-            </Modal>
+              <Modal
+                onClose={() => fn_close_modal_doctor_request()}
+                finalFocusRef={reviewBtnRef}
+                isOpen={isOpenRequestModal}
+                scrollBehavior={'inside'}
+                blockScrollOnMount={false}
+                preserveScrollBarGap={true}
+                trapFocus={false}
+              >
+                <ModalOverlay />
+                <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
+                  <ModalHeader>{"의사정보 수정 요청"}</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody overflowY="auto" maxH="100vh">
+                    <RequestDoctor
+                      isOpen={isOpenRequestModal}
+                      setClose={() => fn_close_modal_doctor_request()}
+                      onHandleDoctorRequestRegist={(data:any) => onHandleRequestDoctor(data)}
+                      doctor_id={doctorBasicData?.doctor_id}
+                    />
+                  </ModalBody>
+                </ModalContent>
+              </Modal>
             </Portal>
+          )
+        }
+        {
+          isOpenAlert && (
+            <Alert 
+              isShowAppname={false}
+              AppName='AIGA'
+              bodyContent={
+                <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} py="20px">
+                  <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"120px"}>
+                    <NextImage width="106" height="90" src={iconAlertWarning} alt={'doctor1'}/>
+                  </Box>
+                  <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"50px"}>
+                    <Text fontSize={'18px'} color="#212127" fontWeight={'bold'}>리뷰를 작성하시려면 로그인이 필요합니다. 로그인 하시겠습니까?</Text>
+                  </Box>
+                </Flex>
+              }
+              isOpen={isOpenAlert}
+              onClose={() => setOpenAlert(false)}
+              onConfirm={() => onHandleAlertConfirm()}
+              closeText='취소'
+              confirmText='확인'
+              footerContent={
+                <Flex flexDirection={'row'} justifyContent={'center'} alignItems={'center'} py="20px" width={"100%"}>
+                  <Box width={"78px"} mr="5px" display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#2B8FFF" borderRadius={'6px'} onClick={() => onHandleAlertConfirm()} cursor={'pointer'}>
+                    <Text fontSize={'16px'} color="#ffffff" fontWeight={'bold'}>확인</Text>
+                  </Box>
+                  <Box width={"78px"} ml="5px" display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#DFE3EA" borderRadius={'6px'} onClick={() => setOpenAlert(false)} cursor={'pointer'}>
+                    <Text fontSize={'16px'} color="#000000" fontWeight={'bold'}>취소</Text>
+                  </Box>
+                </Flex>
+              }
+            />
           )
         }
       </>
     )
   }
 }
-
 
 export default DoctorModal;

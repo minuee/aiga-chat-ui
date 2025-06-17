@@ -96,13 +96,6 @@ export default function AdminNavbar(props: {
         </Box>
         <Box display={'flex'} flex={1} alignItems={'center'} justifyContent={'flex-end'} pr="10px">
           <NavbarLinks secondary={props.secondary} />
-          {/*
-          <Icon as={MdOutlineMenu} width="24px" height="24px" color={basicColor} />
-          <Box display={'flex'} minW={'52px'} height={'28px'} justifyContent={'center'} alignItems={'center'} bg={navbarIcon} borderRadius={'5px'}>  
-            <Text fontSize={'17px'} color={basicColor}>
-              로그인
-            </Text>
-          </Box> */}
         </Box>
       </Flex>
     </Box>
