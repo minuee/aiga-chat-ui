@@ -61,7 +61,10 @@ function DoctorReview( props: DoctorModalProps ) {
       toast({
         title: "조회중 오류가 발생하였습니다.",
         position: 'top-right',
-        status: 'info',
+        status: 'error',
+        containerStyle: {
+          color: '#ffffff',
+        },
         isClosable: true,
       });
       setTimeout(() => {
@@ -79,7 +82,10 @@ function DoctorReview( props: DoctorModalProps ) {
         title: 'AIGA',
         position: 'top-right',
         description: '정상적으로 삭제되었습니다.',
-        status: 'info',
+        status: 'success',
+        containerStyle: {
+          color: '#ffffff',
+        },
         duration: 1500,
         isClosable: true,
       });
@@ -91,7 +97,10 @@ function DoctorReview( props: DoctorModalProps ) {
         title: 'AIGA',
         position: 'top-right',
         description: '삭제중 에러가 발생하였습니다 잠시후 다시이용해주십시요',
-        status: 'info',
+        status: 'error',
+        containerStyle: {
+          color: '#ffffff',
+        },
         duration: 1500,
         isClosable: true,
       });

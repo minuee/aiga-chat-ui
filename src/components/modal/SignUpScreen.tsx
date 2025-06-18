@@ -16,7 +16,7 @@ import { encryptToken } from "@/utils/secureToken";
 import UserStateStore from '@/store/userStore';
 import NewChatStateStore from '@/store/newChatStore';
 import ConfigInfoStore from '@/store/configStore';
-import { ModalSignupAgreeStoreStore,ModalSignupFinishStoreStore } from '@/store/modalStore';
+import { ModalSignupAgreeStoreStore,ModalSignupFinishStoreStore,DoctorFromListStore } from '@/store/modalStore';
 import { MdOutlineSettings,MdArrowBack,MdOutlineClose } from 'react-icons/md';
 export interface LoginModalProps extends PropsWithChildren {
   isOpen : boolean;
@@ -41,7 +41,7 @@ function LoginModal(props: LoginModalProps) {
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
   const signupAgreeBtnRef = React.useRef<HTMLButtonElement>(null);
-
+  const { isFromDoctorDepth2 } = DoctorFromListStore(state => state);
   const setLoginUserInfo = UserStateStore((state) => state.setUserState);
   const { nickName, ...userInfo } = UserStateStore(state => state);
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
@@ -128,6 +128,10 @@ function LoginModal(props: LoginModalProps) {
         window.removeEventListener('message', receiveMessage);
         return;
       }
+
+      const expireDate = new Date();  
+      expireDate.setDate(expireDate.getDate() + 7); // 7일 후 만료
+
       console.log('apidata event.data.type',event.data.type);
       if (event.data.type === 'kakao-auth') {
         console.log('apidata ✅ 카카오 로그인 성공:', event.data.code?.data?.user);
@@ -135,7 +139,7 @@ function LoginModal(props: LoginModalProps) {
         const accessToken = event?.data?.code?.data?.access_token;
         console.log('apidata accessToken',accessToken);
         if ( loginUserInfo?.agreement ) { // 회원인상태
-          mCookie.setCookie(mConstants.apiTokenName, encryptToken(accessToken))
+          mCookie.setCookie(mConstants.apiTokenName, encryptToken(accessToken), { path: '/' , expires : expireDate })
           setLoginUserInfo({
             isState : loginUserInfo?.agreement, //isState
             sns_id : loginUserInfo?.sns_id, //sns_id
@@ -158,7 +162,7 @@ function LoginModal(props: LoginModalProps) {
           }, 100);
           setClose();
         }else{ // 동의안한상태
-          mCookie.setCookie(mConstants.apiTokenName, encryptToken(accessToken))
+          mCookie.setCookie(mConstants.apiTokenName, encryptToken(accessToken), { path: '/' , expires : expireDate })
           setLoginUserInfo({
             isState : loginUserInfo?.agreement, //isState
             sns_id : loginUserInfo?.sns_id, //sns_id
@@ -195,6 +199,9 @@ function LoginModal(props: LoginModalProps) {
           position: 'top-right',
           description: '회원가입/로그인중 오류가 발생하였습니다. 잠시뒤에 이용해주세요. ',
           status: 'info',
+          containerStyle: {
+            color: '#ffffff',
+          },
           duration: 2000,
           isClosable: true,
         });
@@ -203,7 +210,25 @@ function LoginModal(props: LoginModalProps) {
     window.addEventListener('message', receiveMessage);
   };
 
-  const setClcikClose = (str:string) => {
+
+
+  const setClcikClose = async(str:string) => {
+    const currentPathname = await mCookie.getCookie('currentPathname');
+    console.log("setClcikClose",currentPathname,mConstants.pathname_modal_21_2)
+    if ( currentPathname == mConstants.pathname_modal_21_2 ) { //의사 상세위에서 로그인화면 
+      const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+      if ( isFromDoctorDepth2 ) {//true이면 list > detail
+        router.replace(`/${locale}/chat#${mConstants.pathname_modal_2_2}`);
+        setTimeout(() => {
+          mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2_2}`)  
+        }, 200);
+      }else{
+        router.replace(`/${locale}/chat#${mConstants.pathname_modal_2}`);
+        setTimeout(() => {
+          mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2}`)  
+        }, 200);
+      }
+    }
     if(str === 'kakao' || str === 'naver' || str === 'aiga') {
       setLoginForm({socialType : ""});
     }else{
@@ -214,24 +239,11 @@ function LoginModal(props: LoginModalProps) {
   return (
   
     <Flex w="100%" maxW={`${mConstants.modalMaxWidth}px`} padding='10px' height='100%' alignItems={'center'} >
-      {
-        (  ['aiga'].includes(loginForm.socialType) ) 
-        ?
-        (
-          <JoinScreen
-            socialType={loginForm.socialType}
-            onClickJoin={onClickJoin}
-          />
-        )
-        : 
-        (
-          <LoginScreen
-            onClickJoin={onClickJoin}
-            onClcikClose={setClcikClose}
-            isProduction={true}
-          />
-        )
-      }
+      <LoginScreen
+        onClickJoin={onClickJoin}
+        onClcikClose={setClcikClose}
+        isProduction={true}
+      />
       {
         isOpenSignupAgreeModal && (   
           <Modal
@@ -246,45 +258,39 @@ function LoginModal(props: LoginModalProps) {
           >
             <ModalOverlay />
             <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000} margin={0} padding={0}>
-              <ModalHeader bg={navbarBg} display={isOpenSignupFinishModal ? 'none' : 'block'}>
-                <Flex flexDirection={'row'}>
+              <ModalHeader bg={navbarBg} padding="basePadding">
+                <Flex flexDirection={'row'} position={'relative'}>
                   <Box 
-                    flex={1} 
+                    position={'absolute'}
+                    left={0}
+                    top={0}
+                    width="50px"
+                    height={'100%'}
                     display={{base :'flex', md:'none'}} 
-                    alignItems={'center'} 
-                    onClick={() => fn_close_modal_signup_agree()} 
-                    cursor={'pointer'}
+                    alignItems={'center'}  
+                    onClick={() => fn_close_modal_signup_agree()} cursor={'pointer'}
                   >
-                    <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
+                    <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                   </Box>
-                  <Box 
-                    flex={3} 
-                    display={{base :'none', md:'flex'}} 
-                    alignItems={'center'} 
-                    >
+                  <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
                     <Text color={'white'} noOfLines={1}>이용동의</Text>
                   </Box>
                   <Box 
-                    flex={3} 
-                    display={{base :'flex', md:'none'}} 
-                    alignItems={'center'} 
-                    justifyContent={'flex-end'}
-                  >
-                    <Text color={'white'} noOfLines={1}>이용동의</Text>
-                  </Box>
-                  <Box 
-                    flex={1} 
+                    position={'absolute'}
+                    right={0}
+                    top={0}
+                    width="50px"
+                    height={'100%'}
                     display={{base :'none', md:'flex'}} 
-                    justifyContent={'flex-end'}
-                    alignItems={'center'} 
-                    onClick={() => fn_close_modal_signup_agree()} 
-                    cursor={'pointer'}
+                    justifyContent={'flex-end'} 
+                    alignItems={'center'}  
+                    onClick={() => fn_close_modal_signup_agree()}  cursor={'pointer'}
                     >
-                    <Icon as={MdOutlineClose} width="30px" height="30px" color="white" />
+                    <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
                   </Box>
                 </Flex>
               </ModalHeader>
-              <ModalBody overflowY="auto" maxH="100vh">
+              <ModalBody overflowY="auto" maxH="100vh" padding="basePadding" margin="0">
                 <SignupAgree
                   userInfo={null}
                   isOpen={isOpenSignupAgreeModal}

@@ -33,6 +33,11 @@ export default extendTheme(
   CardComponent, // card component
   {
     breakpoints,
+    space : {
+      basePadding: '16px',
+      baseTopContainerPadding : '28px',
+      baseTopContentPadding : '24px' 
+    },
     fonts: {
       heading: `'Heading Font Name', sans-serif`,
       body: `'Body Font Name', sans-serif`,

@@ -34,3 +34,19 @@ export function getCommonConfig(): any {
         return null;   
    }
 }
+
+export function getNoticeList(): any {
+    try{
+        const res:any =  api.get(`/notice`)
+        .then((response) => {
+            return response?.data;
+        }).catch((error) => {
+            console.log("eeeee",error)
+            return null;
+        });
+        return res;
+    }catch(error){
+        console.log("eeeee",error)
+        return null;   
+    }
+}

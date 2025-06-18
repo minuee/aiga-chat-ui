@@ -82,7 +82,10 @@ function ReviewModal(props: ReviewModalProps) {
       toast({
         title: "조회중 오류가 발생하였습니다.",
         position: 'top-right',
-        status: 'info',
+        status: 'error',
+        containerStyle: {
+          color: '#ffffff',
+        },
         isClosable: true,
       });
       setTimeout(() => {
@@ -107,7 +110,10 @@ function ReviewModal(props: ReviewModalProps) {
           toast({
             title: isRegist ? "등록중 오류가 발생하였습니다." : "수정중 오류가 발생하였습니다.",
             position: 'top-right',
-            status: 'info',
+            status: 'error',
+            containerStyle: {
+              color: '#ffffff',
+            },
             isClosable: true,
           });
           setReceiving(false);
@@ -150,7 +156,7 @@ function ReviewModal(props: ReviewModalProps) {
           )
         }
         <Flex display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'20px'}>
-          <Flex  justifyContent={'center'} minHeight={'50px'} width={'98%'} mt={5}>
+          <Flex  justifyContent={'center'} minHeight={'50px'} width={'100%'} mt={5}>
             <Box flex={3} pr={'20px'}> 
               <Text fontSize={'24px'} color={textColor2} fontWeight={'bold'}>
                 솔직한 리뷰를 남겨주세요

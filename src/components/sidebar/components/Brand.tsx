@@ -12,14 +12,6 @@ export function SidebarBrand() {
 
   return (
     <Flex alignItems="flex-start" justifyContent={'center'} flexDirection="column" height={'50px'} pl="20px">
-      {/* <AigaLog h="26px" w="146px" my="30px" color={logoColor} /> */}
-      {/* <Text
-        color={logoColor}
-        fontWeight="500"
-        fontSize="xl"
-      >
-        AIGA 의사추천 
-      </Text> */}
       <Image 
           src={LogoImage}
           alt="Aiga Logo"

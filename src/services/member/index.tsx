@@ -136,7 +136,7 @@ export function setSignupAgree(): any {
  export function setMemberLogout(): any {
     try{
         console.log("apidata setMemberLogout")
-        const res:any =  api.get(`/auth/logout`)
+        const res:any =  api.get(`/auth/logout`,{withCredentials:true})
         .then((response) => {
              return response?.data;
         }).catch((error) => {
@@ -149,5 +149,3 @@ export function setSignupAgree(): any {
         return null;   
     }
  }
-
- 

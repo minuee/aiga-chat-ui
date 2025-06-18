@@ -77,31 +77,6 @@ function LoginModal(props: LoginModalProps) {
     }, 200);
   }
 
-  const onClickJoin666 = async () => {
-    try {
-      const response = await axios.get('/auth/kakao', {
-        withCredentials: true,
-      });
-
-      if (response.data?.user) {
-        // ✅ 이미 가입된 유저
-        setUserInfo(response.data.user);
-        console.log('사용자 정보:', response.data.user);
-      } else if (response.data?.url) {
-        // ✅ 미가입자 → 카카오 로그인 창 띄우기
-        setLoginUrl(response.data.url);
-        setModalOpen(true);
-      } else {
-        console.warn('예상하지 못한 응답:', response.data);
-      }
-    } catch (error) {
-      const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=95ad93cc72ddbfd346b51eb9464c9313&redirect_uri=https://aigadev.kormedi.com/api/auth/kakao/callback&response_type=code`;
-      setLoginUrl(kakaoAuthUrl);
-      setModalOpen(true);
-      console.error('카카오 로그인 오류:', error);
-    }
-  };
-  
   const onClickJoin = (str:string) => {
     onSendSignupAgreeButton();
     return;
@@ -150,47 +125,6 @@ function LoginModal(props: LoginModalProps) {
   };
 
 
-  const onClickJoin3333 = async(str:string) => {
-    setLoginForm({
-      socialType : str
-    });
-
-    try{
-      if ( !functions.isEmpty(str) ) {
-        const res:any = await AuthService.handleKakaoLogin({ joinType : str});
-        //console.log("res of onClickJoin",res)         
-      }
-    }catch(e:any){
-      //console.log("error of getNewSessionID",e)
-    }
-
-  }
-
-  const onClickJoin333 = async(str:string) => {
-    console.log("onClickJoin",str)
-    try {
-      const response = await axios.get('/auth/kakao', {
-        withCredentials: false,
-      });
-      console.log("response",response)
-      //const kakaoUrl = response.data.url;
-      router.push(response?.data?.url);
-    } catch (err) {
-      console.error('카카오 로그인 에러:', err);
-    }
-  };
-
-  const onClickJoin555 = async () => {
-    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=95ad93cc72ddbfd346b51eb9464c9313&redirect_uri=https://aigadev.kormedi.com/api/auth/kakao/callback&response_type=code`;
-    //window.location.href = kakaoAuthUrl;       //웹개발할때 숨쉬듯이 작성할 코드
-    //window.location.replace(kakaoAuthUrl);     // 이전 페이지로 못돌아감
-    window.open(kakaoAuthUrl); 
-
-    //const result = await router.push(kakaoAuthUrl);
-    //console.log('페이지 이동 완료:', result);
-    //window.location.href = kakaoAuthUrl;
-  };
-  
   const setClcikClose = (str:string) => {
     if(str === 'kakao' || str === 'naver' || str === 'aiga') {
       setLoginForm({socialType : ""});
@@ -259,25 +193,6 @@ function LoginModal(props: LoginModalProps) {
           </DrawerBody>
         </DrawerContent>
       </Drawer>
-      <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} isCentered size="xl">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>카카오 로그인</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            {loginUrl && (
-              <iframe
-                src={loginUrl}
-                width="100%"
-                height="500px"
-                title="Kakao Login"
-                style={{ border: 'none' }}
-              ></iframe>
-            )}
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-
       {
         isOpenSignupAgreeModal && (   
           <Modal
@@ -292,41 +207,35 @@ function LoginModal(props: LoginModalProps) {
           >
             <ModalOverlay />
             <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000} margin={0} padding={0}>
-              <ModalHeader bg={navbarBg}>
-                <Flex flexDirection={'row'}>
+              <ModalHeader bg={navbarBg} padding="basePadding">
+                <Flex flexDirection={'row'} position={'relative'}>
                   <Box 
-                    flex={1} 
+                    position={'absolute'}
+                    left={0}
+                    top={0}
+                    width="50px"
+                    height={'100%'}
                     display={{base :'flex', md:'none'}} 
-                    alignItems={'center'} 
-                    onClick={() => fn_close_modal_signup_agree()} 
-                    cursor={'pointer'}
+                    alignItems={'center'}  
+                    onClick={() => fn_close_modal_signup_agree()} cursor={'pointer'}
                   >
-                    <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
+                    <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                   </Box>
-                  <Box 
-                    flex={3} 
-                    display={{base :'none', md:'flex'}} 
-                    alignItems={'center'} 
-                    >
+                  <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
                     <Text color={'white'} noOfLines={1}>이용동의</Text>
                   </Box>
                   <Box 
-                    flex={3} 
-                    display={{base :'flex', md:'none'}} 
-                    alignItems={'center'} 
-                    justifyContent={'flex-end'}
-                  >
-                    <Text color={'white'} noOfLines={1}>이용동의</Text>
-                  </Box>
-                  <Box 
-                    flex={1} 
+                    position={'absolute'}
+                    right={0}
+                    top={0}
+                    width="50px"
+                    height={'100%'}
                     display={{base :'none', md:'flex'}} 
-                    justifyContent={'flex-end'}
-                    alignItems={'center'} 
-                    onClick={() => fn_close_modal_signup_agree()} 
-                    cursor={'pointer'}
+                    justifyContent={'flex-end'} 
+                    alignItems={'center'}  
+                    onClick={() => fn_close_modal_signup_agree()}  cursor={'pointer'}
                     >
-                    <Icon as={MdOutlineClose} width="30px" height="30px" color="white" />
+                    <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
                   </Box>
                 </Flex>
               </ModalHeader>

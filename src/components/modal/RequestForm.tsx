@@ -8,14 +8,14 @@ import Alert from '@/components/alert/Alert';
 import NextImage from 'next/legacy/image';
 import { loadingImage } from "@/components/icons/IconImage"
 
-export interface ReviewModalProps extends PropsWithChildren {
+export interface RequestModalProps extends PropsWithChildren {
   isReceiving : boolean;
   isOpen : boolean;
   setClose : () => void;
   onHandleRequest : (data:any) => void;
 }
 
-function ReviewModal(props: ReviewModalProps) {
+function RequestModal(props: RequestModalProps) {
 
   const { isOpen, setClose, onHandleRequest ,isReceiving} = props;
   const [isLoading, setIsLoading] = React.useState(true);
@@ -47,7 +47,7 @@ function ReviewModal(props: ReviewModalProps) {
 
     return (
       <>
-        <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} padding={'0 10px'} mt={5}> 
+        <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'}> 
           {
             isReceiving && (
               <Flex position='absolute' left={0} top={0} width='100%' height='100%' display={'flex'} justifyContent={'center'}  backgroundColor={'#000000'} opacity={0.7} zIndex={100}>
@@ -63,7 +63,7 @@ function ReviewModal(props: ReviewModalProps) {
               </Flex>
             )
           }
-          <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'98%'}>
+          <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'100%'}>
             <Text fontSize={'17px'} color={textColor2}>
                 서비스 이용 중 궁금하신  점이나 개선 의견을 보내주세요
             </Text>
@@ -92,7 +92,7 @@ function ReviewModal(props: ReviewModalProps) {
                 id={"textarea_content"}
               />
             </Box>
-            <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}  width={'98%'} mt={2} mb={5}>
+            <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}  width={'100%'} mt={2} mb={5}>
               <Button 
                 colorScheme='blue' 
                 variant='solid' 
@@ -112,11 +112,11 @@ function ReviewModal(props: ReviewModalProps) {
             • 산업안전보건법에 따라 고객 응대 근로자 보호조치를 하고 있으며, 모든 문의는 기록으로 남습니다.
             </Text>
           </Box>
-          <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'98%'} mt={5}>
+          <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'100%'} mt={5}>
             <Text fontSize={'14px'} fontWeight={'bold'}>
                 개인정보 수집•이용에 대한 안내
             </Text>
-            <Box display={'flex'} flexDirection={'row'} alignContent={'center'} minHeight={'50px'} width={'98%'}>
+            <Box display={'flex'} flexDirection={'row'} alignContent={'center'} minHeight={'50px'} width={'100%'}>
               <Checkbox
                 colorScheme='blue'
                 isChecked={inputs.isAgree}
@@ -125,7 +125,7 @@ function ReviewModal(props: ReviewModalProps) {
                 (필수) 개인정보 수집•이용에 동의합니다.
               </Checkbox>
             </Box>
-            <Box display={'flex'} flexDirection={'column'} alignContent={'center'} minHeight={'50px'} width={'98%'}>
+            <Box display={'flex'} flexDirection={'column'} alignContent={'center'} minHeight={'50px'} width={'100%'}>
               <Card>
                 <CardBody>
                   <Stack divider={<StackDivider />} spacing='4'>
@@ -157,7 +157,7 @@ function ReviewModal(props: ReviewModalProps) {
                 </CardBody>
               </Card>
             </Box>
-            <Box display={'flex'} flexDirection={'column'} alignContent={'center'} minHeight={'50px'} width={'98%'} mt={2}>
+            <Box display={'flex'} flexDirection={'column'} alignContent={'center'} minHeight={'50px'} width={'100%'} mt={2}>
               <Text fontSize={'12px'} color={textColor2}>
                 위 동의를 거부할 권리가 있으며, 동의를 거부하실 경우 문의처리 및 결과 회신이 제한됩니다. 요구하지 않은 개인정보는 입력하지 않도록 주의해 주세요
               </Text>
@@ -168,7 +168,7 @@ function ReviewModal(props: ReviewModalProps) {
           </Box>
           
         </Flex>
-        <Box height={'100px'} />
+        <Box height={'50px'} />
         {
           isOpenLogoutModal && (
             <Alert 
@@ -188,4 +188,4 @@ function ReviewModal(props: ReviewModalProps) {
 }
 
 
-export default ReviewModal;
+export default RequestModal;

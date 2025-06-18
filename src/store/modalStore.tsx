@@ -211,6 +211,33 @@ export const ModalMypageNoticeStore = create<ModalMypageNoticeListStoreState>()(
 );
 
 
+interface ModalMypageNoticeDetailStoreState {
+    isOpenNoticeDetailModal : boolean;
+    setIsOpenNoticeDetailModal: (isOpenNoticeDetailModal: boolean) => void;
+}
+
+export const ModalMypageNoticeDetailStore = create<ModalMypageNoticeDetailStoreState>()(
+    devtools(
+        persist(
+            (set) => ({
+                isOpenNoticeDetailModal: false,
+                setIsOpenNoticeDetailModal: (isOpenNoticeDetailModal:boolean) => {
+                    set({isOpenNoticeDetailModal});
+                },
+                hasHydrated: false,
+            }),
+            { 
+                name: 'ModalMypageNoticeDetailStore',
+                storage: createJSONStorage(() => localStorage),
+                onRehydrateStorage: () => (state:any) => {
+                    state?.set({ hasHydrated: true });
+                }
+            }
+        )
+    )
+);
+
+
 interface ModalMypageRequestStoreState {
     isOpenMypageRequestModal : boolean;
     setIsOpenMypageRequestModal: (isOpenMypageRequestModal: boolean) => void;

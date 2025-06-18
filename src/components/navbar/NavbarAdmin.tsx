@@ -3,7 +3,6 @@
 // Chakra Imports
 import { Box,Flex,useColorModeValue } from '@chakra-ui/react';
 import { useState, useEffect,useRef } from 'react';
-import AdminNavbarLinks from './NavbarLinksAdmin';
 import { isWindowAvailable } from '@/utils/navigation';
 import Image from 'next/image';
 import LogoImage from "@/assets/images/logo.png";
@@ -115,9 +114,6 @@ export default function AdminNavbar(props: {
             alt="Aiga Logo"
             style={{width:'100px',objectFit: 'contain',maxWidth:"100px"}}
           />
-        </Box>
-        <Box ms="auto" w={{ sm: '100%', md: 'auto' }} maxW="160px" >
-          <AdminNavbarLinks secondary={props.secondary} />
         </Box>
       </Flex>
     </Box>

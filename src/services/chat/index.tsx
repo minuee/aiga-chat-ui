@@ -60,7 +60,24 @@ export function removeChatHistory(session_id: RemoveHistoryProps): any {
 export function updateChatHistoryTitle(session_id: string, title: string): any {
     try{
         console.log("apidata updateChatHistoryTitle",session_id,title)
-        const res:any =  api.patch(`/history/${session_id}`,title)
+        const res:any =  api.patch(`/history/${session_id}`,{title})
+            .then((response) => {
+                return response?.data;
+            }).catch((error) => {
+                console.log("eeeee",error)
+                return null;
+            });
+            return res; 
+   }catch(error){
+        console.log("eeeee",error)
+        return null;   
+   }
+}
+
+export function getChatMessage(session_id: string, msg: string): any {
+    try{
+        console.log("apidata updateChatHistoryTitle",session_id,msg)
+        const res:any =  api.post(`/chat/${session_id}`,{question : msg})
             .then((response) => {
                 return response?.data;
             }).catch((error) => {

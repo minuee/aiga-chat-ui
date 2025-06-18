@@ -1,21 +1,25 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import {Flex,Box,useColorModeValue,Accordion,AccordionItem,AccordionButton,AccordionPanel,AccordionIcon,SkeletonText,SkeletonCircle } from '@chakra-ui/react';
+import {Flex,Box,useColorModeValue,Accordion,AccordionItem,AccordionButton,AccordionPanel,AccordionIcon,SkeletonText,SkeletonCircle,Text } from '@chakra-ui/react';
 import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
+import * as CommonService from "@/services/common/index";
+import mConstants from '@/utils/constants';
 import * as mCookie from "@/utils/cookies";
-
-import { ModalDoctorDetailStore } from '@/store/modalStore';
-
+import { ModalMypageNoticeDetailStore } from '@/store/modalStore';
+import Image from 'next/image';
 import { loadingImage } from "@/components/icons/IconImage";
+import ImageNullList from "@/assets/icons/img-notice.png";
+import NoticeDetail from "@/components/modal/NoticeDetail";
+
 
 const items = [
-  { idx: 1, title: "First Item", text: "Some value 1..." },
-  { idx: 2, title: "Second Item", text: "Some value 2..." },
-  { idx: 3, title: "Third Item", text: "Some value 3..." },
-  { idx: 4, title: "Third Item", text: "Some value 3..." },
-  { idx: 5, title: "Third Item", text: "Some value 3..." },
+  { idx: 1, title: "First Item", content: "Some value 1..." , date:'2023-01-01'},
+  { idx: 2, title: "Second Item", content: "Some value 2..." , date:'2023-01-01'},
+  { idx: 3, title: "Third Item", content: "Some value 3..." , date:'2023-01-01'},
+  { idx: 4, title: "Third Item", content: "Some value 3..." , date:'2023-01-01'},
+  { idx: 5, title: "Third Item", content: "Some value 3..." , date:'2023-01-01'},
 ]
 
 export interface NoticeListModalProps extends PropsWithChildren {
@@ -30,56 +34,101 @@ function NoticeListModal(props: NoticeListModalProps) {
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [isViewDetailMode, setIsViewDetailMode] = React.useState(false);
+  const [noticeList, setNoticeList] = React.useState<any>([]);
+  const [selectNoticeId, setSelectNoticeId] = React.useState(null);
+
+  const { isOpenNoticeDetailModal } = ModalMypageNoticeDetailStore(state => state);
+  const setIsOpenNoticeDetailModal = ModalMypageNoticeDetailStore((state) => state.setIsOpenNoticeDetailModal);
 
   const skeletonColor = useColorModeValue('white', 'navy.800');
+  const textColor2 = useColorModeValue('#7F879B', 'white');
+  const titleColor = useColorModeValue('#212127', 'white');
+  const dateColor = useColorModeValue('#7F879B', 'white');
   
   React.useEffect(() => {
+    getNoticeListData();
+    setIsOpenNoticeDetailModal(false)
     setTimeout(() => {
       setIsLoading(false);
     }, 1000);
   }, [isOpen]);
 
+
+  const getNoticeListData = async() => {
+    try{
+      const res:any = await CommonService.getNoticeList();
+      if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
+        //setNoticeList(res?.data?.notice)
+        setNoticeList(items)
+        setIsLoading(false)
+      }      
+      setIsLoading(false)
+    }catch(e:any){
+      console.log("error of getNewSessionID",e)
+      setIsLoading(false)
+    }
+  }
+
+  const onSendNoticeListButton = async(nid:any) => {
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_5_2}`);
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_5_2}`)
+    setIsOpenNoticeDetailModal(true)
+    setSelectNoticeId(nid)
+  }
+
   if ( isLoading ) {
     return (
       <Box padding='6' boxShadow='lg' bg={skeletonColor}>
-        <SkeletonCircle size='10' />
         <SkeletonText mt='4' noOfLines={4} spacing='4' skeletonHeight='2' />
       </Box>
     )
   }else{
     return (
       <>
-        <Flex flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'20px'}>
-          <Box sx={{width:'100%',heigh:"90%",padding:'10px'}}>
+        <Flex display={isOpenNoticeDetailModal ? 'block' : 'none'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} width={'100%'}>
+          <NoticeDetail
+            noticeID={selectNoticeId}
+          />
+        </Flex>
+        <Flex display={isOpenNoticeDetailModal ? 'none' : 'block'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} width={'100%'}>
+          <Box sx={{width:'100%',heigh:"100%"}}>
             {
-              isLoading 
+              noticeList?.length == 0 
               ?
-              <Box padding='6' boxShadow='lg' bg={skeletonColor}>
-                <SkeletonText noOfLines={5} spacing='4' skeletonHeight='10' />
-              </Box>
+              <Flex flexDirection={'column'} justifyContent={'center'} minHeight={'calc( 100vh - 300px )'} width={'100%'} mt={5}>
+                <Box display={'flex'} justifyContent={'center'} alignContent={'center'}> 
+                  <Image 
+                    src={ImageNullList}
+                    alt="ImageNullList"
+                    style={{width:'40px',objectFit: 'contain',maxWidth:"40px"}}
+                  />
+                </Box>
+                <Box display={'flex'} justifyContent={'center'} alignContent={'center'} mt="20px"> 
+                  <Text fontSize={'17px'} color={textColor2}>
+                    공지사항이 없습니다.
+                  </Text>
+                </Box>
+              </Flex>
               :
-              <Accordion defaultIndex={[0]} allowMultiple>
+              <Flex flexDirection={'column'}  minHeight={'calc( 100vh - 300px )'} width={'100%'} mt={5}>
               {
                 items.map((element, index) => {
                   return (
-                    <AccordionItem key={index}>
-                      <h2>
-                        <AccordionButton>
-                          <Box as='span' flex='1' textAlign='left'>
-                            Section {index+1} title
-                          </Box>
-                          <AccordionIcon />
-                        </AccordionButton>
-                      </h2>
-                      <AccordionPanel pb={4}>
-                        동해물과 백수산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 
-                        이걸 {index + 1} 반복하세요 
-                      </AccordionPanel>
-                    </AccordionItem>
+                    <Flex 
+                      key={index} 
+                      flexDirection={'column'} minHeight={'70px'} borderBottom={'1px solid #DFE3EA'} mb="20px"
+                      cursor={'pointer'} onClick={() => onSendNoticeListButton(element)}
+                    >
+                      <Box display={'flex'} flexDirection={'column'} justifyContent={'center'}>
+                        <Text fontSize={'17px'} color={titleColor} lineHeight={"150%"} fontWeight={'700'}>{element.title}</Text>
+                        <Text fontSize={'13px'} color={dateColor} lineHeight={"150%"}>{element.date}</Text>
+                      </Box>
+                    </Flex>
                   )
                 })
               }
-              </Accordion>
+              </Flex>
             }
           </Box>
         </Flex>

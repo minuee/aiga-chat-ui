@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const viewport = device.type || 'desktop';
 	const accessToken = request.cookies.get('refresh_token');
-  console.log('accessToken middleware',accessToken)
+  console.log('middleware accessToken',accessToken)
   //const refreshToken = mCookie.getCookie('refresh_token');
   //console.log('refreshToken middleware',refreshToken)
   const response = handleI18nRouting(request); // NextResponse 객체 반환됨

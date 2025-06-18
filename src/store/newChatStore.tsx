@@ -25,6 +25,29 @@ const NewStateStore = create<State>()(
 
 export default NewStateStore;
 
+interface CallHistoryDataStoreState {
+    historyData : any;
+    setOldHistoryData: (historyData: any) => void;
+}
+
+export const CallHistoryDataStore = create<CallHistoryDataStoreState>()(
+    devtools(
+        persist(
+            (set) => ({
+                historyData: null,
+                setOldHistoryData: (historyData:any) => {
+                    set({historyData});
+                },
+            }),
+            { 
+                name: 'CallHistoryDataStore',
+                storage: createJSONStorage(() => sessionStorage)
+            }
+        )
+    )
+);
+
+
 interface ChatSesseionIdStoreState {
     chatSessionId : string;
     setChatSessionId: (chatSessionId: string) => void;

@@ -1,7 +1,7 @@
 'use client';
 // chakra imports
-import { Box,Button,Flex,Icon,Menu,MenuButton,Stack,Text,useColorModeValue,useDisclosure,SkeletonText, Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody } from '@chakra-ui/react';
-import { format } from 'date-fns';
+import { Box,Button,Flex,Icon,Menu,MenuButton,Stack,Text,useColorModeValue,useDisclosure,SkeletonText, Modal,ModalOverlay,ModalContent,ModalHeader,useToast,ModalBody } from '@chakra-ui/react';
+import Image from "next/image";
 import { HSeparator } from '@/components/separator/Separator';
 //   Custom components
 import defaultProfile from '@/assets/images/avatar0.png';
@@ -20,35 +20,13 @@ import * as history from '@/utils/history';
 import functions from "@/utils/functions";
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
+import groupSessionsByDateSorted from "./GroupSort";
+import LoadingBar from "@/assets/icons/loading.gif";
 //새창열기 전역상태
 import UserStateStore from '@/store/userStore';
-import NewChatStateStore from '@/store/newChatStore';
+import NewChatStateStore,{CallHistoryDataStore} from '@/store/newChatStore';
 import { ModalMypageStore,DrawerHistoryStore } from '@/store/modalStore';
 import HistoryItem from '@/components/text/HistoryItem';
-import { url } from 'inspector';
-
-const mockupHistoryData = [
-  {
-    session_id: 1,
-    createdAt: '2025-05-05',
-    content: '몸이 너무너무 아픕네다',
-  },
-  {
-    session_id: 2,
-    createdAt: '2025-05-04',
-    content: '수정된 제목입니다. 수정된 제목입니다.',
-  },
-  {
-    session_id: 3,
-    createdAt: '2025-05-04',
-    content: 'The government of the people, by the people, for the people. a speech by Abraham Lincoln',
-  },
-  { 
-    session_id: 4,
-    createdAt: '2025-05-03',
-    content: '空気読めない奴だな訳してKYな奴決して許せない。Qさまという番組は俺が一番好きな番組でござんす',
-  },
-]
 
 interface SidebarContent extends PropsWithChildren {
   routes: IRoute[];
@@ -58,13 +36,14 @@ interface SidebarContent extends PropsWithChildren {
 function SidebarContent(props: SidebarContent) {
   const { onParentClose } = props;  
   const [ isLoading, setIsLoading] = React.useState(true);
+  const [ isReceiving, setIsReceiving] = React.useState(false);
   const { isOpenSetupModal } = ModalMypageStore(state => state);
   const setIsOpenSetupModal = ModalMypageStore((state) => state.setIsOpenSetupModal);
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
-  const [historyData, setHistoryData] = React.useState(mockupHistoryData);
-
+  const [historyData, setHistoryData] = React.useState<any>([]);
+  const toast = useToast();
   const { ...userBaseInfo } = UserStateStore(state => state);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const textColor = useColorModeValue('navy.700', 'white');
@@ -82,24 +61,21 @@ function SidebarContent(props: SidebarContent) {
   const reviewBtnRef = React.useRef<HTMLButtonElement>(null);
   const confirmRef = useRef();
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
+  const setOldHistoryData = CallHistoryDataStore((state) => state.setOldHistoryData);
   const setOpenHistoryDrawer = DrawerHistoryStore((state) => state.setOpenHistoryDrawer);
   React.useEffect(() => {
+    //setIsLoading(false)
     getMyHistoryData();
-    /* setHistoryData(mockupHistoryData);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000); */
   }, []);
 
   const getMyHistoryData = async() => {
     try{
       const res:any = await ChatService.getChatHistoryList();
-      console.log('apidata getMyHistoryData',res)
       if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
+        const reData = groupSessionsByDateSorted(res?.data?.history.sessions)
+        setHistoryData(reData)
         setIsLoading(false)
-        //setHistoryData(res?.data)
-      }          
-      
+      }
     }catch(e:any){
       console.log("error of getNewSessionID",e)
     }
@@ -107,16 +83,33 @@ function SidebarContent(props: SidebarContent) {
 
   const onDeleteHistory = async(session_id: any) => {
     try{
-      setIsLoading(true)
+      setIsReceiving(true)
       const res:any = await ChatService.removeChatHistory(session_id);
       console.log('apidata onDeleteHistory',res)
       if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
-        setIsLoading(false)
-        const newHistoryData = historyData.filter((item:any) => item.session_id !== session_id);
+        setIsReceiving(false)
+        //const newHistoryData = historyData.filter((item:any) => item.session_id !== session_id);
+        const newHistoryData = await historyData.map((item:any) => {
+          const newSessions = item.sessions.filter((subItem: any)  => subItem.session_id !== session_id);
+          return {
+            ...item,
+            sessions: newSessions,
+          };
+        })
         setHistoryData(newHistoryData);
+        toast({
+          title: "정상적으로 삭제되었습니다.",
+          position: 'top-right',
+          isClosable: true,
+          duration:1500,
+          status: 'success',
+          containerStyle: {
+            color: '#ffffff',
+          }
+        });
       }          
-      
     }catch(e:any){
+      setIsReceiving(false)
       console.log("error of getNewSessionID",e)
     }
   }
@@ -131,25 +124,36 @@ function SidebarContent(props: SidebarContent) {
     }, 300);
   }
 
+  const onHandReplaceHistory = async( data:any) => {
+    setOldHistoryData(data)
+  }
+
   const onHandleUpdateTitle = async(inputs: any) => {
 
     try{
-      setIsLoading(true)
+      setIsReceiving(true)
+      console.log('getMyHistoryData inputs?.title',inputs?.title)
       const res:any = await ChatService.updateChatHistoryTitle(inputs.session_id,inputs?.title);
-      console.log('apidata onDeleteHistory',res)
+      console.log('getMyHistoryData onHandleUpdateTitle',res)
       if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
-        setIsLoading(false)
-        const newHistoryData = historyData.map((item) => {
-          if (item.session_id === inputs.session_id) {
-            return { ...item, content: inputs.content };
-          }
-          return item;
-        });
+        setIsReceiving(false)
+        const newHistoryData = await historyData.map((item:any) => {
+          const newSessions = item.sessions.map((subItem: any) => {
+            if (subItem.session_id === inputs.session_id) {
+              return { ...subItem, title: inputs.title };
+            }
+            return subItem;
+          });
+          return {
+            ...item,
+            sessions: newSessions,
+          };
+        })
         setHistoryData(newHistoryData);
-      }          
-      
+      }           
     }catch(e:any){
-      console.log("error of getNewSessionID",e)
+      setIsReceiving(false)
+      console.log("error of onHandleUpdateTitle",e)
     }
   } 
 
@@ -179,18 +183,9 @@ function SidebarContent(props: SidebarContent) {
 
   // SIDEBAR
   return (
-    <Flex
-      direction="column"
-      height="100%"
-      //pt="20px"
-      //pb="40px"
-      borderRadius="30px"
-      w="100%"
-      maxW={`${mConstants.modalMaxWidth-10}px`}
-      //px="20px"
-    >
+    <Flex direction="column" height="100%" borderRadius="30px" w="100%" >
       <Brand />
-      <Flex flexDirection={'column'} alignItems={'center'}  width={'100%'} px="20px" my="10px">
+      <Flex flexDirection={'column'} alignItems={'center'}  width={'100%'} px="basePadding" my="10px">
         <Button 
           colorScheme='blue' 
           bgColor={buttonBgColor}
@@ -206,67 +201,53 @@ function SidebarContent(props: SidebarContent) {
           새 대화 
         </Button>
       </Flex>
-      <Stack direction="column" mb="auto"  width={'100%'}  overflowY={'auto'} minHeight={'calc(100vh - 140px'}>
-        <Flex flexDirection={'column'} alignItems={'center'}  width={'100%'}>
-         
-          <HSeparator mt="20px" mb="20px" w="100%"  />
-          <Box display={'flex'} flexDirection={'column'} justifyContent={'flex-start'} width={'100%'} mt={1} px="20px">
-            <Text fontSize={'17px'} color={textColor2} fontWeight={'bold'}>
-               {format(Date.now(), 'yyyy-MM-dd')}
-            </Text>
+      {
+        isLoading
+        ?
+        <Stack direction="column" mb="auto"  width={'100%'}  overflowY={'auto'} minHeight={'calc(100vh - 140px'}>
+          <Box padding='6' boxShadow='lg' bg={skeletonColor}>
+            <SkeletonText mt='3' noOfLines={4} spacing='4' skeletonHeight='5' />
           </Box>
-          
-          <Flex flexDirection={'column'} justifyContent={'flex-start'} minHeight={'50px'} width="100%"  px="20px">
+        </Stack>
+        :
+        <Stack direction="column" mb="auto"  width={'100%'}  overflowY={'auto'} minHeight={'calc(100vh - 140px'}>
+          {
+            isReceiving
+            &&
+            (<Flex position={'absolute'} top="100px" left={0} width="100%" height={"100%"} justifyContent={'center'} pt="calc( 100vh / 5 )">
+              <Image src={LoadingBar} alt="LoadingBar" style={{width:'30px', height:'30px'}} /> 
+            </Flex>)
+          }
+          <Flex flexDirection={'column'} alignItems={'center'}  width={'100%'} pb="100px">
             {
-              isLoading ? (
-                <Box padding='6' boxShadow='lg' bg={skeletonColor} width="100%" px="20px">
-                  <SkeletonText mt='4' noOfLines={4} spacing='4' skeletonHeight='4' width={'100%'}  />
+              historyData.map(({ date, sessions } : any) => (
+              <Flex key={date} flexDirection={'column'} width={'100%'}>
+                <HSeparator mt="20px" mb="15px" w="100%"  />
+                <Box display={'flex'} width={'100%'} mt={1} py="basePadding" px="25px">
+                  <Text fontSize={'15px'} color={textColor2} fontWeight={'semibold'}>
+                    {date? date.toString() : "YYYY-MM-DD"}
+                  </Text>
                 </Box>
-              )
-              :
-              <Stack spacing='2'>
-                {historyData.map((item, index) => (
-                  <HistoryItem 
-                    key={index} 
-                    data={item} 
-                    onDeleteHistory={onDeleteHistory} 
-                    onHandleUpdateTitle={onHandleUpdateTitle}
-                  />
-                ))}
-              </Stack>
-              }
+                <Flex flexDirection={'column'} justifyContent={'flex-start'} minHeight={'50px'} width="100%"  px="basePadding">
+                  <Stack>
+                    {sessions.map((item:any, index:number) => (
+                      <HistoryItem 
+                        key={index} 
+                        data={item} 
+                        onDeleteHistory={onDeleteHistory} 
+                        onHandleUpdateTitle={onHandleUpdateTitle}
+                        onHandCallHistory={(data:any) => onHandReplaceHistory(data)}
+                      />
+                    ))}
+                  </Stack>
+                </Flex>
+              </Flex>
+              ))
+            }
+            <HSeparator mt="20px" mb="20px" w="calc( 100% - 40px )" px="20px" />
           </Flex>
-
-          <HSeparator mt="20px" mb="20px" w="calc( 100% - 40px )" px="20px" />
-          <Box display={'flex'} flexDirection={'column'} justifyContent={'flex-start'} width={'100%'} mt={1} px="20px">
-            <Text fontSize={'17px'} color={textColor2} fontWeight={'bold'}>
-               {format(Date.now()-1, 'yyyy-MM-dd')}
-            </Text>
-          </Box>
-          
-          <Flex flexDirection={'column'} justifyContent={'flex-start'} minHeight={'50px'} width="100%" px="20px">
-            {
-              isLoading ? (
-                <Box padding='6' boxShadow='lg' bg={skeletonColor} width="100%" maxWidth={`${mConstants.modalMaxWidth-50}px`}>
-                  <SkeletonText mt='4' noOfLines={4} spacing='4' skeletonHeight='4' width={'100%'}  />
-                </Box>
-              )
-              :
-              <Stack spacing='2'>
-                {historyData.map((item, index) => (
-                  <HistoryItem 
-                    key={index} 
-                    data={item} 
-                    onDeleteHistory={onDeleteHistory} 
-                    onHandleUpdateTitle={onHandleUpdateTitle}
-                  />
-                ))}
-              </Stack>
-              }
-          </Flex>
-          <HSeparator mt="20px" mb="20px" w="calc( 100% - 40px )" px="20px" />
-        </Flex>
-      </Stack>
+        </Stack>
+      }
 
       <Flex 
         position={'fixed'}
@@ -279,6 +260,7 @@ function SidebarContent(props: SidebarContent) {
         justifyContent={'space-between'} 
         bg='#e9edf3' 
         px="20px"
+        zIndex={10}
       >
         <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
           {
@@ -286,15 +268,7 @@ function SidebarContent(props: SidebarContent) {
             ?
             <NextAvatar h="34px" w="34px" src={defaultProfile} me="10px" />
             :
-            <NextImage 
-              src={userBaseInfo?.profileImage}
-              alt="프로필이미지"
-              //fill={true}
-              style={{ borderRadius: '50%', objectFit: 'cover' }} 
-              width={34} 
-              height={34}
-            />
-            
+            <NextImage  src={userBaseInfo?.profileImage} alt="프로필이미지" style={{ borderRadius: '50%', objectFit: 'cover' }}  width={34} height={34}/>
           }
           <Box pl="10px">
             <Text color={textColor} fontSize="xs" fontWeight="600" me="10px">
@@ -343,45 +317,39 @@ function SidebarContent(props: SidebarContent) {
           >
             <ModalOverlay />
             <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000} margin={0} padding={0}>
-              <ModalHeader bg={navbarBg}>
-                <Flex flexDirection={'row'}>
+              <ModalHeader bg={navbarBg} padding="basePadding">
+                <Flex flexDirection={'row'} position={'relative'}>
                   <Box 
-                    flex={1} 
+                    position={'absolute'}
+                    left={0}
+                    top={0}
+                    width="50px"
+                    height={'100%'}
                     display={{base :'flex', md:'none'}} 
-                    alignItems={'center'} 
-                    onClick={() => fn_close_modal_mypage(false)} 
-                    cursor={'pointer'}
+                    alignItems={'center'}  
+                    onClick={() => fn_close_modal_mypage(false)} cursor={'pointer'}
                   >
-                    <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
+                    <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                   </Box>
-                  <Box 
-                    flex={3} 
-                    display={{base :'none', md:'flex'}} 
-                    alignItems={'center'} 
-                    >
+                  <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
                     <Text color={'white'} noOfLines={1}>마이페이지</Text>
                   </Box>
                   <Box 
-                    flex={3} 
-                    display={{base :'flex', md:'none'}} 
-                    alignItems={'center'} 
-                    justifyContent={'flex-end'}
-                  >
-                    <Text color={'white'} noOfLines={1}>마이페이지</Text>
-                  </Box>
-                  <Box 
-                    flex={1} 
+                    position={'absolute'}
+                    right={0}
+                    top={0}
+                    width="50px"
+                    height={'100%'}
                     display={{base :'none', md:'flex'}} 
-                    justifyContent={'flex-end'}
-                    alignItems={'center'} 
-                    onClick={() => fn_close_modal_mypage(false)} 
-                    cursor={'pointer'}
+                    justifyContent={'flex-end'} 
+                    alignItems={'center'}  
+                    onClick={() => fn_close_modal_mypage(false)}  cursor={'pointer'}
                     >
-                    <Icon as={MdOutlineClose} width="30px" height="30px" color="white" />
+                    <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
                   </Box>
                 </Flex>
               </ModalHeader>
-              <ModalBody overflowY="auto" maxH="100vh">
+              <ModalBody overflowY="auto" maxH="100vh" padding="basePadding" margin="0">
                 <ProfileSetting
                   isOpen={isOpenSetupModal}
                   setClose={() => fn_close_modal_mypage(false)}

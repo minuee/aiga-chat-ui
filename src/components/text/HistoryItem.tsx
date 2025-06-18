@@ -3,14 +3,16 @@ import { Box,Heading,Text,Popover,PopoverTrigger,PopoverContent,PopoverArrow,Pop
 import { MdOutlineMoreVert,MdMoreHoriz,MdOutlineEdit,MdOutlineDelete } from 'react-icons/md';
 import Alert from '@/components/alert/Alert';
 import mConstants from '@/utils/constants';
+import functions from '@/utils/functions';
 type HistoryItemProps = {
     data: any;
     onDeleteHistory: (session_id: string) => void;
     onHandleUpdateTitle: (inputs: any) => void;
+    onHandCallHistory : ( data :any) => void;
 };
   
-const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle }:HistoryItemProps) => {
-    const { content, createdAt } = data;
+const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHistory }:HistoryItemProps) => {
+    const { cuser_id,session_id,title,session_time,chattings } = data;
     const toast = useToast();
 
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -18,7 +20,6 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle }:HistoryItemP
     const [isOpenShare, setIsOpenShare] = React.useState(false);
     const [inputs, setInputs] = React.useState<any>({
         ...data,
-        content: content,
         shareLink : `https://aiga.kormedi.com/share/minuee/${data.session_id}`
     });
     const textColor = useColorModeValue('navy.700', 'white');
@@ -46,14 +47,30 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle }:HistoryItemP
     }
 
     return (
-        <Box position={'relative'} width="100%" maxWidth={`${mConstants.modalMaxWidth}px`}>{
+        <Flex 
+            display={'flex'}
+            alignItems={'center'}
+            position={'relative'} 
+            width="100%" 
+            minHeight={'42px'}
+            px="10px"
+            maxWidth={`${mConstants.modalMaxWidth}px`}
+            bg={editMode ?'#EAF4FF' : '#ffffff'}
+            borderRadius={editMode ? '8px' : 0}
+            _hover={{
+                bg: editMode ?'#EAF4FF' : '#EFF2F7',
+                borderRadius:'8px',
+                cursor: 'pointer'
+            }}
+        >
+        {
             editMode ? 
-            <FormControl variant="floatingLabel">
+            <FormControl variant="floatingLabel" py="10px">
                 <Input 
                     type="text" 
                     placeholder='제목을 입력해주세요(필수)' 
-                    value={inputs.content}
-                    onChange={(e) => setInputs({...inputs, content: e.target.value})}
+                    value={functions.isEmpty(inputs?.title) ? "무제" : inputs?.title}
+                    onChange={(e) => setInputs({...inputs, title: e.target.value})}
                     color={textColor}
                     id="input_title"
                 />
@@ -61,20 +78,23 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle }:HistoryItemP
                     <Button size='sm' variant={'solid'} colorScheme='blue' onClick={() => {onHandleUpdateTitle(inputs);setEditMode(false)}} id="button_save">
                         저장
                     </Button>
-                    <Button size='sm' variant={'solid'} colorScheme='red' onClick={() => setEditMode(false)} id="button_cancel">
+                    <Button size='sm' variant={'solid'} colorScheme='gray' onClick={() => setEditMode(false)} id="button_cancel">
                         취소
                     </Button>
                 </Flex>
             </FormControl>
             :
-            <Text pt='2' fontSize='sm' noOfLines={1} pr='20px'>
-                {content}
-            </Text>
+            <Box onClick={() => onHandCallHistory(data)} bg='transparent' minWidth={"90%"} zIndex={2} cursor={'pointer'}>
+                <Text fontSize='17px' noOfLines={1} pr='20px' color='#212127'>
+                    {functions.isEmpty(title) ? "무제" :title }
+                </Text>
+            </Box>
+            
         }
             
         { 
             !editMode && (
-                <Box position={"absolute"} left={0} top={0} width={'100%'} maxW={`${mConstants.modalMaxWidth}px`} height={'40px'}>
+                <Box position={"absolute"} left={'-5px'} top={"6px"} width={'100%'}  height={'42px'} zIndex={1}>
                     <Flex justifyContent={'flex-end'}>
                         <Popover>
                             <PopoverTrigger>
@@ -142,7 +162,7 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle }:HistoryItemP
                 />
             )
         }
-        </Box>
+        </Flex>
     )
 };
 

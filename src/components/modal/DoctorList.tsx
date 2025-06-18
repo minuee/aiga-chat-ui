@@ -211,7 +211,7 @@ function DoctorListModal(props: DoctorListModalProps) {
 
     return (
       <>
-        <Flex flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'20px'}>
+        <Flex flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'20px'} width="100%">
           {
             isReLoading && (
               <Flex position='absolute' left={0} top={0} width='100%' height='100%'  justifyContent={'center'}  backgroundColor={'#000000'} opacity={0.7} zIndex="100">
@@ -244,7 +244,8 @@ function DoctorListModal(props: DoctorListModalProps) {
           >
             <Flex 
               width={"100%"} 
-              padding="15px 20px"
+              px="15px"
+              py="15px"
               flexDirection={'row'} alignItems={'center'} 
               fontSize={'14px'} minHeight={"40px"} 
               borderBottom={"1px solid #ccc"} zIndex={1000} 
@@ -405,45 +406,39 @@ function DoctorListModal(props: DoctorListModalProps) {
             >
               <ModalOverlay />
               <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1}>
-                <ModalHeader bg={navbarBg}>
-                  <Flex flexDirection={'row'}>
+                <ModalHeader bg={navbarBg} padding="basePadding">
+                  <Flex flexDirection={'row'} position={'relative'}>
                     <Box 
-                      flex={1} 
+                      position={'absolute'}
+                      left={0}
+                      top={0}
+                      width="50px"
+                      height={'100%'}
                       display={{base :'flex', md:'none'}} 
-                      alignItems={'center'} 
-                      onClick={() => fn_close_modal_doctor_detail()} 
-                      cursor={'pointer'}
+                      alignItems={'center'}  
+                      onClick={() => fn_close_modal_doctor_detail()} cursor={'pointer'}
                     >
-                      <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
+                      <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                     </Box>
-                    <Box 
-                      flex={3} 
-                      display={{base :'none', md:'flex'}} 
-                      alignItems={'center'} 
-                     >
+                    <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
                       <Text color={'white'} noOfLines={1}>{"{의사명} 교수"}</Text>
                     </Box>
                     <Box 
-                      flex={3} 
-                      display={{base :'flex', md:'none'}} 
-                      alignItems={'center'} 
-                      justifyContent={'flex-end'}
-                    >
-                      <Text color={'white'} noOfLines={1}>{"{의사명} 교수"}</Text>
-                    </Box>
-                    <Box 
-                      flex={1} 
+                      position={'absolute'}
+                      right={0}
+                      top={0}
+                      width="50px"
+                      height={'100%'}
                       display={{base :'none', md:'flex'}} 
-                      justifyContent={'flex-end'}
-                      alignItems={'center'} 
-                      onClick={() => fn_close_modal_doctor_detail()} 
-                      cursor={'pointer'}
-                     >
-                      <Icon as={MdOutlineClose} width="30px" height="30px" color="white" />
+                      justifyContent={'flex-end'} 
+                      alignItems={'center'}  
+                      onClick={() => fn_close_modal_doctor_detail()}  cursor={'pointer'}
+                      >
+                      <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
                     </Box>
                   </Flex>
                 </ModalHeader>
-                <ModalBody >
+                <ModalBody padding="basePadding" margin="0">
                   <DoctorDetail
                     selected_doctor_id={selectedDoctor}
                   />

@@ -141,65 +141,59 @@ const SelectDoctor = ({  onSendButton  }: SelectDoctorProps) => {
         </Box>
       </Flex>
       {
-          isOpenDocListModal && (
-            <Modal
-              onClose={() => fn_close_modal_doctor_list()}
-              finalFocusRef={modalBtnRef}
-              isOpen={isOpenDocListModal}
-              scrollBehavior={'inside'}
-              size={'full'}
-            >
-              <ModalOverlay />
-              <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
-                <ModalHeader bg={navbarBg}>
-                  <Flex flexDirection={'row'}>
-                    <Box 
-                      flex={1} 
-                      display={{base :'flex', md:'none'}} 
-                      alignItems={'center'} 
-                      onClick={() => fn_close_modal_doctor_list()} 
-                      cursor={'pointer'}
+        isOpenDocListModal && (
+          <Modal
+            onClose={() => fn_close_modal_doctor_list()}
+            finalFocusRef={modalBtnRef}
+            isOpen={isOpenDocListModal}
+            scrollBehavior={'inside'}
+            size={'full'}
+          >
+            <ModalOverlay />
+            <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
+              <ModalHeader bg={navbarBg} padding="basePadding">
+                <Flex flexDirection={'row'} position={'relative'}>
+                  <Box 
+                    position={'absolute'}
+                    left={0}
+                    top={0}
+                    width="50px"
+                    height={'100%'}
+                    display={{base :'flex', md:'none'}} 
+                    alignItems={'center'}  
+                    onClick={() => fn_close_modal_doctor_list()} cursor={'pointer'}
+                  >
+                    <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
+                  </Box>
+                  <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
+                    <Text color={'white'} noOfLines={1}>{"신경쇠약[질환명]"}</Text>
+                  </Box>
+                  <Box 
+                    position={'absolute'}
+                    right={0}
+                    top={0}
+                    width="50px"
+                    height={'100%'}
+                    display={{base :'none', md:'flex'}} 
+                    justifyContent={'flex-end'} 
+                    alignItems={'center'}  
+                    onClick={() => fn_close_modal_doctor_list()}  cursor={'pointer'}
                     >
-                      <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
-                    </Box>
-                    <Box 
-                      flex={3} 
-                      display={{base :'none', md:'flex'}} 
-                      alignItems={'center'} 
-                      >
-                      <Text color={'white'} noOfLines={1}>{"신경쇠약[질환명]"}</Text>
-                    </Box>
-                    <Box 
-                      flex={3} 
-                      display={{base :'flex', md:'none'}} 
-                      alignItems={'center'} 
-                      justifyContent={'flex-end'}
-                    >
-                      <Text color={'white'} noOfLines={1}>{"신경쇠약[질환명]"}</Text>
-                    </Box>
-                    <Box 
-                      flex={1} 
-                      display={{base :'none', md:'flex'}} 
-                      justifyContent={'flex-end'}
-                      alignItems={'center'} 
-                      onClick={() => fn_close_modal_doctor_list()} 
-                      cursor={'pointer'}
-                      >
-                      <Icon as={MdOutlineClose} width="30px" height="30px" color="white" />
-                    </Box>
-                  </Flex>
-                </ModalHeader>
-                <ModalBody overflowY="auto" maxH="100vh" padding={0}>
-                  <DoctorList
-                    isOpen={isOpenDocListModal}
-                    setClose={() => fn_close_modal_doctor_list()}
-                    doctorData={[]}
-                  />
-                </ModalBody>
-              </ModalContent>
-            </Modal>
-          )
-        }
+                    <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
+                  </Box>
+                </Flex>
+              </ModalHeader>
+              <ModalBody overflowY="auto" maxH="100vh" padding="basePadding" margin="0" >
+                <DoctorList
+                  isOpen={isOpenDocListModal}
+                  setClose={() => fn_close_modal_doctor_list()}
+                  doctorData={[]}
+                />
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        )
+      }
     </Stack>
   )
     

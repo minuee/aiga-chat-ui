@@ -18,6 +18,9 @@ const PreventRefresh = () => {
                 position: 'top-right',
                 description: '새로고침을 할수 없는 페이지입니다.',
                 status: 'info',
+                containerStyle: {
+                    color: '#ffffff',
+                },
                 duration: 1500,
                 isClosable: true,
               });

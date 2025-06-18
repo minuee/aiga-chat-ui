@@ -15,6 +15,9 @@ import DoctorDetail  from '@/components/modal/Doctor';
 import SelectBody  from '@/components/msgType/SelectBody';
 import SelectDoctor  from '@/components/msgType/SelectDoctor';
 import SelectName  from '@/components/msgType/SelectName';
+import ForceStop  from '@/components/msgType/ForceStop';
+import ChatMeMessage from '@/components/msgType/ChatMeMessage';
+import ChatWrongMessage from '@/components/msgType/ChatWrongMessage';
 import Welcome  from '@/components/msgType/Welcome';
 import { ChatDisable,ChatWarningInfo }  from '@/components/msgType/ChatOptionView';
 import MotionWelcome,{MotionWelcomeImage}  from '@/components/msgType/MotionWelcome';
@@ -26,16 +29,17 @@ import { useTranslations } from 'next-intl';
 import LoadingBar from "@/assets/icons/loading.gif";
 import mConstants from '@/utils/constants';
 //새창열기 전역상태
-import NewChatStateStore,{ ChatSesseionIdStore } from '@/store/newChatStore';
+import NewChatStateStore,{ ChatSesseionIdStore,CallHistoryDataStore } from '@/store/newChatStore';
 import historyStore from '@/store/historyStore';
 import { 
-  ModalDoctorDetailStore,ModalDoctorReviewStore,ModalDoctorRequestStore,ModalDoctorListStore,DrawerHistoryStore,ModalMypageStore,ModalMypageNoticeStore,
+  ModalDoctorDetailStore,ModalDoctorReviewStore,ModalDoctorRequestStore,ModalDoctorListStore,DrawerHistoryStore,ModalMypageStore,ModalMypageNoticeStore,ModalMypageNoticeDetailStore,
   ModalMypageRequestStore,ModalMypageEntireStore,ModalMypagePolicyStore,ModalMypageYakwanStore,ModalSignupStoreStore,ModalSignupAgreeStoreStore,DoctorFromListStore
  } from '@/store/modalStore';
 
 import * as ChatService from "@/services/chat/index";
 import SendButtonOff from "@/assets/icons/send_btn_off.png";
 import SendButtonOn from "@/assets/icons/send_btn_on.png";
+import LogoImage from "@/assets/images/logo.png";
 
 export default function ChatBot() {
   const t = useTranslations('Messages');
@@ -58,13 +62,12 @@ export default function ChatBot() {
     isState :  true,
     isAlertMsg : false 
   });
-  // Loading state
-  const [loading, setLoading] = useState<boolean>(false);
+  
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollBottomRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentLocale, setCurrentLocale] = useState('ko');
-  // Loading state
+
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
   const navbarIcon = useColorModeValue('gray.500', 'white');
 
@@ -73,6 +76,8 @@ export default function ChatBot() {
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
   const chatSessionId = ChatSesseionIdStore(state => state.chatSessionId);
   const setChatSessionId = ChatSesseionIdStore((state) => state.setChatSessionId);
+  const oldHistoryData = CallHistoryDataStore(state => state.historyData);
+  const setOldHistoryData = CallHistoryDataStore((state) => state.setOldHistoryData);
 
   const { isFromDoctorDepth2 } = DoctorFromListStore(state => state);
   const setCurrentPathname = historyStore((state) => state.setCurrentPathname);
@@ -83,24 +88,32 @@ export default function ChatBot() {
   const setOpenHistoryDrawer = DrawerHistoryStore((state) => state.setOpenHistoryDrawer);
   const setIsOpenSetupModal = ModalMypageStore((state) => state.setIsOpenSetupModal);
   const setIsOpenNoticeListModal = ModalMypageNoticeStore((state) => state.setIsOpenNoticeListModal);
+  const setIsOpenNoticeDetailModal = ModalMypageNoticeDetailStore((state) => state.setIsOpenNoticeDetailModal);
   const setIsOpenMypageRequestModal = ModalMypageRequestStore((state) => state.setIsOpenMypageRequestModal);
   const setIsOpenEntireModal = ModalMypageEntireStore((state) => state.setIsOpenEntireModal);
   const setIsOpenPolicyModal = ModalMypagePolicyStore((state) => state.setIsOpenPolicyModal);
   const setIsOpenYakwanModal = ModalMypageYakwanStore((state) => state.setIsOpenYakwanModal);
   const setIsOpenSignupModal = ModalSignupStoreStore((state) => state.setIsOpenSignupModal)
   const setIsOpenSignupAgreeModal = ModalSignupAgreeStoreStore((state) => state.setIsOpenSignupAgreeModal)
+  
 
   const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
   const borderColor = useColorModeValue('gray.200', 'gray');
   const inputColor = useColorModeValue('navy.700', 'white');
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
-  const brandColor = useColorModeValue('brand.500', 'white');
   const themeColor = useColorModeValue('white', 'navy.900');
-  const textColor = useColorModeValue('navy.700', 'white');
+  
+  const bgMeColor = useColorModeValue('#2B8FFF', 'white');
+  const textMeColor = useColorModeValue('white', 'navy.800');
+  const bgSystemColor = useColorModeValue('#F4F6FA', 'white');
+  const textSystemColor = useColorModeValue('#212127', 'navy.800');
+  const bgSystemStopColor = useColorModeValue('#FFF0F0', 'white');
+  const textSystemStopColor = useColorModeValue('#F94848', 'navy.800');
+  const textSystemStopIconColor = useColorModeValue('#5E0018', 'navy.800');
   const placeholderColor = useColorModeValue({ color: 'gray.500' },{ color: 'gray' });
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
   const isSystemText = ["system_text","system_doctors","system_list","system_select","system_image"];
-
+  
   /* useEffect(() => {
     console.log("chatSessionId Top",chatSessionId)
     if ( functions.isEmpty(chatSessionId) ) {
@@ -113,8 +126,28 @@ export default function ChatBot() {
     console.log("chatSessionId Top",chatSessionId)
     if (!alreadyInitialized.current) {
       console.log('🔥 최초 1회만 실행');
-      getNewSessionID(); // ✅ 여기서만 실행됨
+      setChatSessionId('')
+      setIsOpenReview(false)
+      setIsOpenDoctorDetailModal(false);
+      setOpenHistoryDrawer(false);
+      setIsOpenRequestModal(false);
+      setOpenDoctorListModal(false);
+      setIsOpenSetupModal(false);
+      setIsOpenNoticeListModal(false);
+      setIsOpenDoctorDetailModal(false);
+      setIsOpenMypageRequestModal(false);
+      setIsOpenEntireModal(false);
+      setIsOpenPolicyModal(false);
+      setIsOpenYakwanModal(false);
+      setIsOpenSignupModal(false);
+      setIsOpenSignupAgreeModal(false);
+      setOldHistoryData(null)
+      //getNewSessionID(); // ✅ 여기서만 실행됨
       alreadyInitialized.current = true;
+      
+      setTimeout(() => {
+        setIsLoading(false)
+      }, 300);
     }
   }, []);
 
@@ -162,10 +195,17 @@ export default function ChatBot() {
   const fn_close_modal_doctor_request = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenRequestModal(false);
-    router.replace(`/${locale}/chat#${mConstants.pathname_modal_2}`);
-    setTimeout(() => {
-      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2}`)
-    }, 200);
+    if ( isFromDoctorDepth2 ) {
+      router.replace(`/${locale}/chat#${mConstants.pathname_modal_2_2}`);
+      setTimeout(() => {
+        mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2_2}`)
+      }, 200);
+    }else{
+      router.replace(`/${locale}/chat#${mConstants.pathname_modal_2}`);
+      setTimeout(() => {
+        mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2}`)
+      }, 200);
+    }
   }
 
   const fn_close_modal_doctor_list = async() => {
@@ -201,6 +241,15 @@ export default function ChatBot() {
     router.replace(`/${locale}/chat#${mConstants.pathname_modal_10}`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`);
+    }, 200);
+  }
+
+  const fn_close_modal_notice_detail = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenNoticeDetailModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_5}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_5}`);
     }, 200);
   }
 
@@ -263,8 +312,6 @@ export default function ChatBot() {
         mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_3}`)  
       }, 200);
     }
-    
-    
   }
 
   const fn_close_modal_signup_agree = async() => {
@@ -329,6 +376,10 @@ export default function ChatBot() {
           event.preventDefault(); // modal_mypage_notice 기본 뒤로가기 방지
           fn_close_modal_notice_list();
           break;
+        case `${mConstants.pathname_modal_5_2}` : 
+          event.preventDefault(); // modal_mypage_notice detail 기본 뒤로가기 방지
+          fn_close_modal_notice_detail();
+          break;
         case `${mConstants.pathname_modal_6}` : 
           event.preventDefault(); // modal_mypage_request 기본 뒤로가기 방지
           fn_close_modal_mypage_request();
@@ -364,11 +415,14 @@ export default function ChatBot() {
       const res:any = await ChatService.getChatNewSession();
       console.log("getNewSessionID",res.data)
       if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
-        setIsLoading(false)
         console.log("getNewSessionID res?.data?.session_id",res?.data?.session_id)
         setChatSessionId(res?.data?.session_id?.session_id)
-      }          
+        return res?.data?.session_id?.session_id
+      }else{
+        return null;
+      }
     }catch(e:any){
+      return null;
       console.log("error of getNewSessionID",e);
     }
   }
@@ -377,7 +431,7 @@ export default function ChatBot() {
     console.log("chatbot.tsx ",isNewChat,outputCode.length)
     if ( isNewChat && outputCode.length > 0 ) {
       // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
-      getNewSessionID()
+      setChatSessionId('')
       setOutputCode([]);
       setChatDisabled({
         isState : true,
@@ -391,11 +445,25 @@ export default function ChatBot() {
     }
   }, [isNewChat]);
 
-
+  useEffect(() => {
+    console.log("oldHistoryData",oldHistoryData)
+    if ( !functions.isEmpty(oldHistoryData) ) {
+      if ( !functions.isEmpty(oldHistoryData?.session_id) ) {
+        setChatSessionId(oldHistoryData?.session_id)
+        setOutputCode(oldHistoryData?.chattings);
+        setChatDisabled({
+          isState : true,
+          isAlertMsg : false
+        })
+        fn_close_drawer_history();
+        setOldHistoryData(null)
+      }
+    }
+  }, [oldHistoryData]);
   /* 대화 불능 상태 컨트롤 */
   useEffect(() => {
     console.log('outputCode,chatSessionId chatSessionId',chatSessionId,outputCode.length, mConstants.userMaxToken)
-    if ( functions.isEmpty(chatSessionId) ) {
+    /* if ( functions.isEmpty(chatSessionId) ) {
       console.log('outputCode,chatSessionId chatSessionId if')
       if ( functions.isEmpty(chatSessionId) ) {
         setChatDisabled({
@@ -403,7 +471,8 @@ export default function ChatBot() {
           isAlertMsg : false,
         })
       }
-    }else if ( outputCode.length == mConstants.userMaxToken && !functions.isEmpty(chatSessionId)) {
+    }else */ 
+    if ( outputCode.length == mConstants.userMaxToken && !functions.isEmpty(chatSessionId)) {
       console.log('outputCode,chatSessionId chatSessionId else')
       setChatDisabled({
         isState : false,
@@ -447,13 +516,67 @@ export default function ChatBot() {
   };
 
   const onHandleStopRequest = () => {
+    const forceMsg = "대답이 중지되었습니다."
     setReceiving(false);
-    setLoading(false)
+    setIsLoading(false)
+    setOutputCode((prevCode: any[]) => [...prevCode, { id: functions.getUUID(), ismode: "system_stop", msg: forceMsg }]);
   }
+
 
   const handleTranslate = async( isText:any = '') => {
 
     if ( functions.isEmpty(inputCode) && functions.isEmpty(isText) ) return;
+    
+    console.log("handleTranslate chatSessionId", chatSessionId)
+    let chat_sessinn_id = chatSessionId;
+    if ( functions.isEmpty(chat_sessinn_id)) {
+      chat_sessinn_id = await getNewSessionID();
+    }
+
+    
+    setReceiving(true);
+    const msgLen = parseInt(outputCode.length+1);
+    const inputCodeText = inputCode || isText;
+    //고혈압 치료를 잘하는 의사를 소개해줘
+    if ( isSystemText.includes(inputCodeText) ) {
+      if( inputCodeText != outputCode[outputCode?.length -1]?.msg) { 
+        setOutputCode((prevCode: any[]) => [...prevCode, { id: functions.getUUID(), ismode: "system", msg: inputCodeText }]);
+        setIsLoading(false);
+        setReceiving(false);
+        return;
+      }else{
+        setIsLoading(false);
+        setReceiving(false);
+        return;
+      }
+    }else{
+      setOutputCode((prevCode: any[]) => [...prevCode, { id: functions.getUUID(),ismode: "me", msg: inputCodeText }]);
+    }
+    setInputCode('')
+    try{
+      const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText);
+      console.log("handleTranslate questionResult",questionResult)
+      setIsLoading(false);
+      setReceiving(false);
+    }catch(e:any){
+      console.log("handleTranslate error",e);
+      setIsLoading(false);
+      setReceiving(false);
+    }
+ 
+  }
+
+  const handleTranslate_origin = async( isText:any = '') => {
+
+    if ( functions.isEmpty(inputCode) && functions.isEmpty(isText) ) return;
+    
+    console.log("handleTranslate chatSessionId", chatSessionId)
+    let chat_sessinn_id = chatSessionId;
+    if ( functions.isEmpty(chat_sessinn_id)) {
+      chat_sessinn_id = await getNewSessionID();
+    }
+
+    
     setReceiving(true);
     const msgLen = parseInt(outputCode.length+1);
     const inputCodeText = inputCode || isText;
@@ -461,11 +584,11 @@ export default function ChatBot() {
     if ( isSystemText.includes(inputCodeText) ) {
       if( inputCodeText != outputCode[outputCode?.length -1]?.msg) { 
         setOutputCode((prevCode: any[]) => [...prevCode, { id: functions.getUUID(), ismode: "system", msg: inputCodeText }]);
-        setLoading(false);
+        setIsLoading(false);
         setReceiving(false);
         return;
       }else{
-        setLoading(false);
+        setIsLoading(false);
         setReceiving(false);
         return;
       }
@@ -498,7 +621,7 @@ export default function ChatBot() {
     
       if (done) {
         setTimeout(() => {
-          setLoading(false);
+          setIsLoading(false);
           setReceiving(false);
         },3000)
         
@@ -624,16 +747,17 @@ export default function ChatBot() {
             outputCode.map((element:any,index:number) => {
               if ( element.ismode == 'me') {
                 return (
-                  <Flex w="100%" align={'center'} mb="10px"  mt="5px" key={element.id} justifyContent='flex-end'>
-                    <Flex p="10px" border="1px solid" borderColor={borderColor} borderRadius="14px" w="auto" zIndex={2}>
-                      <Text color={textColor} fontWeight="600" fontSize={{ base: 'sm', md: 'md' }} lineHeight={{ base:'24px',md:'26px'}} whiteSpace="pre-line">
-                        {element?.msg}
-                      </Text>
-                    </Flex>
-                    <Flex borderRadius="full" justify="center" align="center" bg={'transparent'} border="1px solid" borderColor={borderColor} ms="10px" h="40px" minH="40px" minW="40px">
-                      <Icon as={MdPerson} width="20px" height="20px" color={brandColor} />
-                    </Flex>
-                  </Flex>
+                  <ChatMeMessage
+                    indexKey={element.id}
+                    msg={element.msg}
+                  />
+                )
+              }else if ( element.ismode == 'system_stop') {
+                return (
+                  <ForceStop
+                    indexKey={element.id}
+                    msg={element.msg}
+                  />
                 )
               }else if ( element.ismode == 'system') {
                 if ( element.msg === "system_doctors" ) {
@@ -672,21 +796,10 @@ export default function ChatBot() {
                   )
                 }else {
                   return (
-                    <Flex w="100%" key={element.id} margin="10px 0">
-                      <Flex
-                        borderRadius="full"
-                        justify="center"
-                        align="center"
-                        bg={'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)'}
-                        me="10px"
-                        h="40px"
-                        minH="40px"
-                        minW="40px"
-                      >
-                        <Icon as={MdFitbit} width="20px" height="20px" color="white" />
-                      </Flex>
-                      <MessageBoxChat output={"잘못된 선택입니다.."} />
-                    </Flex>
+                    <ChatWrongMessage
+                      indexKey={element.id}
+                      msg={'흠..뭔가 잘못된 것 같습니다'}
+                    />
                   )
                 }
               }else{
@@ -731,21 +844,7 @@ export default function ChatBot() {
           }
           <Box ref={scrollBottomRef} h="1px" pb={"30px"} />
         </Flex>
-        <Flex
-          position="fixed"          // ✅ 고정 위치
-          bottom="0"                // ✅ 화면 하단에 붙임
-          left="0"
-          w="100%"                  // ✅ 전체 너비
-          //maxW="1024px"
-          px="20px"                 // 양쪽 여백
-          py="10px"                 // 위아래 여백
-          bg={themeColor}                // 배경색 (필수! 안 넣으면 뒤 채팅이 비쳐요)
-          zIndex="100"              // 채팅보다 위에 오게
-          //boxShadow="0 -2px 10px rgba(0,0,0,0.05)" // 선택: 살짝 그림자 효과
-          display={'flex'}
-          justifyContent='center'
-          //alignItems={'center'}
-        >
+        <Flex position="fixed" bottom="0" left="0" w="100%" px="20px" py="10px" bg={themeColor} zIndex="100" display={'flex'} justifyContent='center'>
           <Box 
             w={{ base: '100%', md: `${mConstants.desktopMinWidth-20}px` }}
             maxWidth={`${mConstants.desktopMinWidth}px` }
@@ -773,6 +872,7 @@ export default function ChatBot() {
               borderColor={borderColor}
               bg={isFocus ? 'transparent' :'#f4f6fa'}
               readOnly={isReceiving}
+              maxLength={mConstants.inputMaxMessage}
               borderRadius="20px"
               lineHeight={"140%"}
               //me="10px"
@@ -787,7 +887,7 @@ export default function ChatBot() {
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
               id={"textarea_content"}
-              disabled={( !isChatDisabled?.isState || functions.isEmpty(chatSessionId) )}
+              disabled={!isChatDisabled?.isState}
             />
             <Box display={'flex'} position={'absolute'} bottom={'-2px'} right={'10px'} w={'55px'} height={'55px'} justifyContent={'flex-end'} alignItems={'center'}>
               {
@@ -808,19 +908,22 @@ export default function ChatBot() {
                         position: 'top-right',
                         description: '수신중입니다. 잠시만 기달주세요',
                         status: 'info',
+                        containerStyle: {
+                          color: '#ffffff',
+                        },
                         duration: 2000,
                         isClosable: true,
                       });
                     }
                   }}
                 >
-                  {
-                    isFocus 
-                    ?
-                    <Image src={SendButtonOn} alt="send" style={{width:'32px',objectFit: 'contain'}} />
-                    :
-                    <Image src={SendButtonOff} alt="send" style={{width:'32px',objectFit: 'contain'}} />
-                  }
+                {
+                  isFocus 
+                  ?
+                  <Image src={SendButtonOn} alt="send" style={{width:'32px',objectFit: 'contain'}} />
+                  :
+                  <Image src={SendButtonOff} alt="send" style={{width:'32px',objectFit: 'contain'}} />
+                }
                 </Box>
               }
             </Box>
@@ -836,26 +939,39 @@ export default function ChatBot() {
             >
               <ModalOverlay />
               <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1}>
-                <ModalHeader bg={navbarBg}>
-                  <Flex flexDirection={'row'}>
-                    <Box flex={1} display={{base :'flex', md:'none'}} alignItems={'center'}  onClick={() => fn_close_modal_doctor_detail()} cursor={'pointer'}>
-                      <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
+                <ModalHeader bg={navbarBg} padding="basePadding">
+                  <Flex flexDirection={'row'} position={'relative'}>
+                    <Box 
+                      position={'absolute'}
+                      left={0}
+                      top={0}
+                      width="50px"
+                      height={'100%'}
+                      display={{base :'flex', md:'none'}} 
+                      alignItems={'center'}  
+                      onClick={() => fn_close_modal_doctor_detail()} cursor={'pointer'}
+                    >
+                      <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                     </Box>
-                    <Box flex={3} display={{base :'none', md:'flex'}}  alignItems={'center'} >
-                      <Text color={'white'} noOfLines={1}>{"{의사명} 교수"}</Text>
-                    </Box>
-                    <Box flex={3} display={{base :'flex', md:'none'}} alignItems={'center'} justifyContent={'flex-end'}>
+                    <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
                       <Text color={'white'} noOfLines={1}>{"{의사명} 교수"}</Text>
                     </Box>
                     <Box 
-                      flex={1} display={{base :'none', md:'flex'}} justifyContent={'flex-end'} alignItems={'center'}  cursor={'pointer'}
-                      onClick={() => fn_close_modal_doctor_detail()} 
+                      position={'absolute'}
+                      right={0}
+                      top={0}
+                      width="50px"
+                      height={'100%'}
+                      display={{base :'none', md:'flex'}} 
+                      justifyContent={'flex-end'} 
+                      alignItems={'center'}  
+                      onClick={() => fn_close_modal_doctor_detail()}  cursor={'pointer'}
                      >
-                      <Icon as={MdOutlineClose} width="30px" height="30px" color="white" />
+                      <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
                     </Box>
                   </Flex>
                 </ModalHeader>
-                <ModalBody >
+                <ModalBody padding="basePadding" margin="0">
                   <DoctorDetail
                     selected_doctor_id={selectedDoctor}
                   />

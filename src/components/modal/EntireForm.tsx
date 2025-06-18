@@ -42,8 +42,8 @@ function EntireModal(props: EntireModalProps) {
 
     return (
       <>
-        <Flex display={'flex'} flexDirection={'column'} minHeight={'calc( 100vh - 120px )'} padding={'0 10px'} mt={5} justifyContent={'space-between'}> 
-          <Box flex={1} display={'flex'} flexDirection={'column'} justifyContent={'flex-start'} minHeight={'50px'} width={'98%'}>
+        <Flex display={'flex'} flexDirection={'column'} minHeight={'calc( 100vh - 120px )'} justifyContent={'space-between'}> 
+          <Box flex={1} display={'flex'} flexDirection={'column'} justifyContent={'flex-start'} minHeight={'50px'} width={'100%'}>
             <Flex  justifyContent={'center'} minHeight={'50px'} width={'98%'} mt={5}>
               <Box flex={3} pr={'20px'}> 
                 <Text fontSize={'24px'} color={textColor2} fontWeight={'bold'}>
@@ -58,14 +58,16 @@ function EntireModal(props: EntireModalProps) {
                 />
               </Box>
             </Flex>
-            <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'100%'} mt={5}>
-              <Box display={'flex'} flexDirection={'row'} alignContent={'center'}  minHeight={'50px'} width={'100%'}>
+            <Box display={'flex'} flexDirection={'column'}  minHeight={'50px'} width={'100%'} mt={10}>
+              <Box display={'flex'} flexDirection={'row'}   minHeight={'50px'} width={'100%'}>
                 <Checkbox
                   colorScheme='blue'
                   isChecked={inputs.isAgree}
                   onChange={(e) => setInputs({...inputs, isAgree: e.target.checked})}
                 >
-                  리뷰에 기여하신 글과 댓글들은 삭제되지 않습니다. 삭제를 원하시는 내용이 있다면 탈퇴하기 전에 삭제 처리를 부탁드립니다.
+                  <Text color='#7F879B' fontSize={'13px'} lineHeight={'150%'}>
+                    리뷰에 기여하신 글과 댓글들은 삭제되지 않습니다. 삭제를 원하시는 내용이 있다면 탈퇴하기 전에 삭제 처리를 부탁드립니다.
+                  </Text>
                 </Checkbox>
               </Box>
             </Box>
@@ -76,7 +78,9 @@ function EntireModal(props: EntireModalProps) {
                   isChecked={inputs.isAgree2}
                   onChange={(e) => setInputs({...inputs, isAgree2: e.target.checked})}
                 >
-                  삭제된 정보는 다시 되살릴 수 없습니다. 또한 탈퇴 후 24시간 동안 재가입이 어렵습니다.
+                  <Text color='#7F879B' fontSize={'13px'} lineHeight={'150%'}>
+                    삭제된 정보는 다시 되살릴 수 없습니다. 또한 탈퇴 후 24시간 동안 재가입이 어렵습니다.
+                  </Text>
                 </Checkbox>
               </Box>
             </Box>
@@ -85,6 +89,7 @@ function EntireModal(props: EntireModalProps) {
           <Box position={'fixed'} bottom={0} left={0} padding={'10px'} width={'100%'} height={'100px'} display={'flex'} justifyContent={'center'} alignItems={'center'}>
             <Button 
               colorScheme='blue' 
+              //bg='#E9EDF3'
               variant='solid' 
               width={'95%'} 
               maxWidth={`${mConstants.modalMaxWidth-50}px`} 

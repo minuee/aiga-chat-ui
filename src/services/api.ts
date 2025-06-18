@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import * as mCookie from "@/utils/cookies";
 import mConstants from '@/utils/constants';
 import { decryptToken } from "@/utils/secureToken";
+import functions from '@/utils/functions';
 
 export type ApiResponse<T> = Promise<AxiosResponse<T>>;
 type State = 'true' | 'false';
@@ -10,7 +11,7 @@ export type ServiceResponse<T> = {
 } & T;
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:9999';
-axios.defaults.withCredentials = false;
+axios.defaults.withCredentials = true;
 
 axios.interceptors.request.use(
   function (config) {
@@ -24,11 +25,15 @@ axios.interceptors.request.use(
 
 axios.interceptors.request.use((config) => {
   try{
+    const refreshToken =  mCookie.getCookie('refresh_token');
+    console.log("apidata refreshToken",refreshToken)
     const accessTmpToken =  mCookie.getCookie(mConstants.apiTokenName);//'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidWlkX2ViZjE4YzE5LWE1N2UtNDlhMC1hY2JkLTMwZGQ2MzU4NDRhNSIsInNuc190eXBlIjoia2FrYW8iLCJzbnNfaWQiOiI0MjkxODg1MjIzIiwiaWF0IjoxNzUwMTE5MjE3LCJleHAiOjE3NTAyMDU2MTd9.3Qjc-inX5H79FMzTLI-uJMnb2o2w0D53EP6DUc9DP8c';
     console.log("apidata accessTmpToken",accessTmpToken)
-    const accessToken =  decryptToken(accessTmpToken)
-    console.log("apidata accessToken",accessToken)
-    config.headers['Authorization'] = `Bearer ${accessToken}` 
+    if ( !functions.isEmpty(accessTmpToken)) { 
+      const accessToken =  decryptToken(accessTmpToken)
+      console.log("apidata accessToken",accessToken)
+      config.headers['Authorization'] = `Bearer ${accessToken}` 
+    }
     return config
   }catch{
     return config

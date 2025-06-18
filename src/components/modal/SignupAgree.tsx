@@ -116,7 +116,7 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
               </Flex>
             )
           }
-          <Flex flexDirection={'column'} minHeight={'calc( 100vh - 120px )'}  justifyContent={'space-between'}> 
+          <Flex flexDirection={'column'} minHeight={'calc( 100vh - 120px )'}  justifyContent={'space-between'} width={'100%'} > 
             <Flex flexDirection={'column'} justifyContent={'center'} minHeight={'100%'} width={'100%'} mt={'50px'}>
               <Box display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'}> 
                 <Text fontSize={'32px'} color={textColor} fontWeight={'bold'}>

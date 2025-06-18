@@ -15,7 +15,7 @@ import functions from "@/utils/functions";
 import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
-import { DrawerHistoryStore,ModalSignupStoreStore } from '@/store/modalStore';
+import { DrawerHistoryStore,ModalSignupStoreStore,DoctorFromListStore } from '@/store/modalStore';
 import LoginModal  from '@/components/modal/SignUpScreen';
 import UserStateStore from '@/store/userStore';
 
@@ -77,6 +77,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
   let menuColor = useColorModeValue('gray.400', 'white');
   // // SIDEBAR
   //const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isFromDoctorDepth2 } = DoctorFromListStore(state => state);
   const { isOpenHistoryDrawer } = DrawerHistoryStore(state => state);
   const setOpenHistoryDrawer = DrawerHistoryStore((state) => state.setOpenHistoryDrawer);
   const { isOpenLoginModal } = ModalSignupStoreStore(state => state);
@@ -108,13 +109,39 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
     }, 200);
   }
 
+  
+
   const fn_close_modal_user_login = async() => {
-    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
-    setIsOpenSignupModal(false);
-    router.replace(`/${locale}/chat`);
-    setTimeout(() => {
-      mCookie.setCookie('currentPathname','')
-    }, 200);
+
+    const currentPathname = await mCookie.getCookie('currentPathname');
+    console.log("setClcikClose",currentPathname,mConstants.pathname_modal_21_2,isFromDoctorDepth2)
+    if ( currentPathname == mConstants.pathname_modal_21_2 ) { //의사 상세위에서 로그인화면 
+      const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+      if ( isFromDoctorDepth2 ) {//true이면 list > detail
+        router.replace(`/${locale}/chat#${mConstants.pathname_modal_2_2}`);
+        setTimeout(() => {
+          mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2_2}`)  
+          setIsOpenSignupModal(false);
+        }, 200);
+      }else{
+        router.replace(`/${locale}/chat#${mConstants.pathname_modal_2}`);
+        setTimeout(() => {
+          mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2}`)  
+          setIsOpenSignupModal(false);
+        }, 200);
+      }
+    }else{
+      const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+      setIsOpenSignupModal(false);
+      router.replace(`/${locale}/chat`);
+      setTimeout(() => {
+        mCookie.setCookie('currentPathname','')
+      }, 200);
+    }
+
+
+
+    
   }
 
   const onSendsignupButton = async() => {

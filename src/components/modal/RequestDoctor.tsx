@@ -71,7 +71,10 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
           title: 'AIGA',
           position: 'top-right',
           description: '등록중 에러가 발생하였습니다 잠시후 다시이용해주십시요',
-          status: 'info',
+          status: 'error',
+          containerStyle: {
+            color: '#ffffff',
+          },
           duration: 1500,
           isClosable: true,
         });
@@ -100,7 +103,7 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
           </Box>
         </Flex>
        
-        <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} padding={'0 10px'} mt={3}>
+        <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'}>
           {
             isReceiving && (
               <Flex position='absolute' left={0} top={0} width='100%' height='100%'  justifyContent={'center'}  backgroundColor={'#000000'} opacity={0.7} zIndex="100">

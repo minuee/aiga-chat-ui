@@ -94,7 +94,7 @@ export default function Index() {
           <Box
             display={'flex'}
             alignItems={'center'}
-            px={'20px'}
+            px='basePadding'
             width="100%"
             maxWidth={`${mConstants.desktopMinWidth}px`}
             overflow={'hidden'}

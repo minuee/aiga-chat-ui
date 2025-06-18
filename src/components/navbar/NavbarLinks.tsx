@@ -7,7 +7,7 @@ import {
 } from '@chakra-ui/react';
 import { SidebarResponsive } from '@/components/sidebar/Sidebar';
 import { IoMdMoon, IoMdSunny } from 'react-icons/io';
-import NoticerModal  from '@/components/modal/Notice';
+import NoticerModal  from '@/components/modal/NoticeList';
 import LoginModal  from '@/components/modal/LoginForm';
 import routes from '@/routes';
 import ProfileSetting from '@/components/modal/ProfileSetting';
@@ -103,6 +103,9 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
             position: 'top-right',
             description: 'You are already subscribed to the push notifications',
             status: 'info',
+            containerStyle: {
+              color: '#ffffff',
+            },
             duration: 5000,
             isClosable: true,
           });
@@ -220,9 +223,9 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
           >
             <ModalOverlay />
             <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
-              <ModalHeader>{"Profile Settings"}</ModalHeader>
+              <ModalHeader  padding="basePadding">{"Profile Settings"}</ModalHeader>
               <ModalCloseButton />
-              <ModalBody overflowY="auto" maxH="100vh">
+              <ModalBody overflowY="auto" maxH="100vh" padding="basePadding" margin="0">
                 <ProfileSetting
                   isOpen={isOpenSetupModal}
                   setClose={() => setIsOpenSetupModal(false)}

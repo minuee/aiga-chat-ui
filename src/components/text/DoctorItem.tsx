@@ -17,7 +17,7 @@ const DoctorList = ({ data, onSendDoctorButton }:DoctorListProps) => {
 
     return (
         <>
-            <Flex display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'100px'} mt="20px" padding="10px 20px">
+            <Flex display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'100px'} py="15px">
                 <Box flex={3} flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} pr='15px' onClick={() => onSendDoctorButton(data,1)} cursor={'pointer'}>
                     <Text fontSize={'15px'} color="#0AA464" fontWeight={'bold'}>병원명</Text>
                     <Text fontSize={'24px'} color="#000000" fontWeight={'bold'} lineHeight={"200%"}>

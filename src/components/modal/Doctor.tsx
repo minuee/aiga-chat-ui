@@ -96,8 +96,11 @@ function DoctorModal(props: DoctorModalProps) {
       toast({
         title: "조회중 오류가 발생하였습니다.",
         position: 'top-right',
-        status: 'info',
         isClosable: true,
+        status: 'error',
+        containerStyle: {
+          color: '#ffffff',
+        }
       });
       setTimeout(() => {
         setDoctorBasicData(null);
@@ -135,43 +138,38 @@ function DoctorModal(props: DoctorModalProps) {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenRequestModal(false);
     if ( isFromDoctorDepth2 ) {//true이면 list > detail
-      router.replace(`/${locale}/chat#${mConstants.pathname_modal_2}`);
-      setTimeout(() => {
-        mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2}`)  
-      }, 200);
-    }else{
       router.replace(`/${locale}/chat#${mConstants.pathname_modal_2_2}`);
       setTimeout(() => {
         mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2_2}`)  
+      }, 200);
+    }else{
+      router.replace(`/${locale}/chat#${mConstants.pathname_modal_2}`);
+      setTimeout(() => {
+        mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2}`)  
       }, 200);
     }
   }
 
   const onSendDoctorRequestButton = async( gubun = "") => {
-    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_4}`);
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    history.push(`${locale}#${mConstants.pathname_modal_4}`);
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_4}`)   
     setIsOpenRequestModal(true);
   }
 
-  const onHandleAlertConfirm = () => {
-    setOpenAlert(false);
-    onSendsignupButton()
-  }
-
-  const fn_close_modal_user_login = async() => {
+  const onHandleAlertConfirm = async( isBool : boolean) => {
+    if ( isBool ) {
+      setOpenAlert(false)
+      onSendDoctorReviewButton()
+      return;
+    }
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
-    setIsOpenSignupModal(false);
-    router.replace(`/${locale}/chat`);
-    setTimeout(() => {
-      mCookie.setCookie('currentPathname','')
-    }, 200);
-  }
-
-  const onSendsignupButton = async() => {
-    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_21}`);
-    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_21}`)
+    setOpenAlert(false);
+    history.push(`${locale}#${mConstants.pathname_modal_21_2}`);
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_21_2}`)
     setIsOpenSignupModal(true);
   }
+
 
   if ( isLoading ) {
     return (
@@ -185,7 +183,7 @@ function DoctorModal(props: DoctorModalProps) {
     return (
       <>
         <UsePreventRefresh />
-        <Flex display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'100px'} mt="20px">
+        <Flex display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'100px'}>
           <Box flex={3} flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} fontSize={'15px'} pr='15px'>
             <CustomBoldText fontSize={'15px'} color="#0AA464" >{doctorBasicData?.hospital}</CustomBoldText>
             <CustomBoldText fontSize={'24px'} color="#000000" lineHeight={"200%"}>
@@ -318,39 +316,40 @@ function DoctorModal(props: DoctorModalProps) {
             >
               <ModalOverlay />
               <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
-                {/* <ModalHeader bg={navbarBg}>
-                  <Flex flexDirection={'row'}>
-                    <Box flex={1} display={'flex'} alignItems={'center'} onClick={() => setIsOpenReview(false)} cursor={'pointer'}>
-                      <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
+                <ModalHeader bg={navbarBg} padding="basePadding">
+                  <Flex flexDirection={'row'} position={'relative'}>
+                    <Box 
+                      position={'absolute'}
+                      left={0}
+                      top={0}
+                      width="50px"
+                      height={'100%'}
+                      display={{base :'flex', md:'none'}} 
+                      alignItems={'center'}  
+                      onClick={() => fn_close_modal_doctor_review()} cursor={'pointer'}
+                    >
+                      <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                     </Box>
-                    <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'center'}>
-                      <Text color={'white'}>리뷰 작성</Text>
+                    <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
+                      <Text color={'white'} noOfLines={1}>리뷰 작성</Text>
                     </Box>
-                    <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'flex-end'}>
-                    
+                    <Box 
+                      position={'absolute'}
+                      right={0}
+                      top={0}
+                      width="50px"
+                      height={'100%'}
+                      display={{base :'none', md:'flex'}} 
+                      justifyContent={'flex-end'} 
+                      alignItems={'center'}  
+                      onClick={() => fn_close_modal_doctor_review()}  cursor={'pointer'}
+                    >
+                      <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
                     </Box>
                   </Flex>
-                </ModalHeader> */}
-                <ModalHeader bg={navbarBg}>
-                    <Flex flexDirection={'row'}>
-                      <Box flex={1} display={{base :'flex', md:'none'}} alignItems={'center'} onClick={() => fn_close_modal_doctor_review()} cursor={'pointer'} >
-                        <Icon as={MdArrowBack} width="20px" height="20px" color="white" />
-                      </Box>
-                      <Box flex={3} display={{base :'none', md:'flex'}} alignItems={'center'} >
-                        <Text color={'white'} noOfLines={1}>리뷰 작성</Text>
-                      </Box>
-                      <Box flex={3} display={{base :'flex', md:'none'}} alignItems={'center'} justifyContent={'flex-end'}>
-                        <Text color={'white'} noOfLines={1}>리뷰 작성</Text>
-                      </Box>
-                      <Box flex={1} display={{base :'none', md:'flex'}} justifyContent={'flex-end'} alignItems={'center'} 
-                        onClick={() => fn_close_modal_doctor_review()} cursor={'pointer'}
-                      >
-                        <Icon as={MdOutlineClose} width="30px" height="30px" color="white" />
-                      </Box>
-                    </Flex>
                 </ModalHeader>
                {/*  <ModalCloseButton /> */}
-                <ModalBody overflowY="auto" maxH="100vh">
+                <ModalBody overflowY="auto" maxH="100vh" padding="basePadding" margin="0">
                   <ReviewDetail
                     isOpen={isOpenReview}
                     setClose={() => fn_close_modal_doctor_review()}
@@ -377,9 +376,9 @@ function DoctorModal(props: DoctorModalProps) {
               >
                 <ModalOverlay />
                 <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
-                  <ModalHeader>{"의사정보 수정 요청"}</ModalHeader>
+                  <ModalHeader  padding="basePadding">{"의사정보 수정 요청"}</ModalHeader>
                   <ModalCloseButton />
-                  <ModalBody overflowY="auto" maxH="100vh">
+                  <ModalBody overflowY="auto" maxH="100vh" padding="basePadding" margin="0">
                     <RequestDoctor
                       isOpen={isOpenRequestModal}
                       setClose={() => fn_close_modal_doctor_request()}
@@ -402,20 +401,26 @@ function DoctorModal(props: DoctorModalProps) {
                   <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"120px"}>
                     <NextImage width="106" height="90" src={iconAlertWarning} alt={'doctor1'}/>
                   </Box>
-                  <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"50px"}>
+                  <Box width={"100%"}  display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} minHeight={"50px"}>
                     <Text fontSize={'18px'} color="#212127" fontWeight={'bold'}>리뷰를 작성하시려면 로그인이 필요합니다. 로그인 하시겠습니까?</Text>
+                    <Text fontSize={'13px'} color="#ff0000">
+                      {"check:보통 이동하지 않고 바로 로그인/회원가입을 해야되기 때문에 의사상세페이지위에 로그인 화면이 나옵니다.여기서 로그인을 하면 토큰등관리가 비회원 > 회원으로 전환되어 새대화로 진행을 해야되는데..논의가 필요한 상태 그이후 마무리하겠음 "}
+                      </Text>
                   </Box>
                 </Flex>
               }
               isOpen={isOpenAlert}
               onClose={() => setOpenAlert(false)}
-              onConfirm={() => onHandleAlertConfirm()}
+              onConfirm={() => onHandleAlertConfirm(false)}
               closeText='취소'
               confirmText='확인'
               footerContent={
                 <Flex flexDirection={'row'} justifyContent={'center'} alignItems={'center'} py="20px" width={"100%"}>
-                  <Box width={"78px"} mr="5px" display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#2B8FFF" borderRadius={'6px'} onClick={() => onHandleAlertConfirm()} cursor={'pointer'}>
-                    <Text fontSize={'16px'} color="#ffffff" fontWeight={'bold'}>확인</Text>
+                  <Box width={"98px"} mr="5px" display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#2B8FFF" borderRadius={'6px'} onClick={() => onHandleAlertConfirm(true)} cursor={'pointer'}>
+                    <Text fontSize={'16px'} color="#ffffff" fontWeight={'bold'}>이동[임시용]</Text>
+                  </Box>
+                  <Box width={"98px"} mr="5px" display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#2B8FFF" borderRadius={'6px'} onClick={() => onHandleAlertConfirm(false)} cursor={'pointer'}>
+                    <Text fontSize={'16px'} color="#ffffff" fontWeight={'bold'}>확인[비회원]</Text>
                   </Box>
                   <Box width={"78px"} ml="5px" display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#DFE3EA" borderRadius={'6px'} onClick={() => setOpenAlert(false)} cursor={'pointer'}>
                     <Text fontSize={'16px'} color="#000000" fontWeight={'bold'}>취소</Text>
