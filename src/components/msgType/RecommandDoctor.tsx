@@ -1,16 +1,19 @@
 import { useRef, useEffect, useState } from "react";
 import NextImage from 'next/legacy/image';
-import { Box,Flex,Stack,useColorModeValue,Text,Icon, Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody } from '@chakra-ui/react';
+import Image from 'next/image';
+import { Box,Flex,Stack,useColorModeValue,Text,Icon, Modal,ModalOverlay,ModalContent,ModalHeader,SimpleGrid,ModalBody } from '@chakra-ui/react';
 import mConstants from "@/utils/constants";
 import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
-
+import functions from "@/utils/functions";
 import { ModalDoctorListStore } from '@/store/modalStore';
 import DoctorList from "@/components/modal/DoctorList";
 import { sampleDoctor1, sampleDoctor2,sampleDoctor3 } from "@/components/icons/IconImage";
 import { MdArrowBack,MdOutlineClose } from 'react-icons/md';
-import functions from "@/utils/functions";
+
+
+import DoctorAvatar from "@/assets/images/doctor_default_white.png";
 type RecommandDoctorProps = {
     data : any;
     onSendButton: (data: any,id:number) => void; 
@@ -58,12 +61,17 @@ const RecommandDoctor = ({  onSendButton , data }: RecommandDoctorProps) => {
   }, []);
 
   useEffect(() => {
+    console.log("data?.answer?.doctors",data?.answer?.doctors)
     if ( !functions.isEmpty( data?.answer?.doctors )) {
       setDoctorList(data?.answer?.doctors)
     }
   }, [data]);
 
-  const onSendDoctorListButton = async( gubun = "") => {
+  useEffect(() => {
+    console.log("data?.answer?.doctors",doctorList?.length)
+  }, [doctorList]);
+
+  const onSendDoctorListButton = async( ) => {
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_1}`);
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_1}`)   
     setOpenDoctorListModal(true);
@@ -83,34 +91,74 @@ const RecommandDoctor = ({  onSendButton , data }: RecommandDoctorProps) => {
       minWidth={'100%'} width={'auto'} minHeight={"50px"} maxHeight={"300px"} position={'relative'}
       sx={{
         '&::after': {
-          content: showGradient ? '""' : 'none', position: 'absolute', top: 0,right: 0,width: '200px',height: '100%',maxHeight : "250px",
+          content: ( showGradient && doctorList?.length > 4 ) ? '""' : 'none', position: 'absolute', top: 0,right: 0,width: '200px',height: '100%',maxHeight : "250px",
           background:  isDark ? 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0  , 1) 100%)' : 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)',
           pointerEvents: 'none', // 클릭 이벤트 방지
         },
       }}
     >
-      <Flex
-        alignItems={"center"} mt="20px" padding={'10px'} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'}
-        minHeight={"50px"} maxHeight={"250px"} overflowX={'auto'} ref={flexRef} 
-      >
-        <Box mr={5} boxSize={200}  flexShrink="0" onClick={() => onSendButton("data",1)} cursor={'pointer'}>
-          <NextImage width="200" height="200" src={sampleDoctor1} alt={'doctor1'} />
-        </Box>
-        <Box mr={5} boxSize={200}  flexShrink="0" onClick={() => onSendButton("data",2)} cursor={'pointer'}>
-          <NextImage width="200" height="200" src={sampleDoctor2} alt={'doctor1'} />
-        </Box>
-        <Box mr={5} boxSize={200} flexShrink="0" onClick={() => onSendButton("data",1)} cursor={'pointer'}>
-          <NextImage width="200" height="200" src={sampleDoctor2} alt={'doctor1'} />
-        </Box>
-        <Box mr={5} boxSize={200} flexShrink="0" onClick={() => onSendButton('data',2)} cursor={'pointer'}>
-          <NextImage width="200" height="200" src={sampleDoctor2} alt={'doctor1'} />
-        </Box>
-        <Box mr={5} boxSize={200} flexShrink="0" onClick={() => onSendButton('data', 1)} cursor={'pointer'}>
-          <NextImage width="200" height="200" src={sampleDoctor2} alt={'doctor1'}/>
-        </Box>
-        <Box  boxSize={200} flexShrink="0" onClick={() => onSendButton('data', 2)} cursor={'pointer'}>
-          <NextImage width="200" height="200" src={sampleDoctor3} alt={'doctor1'} />
-        </Box>
+      <Flex  alignItems={"center"} mt="20px" justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"50px"} maxHeight={"250px"} overflowX={'auto'} ref={flexRef} >
+        {
+          doctorList.map((element: any, index: number) => (
+            <Flex 
+              key={index} 
+              flexDirection="column" 
+              bg="#F4F6FA" 
+              width={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
+              maxWidth='300px' 
+              px="10px"
+              borderRadius="8px"
+              mr='5px'
+              onClick={() => onSendButton(element,element?.doctor_id)} cursor={'pointer'}
+            >
+              <Box display={'flex'} justifyContent={'center'} alignItems={'center'} pt="20px" pb="16px">
+                <NextImage 
+                  src={DoctorAvatar}
+                  alt="프로필이미지"
+                  style={{ borderRadius: '50%', objectFit: 'cover' }} 
+                  width={60} 
+                  height={60}
+                />
+              </Box>
+              <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'26px'} pb="16px">
+                <Text fontSize={'17px'} fontWeight={'700'} color='#17191D' lineHeight={"150%"} noOfLines={1}>
+                  {element?.name}
+                </Text>
+              </Box>
+              <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'26px'} pb="16px">
+                <Text fontSize={'12px'} fontWeight={'700'} color='#0AA464' lineHeight={"150%"} noOfLines={1}>
+                  {element?.hospital}
+                </Text>
+              </Box>
+              <Box display={'flex'} justifyContent={'center'} alignItems={'center'} pb="32px" height={'26px'}>
+                <Text fontSize={'12px'} fontWeight={'700'} color='#7F879B' lineHeight={"150%"} letterSpacing={'-5%'} noOfLines={1}>
+                  {element?.deptname}
+                </Text>
+              </Box>
+              
+            </Flex>
+          ))
+        }
+
+        {/* { 
+          doctorList.map((element:any,index:number) => {
+            return (
+              <Flex flexDirection={'column'} key={index}>
+                <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
+                  
+                  <NextImage 
+                      src={DoctorAvatar}
+                      alt="프로필이미지"
+                      style={{ borderRadius: '50%', objectFit: 'cover' }} 
+                      width={60} 
+                      height={60}
+                    />
+                </Box>
+              </Flex>
+            )
+          })
+        } */}
+        
       </Flex>
       <Flex pr={2} justifyContent={'flex-end'}>
         <Box 
@@ -148,7 +196,7 @@ const RecommandDoctor = ({  onSendButton , data }: RecommandDoctorProps) => {
                     <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                   </Box>
                   <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                    <Text color={'white'} noOfLines={1}>{"신경쇠약[질환명]"}</Text>
+                    <Text color={'white'} noOfLines={1}>{data?.answer?.disease}</Text>
                   </Box>
                   <Box 
                     position={'absolute'}

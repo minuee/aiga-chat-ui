@@ -98,7 +98,7 @@ function LoginModal(props: LoginModalProps) {
       const screenHeight = isMobileOnly ? window.screen.availHeight : 600;
       const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:9999';
       const popup = window.open(
-        `${baseURL}/auth/${str}`, // Next.js에서 프록시된 백엔드 URL
+        `${baseURL}auth/${str}`, // Next.js에서 프록시된 백엔드 URL
         'SocialLogin',
         `width=${screenWidth},height=${screenHeight}`
         //`width=${screenWidth},height=${screenHeight},left=0,top=0`

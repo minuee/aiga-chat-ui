@@ -25,6 +25,10 @@ const functions = {
     return outputArray;
   },
 
+  stripHtmlTags(str:any) {
+    if (typeof str !== 'string') return '';
+    return str.replace(/<[^>]*>/g, '');
+  },
   //날짜->문자
 
   dateToDate(val:any) {

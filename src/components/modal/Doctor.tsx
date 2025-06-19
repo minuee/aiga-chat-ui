@@ -9,8 +9,7 @@ import {
 
 import NextImage from 'next/legacy/image';
 import Alert from '@/components/alert/CustomAlert';
-import * as DoctorService from "@/services/doctor/index";
-import * as history from '@/utils/history';
+import UserStateStore from '@/store/userStore';import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
 import Image from 'next/image';
@@ -32,32 +31,51 @@ import CustomText, { CustomBoldText } from "@/components/text/CustomText";
 import { ModalDoctorReviewStore,ModalDoctorRequestStore,DoctorFromListStore,ModalSignupStoreStore } from '@/store/modalStore';
 
 export interface DoctorModalProps extends PropsWithChildren {
-  selected_doctor_id : any;
+  selected_doctor : any;
 }
 
 const limintView = 3;
 function DoctorModal(props: DoctorModalProps) {
 
-  const { selected_doctor_id } = props;
+  const { selected_doctor } = props;
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
   const toast = useToast();
   const [isLoading, setIsLoading] = React.useState(true);
-  const [selectedDoctorId, setSelectedDoctorId] = React.useState(selected_doctor_id);
+  
   const [doctorBasicData, setDoctorBasicData] = React.useState<any>({
-    department : '',
-    description : '',
-    doctor_id : 0,
-    hospital : '',
-    name : '',
-    position : '',
-    profile_img : '',
-    contact : ''
+    doctor_id: 0,
+    hospital: "",
+    address: "",
+    lat: 0,
+    lon: 0,
+    name: "",
+    deptname: "",
+    specialties: "",
+    url: "",
+    education: "",
+    career: "",
+    paper: [],
+    photo: "",
+    doctor_score: {
+        paper_score: 0,
+        patient_score: 0,
+        public_score: 0,
+        peer_score: 0
+    },
+    ai_score: "",
+    review: []
   });
+  const [selectedDoctorId, setSelectedDoctorId] = React.useState(selected_doctor);
+  const [educationList, setEducationList] = React.useState([]);
+  const [careerList, setCareerList] = React.useState([]);
+  const [paperList, setPaperList] = React.useState([]);
   const [isOpenAlert, setOpenAlert] = React.useState(false);  
+  
   const [reviewData, setReviewData] = React.useState<any>(null);
   const formBtnRef = React.useRef<HTMLButtonElement>(null);
+  const { ...userBaseInfo } = UserStateStore(state => state);
   const { isOpenReview } = ModalDoctorReviewStore(state => state);
   const setIsOpenReview = ModalDoctorReviewStore((state) => state.setModalState);
   const { isOpenRequestModal } = ModalDoctorRequestStore(state => state);
@@ -74,15 +92,32 @@ function DoctorModal(props: DoctorModalProps) {
 
   
   React.useEffect(() => {
-    getDoctorBasicData();
-  }, [selected_doctor_id]);
+    setDoctorBasicData({
+      ...doctorBasicData,
+      ...selected_doctor
+    });
+    setSelectedDoctorId(selected_doctor?.doctor_id);
+    if ( !functions.isEmpty(selected_doctor?.education)) {
+      setEducationList(JSON.parse(selected_doctor?.education))
+    }
+    if ( !functions.isEmpty(selected_doctor?.career)) {
+      setCareerList(JSON.parse(selected_doctor?.career))
+    }
+    if ( !functions.isEmpty(selected_doctor?.paper)) {
+      setPaperList(selected_doctor?.paper)
+    }
+  
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 60);
+  }, [selected_doctor]);
 
   const onHandleRegistReview = () => {
     console.log("onHandleRegistReview")
     setSelectedDoctorId(null);
     setTimeout(() => {
       fn_close_modal_doctor_review();
-      setSelectedDoctorId(selected_doctor_id);
+      setSelectedDoctorId(selected_doctor);
     }, 60);
    
   }
@@ -91,7 +126,7 @@ function DoctorModal(props: DoctorModalProps) {
     fn_close_modal_doctor_request();
   }
 
-  const getDoctorBasicData = async() => {
+  /* const getDoctorBasicData = async() => {
     const res:any = await DoctorService.getDoctorBasicData(1);
     console.log("apidata getDoctorBasicData",res)
     if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
@@ -114,7 +149,7 @@ function DoctorModal(props: DoctorModalProps) {
       }, 1000);
     }
   }
-
+ */
 
   const fn_close_modal_doctor_review = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
@@ -164,13 +199,12 @@ function DoctorModal(props: DoctorModalProps) {
   }
 
   const onHandleAlertConfirm = async( isBool : boolean) => {
-    if ( isBool ) {
+    if ( userBaseInfo.isGuest &&  functions.isEmpty(userBaseInfo?.userId) ) {
       setOpenAlert(false)
       onSendDoctorReviewButton()
       return;
     }
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
-    setOpenAlert(false);
     history.push(`${locale}#${mConstants.pathname_modal_21_2}`);
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_21_2}`)
     setIsOpenSignupModal(true);
@@ -193,24 +227,21 @@ function DoctorModal(props: DoctorModalProps) {
           <Box flex={3} flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} fontSize={'15px'} pr='15px'>
             <CustomBoldText fontSize={'15px'} color="#0AA464" >{doctorBasicData?.hospital}</CustomBoldText>
             <CustomBoldText fontSize={'24px'} color="#000000" lineHeight={"200%"}>
-              {doctorBasicData?.name} {doctorBasicData?.position}
+              {!functions.isEmpty(doctorBasicData?.name) ? doctorBasicData?.name : ""} 교수
             </CustomBoldText>
             <Flex mt="2" flexShrink={1} flexWrap={'wrap'}>
-              <Box display={'flex'} padding="5px" bg="#DFF5ED" borderRadius={"4px"} gap="8px" mr="1" mt="1">
-                <CustomText fontSize={'13px'} color="#5C5E69">{doctorBasicData?.department}</CustomText>
+              <Box display={'flex'} padding="2px 4px" bg="#DFF5ED" borderRadius={"4px"} mr="1" mt="1">
+                <CustomText fontSize={'13px'} color="#5C5E69">{doctorBasicData?.deptname || ""}</CustomText>
               </Box>
-              <Box display={'flex'} padding="5px" bg="#EFF2F7" borderRadius={"4px"} gap="8px" mr="1" mt="1">
-                <CustomText fontSize={'13px'} color="#5C5E69">진료분야 1</CustomText>
-              </Box>
-              <Box display={'flex'} padding="5px" bg="#EFF2F7" borderRadius={"4px"} gap="8px" mr="1" mt="1">
-                <CustomText fontSize={'13px'} color="#5C5E69">진료분야 2</CustomText>
-              </Box>
-              <Box display={'flex'} padding="5px" bg="#EFF2F7" borderRadius={"4px"} gap="8px" mr="1" mt="1">
-                <CustomText fontSize={'13px'} color="#5C5E69">진료분야 3</CustomText>
-              </Box>
-              <Box display={'flex'} padding="5px" bg="#EFF2F7" borderRadius={"4px"} gap="8px" mr="1" mt="1">
-                <CustomText fontSize={'13px'} color="#5C5E69">진료분야 4</CustomText>
-              </Box>
+              {
+                !functions.isEmpty(doctorBasicData.specialties) && (
+                  doctorBasicData.specialties.split(",").map((subItem:any, subIndex:number) => (
+                    <Box display={'flex'} padding="2px 4px" bg="#EFF2F7" borderRadius={"4px"} mr="1" mt="1" key={subIndex}>
+                      <CustomText fontSize={'13px'} color="#5C5E69">{subItem.toString()}</CustomText>
+                    </Box>
+                    )
+                ))
+              }
             </Flex>
           </Box>
           <Box display={'flex'} flex={1} justifyContent={'center'} alignItems={'center'} pl='15px' minWidth={'90px'}>
@@ -251,24 +282,27 @@ function DoctorModal(props: DoctorModalProps) {
           </Box>
           <Divider orientation='horizontal' my={5} width="100%" />
           <ListItem
-            title="경력(4)"
-            content={["경력경력경력경력경력____1", "경력경력경력경력경력____2", "경력경력경력경력경력____3", "경력경력경력경력경력____4"]}
+            title={`경력(${careerList?.length})`}
+            content={careerList}
             limintView={limintView}
             marginTop={0}
+            isType="career"
           />
           <Divider orientation='horizontal' my={2} width="100%" />
           <ListItem
-            title="학력(2)"
-            content={["학력학력학력학력학력학력____1", "학력학력학력학력학력학력____2"]}
+            title={`학력(${educationList?.length})`}
+            content={educationList}
             limintView={limintView}
             marginTop={2}
+            isType="education"
           />
           <Divider orientation='horizontal' my={2} width="100%" />
           <ListItem
-            title="논문(8)"
-            content={["논문논문논문논문논문논문____1", "논문논문논문논문논문논문____2", "논문논문논문논문논문논문____3", "논문논문논문논문논문____4", "논문____5", "논문____6", "논문____7", "논문____8"]}
+            title={`논문(${paperList?.length})`}
+            content={paperList}
             limintView={limintView}
             marginTop={2}
+            isType="paper"
           />
           <Divider orientation='horizontal' my={4} width="100%" />
           <Flex display={'flex'} justifyContent={'flex-end'}  width="100%">
@@ -289,7 +323,7 @@ function DoctorModal(props: DoctorModalProps) {
         </Flex>
         
         <DoctorReviews 
-          data={selectedDoctorId}
+          doctorID={selectedDoctorId}
         />
         <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}  width={'100%'} mt={5}>
           <Button 
@@ -298,8 +332,7 @@ function DoctorModal(props: DoctorModalProps) {
             height={'56px'}
             width={'100%'} 
             borderRadius={'10px'}
-            //onClick={() => onSendDoctorReviewButton('')}
-            onClick={()=>setOpenAlert(true)}
+            onClick={() => onSendDoctorReviewButton('')}
             id="button_review"
           >
             리뷰쓰기
@@ -361,6 +394,7 @@ function DoctorModal(props: DoctorModalProps) {
                     setClose={() => fn_close_modal_doctor_review()}
                     onHandleRegistReview={() => onHandleRegistReview()}
                     reviewData={reviewData}
+                    selected_doctor={doctorBasicData}
                   />
                 </ModalBody>
               </ModalContent>
@@ -389,7 +423,7 @@ function DoctorModal(props: DoctorModalProps) {
                       isOpen={isOpenRequestModal}
                       setClose={() => fn_close_modal_doctor_request()}
                       onHandleDoctorRequestRegist={(data:any) => onHandleRequestDoctor(data)}
-                      doctor_id={doctorBasicData?.doctor_id}
+                      selected_doctor={doctorBasicData}
                     />
                   </ModalBody>
                 </ModalContent>
@@ -409,9 +443,6 @@ function DoctorModal(props: DoctorModalProps) {
                   </Box>
                   <Box width={"100%"}  display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} minHeight={"50px"}>
                     <Text fontSize={'18px'} color="#212127" fontWeight={'bold'}>리뷰를 작성하시려면 로그인이 필요합니다. 로그인 하시겠습니까?</Text>
-                    <Text fontSize={'13px'} color="#ff0000">
-                      {"check:보통 이동하지 않고 바로 로그인/회원가입을 해야되기 때문에 의사상세페이지위에 로그인 화면이 나옵니다.여기서 로그인을 하면 토큰등관리가 비회원 > 회원으로 전환되어 새대화로 진행을 해야되는데..논의가 필요한 상태 그이후 마무리하겠음 "}
-                      </Text>
                   </Box>
                 </Flex>
               }
@@ -422,11 +453,8 @@ function DoctorModal(props: DoctorModalProps) {
               confirmText='확인'
               footerContent={
                 <Flex flexDirection={'row'} justifyContent={'center'} alignItems={'center'} py="20px" width={"100%"}>
-                  <Box width={"98px"} mr="5px" display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#2B8FFF" borderRadius={'6px'} onClick={() => onHandleAlertConfirm(true)} cursor={'pointer'}>
-                    <Text fontSize={'16px'} color="#ffffff" fontWeight={'bold'}>이동[임시용]</Text>
-                  </Box>
                   <Box width={"98px"} mr="5px" display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#2B8FFF" borderRadius={'6px'} onClick={() => onHandleAlertConfirm(false)} cursor={'pointer'}>
-                    <Text fontSize={'16px'} color="#ffffff" fontWeight={'bold'}>확인[비회원]</Text>
+                    <Text fontSize={'16px'} color="#ffffff" fontWeight={'bold'}>확인</Text>
                   </Box>
                   <Box width={"78px"} ml="5px" display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#DFE3EA" borderRadius={'6px'} onClick={() => setOpenAlert(false)} cursor={'pointer'}>
                     <Text fontSize={'16px'} color="#000000" fontWeight={'bold'}>취소</Text>

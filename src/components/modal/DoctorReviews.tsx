@@ -26,12 +26,12 @@ import CustomText, { CustomBoldText } from "@/components/text/CustomText";
 import { ModalDoctorReviewStore,ModalDoctorRequestStore,DoctorFromListStore } from '@/store/modalStore';
 
 export interface DoctorModalProps extends PropsWithChildren {
-  data : any;
+  doctorID : any;
 }
 
 function DoctorReview( props: DoctorModalProps ) {
 
-  const { data } = props;
+  const { doctorID } = props;
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
@@ -47,11 +47,11 @@ function DoctorReview( props: DoctorModalProps ) {
 
 
   React.useEffect(() => {
-    getDoctorReviewListData();
-  }, [data]);
+    getDoctorReviewListData(doctorID);
+  }, [doctorID]);
  
-  const getDoctorReviewListData = async() => {
-    const res:any = await DoctorService.getReviewListData(1);
+  const getDoctorReviewListData = async(doctorID:any) => {
+    const res:any = await DoctorService.getReviewListData(doctorID);
     console.log("onHandleRegistReview res",res)
     if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
       const rData = res?.data?.review;
@@ -90,7 +90,7 @@ function DoctorReview( props: DoctorModalProps ) {
         isClosable: true,
       });
       setTimeout(() => {
-        getDoctorReviewListData()
+        getDoctorReviewListData(doctorID)
       }, 500);
     }else{
       toast({

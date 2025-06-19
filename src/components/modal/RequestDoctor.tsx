@@ -12,17 +12,16 @@ import * as DoctorService from "@/services/doctor/index";
 
 import { loadingImage,iconAlertModify } from "@/components/icons/IconImage"
 
-
 export interface DoctorRequestModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
   onHandleDoctorRequestRegist : (data:any) => void;
-  doctor_id : any;
+  selected_doctor : any;
 }
 
 function DoctorRequestModal(props: DoctorRequestModalProps) {
   
-  const { isOpen, setClose, onHandleDoctorRequestRegist, doctor_id } = props;
+  const { isOpen, setClose, onHandleDoctorRequestRegist, selected_doctor } = props;
   const [isLoading, setIsLoading] = React.useState(true);  
   const [isReceiving, setReceiving] = React.useState(false);
   const [isOpenAlert, setOpenAlert] = React.useState(false);  
@@ -42,10 +41,10 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
       setIsLoading(false);
     }, 1000);
 
-    if( !functions.isEmpty(doctor_id) ){
+    if( !functions.isEmpty(selected_doctor?.doctor_id) ){
       setInputs({
         ...inputs,
-        doctor_id: doctor_id
+        doctor_id: selected_doctor?.doctor_id
       });
     }
   }, [isOpen]);
@@ -58,9 +57,8 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
   const onSendDoctorRequestRegist = async(data:any) => {
     try{
       setReceiving(true)
-      const title = `홍길동 의사의 정보수정요청_${format(Date.now(), 'yyyy-MM-dd')}`
+      const title = `${selected_doctor?.name} 의사의 정보수정요청_${format(Date.now(), 'yyyy-MM-dd')}`
       const res:any = await DoctorService.registModifyDoctorInfo(inputs.doctor_id,title,inputs?.content);
-      console.log('apidata onSendDoctorRequestRegist',res)
       if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
         setTimeout(() => {
           setOpenAlert(true)
@@ -79,11 +77,9 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
           isClosable: true,
         });
       }
-      
     }catch(e:any){
       console.log("error of getNewSessionID",e)
     }
-
   } 
 
   if ( isLoading ) {

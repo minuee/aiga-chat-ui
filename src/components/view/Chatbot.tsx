@@ -19,6 +19,7 @@ import SelectName  from '@/components/msgType/SelectName';
 import ForceStop  from '@/components/msgType/ForceStop';
 import ChatMeMessage from '@/components/msgType/ChatMeMessage';
 import ChatWrongMessage from '@/components/msgType/ChatWrongMessage';
+import GeneralMessage from "@/components/msgType/GeneralMessage";
 import Welcome  from '@/components/msgType/Welcome';
 import { ChatDisable,ChatWarningInfo }  from '@/components/msgType/ChatOptionView';
 import MotionWelcome,{MotionWelcomeImage}  from '@/components/msgType/MotionWelcome';
@@ -123,31 +124,50 @@ export default function ChatBot() {
     return () => setChatSessionId('');
   }, []); */
 
+  const firstForceStep = () => {
+    setChatSessionId('')
+    setIsOpenReview(false)
+    setIsOpenDoctorDetailModal(false);
+    setOpenHistoryDrawer(false);
+    setIsOpenRequestModal(false);
+    setOpenDoctorListModal(false);
+    setIsOpenSetupModal(false);
+    setIsOpenNoticeListModal(false);
+    setIsOpenDoctorDetailModal(false);
+    setIsOpenMypageRequestModal(false);
+    setIsOpenEntireModal(false);
+    setIsOpenPolicyModal(false);
+    setIsOpenYakwanModal(false);
+    setIsOpenSignupModal(false);
+    setIsOpenSignupAgreeModal(false);
+    setOldHistoryData(null)
+  }
+
   useEffect(() => {
     console.log("chatSessionId Top",chatSessionId)
     if (!alreadyInitialized.current) {
       console.log('🔥 최초 1회만 실행');
-      setChatSessionId('')
-      setIsOpenReview(false)
-      setIsOpenDoctorDetailModal(false);
-      setOpenHistoryDrawer(false);
-      setIsOpenRequestModal(false);
-      setOpenDoctorListModal(false);
-      setIsOpenSetupModal(false);
-      setIsOpenNoticeListModal(false);
-      setIsOpenDoctorDetailModal(false);
-      setIsOpenMypageRequestModal(false);
-      setIsOpenEntireModal(false);
-      setIsOpenPolicyModal(false);
-      setIsOpenYakwanModal(false);
-      setIsOpenSignupModal(false);
-      setIsOpenSignupAgreeModal(false);
-      setOldHistoryData(null)
+      firstForceStep();
       //getNewSessionID(); // ✅ 여기서만 실행됨
       alreadyInitialized.current = true;
       
       setTimeout(() => {
-        setIsLoading(false)
+        setIsLoading(false);
+        const msgLen = outputCode?.length;
+        const sampleMsg1 = mConstants.sample_msg_2;
+        setOutputCode((prevCode: any[]) => {
+          const newArray = [...prevCode];
+          const lastIndex = msgLen;
+          newArray[lastIndex] = {
+            ismode : 'server',
+            id: sampleMsg1?.session_id,
+            user_question : sampleMsg1?.question,
+            answer : sampleMsg1?.answer,
+            msg: sampleMsg1?.chat_type,
+            used_token : sampleMsg1?.used_token
+          };
+          return newArray;
+        })
       }, 300);
     }
   }, []);
@@ -432,6 +452,7 @@ export default function ChatBot() {
     console.log("chatbot.tsx ",isNewChat,outputCode.length)
     if ( isNewChat && outputCode.length > 0 ) {
       // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
+      
       setChatSessionId('')
       setOutputCode([]);
       setChatDisabled({
@@ -440,6 +461,7 @@ export default function ChatBot() {
       })
       setCurrentPathname('')
       mCookie.setCookie('currentPathname','')
+      firstForceStep();
       setTimeout(() => {
         setNewChatOpen(false);
       }, 1000);
@@ -703,11 +725,11 @@ export default function ChatBot() {
   };
 
   const onSendButton = async( str : string) => {
-    if ( !isReceiving) await handleTranslate_origin(str);
+    if ( !isReceiving) await handleTranslate(str);
   }
 
   const onSendWelcomeButton = async( str : string) => {
-    if ( !isReceiving ) await handleTranslate_origin(str);
+    if ( !isReceiving ) await handleTranslate(str);
   }
 
   const onSendDoctorButton = async( data : any,isType : number) => {
@@ -719,11 +741,11 @@ export default function ChatBot() {
   }
 
   const onSendNameButton = async( str : string) => {
-    if ( !isReceiving ) await handleTranslate_origin(str);
+    if ( !isReceiving ) await handleTranslate(str);
   }
 
   const onSendTypeButton = async( typeString : string ) => {
-    if ( !isReceiving ) await handleTranslate_origin(typeString);
+    if ( !isReceiving ) await handleTranslate(typeString);
   }
   
   if (isLoading) {
@@ -787,6 +809,22 @@ export default function ChatBot() {
                         data={element}
                         onSendButton={onSendDoctorButton}
                       />
+                    </Box>
+                  )
+                }else if ( element.msg === "recommand_hospital" ) {
+                  return (
+                    <Box key={index}>
+                      <Flex w="100%" key={index}>
+                        <GeneralMessage output={element.answer} />
+                      </Flex>
+                    </Box>
+                  )
+                }else if ( element.msg === "general" ) {
+                  return (
+                    <Box key={index}>
+                      <Flex w="100%" key={index}>
+                        <GeneralMessage output={element.answer.replaceAll('\n','<br />')} />
+                      </Flex>
                     </Box>
                   )
                 }else {
@@ -929,7 +967,7 @@ export default function ChatBot() {
                   zIndex={444}
                   onClick={() => { 
                     if ( !isReceiving ) {
-                      handleTranslate_origin(inputCode);
+                      handleTranslate(inputCode);
                     }else {
                       toast({
                         title: 'AIGA',
@@ -982,7 +1020,7 @@ export default function ChatBot() {
                       <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                     </Box>
                     <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                      <Text color={'white'} noOfLines={1}>{"{의사명} 교수"}</Text>
+                      <Text color={'white'} noOfLines={1}>{selectedDoctor?.name} 의사</Text>
                     </Box>
                     <Box 
                       position={'absolute'}
@@ -1001,7 +1039,7 @@ export default function ChatBot() {
                 </ModalHeader>
                 <ModalBody padding="basePadding" margin="0">
                   <DoctorDetail
-                    selected_doctor_id={selectedDoctor}
+                    selected_doctor={selectedDoctor}
                   />
                 </ModalBody>
               </ModalContent>

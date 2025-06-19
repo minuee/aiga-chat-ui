@@ -23,10 +23,11 @@ export interface ReviewModalProps extends PropsWithChildren {
   setClose : () => void;
   onHandleRegistReview : () => void;
   reviewData : any;
+  selected_doctor : any;
 }
 
 function ReviewModal(props: ReviewModalProps) {
-  const { isOpen, setClose, onHandleRegistReview, reviewData } = props;
+  const { isOpen, setClose, onHandleRegistReview, reviewData,selected_doctor } = props;
   const toast = useToast();
   const [isLoading, setIsLoading] = React.useState(true);
   const [isReceiving, setReceiving] = React.useState(false);
@@ -35,7 +36,7 @@ function ReviewModal(props: ReviewModalProps) {
   const textColor2 = useColorModeValue('black', 'white');
   const buttonBgColor = useColorModeValue('#2b8fff', 'white');
   const [inputs, setInputs] = React.useState<any>({
-    doctor_id: 1,
+    doctor_id: null,
     content: null,
     kindness_score : 0,
     satisfaction_score : 0,
@@ -57,9 +58,13 @@ function ReviewModal(props: ReviewModalProps) {
         recommand_score: reviewData?.recommand_score,
       }); */
     }else{
+      setInputs({
+        ...inputs,
+        doctor_id : selected_doctor?.doctor_id
+      })
       setTimeout(() => {
         setIsLoading(false);
-      }, 1000);
+      }, 500);
     }
   }, [isOpen]);
 

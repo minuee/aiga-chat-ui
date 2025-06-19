@@ -11,6 +11,14 @@ body {
   -ms-text-size-adjust : none;  /* IE */
   -moz-text-size-adjust : none;  /* 파이어폭스 */
   -o-text-size-adjust : none;  /* 오페라 구버전 */
+  -ms-overflow-style: none;  /* IE, 구버전 Edge */
+  scrollbar-width: none;     /* Firefox */
+  overflow: auto;
+}
+
+
+body::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari, 최신 Edge */
 }
 
 option {

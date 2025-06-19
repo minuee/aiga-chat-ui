@@ -20,26 +20,23 @@ const DoctorList = ({ data, onSendDoctorButton }:DoctorListProps) => {
         <>
             <Flex display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'100px'} py="15px">
                 <Box flex={3} flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} pr='15px' onClick={() => onSendDoctorButton(data,1)} cursor={'pointer'}>
-                    <Text fontSize={'15px'} color="#0AA464" fontWeight={'bold'}>병원명</Text>
+                    <Text fontSize={'15px'} color="#0AA464" fontWeight={'bold'}>{data?.hospital || ""}</Text>
                     <Text fontSize={'24px'} color="#000000" fontWeight={'bold'} lineHeight={"200%"}>
-                    의사명 교수
+                        {!functions.isEmpty(data?.name) ? data?.name : ""} 교수
                     </Text>
                     <Flex mt="2" flexShrink={1} flexWrap={'wrap'}>
-                        <Box display={'flex'} padding="5px" bg="#DFF5ED" borderRadius={"4px"} gap="8px" mr="1" mt="1">
-                            <CustomText fontSize={'13px'} color="#5C5E69">가정의학과</CustomText>
+                        <Box display={'flex'} padding="2px 4px" bg="#DFF5ED" borderRadius={"4px"}  mr="1" mt="1">
+                            <CustomText fontSize={'13px'} color="#5C5E69">{data?.deptname || ""}</CustomText>
                         </Box>
-                        <Box display={'flex'} padding="5px" bg="#EFF2F7" borderRadius={"4px"} gap="8px" mr="1" mt="1">
-                            <CustomText fontSize={'13px'} color="#5C5E69">진료분야 1</CustomText>
-                        </Box>
-                        <Box display={'flex'} padding="5px" bg="#EFF2F7" borderRadius={"4px"} gap="8px" mr="1" mt="1">
-                            <CustomText fontSize={'13px'} color="#5C5E69">진료분야 2</CustomText>
-                        </Box>
-                        <Box display={'flex'} padding="5px" bg="#EFF2F7" borderRadius={"4px"} gap="8px" mr="1" mt="1">
-                            <CustomText fontSize={'13px'} color="#5C5E69">진료분야 3</CustomText>
-                        </Box>
-                        <Box display={'flex'} padding="5px" bg="#EFF2F7" borderRadius={"4px"} gap="8px" mr="1" mt="1">
-                            <CustomText fontSize={'13px'} color="#5C5E69">진료분야 4</CustomText>
-                        </Box>
+                        {
+                            !functions.isEmpty(data.specialties) && (
+                                data.specialties.split(",").map((subItem:any, subIndex:number) => (
+                                <Box display={'flex'} padding="2px 4px" bg="#EFF2F7" borderRadius={"4px"} mr="1" mt="1" key={subIndex}>
+                                    <CustomText fontSize={'13px'} color="#5C5E69">{subItem.toString()}</CustomText>
+                                </Box>
+                                )
+                            ))
+                        }
                     </Flex>
                 </Box>
                 <Box display={'flex'} flex={1} justifyContent={'center'} alignItems={'center'} pl='15px' minWidth={'90px'} onClick={() => onSendDoctorButton(data,1)} cursor={'pointer'}>

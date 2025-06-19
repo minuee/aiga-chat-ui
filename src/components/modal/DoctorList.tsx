@@ -111,7 +111,7 @@ function DoctorListModal(props: DoctorListModalProps) {
   };
   
   React.useEffect(() => {
-    setDoctors(mockupDoctors)
+    setDoctors(doctorData)
     setTimeout(() => {
       setIsLoading(false);
     }, 1000);
@@ -216,13 +216,7 @@ function DoctorListModal(props: DoctorListModalProps) {
             isReLoading && (
               <Flex position='absolute' left={0} top={0} width='100%' height='100%'  justifyContent={'center'}  backgroundColor={'#000000'} opacity={0.7} zIndex="100">
                 <Box padding='6' boxShadow='lg' width={"300px"} height={"calc( 100vh / 2 )"} display={'flex'} flexDirection={'column'}  justifyContent={'center'} alignItems={'center'}>
-                  <NextImage
-                      width="100"
-                      height="100"
-                      src={loadingImage}
-                      alt={'doctor1'}
-                  />
-                  <Text color="#ffffff">Data Processing!!!</Text>
+                  <NextImage width="100" height="100" src={loadingImage} alt={'doctor1'}/>
                 </Box>
               </Flex>
             )
@@ -421,26 +415,18 @@ function DoctorListModal(props: DoctorListModalProps) {
                       <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                     </Box>
                     <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                      <Text color={'white'} noOfLines={1}>{"{의사명} 교수"}</Text>
+                      <Text color={'white'} noOfLines={1}>{selectedDoctor?.name} 교수</Text>
                     </Box>
-                    <Box 
-                      position={'absolute'}
-                      right={0}
-                      top={0}
-                      width="50px"
-                      height={'100%'}
-                      display={{base :'none', md:'flex'}} 
-                      justifyContent={'flex-end'} 
-                      alignItems={'center'}  
-                      onClick={() => fn_close_modal_doctor_detail()}  cursor={'pointer'}
-                      >
+                    <Box position={'absolute'} right={0} top={0} width="50px" height={'100%'} display={{base :'none', md:'flex'}} justifyContent={'flex-end'} 
+                      alignItems={'center'}  onClick={() => fn_close_modal_doctor_detail()}  cursor={'pointer'}
+                    >
                       <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
                     </Box>
                   </Flex>
                 </ModalHeader>
                 <ModalBody padding="basePadding" margin="0">
                   <DoctorDetail
-                    selected_doctor_id={selectedDoctor}
+                    selected_doctor={selectedDoctor}
                   />
                 </ModalBody>
               </ModalContent>
