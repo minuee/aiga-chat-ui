@@ -237,7 +237,6 @@ function LoginModal(props: LoginModalProps) {
             duration: 2000,
             isClosable: true,
           });
-          popup?.close();
           window.removeEventListener('message', receiveMessage);
         }
       };
