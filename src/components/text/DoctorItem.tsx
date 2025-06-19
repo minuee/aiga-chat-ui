@@ -4,6 +4,7 @@ import React from 'react';
 import { Box,Flex, useColorModeValue,Text,Input, Divider} from '@chakra-ui/react';
 import Image from 'next/image';
 import functions from '@/utils/functions';
+import CustomText, { CustomBoldText } from "@/components/text/CustomText";
 import DoctorAvatar from "@/assets/images/thumb_dr_basic.png";
 type DoctorListProps = {
     data: any;
@@ -24,18 +25,21 @@ const DoctorList = ({ data, onSendDoctorButton }:DoctorListProps) => {
                     의사명 교수
                     </Text>
                     <Flex mt="2" flexShrink={1} flexWrap={'wrap'}>
-                    <Box display={'flex'} padding="5px" bg="#EFF2F7" borderRadius={"4px"} gap="8px" mr="1" mt="1">
-                        <Text fontSize={'13px'} color="#5C5E69">진료분야 1</Text>
-                    </Box>
-                    <Box display={'flex'} padding="5px" bg="#EFF2F7" borderRadius={"4px"} gap="8px" mr="1" mt="1">
-                        <Text fontSize={'13px'} color="#5C5E69">진료분야 2</Text>
-                    </Box>
-                    <Box display={'flex'} padding="5px" bg="#EFF2F7" borderRadius={"4px"} gap="8px" mr="1" mt="1">
-                        <Text fontSize={'13px'} color="#5C5E69">진료분야 3</Text>
-                    </Box>
-                    <Box display={'flex'} padding="5px" bg="#EFF2F7" borderRadius={"4px"} gap="8px" mr="1" mt="1">
-                        <Text fontSize={'13px'} color="#5C5E69">진료분야 4</Text>
-                    </Box>
+                        <Box display={'flex'} padding="5px" bg="#DFF5ED" borderRadius={"4px"} gap="8px" mr="1" mt="1">
+                            <CustomText fontSize={'13px'} color="#5C5E69">가정의학과</CustomText>
+                        </Box>
+                        <Box display={'flex'} padding="5px" bg="#EFF2F7" borderRadius={"4px"} gap="8px" mr="1" mt="1">
+                            <CustomText fontSize={'13px'} color="#5C5E69">진료분야 1</CustomText>
+                        </Box>
+                        <Box display={'flex'} padding="5px" bg="#EFF2F7" borderRadius={"4px"} gap="8px" mr="1" mt="1">
+                            <CustomText fontSize={'13px'} color="#5C5E69">진료분야 2</CustomText>
+                        </Box>
+                        <Box display={'flex'} padding="5px" bg="#EFF2F7" borderRadius={"4px"} gap="8px" mr="1" mt="1">
+                            <CustomText fontSize={'13px'} color="#5C5E69">진료분야 3</CustomText>
+                        </Box>
+                        <Box display={'flex'} padding="5px" bg="#EFF2F7" borderRadius={"4px"} gap="8px" mr="1" mt="1">
+                            <CustomText fontSize={'13px'} color="#5C5E69">진료분야 4</CustomText>
+                        </Box>
                     </Flex>
                 </Box>
                 <Box display={'flex'} flex={1} justifyContent={'center'} alignItems={'center'} pl='15px' minWidth={'90px'} onClick={() => onSendDoctorButton(data,1)} cursor={'pointer'}>

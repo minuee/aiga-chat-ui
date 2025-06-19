@@ -14,6 +14,7 @@ import { MdOutlineArrowDownward, MdFitbit, MdPerson,MdOutlineClose,MdArrowBack }
 import DoctorDetail  from '@/components/modal/Doctor';
 import SelectBody  from '@/components/msgType/SelectBody';
 import SelectDoctor  from '@/components/msgType/SelectDoctor';
+import RecommandDoctor  from '@/components/msgType/RecommandDoctor';
 import SelectName  from '@/components/msgType/SelectName';
 import ForceStop  from '@/components/msgType/ForceStop';
 import ChatMeMessage from '@/components/msgType/ChatMeMessage';
@@ -28,6 +29,8 @@ import SelectType  from '@/components/msgType/SelectType';
 import { useTranslations } from 'next-intl';
 import LoadingBar from "@/assets/icons/loading.gif";
 import mConstants from '@/utils/constants';
+
+import { ChatSystemMessageType } from "@/types/types";
 //새창열기 전역상태
 import NewChatStateStore,{ ChatSesseionIdStore,CallHistoryDataStore } from '@/store/newChatStore';
 import historyStore from '@/store/historyStore';
@@ -50,7 +53,6 @@ export default function ChatBot() {
   const router = useRouter();
   const pathnameRef = useRef(pathname);
   const [isFocus, setIsFocus] = useState<boolean>(false);
-  const [isAccessFirst, setAccessFirst] = useState<boolean>(false);
   const [inputCode, setInputCode] = useState<string>('');
   const [isShowScroll, setShowScroll] = useState(false);
   const [isReceiving, setReceiving] = useState(false);
@@ -66,7 +68,6 @@ export default function ChatBot() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollBottomRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentLocale, setCurrentLocale] = useState('ko');
 
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
   const navbarIcon = useColorModeValue('gray.500', 'white');
@@ -519,12 +520,12 @@ export default function ChatBot() {
     const forceMsg = "대답이 중지되었습니다."
     setReceiving(false);
     setIsLoading(false)
-    setOutputCode((prevCode: any[]) => [...prevCode, { id: functions.getUUID(), ismode: "system_stop", msg: forceMsg }]);
+    setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system_stop", msg: forceMsg }]);
   }
 
 
   const handleTranslate = async( isText:any = '') => {
-
+   
     if ( functions.isEmpty(inputCode) && functions.isEmpty(isText) ) return;
     
     console.log("handleTranslate chatSessionId", chatSessionId)
@@ -533,14 +534,13 @@ export default function ChatBot() {
       chat_sessinn_id = await getNewSessionID();
     }
 
-    
     setReceiving(true);
     const msgLen = parseInt(outputCode.length+1);
     const inputCodeText = inputCode || isText;
     //고혈압 치료를 잘하는 의사를 소개해줘
     if ( isSystemText.includes(inputCodeText) ) {
       if( inputCodeText != outputCode[outputCode?.length -1]?.msg) { 
-        setOutputCode((prevCode: any[]) => [...prevCode, { id: functions.getUUID(), ismode: "system", msg: inputCodeText }]);
+        setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system", msg: inputCodeText }]);
         setIsLoading(false);
         setReceiving(false);
         return;
@@ -550,14 +550,44 @@ export default function ChatBot() {
         return;
       }
     }else{
-      setOutputCode((prevCode: any[]) => [...prevCode, { id: functions.getUUID(),ismode: "me", msg: inputCodeText }]);
+      setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(),ismode: "me", msg: inputCodeText }]);
     }
     setInputCode('')
     try{
       const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText);
       console.log("handleTranslate questionResult",questionResult)
-      setIsLoading(false);
-      setReceiving(false);
+      if ( mConstants.apiSuccessCode.includes(questionResult?.statusCode) ) {
+        const answerMessage = questionResult?.data
+        setIsLoading(false);
+        setReceiving(false);
+        setOutputCode((prevCode: any[]) => {
+          const newArray = [...prevCode];
+          const lastIndex = msgLen;
+          newArray[lastIndex] = {
+            ismode : 'server',
+            id: answerMessage?.chat_id,
+            user_question : answerMessage?.question,
+            answer : answerMessage?.answer,
+            msg: answerMessage?.chat_type,
+            used_token : answerMessage?.used_token
+          };
+          return newArray;
+        })
+      }else{
+        setOutputCode((prevCode: any[]) => {
+          const newArray = [...prevCode];
+          const lastIndex = msgLen;
+          newArray[lastIndex] = {
+            ismode : 'system',
+            id: functions.getUUID(),
+            user_question : inputCodeText,
+            answer : null,
+            msg: `${inputCodeText}의 대한 답변`,
+            used_token : 0
+          };
+          return newArray;
+        })
+      }
     }catch(e:any){
       console.log("handleTranslate error",e);
       setIsLoading(false);
@@ -583,7 +613,7 @@ export default function ChatBot() {
     
     if ( isSystemText.includes(inputCodeText) ) {
       if( inputCodeText != outputCode[outputCode?.length -1]?.msg) { 
-        setOutputCode((prevCode: any[]) => [...prevCode, { id: functions.getUUID(), ismode: "system", msg: inputCodeText }]);
+        setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system", msg: inputCodeText }]);
         setIsLoading(false);
         setReceiving(false);
         return;
@@ -593,7 +623,7 @@ export default function ChatBot() {
         return;
       }
     }else{
-      setOutputCode((prevCode: any[]) => [...prevCode, { id: functions.getUUID(),ismode: "me", msg: inputCodeText }]);
+      setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(),ismode: "me", msg: inputCodeText }]);
     }
     setInputCode('')
 
@@ -673,11 +703,11 @@ export default function ChatBot() {
   };
 
   const onSendButton = async( str : string) => {
-    if ( !isReceiving) await handleTranslate(str);
+    if ( !isReceiving) await handleTranslate_origin(str);
   }
 
   const onSendWelcomeButton = async( str : string) => {
-    if ( !isReceiving ) await handleTranslate(str);
+    if ( !isReceiving ) await handleTranslate_origin(str);
   }
 
   const onSendDoctorButton = async( data : any,isType : number) => {
@@ -689,11 +719,11 @@ export default function ChatBot() {
   }
 
   const onSendNameButton = async( str : string) => {
-    if ( !isReceiving ) await handleTranslate(str);
+    if ( !isReceiving ) await handleTranslate_origin(str);
   }
 
   const onSendTypeButton = async( typeString : string ) => {
-    if ( !isReceiving ) await handleTranslate(typeString);
+    if ( !isReceiving ) await handleTranslate_origin(typeString);
   }
   
   if (isLoading) {
@@ -705,14 +735,9 @@ export default function ChatBot() {
     <Flex top={"35px"} w={'100%'} maxWidth={`${mConstants.desktopMinWidth}px`} direction="column" position="relative">
       <Flex direction="column" w={'100%'} maxWidth={`${mConstants.desktopMinWidth}px`} overflowY='scroll'>
         <Flex
-          direction="column"
-          w="100%"
-          maxWidth={`${mConstants.desktopMinWidth}px` }
+          direction="column" w="100%" maxWidth={`${mConstants.desktopMinWidth}px` }
           maxH="calc(100vh - 100px)" /* 여기가 하단 스크롤 영역 영향 받음 */
-          minH="calc(100vh - 100px)"
-          overflowY='auto'
-          display={outputCode ? 'flex' : 'none'}
-          ref={scrollRef}
+          minH="calc(100vh - 100px)" overflowY='auto' display={outputCode ? 'flex' : 'none'} ref={scrollRef}
         >
           <Box display={outputCode?.length == 0 ? 'flex' : 'none'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}  paddingTop={{base : "70px", md : "60px"}}>
             {/* <Welcome 
@@ -747,22 +772,42 @@ export default function ChatBot() {
             outputCode.map((element:any,index:number) => {
               if ( element.ismode == 'me') {
                 return (
-                  <ChatMeMessage
-                    indexKey={element.id}
-                    msg={element.msg}
-                  />
+                  <Box key={index}>
+                    <ChatMeMessage
+                      indexKey={index}
+                      msg={element.msg}
+                    />
+                  </Box>
                 )
+              }else if ( element.ismode == 'server') {
+                if ( element.msg === "recommand_doctor" ) {
+                  return (
+                    <Box key={index}>
+                      <RecommandDoctor 
+                        data={element}
+                        onSendButton={onSendDoctorButton}
+                      />
+                    </Box>
+                  )
+                }else {
+                  return (
+                    <ChatWrongMessage
+                      indexKey={index}
+                      msg={'흠..뭔가 잘못된 것 같습니다'}
+                    />
+                  )
+                }
               }else if ( element.ismode == 'system_stop') {
                 return (
                   <ForceStop
-                    indexKey={element.id}
+                    indexKey={index}
                     msg={element.msg}
                   />
                 )
               }else if ( element.ismode == 'system') {
                 if ( element.msg === "system_doctors" ) {
                   return (
-                    <Box key={element.id}>
+                    <Box key={index}>
                       <SelectDoctor 
                         onSendButton={onSendDoctorButton}
                       />
@@ -770,7 +815,7 @@ export default function ChatBot() {
                   )
                 }else if ( element.msg === "system_list" ) {
                   return (
-                  <Box key={element.id}>
+                  <Box key={index}>
                     <SelectName 
                       data={[]}
                       onSendButton={onSendNameButton}
@@ -779,7 +824,7 @@ export default function ChatBot() {
                   )
                 }else if ( element.msg === "system_select" ) {
                   return (
-                    <Box key={element.id}>
+                    <Box key={index}>
                       <Welcome 
                         msg={`안녕하세요? 건강AI AIGA에요\r\n누가 아프신가요?`}
                         onSendButton={onSendButton}
@@ -788,7 +833,7 @@ export default function ChatBot() {
                   )
                 }else if ( element.msg === "system_image" ) {
                   return (
-                    <Box key={element.id}>
+                    <Box key={index}>
                       <SelectBody 
                         onSendButton={onSendWelcomeButton}
                       />
@@ -797,23 +842,17 @@ export default function ChatBot() {
                 }else {
                   return (
                     <ChatWrongMessage
-                      indexKey={element.id}
+                      indexKey={index}
                       msg={'흠..뭔가 잘못된 것 같습니다'}
                     />
                   )
                 }
               }else{
                 return (
-                  <Flex w="100%" key={element.id} mb="10px">
+                  <Flex w="100%" key={index} mb="10px">
                     <Flex
-                      borderRadius="full"
-                      justify="center"
-                      align="center"
+                      borderRadius="full" justify="center" align="center" me="10px" h="40px" minH="40px"minW="40px"
                       bg={'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)'}
-                      me="10px"
-                      h="40px"
-                      minH="40px"
-                      minW="40px"
                     >
                       <Icon as={MdFitbit} width="20px" height="20px" color="white" />
                     </Flex>
@@ -827,16 +866,8 @@ export default function ChatBot() {
           { isShowScroll &&  
             (
               <Box
-                position={'absolute'}
-                right="10px"
-                bottom={{base : "100px", md:"50px"}}
-                width="50px"
-                height={"50px"}
-                zIndex={10}
-                display={'flex'}
-                justifyContent='center'
-                alignItems={'center'}
-                onClick={()=> scrollToBottom()}
+                position={'absolute'} right="10px" bottom={{base : "100px", md:"50px"}} width="50px" height={"50px"}
+                zIndex={10} display={'flex'} justifyContent='center' alignItems={'center'}onClick={()=> scrollToBottom()}
               >
                 <Icon as={MdOutlineArrowDownward} width="40px" height="40px" color={navbarIcon} />
               </Box>
@@ -846,11 +877,8 @@ export default function ChatBot() {
         </Flex>
         <Flex position="fixed" bottom="0" left="0" w="100%" px="20px" py="10px" bg={themeColor} zIndex="100" display={'flex'} justifyContent='center'>
           <Box 
-            w={{ base: '100%', md: `${mConstants.desktopMinWidth-20}px` }}
-            maxWidth={`${mConstants.desktopMinWidth}px` }
-            position={'relative'}
-            display={'flex'} 
-            flexDirection={'row'}
+            w={{ base: '100%', md: `${mConstants.desktopMinWidth-20}px` }} maxWidth={`${mConstants.desktopMinWidth}px` }
+            position={'relative'} display={'flex'} flexDirection={'row'}
           >
             {
               ( !isChatDisabled?.isState && !isChatDisabled?.isAlertMsg && !functions.isEmpty(chatSessionId)) && (
@@ -901,7 +929,7 @@ export default function ChatBot() {
                   zIndex={444}
                   onClick={() => { 
                     if ( !isReceiving ) {
-                      handleTranslate(inputCode);
+                      handleTranslate_origin(inputCode);
                     }else {
                       toast({
                         title: 'AIGA',

@@ -11,8 +11,12 @@ export const ModalDoctorDetailStore = create<ModalDoctorDetailStoreState>()(
         persist(
             (set) => ({
                 isOpenDoctorModal: false,
-                setOpenDoctorDetailModal: (isOpenDoctorModal:boolean) => {
-                    set({isOpenDoctorModal});
+                setOpenDoctorDetailModal: (isOpenDoctorModal: boolean) => {
+                    set((prev:ModalDoctorDetailStoreState) =>
+                      prev.isOpenDoctorModal === isOpenDoctorModal
+                        ? prev
+                        : { isOpenDoctorModal }
+                    )
                 },
                 hasHydrated: false,
             }),
@@ -52,7 +56,6 @@ export const DoctorFromListStore = create<DoctorFromListStoreState>()(
         )
     )
 );
-
 
 interface ModalDoctorReviewStoreState {
     isOpenReview : boolean;

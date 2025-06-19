@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse,AxiosRequestConfig } from 'axios';
 import * as mCookie from "@/utils/cookies";
 import mConstants from '@/utils/constants';
 import { decryptToken } from "@/utils/secureToken";
@@ -10,8 +10,12 @@ export type ServiceResponse<T> = {
   state: State;
 } & T;
 
+
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:9999';
 axios.defaults.withCredentials = true;
+
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
 
 axios.interceptors.request.use(
   function (config) {
@@ -25,8 +29,7 @@ axios.interceptors.request.use(
 
 axios.interceptors.request.use((config) => {
   try{
-    const refreshToken =  mCookie.getCookie('refresh_token');
-    console.log("apidata refreshToken",refreshToken)
+
     const accessTmpToken =  mCookie.getCookie(mConstants.apiTokenName);//'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidWlkX2ViZjE4YzE5LWE1N2UtNDlhMC1hY2JkLTMwZGQ2MzU4NDRhNSIsInNuc190eXBlIjoia2FrYW8iLCJzbnNfaWQiOiI0MjkxODg1MjIzIiwiaWF0IjoxNzUwMTE5MjE3LCJleHAiOjE3NTAyMDU2MTd9.3Qjc-inX5H79FMzTLI-uJMnb2o2w0D53EP6DUc9DP8c';
     console.log("apidata accessTmpToken",accessTmpToken)
     if ( !functions.isEmpty(accessTmpToken)) { 
@@ -39,6 +42,63 @@ axios.interceptors.request.use((config) => {
     return config
   }
 })
+
+// 기존 요청을 다시 실행하기 위한 함수 등록
+function subscribeTokenRefresh(cb: (token: string) => void) {
+  refreshSubscribers.push(cb);
+}
+
+function onRefreshed(token: string) {
+  refreshSubscribers.forEach((cb) => cb(token));
+  refreshSubscribers = [];
+}
+
+// ✅ 응답 인터셉터: 401 처리
+axios.interceptors.response.use(
+  function (response: AxiosResponse) {
+    return response;
+  },
+  async function (error) {
+    const originalRequest = error.config as any;
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry // 사용자 정의 속성
+    ) {
+      if (isRefreshing) {
+        return new Promise((resolve) => {
+          subscribeTokenRefresh((token: string) => {
+            originalRequest.headers['Authorization'] = `Bearer ${token}`;
+            resolve(axios(originalRequest));
+          });
+        });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const refreshToken = localStorage.getItem('refresh_token');
+        const res = await axios.post('/auth/refresh-token', { refreshToken });
+
+        const newAccessToken = res.data.accessToken;
+        mCookie.setCookie(mConstants.apiTokenName,newAccessToken)
+        onRefreshed(newAccessToken);
+        isRefreshing = false;
+
+        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+        return axios(originalRequest);
+      } catch (refreshError) {
+        mCookie.removeCookie(mConstants.apiTokenName)
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+
 /* 
 axios.interceptors.response.use(
   res => {

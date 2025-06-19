@@ -29,3 +29,34 @@ const ConfigInfoStore = create<State>()(
 );
 
 export default ConfigInfoStore;
+
+interface GlobalStateStoreState {
+    isGlobalState : boolean;
+    setGlobalState: (isGlobalState: boolean) => void;
+}
+
+
+export const GlobalStateStore = create<GlobalStateStoreState>()(
+    devtools(
+        persist(
+            (set) => ({
+                isGlobalState: true,
+                setGlobalState: (isGlobalState: boolean) => {
+                    set((prev:GlobalStateStoreState) =>
+                      prev.isGlobalState === isGlobalState
+                        ? prev
+                        : { isGlobalState }
+                    )
+                },
+                hasHydrated: false,
+            }),
+            { 
+                name: 'GlobalStateStore',
+                storage: createJSONStorage(() => localStorage),
+                onRehydrateStorage: () => (state:any) => {
+                    state?.set({ hasHydrated: true });
+                }
+            }
+        )
+    )
+);

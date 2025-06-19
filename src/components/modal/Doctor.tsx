@@ -44,6 +44,7 @@ function DoctorModal(props: DoctorModalProps) {
   const pathnameRef = React.useRef(pathname);
   const toast = useToast();
   const [isLoading, setIsLoading] = React.useState(true);
+  const [selectedDoctorId, setSelectedDoctorId] = React.useState(selected_doctor_id);
   const [doctorBasicData, setDoctorBasicData] = React.useState<any>({
     department : '',
     description : '',
@@ -78,7 +79,12 @@ function DoctorModal(props: DoctorModalProps) {
 
   const onHandleRegistReview = () => {
     console.log("onHandleRegistReview")
-    fn_close_modal_doctor_review();
+    setSelectedDoctorId(null);
+    setTimeout(() => {
+      fn_close_modal_doctor_review();
+      setSelectedDoctorId(selected_doctor_id);
+    }, 60);
+   
   }
 
   const onHandleRequestDoctor = (data:any) => {
@@ -283,7 +289,7 @@ function DoctorModal(props: DoctorModalProps) {
         </Flex>
         
         <DoctorReviews 
-          data={selected_doctor_id}
+          data={selectedDoctorId}
         />
         <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}  width={'100%'} mt={5}>
           <Button 

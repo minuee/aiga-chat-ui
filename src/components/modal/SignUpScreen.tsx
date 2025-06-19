@@ -87,130 +87,177 @@ function LoginModal(props: LoginModalProps) {
   }
 
   const onClickJoin = (str:string) => {
-    /* onSendSignupAgreeButton();
-    return;
-    toast({
-      title: 'AIGA',
-      position: 'top-right',
-      description: '현재 작업중입니다. ',
-      status: 'info',
-      duration: 2000,
-      isClosable: true,
-    });
-    return;
- */
+
     console.log("apidata str",str)
     setLoginForm({
       socialType : str
     });
-  
-    const screenWidth = isMobileOnly ? window.screen.availWidth : 450;
-    const screenHeight = isMobileOnly ? window.screen.availHeight : 600;
-    const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:9999';
-    const popup = window.open(
-      `${baseURL}/auth/${str}`, // Next.js에서 프록시된 백엔드 URL
-      'SocialLogin',
-      `width=${screenWidth},height=${screenHeight}`
-      //`width=${screenWidth},height=${screenHeight},left=0,top=0`
-    );
+    
+    try {
+      const screenWidth = isMobileOnly ? window.screen.availWidth : 450;
+      const screenHeight = isMobileOnly ? window.screen.availHeight : 600;
+      const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:9999';
+      const popup = window.open(
+        `${baseURL}/auth/${str}`, // Next.js에서 프록시된 백엔드 URL
+        'SocialLogin',
+        `width=${screenWidth},height=${screenHeight}`
+        //`width=${screenWidth},height=${screenHeight},left=0,top=0`
+      );
 
-    const interval = setInterval(async () => {
-      if (popup?.closed) {
-        clearInterval(interval);
-        console.log('apidata 팝업 닫힘 감지됨');
-      }
-    }, 500);
-
-    const receiveMessage = async(event: MessageEvent) => {
-      if ( !mConstants.apiAllowOriginCode.includes(event.origin) ) {
-        console.warn('apidata 허용되지 않은 출처:', event.origin);
-        popup?.close();
-        window.removeEventListener('message', receiveMessage);
-        return;
-      }
-
-      const expireDate = new Date();  
-      expireDate.setDate(expireDate.getDate() + 7); // 7일 후 만료
-
-      console.log('apidata event.data.type',event.data.type);
-      if (event.data.type === 'kakao-auth') {
-        console.log('apidata ✅ 카카오 로그인 성공:', event.data.code?.data?.user);
-        const loginUserInfo = event?.data?.code?.data?.user;
-        const accessToken = event?.data?.code?.data?.access_token;
-        console.log('apidata accessToken',accessToken);
-        if ( loginUserInfo?.agreement ) { // 회원인상태
-          mCookie.setCookie(mConstants.apiTokenName, encryptToken(accessToken), { path: '/' , expires : expireDate })
-          setLoginUserInfo({
-            isState : loginUserInfo?.agreement, //isState
-            sns_id : loginUserInfo?.sns_id, //sns_id
-            email : loginUserInfo?.email, //email
-            profileImage : loginUserInfo?.profile_img, //profileImage
-            agreement : loginUserInfo?.agreement, //agreement
-            registDate : loginUserInfo?.regist_date, //registDate
-            updatedDate : loginUserInfo?.updatedAt,//updatedDate
-            unregistDate : loginUserInfo?.unregist_date,//unregistDate
-            userId : loginUserInfo?.user_id,//userId
-            isGuest : false, //isGuest
-            joinType : loginUserInfo?.sns_type,//joinType
-            nickName : loginUserInfo?.nickname,//nickName
-            userMaxToken : userMaxToken,//userMaxToken
-            userRetryLimitSec :userRetryLimitSec//userRetryLimitSec
-          });
-          setNewChatOpen(false);
-          setTimeout(() => {
-            setNewChatOpen(true);
-          }, 100);
-          setClose();
-        }else{ // 동의안한상태
-          mCookie.setCookie(mConstants.apiTokenName, encryptToken(accessToken), { path: '/' , expires : expireDate })
-          setLoginUserInfo({
-            isState : loginUserInfo?.agreement, //isState
-            sns_id : loginUserInfo?.sns_id, //sns_id
-            email : loginUserInfo?.email, //email
-            profileImage : loginUserInfo?.profile_img, //profileImage
-            agreement : loginUserInfo?.agreement, //agreement
-            registDate : loginUserInfo?.regist_date, //registDate
-            updatedDate : loginUserInfo?.updatedAt,//updatedDate
-            unregistDate : loginUserInfo?.unregist_date,//unregistDate
-            userId : loginUserInfo?.user_id,//userId
-            isGuest : true, //isGuest
-            joinType : loginUserInfo?.sns_type,//joinType
-            nickName : loginUserInfo?.nickname,//nickName
-            userMaxToken : guestMaxToken,//userMaxToken
-            userRetryLimitSec : guestRetryLimitSec //userRetryLimitSec
-          });
-          onSendSignupAgreeButton();
+      const interval = setInterval(async () => {
+        if (popup?.closed) {
+          clearInterval(interval);
+          console.log('apidata 팝업 닫힘 감지됨');
         }
-        popup?.close();
-        window.removeEventListener('message', receiveMessage);
-      }else if (event.data.type === 'naver-auth') {
-          console.log('apidata ✅ 네이버 로그인 if 성공:', event.data.payload);
+      }, 500);
+
+      const receiveMessage = async(event: MessageEvent) => {
+        if ( !mConstants.apiAllowOriginCode.includes(event.origin) ) {
+          console.warn('apidata 허용되지 않은 출처:', event.origin);
           popup?.close();
-          setNewChatOpen(false);
-          setTimeout(() => {
-            setNewChatOpen(true);
-          }, 100);
           window.removeEventListener('message', receiveMessage);
-      }else{
-        console.log(`apidata ✅ 회원가입 실패 :`, event);
-        window.removeEventListener('message', receiveMessage);
-        toast({
-          title: 'AIGA',
-          position: 'top-right',
-          description: '회원가입/로그인중 오류가 발생하였습니다. 잠시뒤에 이용해주세요. ',
-          status: 'info',
-          containerStyle: {
-            color: '#ffffff',
-          },
-          duration: 2000,
-          isClosable: true,
-        });
-      }
-    };
-    window.addEventListener('message', receiveMessage);
+          return;
+        }
+
+        const expireDate = new Date();  
+        expireDate.setDate(expireDate.getDate() + 7); // 7일 후 만료
+
+        console.log('apidata event.data.type',event?.data?.type);
+        if (event?.data?.type === 'kakao-auth') {
+          console.log('apidata ✅ 카카오 로그인 성공:', event.data.code?.data?.user);
+          const loginUserInfo = event?.data?.code?.data?.user;
+          const accessToken = event?.data?.code?.data?.access_token;
+          console.log('apidata accessToken',accessToken);
+          if ( loginUserInfo?.agreement ) { // 회원인상태
+            mCookie.setCookie(mConstants.apiTokenName, encryptToken(accessToken), { path: '/' , expires : expireDate })
+            setLoginUserInfo({
+              isState : loginUserInfo?.agreement, //isState
+              sns_id : loginUserInfo?.sns_id, //sns_id
+              email : loginUserInfo?.email, //email
+              profileImage : loginUserInfo?.profile_img, //profileImage
+              agreement : loginUserInfo?.agreement, //agreement
+              registDate : loginUserInfo?.regist_date, //registDate
+              updatedDate : loginUserInfo?.updatedAt,//updatedDate
+              unregistDate : loginUserInfo?.unregist_date,//unregistDate
+              userId : loginUserInfo?.user_id,//userId
+              isGuest : false, //isGuest
+              joinType : loginUserInfo?.sns_type,//joinType
+              nickName : loginUserInfo?.nickname,//nickName
+              userMaxToken : userMaxToken,//userMaxToken
+              userRetryLimitSec :userRetryLimitSec//userRetryLimitSec
+            });
+            setNewChatOpen(false);
+            setTimeout(() => {
+              setNewChatOpen(true);
+            }, 100);
+            setClose();
+          }else{ // 동의안한상태
+            mCookie.setCookie(mConstants.apiTokenName, encryptToken(accessToken), { path: '/' , expires : expireDate })
+            setLoginUserInfo({
+              isState : loginUserInfo?.agreement, //isState
+              sns_id : loginUserInfo?.sns_id, //sns_id
+              email : loginUserInfo?.email, //email
+              profileImage : loginUserInfo?.profile_img, //profileImage
+              agreement : loginUserInfo?.agreement, //agreement
+              registDate : loginUserInfo?.regist_date, //registDate
+              updatedDate : loginUserInfo?.updatedAt,//updatedDate
+              unregistDate : loginUserInfo?.unregist_date,//unregistDate
+              userId : loginUserInfo?.user_id,//userId
+              isGuest : true, //isGuest
+              joinType : loginUserInfo?.sns_type,//joinType
+              nickName : loginUserInfo?.nickname,//nickName
+              userMaxToken : guestMaxToken,//userMaxToken
+              userRetryLimitSec : guestRetryLimitSec //userRetryLimitSec
+            });
+            onSendSignupAgreeButton();
+          }
+          popup?.close();
+          window.removeEventListener('message', receiveMessage);
+        }else if (event?.data?.type === 'naver-auth') {
+          console.log('apidata ✅ 네이버 로그인 성공:', event.data.code?.data?.user);
+          const loginUserInfo = event?.data?.code?.data?.user;
+          const accessToken = event?.data?.code?.data?.access_token;
+          console.log('apidata accessToken',accessToken);
+          if ( loginUserInfo?.agreement ) { // 회원인상태
+            mCookie.setCookie(mConstants.apiTokenName, encryptToken(accessToken), { path: '/' , expires : expireDate })
+            setLoginUserInfo({
+              isState : loginUserInfo?.agreement, //isState
+              sns_id : loginUserInfo?.sns_id, //sns_id
+              email : loginUserInfo?.email, //email
+              profileImage : loginUserInfo?.profile_img, //profileImage
+              agreement : loginUserInfo?.agreement, //agreement
+              registDate : loginUserInfo?.regist_date, //registDate
+              updatedDate : loginUserInfo?.updatedAt,//updatedDate
+              unregistDate : loginUserInfo?.unregist_date,//unregistDate
+              userId : loginUserInfo?.user_id,//userId
+              isGuest : false, //isGuest
+              joinType : loginUserInfo?.sns_type,//joinType
+              nickName : loginUserInfo?.nickname,//nickName
+              userMaxToken : userMaxToken,//userMaxToken
+              userRetryLimitSec :userRetryLimitSec//userRetryLimitSec
+            });
+            setNewChatOpen(false);
+            setTimeout(() => {
+              setNewChatOpen(true);
+            }, 100);
+            setClose();
+          }else{ // 동의안한상태
+            mCookie.setCookie(mConstants.apiTokenName, encryptToken(accessToken), { path: '/' , expires : expireDate })
+            setLoginUserInfo({
+              isState : loginUserInfo?.agreement, //isState
+              sns_id : loginUserInfo?.sns_id, //sns_id
+              email : loginUserInfo?.email, //email
+              profileImage : loginUserInfo?.profile_img, //profileImage
+              agreement : loginUserInfo?.agreement, //agreement
+              registDate : loginUserInfo?.regist_date, //registDate
+              updatedDate : loginUserInfo?.updatedAt,//updatedDate
+              unregistDate : loginUserInfo?.unregist_date,//unregistDate
+              userId : loginUserInfo?.user_id,//userId
+              isGuest : true, //isGuest
+              joinType : loginUserInfo?.sns_type,//joinType
+              nickName : loginUserInfo?.nickname,//nickName
+              userMaxToken : guestMaxToken,//userMaxToken
+              userRetryLimitSec : guestRetryLimitSec //userRetryLimitSec
+            });
+            onSendSignupAgreeButton();
+          }
+          popup?.close();
+          window.removeEventListener('message', receiveMessage);
+        }else{
+          console.log(`apidata ✅ 회원가입 실패 :`, event);
+        
+          toast({
+            title: 'AIGA',
+            position: 'top-right',
+            description: '회원가입/로그인중 오류가 발생하였습니다. 잠시뒤에 이용해주세요. ',
+            status: 'info',
+            containerStyle: {
+              color: '#ffffff',
+            },
+            duration: 2000,
+            isClosable: true,
+          });
+          popup?.close();
+          window.removeEventListener('message', receiveMessage);
+        }
+      };
+
+      window.addEventListener('message', receiveMessage);
+    }catch(e:any){
+      console.log(`apidata ✅ 회원가입 실패 errrrr :`, e);
+      toast({
+        title: 'AIGA',
+        position: 'top-right',
+        description: '회원가입/로그인중 오류가 발생하였습니다. 잠시뒤에 이용해주세요. ',
+        status: 'info',
+        containerStyle: {
+          color: '#ffffff',
+        },
+        duration: 2000,
+        isClosable: true,
+      });
+    }
   };
-
-
 
   const setClcikClose = async(str:string) => {
     const currentPathname = await mCookie.getCookie('currentPathname');

@@ -24,7 +24,7 @@ import groupSessionsByDateSorted from "./GroupSort";
 import LoadingBar from "@/assets/icons/loading.gif";
 //새창열기 전역상태
 import UserStateStore from '@/store/userStore';
-import NewChatStateStore,{CallHistoryDataStore} from '@/store/newChatStore';
+import NewChatStateStore,{ ChatSesseionIdStore,CallHistoryDataStore } from '@/store/newChatStore';
 import { ModalMypageStore,DrawerHistoryStore } from '@/store/modalStore';
 import HistoryItem from '@/components/text/HistoryItem';
 
@@ -60,9 +60,11 @@ function SidebarContent(props: SidebarContent) {
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
   const reviewBtnRef = React.useRef<HTMLButtonElement>(null);
   const confirmRef = useRef();
+  const chatSessionId = ChatSesseionIdStore(state => state.chatSessionId);
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
   const setOldHistoryData = CallHistoryDataStore((state) => state.setOldHistoryData);
   const setOpenHistoryDrawer = DrawerHistoryStore((state) => state.setOpenHistoryDrawer);
+  
   React.useEffect(() => {
     //setIsLoading(false)
     getMyHistoryData();
@@ -82,6 +84,21 @@ function SidebarContent(props: SidebarContent) {
   }
 
   const onDeleteHistory = async(session_id: any) => {
+
+    if ( chatSessionId == session_id ) {
+      toast({
+        title: "현재 사용중인 세션은 삭제가 불가합니다.",
+        position: 'top-right',
+        isClosable: true,
+        duration:2000,
+        status: 'info',
+        containerStyle: {
+          color: '#ffffff',
+        }
+      });
+      return;
+    }
+
     try{
       setIsReceiving(true)
       const res:any = await ChatService.removeChatHistory(session_id);

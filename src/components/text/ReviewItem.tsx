@@ -14,6 +14,8 @@ import { MdKeyboardDoubleArrowDown,MdKeyboardDoubleArrowUp } from 'react-icons/m
 import { iconAlertWarning } from "@/components/icons/IconImage"
 import functions from '@/utils/functions';
 
+import UserStateStore from '@/store/userStore';
+
 type ReivewItemProps = {
     data: any;
     onHandleDetail: (data: any) => void;
@@ -24,6 +26,10 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
 
     const [isOpenAlert, setOpenAlert] = React.useState(false); 
     const [isExpanded, setIsExpanded] = React.useState(false);
+    const [shouldShowExpand, setShouldShowExpand] = React.useState(false)
+    const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+    const { ...userBaseInfo } = UserStateStore(state => state);
+
     const bgColor = useColorModeValue('white', 'navy.700');
     const moreColor = useColorModeValue('gray.500', 'whiteAlpha.300');
 
@@ -31,13 +37,24 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
         onHandleDoctorRequestRegist(data)
     }
 
+    React.useEffect(() => {
+        const textarea = textareaRef.current
+        if (textarea) {
+          // 한 줄 높이 기준 계산
+          const lineHeight = parseFloat(getComputedStyle(textarea).lineHeight || "20")
+          const maxVisibleLines = 5
+          const totalLines = Math.round(textarea.scrollHeight / lineHeight)
+          setShouldShowExpand(totalLines > maxVisibleLines)
+        }
+    }, [data?.content])
+
     return (
         <Flex width={'100%'} flexDirection='column'>
             <Divider orientation='horizontal' my={5} />
             <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'100%'} position={'relative'}>
                 <Box 
-                    position={'absolute'} right="0" top="0" width="150px" height={'30px'}
-                    display={'flex'} justifyContent={'center'} alignItems={'center'}
+                    position={'absolute'} right="0" top="0" width="150px" height={'30px'} justifyContent={'center'} alignItems={'center'}
+                    display={userBaseInfo?.userId == data?.user_id ? 'flex' : 'none'} 
                 >
                     <Popover>
                         <PopoverTrigger>
@@ -118,6 +135,7 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                 </SimpleGrid>
                 <Box display={'flex'} flexDirection={'column'} py="15px">
                     <Textarea 
+                        ref={textareaRef}
                         readOnly 
                         variant={'outline'} 
                         value={data?.content} 
@@ -129,9 +147,27 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                         id={"textarea_content"}
                         color={'#5C5E69'}
                         as={ResizeTextarea}
-                        maxHeight={isExpanded ? "none" : "calc(1.2em * 10)"} // 5줄 제한
+                        minRows={1}
+                        maxRows={isExpanded ? undefined : 5}
+                        //maxHeight={isExpanded ? "none" : "calc(1.2em * 10)"} 
                     />
-                    <Box display={'flex'} width="100%" alignItems={'center'} my="10px">
+                    {   shouldShowExpand && (
+                        <Box display={'flex'} width="100%" alignItems={'center'} my="10px">
+                            <Button
+                                size="sm"
+                                backgroundColor={'#E9EDF3'}
+                                borderRadius={0}
+                                py={"3px"}
+                                variant="link"
+                                colorScheme="slate"
+                                onClick={() => setIsExpanded(!isExpanded)}
+                                id="button_toggle"
+                            >
+                                {isExpanded ? <Icon as={MdKeyboardDoubleArrowUp} color={'#555'} /> : <Icon as={MdKeyboardDoubleArrowDown} color={'#555'} />}
+                            </Button>
+                        </Box>
+                    )}
+                    {/* <Box display={'flex'} width="100%" alignItems={'center'} my="10px">
                         <Button
                             size="sm"
                             backgroundColor={'#E9EDF3'}
@@ -144,7 +180,7 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                         >
                             {isExpanded ? <Icon as={MdKeyboardDoubleArrowUp} color={'#555'} /> : <Icon as={MdKeyboardDoubleArrowDown} color={'#555'} />}
                         </Button>
-                    </Box>
+                    </Box> */}
                 </Box>
             </Box> 
             {

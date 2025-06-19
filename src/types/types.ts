@@ -19,3 +19,15 @@ export type GroupedSessionsType = {
   date: string;
   sessions: SessionType[];
 }[];
+
+
+export type ChatSystemMessageType = {
+  ismode : string;
+  session_id: string;
+  chat_id: number;
+  user_question : string;
+  chat_type: string | null;
+  question: string;
+  answer: any[];
+  used_token : number ;
+};
