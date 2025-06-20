@@ -208,7 +208,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
             w="100%"
             height={{base:"60vh", md:"60vh"}}
             maxW={`${mConstants.modalMaxWidth}px`}
-            bg={sidebarBackgroundColor}
+            //bg={sidebarBackgroundColor}
             borderTopLeftRadius={"10px"}
             borderTopRightRadius={"10px"}
             alignItems={'center'}

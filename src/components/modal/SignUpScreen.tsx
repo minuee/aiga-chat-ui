@@ -282,7 +282,7 @@ function LoginModal(props: LoginModalProps) {
 
   return (
   
-    <Flex w="100%" maxW={`${mConstants.modalMaxWidth}px`} padding='10px' height='100%' alignItems={'center'} >
+    <Flex w="100%" maxW={`${mConstants.modalMaxWidth}px`} padding='10px' height='100%' alignItems={'center'}>
       <LoginScreen
         onClickJoin={onClickJoin}
         onClcikClose={setClcikClose}
