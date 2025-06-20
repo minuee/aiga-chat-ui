@@ -8,13 +8,13 @@ import functions from '@/utils/functions';
 import Image from 'next/image';
 import mConstants from '@/utils/constants';
 import * as DoctorService from "@/services/doctor/index";
-
-
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import { IconVote1,IconVote2,IconVote3,IconVote4 } from '@/components/icons/svgIcons';
 import ImageEntire from "@/assets/images/img-entire.png";
-import IconVote1 from "@/assets/icons/vote_1.png";
-import IconVote2 from "@/assets/icons/vote_2.png";
-import IconVote3 from "@/assets/icons/vote_3.png";
-import IconVote4 from "@/assets/icons/vote_4.png";
+//import IconVote1 from "@/assets/icons/vote_1.png";
+//import IconVote2 from "@/assets/icons/vote_2.png";
+//import IconVote3 from "@/assets/icons/vote_3.png";
+//import IconVote4 from "@/assets/icons/vote_4.png";
 import Alert from '@/components/alert/CustomAlert';
 import { loadingImage,iconAlertModify,iconAlertReview } from "@/components/icons/IconImage"
 
@@ -155,7 +155,6 @@ function ReviewModal(props: ReviewModalProps) {
                     src={loadingImage}
                     alt={'doctor1'}
                 />
-                <Text color="#ffffff">Data Processing!!!</Text>
               </Box>
             </Flex>
           )
@@ -163,9 +162,9 @@ function ReviewModal(props: ReviewModalProps) {
         <Flex display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'20px'}>
           <Flex  justifyContent={'center'} minHeight={'50px'} width={'100%'} mt={5}>
             <Box flex={3} pr={'20px'}> 
-              <Text fontSize={'24px'} color={textColor2} fontWeight={'bold'}>
+              <CustomTextBold700 fontSize={'24px'} color={textColor2}>
                 솔직한 리뷰를 남겨주세요
-              </Text>
+              </CustomTextBold700>
             </Box>
             <Box flex={1} minWidth={"104px"}> 
               <Image 
@@ -181,15 +180,11 @@ function ReviewModal(props: ReviewModalProps) {
           <Box display={'flex'} flexDirection={'column'} alignItems={'center'}  width={'100%'} minHeight={'80px'} mb={5}>
             <Flex width={'100%'}>
               <Box display='flex' width={'48px'} height={'48px'} borderRadius={'8px'} bg='#e9edf3' justifyContent={'center'} alignItems={'center'}>
-                <Image 
-                  src={IconVote1}
-                  alt="IconVote1"
-                  style={{width:'26px',objectFit: 'contain',maxWidth:"26px"}}
-                />
+                <IconVote1 boxSize={'32px'} />
               </Box>
               <Box flex={5} display={'flex'} flexDirection={'column'} justifyContent={'center'} pl="20px">
-                <Text fontSize={'17px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"}>친절 • 배려</Text>
-                <Text fontSize={'15px'} color='#7f879b' lineHeight={"150%"}>진료시 친절하게 해 주셨나요?</Text>
+                <CustomTextBold700 fontSize={'17px'} color='#0AA464' lineHeight={"150%"}>친절 • 배려</CustomTextBold700>
+                <CustomText fontSize={'15px'} color='#7f879b' lineHeight={"150%"}>진료시 친절하게 해 주셨나요?</CustomText>
               </Box>
             </Flex>
             <Box width={'100%'} my="5px" padding="10px">
@@ -199,19 +194,14 @@ function ReviewModal(props: ReviewModalProps) {
               />
             </Box>
           </Box>
-
           <Box display={'flex'} flexDirection={'column'} alignItems={'center'}  width={'100%'} minHeight={'80px'} mb={5}>
             <Flex width={'100%'}>
               <Box display='flex' width={'48px'} height={'48px'} borderRadius={'8px'} bg='#e9edf3' justifyContent={'center'} alignItems={'center'}>
-                <Image 
-                  src={IconVote2}
-                  alt="IconVote2"
-                  style={{width:'26px',objectFit: 'contain',maxWidth:"26px"}}
-                />
+                <IconVote2 boxSize={'32px'} />
               </Box>
               <Box flex={5} display={'flex'} flexDirection={'column'} justifyContent={'center'} pl="20px">
-                <Text fontSize={'17px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"}>치료 결과 만족도</Text>
-                <Text fontSize={'15px'} color='#7f879b' lineHeight={"150%"}>진료 후 결과가 좋거나 개선되었나요?</Text>
+                <CustomTextBold700 fontSize={'17px'}  color='#0AA464' lineHeight={"150%"}>치료 결과 만족도</CustomTextBold700>
+                <CustomText fontSize={'15px'} color='#7f879b' lineHeight={"150%"}>진료 후 결과가 좋거나 개선되었나요?</CustomText>
               </Box>
             </Flex>
             <Box width={'100%'} my="5px" padding="10px">
@@ -224,15 +214,11 @@ function ReviewModal(props: ReviewModalProps) {
           <Box display={'flex'} flexDirection={'column'} alignItems={'center'}  width={'100%'} minHeight={'80px'} mb={5}>
             <Flex width={'100%'}>
               <Box display='flex' width={'48px'} height={'48px'} borderRadius={'8px'} bg='#e9edf3' justifyContent={'center'} alignItems={'center'}>
-                <Image 
-                  src={IconVote3}
-                  alt="IconVote3"
-                  style={{width:'26px',objectFit: 'contain',maxWidth:"26px"}}
-                />
+                <IconVote3 boxSize={'32px'} />
               </Box>
               <Box flex={5} display={'flex'} flexDirection={'column'} justifyContent={'center'} pl="20px">
-                <Text fontSize={'17px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"}>쉬운 설명</Text>
-                <Text fontSize={'15px'} color='#7f879b' lineHeight={"150%"}>증상과 치료에 대해 상세히 설명하였나요?</Text>
+                <CustomTextBold700 fontSize={'17px'} color='#0AA464' lineHeight={"150%"}>쉬운 설명</CustomTextBold700>
+                <CustomText fontSize={'15px'} color='#7f879b' lineHeight={"150%"}>증상과 치료에 대해 상세히 설명하였나요?</CustomText>
               </Box>
             </Flex>
             <Box width={'100%'} my="5px" padding="10px">
@@ -245,15 +231,11 @@ function ReviewModal(props: ReviewModalProps) {
           <Box display={'flex'} flexDirection={'column'} alignItems={'center'}  width={'100%'} minHeight={'80px'} mb={5}>
             <Flex width={'100%'}>
               <Box display='flex' width={'48px'} height={'48px'} borderRadius={'8px'} bg='#e9edf3' justifyContent={'center'} alignItems={'center'}>
-                <Image 
-                  src={IconVote4}
-                  alt="IconVote4"
-                  style={{width:'30px',objectFit: 'contain',maxWidth:"30px"}}
-                />
+                <IconVote4 boxSize={'32px'} />
               </Box>
               <Box flex={5} display={'flex'} flexDirection={'column'} justifyContent={'center'} pl="20px">
-                <Text fontSize={'17px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"}>추천 여부</Text>
-                <Text fontSize={'15px'} color='#7f879b' lineHeight={"150%"}>지인에게 추천하시겠어요?</Text>
+                <CustomTextBold700 fontSize={'17px'}  color='#0AA464' lineHeight={"150%"}>추천 여부</CustomTextBold700>
+                <CustomText fontSize={'15px'} color='#7f879b' lineHeight={"150%"}>지인에게 추천하시겠어요?</CustomText>
               </Box>
             </Flex>
             <Box width={'100%'} my="5px" padding="10px">
@@ -266,14 +248,13 @@ function ReviewModal(props: ReviewModalProps) {
         </Flex>
         <Flex flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'100%'} mt={5} padding="20px" bg='#fafbfd' borderRadius={'10px'}>
           <Box>
-            <Text fontSize={'17px'} fontWeight={'bold'} >진료 후기를 작성해 주세요</Text>
+            <CustomTextBold700 fontSize={'17px'}>진료 후기를 작성해 주세요</CustomTextBold700>
           </Box>
           <Box my={3}>
-            <Text fontSize={'13px'} color={'gray.500'}>
+            <CustomText fontSize={'13px'} color={'gray.500'}>
                 허위 또는 과장된 내용은 법적으로 문제가 될 수 있습니다. 정확하고 사실에 근거한 리뷰를 작성해 주시기 바랍니다.
-            </Text>
+            </CustomText>
           </Box>
-          
           <Box mt={2}>
             <Textarea 
               variant={'outline'} 
@@ -339,13 +320,13 @@ function ReviewModal(props: ReviewModalProps) {
                     />
                   </Box>
                   <Box width={"100%"}  display={functions.isEmpty(inputs.review_id) ? 'flex' : 'none'} justifyContent={'center'} alignItems={'center'} minHeight={"50px"}>
-                    <Text fontSize={'18px'} color="#212127" fontWeight={'bold'}>소중한 리뷰 감사합니다!</Text>
+                    <CustomTextBold700 fontSize={'18px'} color="#212127">소중한 리뷰 감사합니다!</CustomTextBold700>
                   </Box>
                   <Box width={"100%"}  display={functions.isEmpty(inputs.review_id) ? 'flex' : 'none'} justifyContent={'center'} alignItems={'center'} minHeight={"60px"}>
-                    <Text fontSize={'17px'} color="#212127">작성해주신 리뷰는 다른 분들에게 큰 도움이 되며 더 나은 서비스를 제공하는 데 활용됩니다.</Text>
+                    <CustomText fontSize={'17px'} color="#212127">작성해주신 리뷰는 다른 분들에게 큰 도움이 되며 더 나은 서비스를 제공하는 데 활용됩니다.</CustomText>
                   </Box>
                   <Box width={"100%"}  display={!functions.isEmpty(inputs.review_id) ? 'flex' : 'none'} justifyContent={'center'} alignItems={'center'} minHeight={"60px"}>
-                    <Text fontSize={'17px'} color="#212127">리뷰 수정이 완료되었습니다.</Text>
+                    <CustomText fontSize={'17px'} color="#212127">리뷰 수정이 완료되었습니다.</CustomText>
                   </Box>
                 </Flex>
               }
@@ -357,7 +338,7 @@ function ReviewModal(props: ReviewModalProps) {
               footerContent={
                 <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} py="20px" width={"100%"}>
                   <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#2B8FFF" borderRadius={'6px'} onClick={() => onHandleAlertConfirm()} cursor={'pointer'}>
-                    <Text fontSize={'16px'} color="#ffffff" fontWeight={'bold'}>확인</Text>
+                    <CustomTextBold700 fontSize={'16px'} color="#ffffff">확인</CustomTextBold700>
                   </Box>
                 </Flex>
               }

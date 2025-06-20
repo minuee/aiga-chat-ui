@@ -1,7 +1,8 @@
 
 import { Box,Flex,Text,useColorModeValue ,Icon} from '@chakra-ui/react';
 import mConstants from '@/utils/constants';
-import { MdOutlineArrowDownward, MdFitbit, MdInfoOutline, MdPerson,MdOutlineMoodBad,MdOutlineClose,MdArrowBack } from 'react-icons/md';
+import {  MdInfoOutline, MdPerson,MdOutlineMoodBad,MdOutlineClose } from 'react-icons/md';
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
 type ChatDisableProps = {
   isChatDisabled : any;
@@ -27,14 +28,14 @@ export const ChatDisable = ({ isChatDisabled,setChatDisabled }: ChatDisableProps
       <Flex  padding='20px' width={"100%"}  height={'100%'} flexDirection={'column'} alignItems={'space-evenly'}>
         <Box display={'flex'} alignItems={'center'} flex={1}>
           <Icon as={MdOutlineMoodBad} width="20px" height="20px" color={oopsColor} mr={3} />
-          <Text fontSize='17px' color={oopsColor} lineHeight={'150%'} letterSpacing={"-5%"} fontWeight={'bold'}>
+          <CustomTextBold700 fontSize='17px' color={oopsColor} lineHeight={'150%'} letterSpacing={"-5%"}>
           일일 질문 제한?
-          </Text>
+          </CustomTextBold700>
         </Box>
         <Box display={'flex'} alignItems={'center'} flex={2}>
-          <Text fontSize='15px' color={oopsColor} lineHeight={'150%'} letterSpacing={"-5%"}>
+          <CustomText fontSize='15px' color={oopsColor} lineHeight={'150%'} letterSpacing={"-5%"}>
             오늘의 질문 제한에 도달했습니다. {"자동계산?"} 이후에 다시 시도해 주세요.
-          </Text>
+          </CustomText>
         </Box>
       </Flex>
       <Flex 
@@ -70,9 +71,9 @@ export const ChatWarningInfo = () => {
     >
       <Box display='flex' alignItems='center' gap='5px' width={"90%"}>
         <Icon as={MdInfoOutline} width="20px" height="20px" color={infoIcon} />
-        <Text fontSize='0.8rem' color='gray.500' lineHeight={'0.8rem'}>
+        <CustomText fontSize='0.8rem' color='gray.500' lineHeight={'0.8rem'}>
           AIGA는 실수를 할 수 있습니다. 본 AI서비스는 의료행위가 아니며 답변에 어떠한 책임도 지지 않습니다.
-        </Text>
+        </CustomText>
       </Box>
     </Flex>
   )

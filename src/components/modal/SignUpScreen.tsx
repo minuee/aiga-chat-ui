@@ -11,7 +11,7 @@ import SignupAgree from "@/components/modal/SignupAgree";
 import functions from '@/utils/functions';
 import mConstants from '@/utils/constants';
 import { usePathname, useRouter } from 'next/navigation';
-import * as AuthService from "@/services/member/index";
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import { encryptToken } from "@/utils/secureToken";
 import UserStateStore from '@/store/userStore';
 import NewChatStateStore from '@/store/newChatStore';
@@ -127,7 +127,6 @@ function LoginModal(props: LoginModalProps) {
           console.log('apidata ✅ 카카오 로그인 성공:', event.data.code?.data?.user);
           const loginUserInfo = event?.data?.code?.data?.user;
           const accessToken = event?.data?.code?.data?.access_token;
-          console.log('apidata accessToken',accessToken);
           if ( loginUserInfo?.agreement ) { // 회원인상태
             mCookie.setCookie(mConstants.apiTokenName, encryptToken(accessToken), { path: '/' , expires : expireDate })
             setLoginUserInfo({
@@ -177,7 +176,6 @@ function LoginModal(props: LoginModalProps) {
           console.log('apidata ✅ 네이버 로그인 성공:', event.data.code?.data?.user);
           const loginUserInfo = event?.data?.code?.data?.user;
           const accessToken = event?.data?.code?.data?.access_token;
-          console.log('apidata accessToken',accessToken);
           if ( loginUserInfo?.agreement ) { // 회원인상태
             mCookie.setCookie(mConstants.apiTokenName, encryptToken(accessToken), { path: '/' , expires : expireDate })
             setLoginUserInfo({
@@ -319,7 +317,7 @@ function LoginModal(props: LoginModalProps) {
                     <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                   </Box>
                   <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                    <Text color={'white'} noOfLines={1}>이용동의</Text>
+                    <CustomText color={'white'} noOfLines={1}>이용동의</CustomText>
                   </Box>
                   <Box 
                     position={'absolute'}

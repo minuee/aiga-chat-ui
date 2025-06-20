@@ -1,7 +1,7 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 import axios from 'axios';
-
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 // chakra imports
 import { Box,Flex,Text,Drawer,DrawerBody,Icon,useColorModeValue,DrawerOverlay,DrawerContent,DrawerCloseButton } from '@chakra-ui/react';
 import Content from '@/components/sidebar/components/Content';
@@ -38,18 +38,8 @@ function Sidebar(props: SidebarProps) {
   return (
     <Box display={{ base: 'none', xl: 'block' }} position="fixed" minH="100%">
       <Box
-        bg={sidebarBg}
-        transition={variantChange}
-        w="100%"
-        maxW={`${mConstants.modalMaxWidth}px`}
-        ms={{ sm: '16px' }}
-        my={{ sm: '16px' }}
-        h="calc(100vh - 32px)"
-        m={sidebarMargins}
-        borderRadius={sidebarRadius}
-        minH="100%"
-        overflowX="hidden"
-        boxShadow={shadow}
+        bg={sidebarBg} transition={variantChange} w="100%" maxW={`${mConstants.modalMaxWidth}px`} ms={{ sm: '16px' }} my={{ sm: '16px' }} h="calc(100vh - 32px)"
+        m={sidebarMargins} borderRadius={sidebarRadius} minH="100%" overflowX="hidden" boxShadow={shadow}
       >
         <Scrollbars
           universal={true}
@@ -84,7 +74,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
   const setIsOpenSignupModal = ModalSignupStoreStore((state) => state.setIsOpenSignupModal);
   const oopsColor = useColorModeValue('#111111', 'white');
   const basicColor = useColorModeValue('white', 'white');
-  const navbarIcon = useColorModeValue('#2b8fff', 'gray.500');
+  const navbarIcon = useColorModeValue('#2b8fff', 'navy.800');
   
 
   const setLoginUserInfo = UserStateStore((state) => state.setUserState);
@@ -138,10 +128,6 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
         mCookie.setCookie('currentPathname','')
       }, 200);
     }
-
-
-
-    
   }
 
   const onSendsignupButton = async() => {
@@ -151,10 +137,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
   }
 
   return (
-    <Flex 
-      //display={{ sm: 'flex', xl: 'none' }} 
-      alignItems="center"
-    >
+    <Flex alignItems="center">
       <Flex w="max-content" h="max-content"  alignItems={'center'}>
         {
           ( userBasicInfo?.isState && !functions.isEmpty(userBasicInfo?.userId) ) 
@@ -167,14 +150,9 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
             display={'flex'} minW={'52px'} height={'28px'} justifyContent={'center'} alignItems={'center'} bg={navbarIcon} borderRadius={'5px'}
             cursor='pointer' onClick={()=> onSendsignupButton()}
           >  
-          <Text fontSize={'17px'} color={basicColor}>
-            로그인
-          </Text>
+          <CustomText fontSize={'17px'} color={basicColor}>로그인</CustomText>
         </Box>
-
         }
-       
-        
       </Flex>
       <Drawer
         isOpen={isOpenHistoryDrawer}
@@ -230,38 +208,23 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
             w="100%"
             height={{base:"60vh", md:"60vh"}}
             maxW={`${mConstants.modalMaxWidth}px`}
-            //bg={sidebarBackgroundColor}
+            bg={sidebarBackgroundColor}
             borderTopLeftRadius={"10px"}
             borderTopRightRadius={"10px"}
             alignItems={'center'}
           > 
-           {/*  <DrawerCloseButton
-              zIndex="3"
-              onClick={ () => fn_close_modal_user_login()}
-              _focus={{ boxShadow: 'none' }}
-              _hover={{ boxShadow: 'none' }}
-              
-            />
-             */}
             <DrawerBody 
               w="100%" 
               maxW={`${mConstants.modalMaxWidth-20}px`} 
               height="100%" 
-              backgroundColor="white"
+              backgroundColor={sidebarBackgroundColor}
               borderTopLeftRadius={"10px"}
               borderTopRightRadius={"10px"}
               position={'relative'}
             >
               <Flex 
-                position={'absolute'}
-                top={0}
-                right={0}
-                width="50px"
-                height={'50px'}
-                justifyContent={'center'}
-                alignItems={'center'}
-                onClick={() => fn_close_modal_user_login()}
-                cursor={'pointer'}
+                position={'absolute'} top={0} right={0} width="50px" height={'50px'} justifyContent={'center'} alignItems={'center'}
+                onClick={() => fn_close_modal_user_login()} cursor={'pointer'}
               >
                 <Icon as={MdOutlineClose} width="20px" height="20px" color={oopsColor} />
               </Flex>
@@ -276,6 +239,5 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
     </Flex>
   );
 }
-// PROPS
 
 export default Sidebar;

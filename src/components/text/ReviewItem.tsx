@@ -9,7 +9,7 @@ import Alert from '@/components/alert/CustomAlert';
 import NextImage from 'next/legacy/image';
 import { format } from 'date-fns';
 import ResizeTextarea from "react-textarea-autosize";
-
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import { MdKeyboardDoubleArrowDown,MdKeyboardDoubleArrowUp } from 'react-icons/md';
 import { iconAlertWarning } from "@/components/icons/IconImage"
 import functions from '@/utils/functions';
@@ -81,17 +81,17 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                     </Popover>
                     
                 </Box>
-                <Text fontSize={'16px'} color={"#000000"} fontWeight={"bold"}>닉네임</Text>
-                <Text fontSize={'13px'} color={'#7F879B'}>{format(data?.createAt, 'yyyy-MM-dd')}</Text>
+                <CustomTextBold700 fontSize={'16px'} color={"#000000"}>{data?.nickname}</CustomTextBold700>
+                <CustomText fontSize={'13px'} color={'#7F879B'}>{format(data?.createAt, 'yyyy-MM-dd')}</CustomText>
                 <SimpleGrid spacing={3} templateColumns={{base : 'repeat(1, 1fr)' , sm : 'repeat(2, 1fr)'}} mt={3}>
                 <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
                     <Flex flexDirection={'row'} justifyContent={'space-around'} alignItems={'center'} width={'100%'}>
                     <Box flex={1} display={'flex'}>
-                        <Text fontSize={'12px'} color='#5C5E69' lineHeight={"150%"}>친절 • 배려</Text>
+                        <CustomText fontSize={'12px'} color='#5C5E69' lineHeight={"150%"}>친절 • 배려</CustomText>
                     </Box>
                     <Box flex={1} display={'flex'} justifyContent={'flex-end'} alignItems={'center'}>
                         <Icon color='gold' as={MdOutlineStarPurple500}  />
-                        <Text fontSize={'12px'} color='#55A5FF' lineHeight={"150%"}>{functions.floatFormat(parseFloat(data?.kindness_score))}</Text>
+                        <CustomText fontSize={'12px'} color='#55A5FF' lineHeight={"150%"}>{functions.floatFormat(parseFloat(data?.kindness_score))}</CustomText>
                     </Box>
                     </Flex>
                     <ProgressBar colorScheme='green' height='8px' width={'100%'} value={parseFloat(data?.kindness_score)*20} borderRadius={'1rem'} bg={'#EFF2F7'} />
@@ -99,11 +99,11 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                 <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
                     <Flex flexDirection={'row'} justifyContent={'space-around'} alignItems={'center'} width={'100%'}>
                     <Box flex={1} display={'flex'}>
-                        <Text fontSize={'12px'} color='#5C5E69' lineHeight={"150%"}>치료 만족</Text>
+                        <CustomText fontSize={'12px'} color='#5C5E69' lineHeight={"150%"}>치료 만족</CustomText>
                     </Box>
                     <Box flex={1} display={'flex'} justifyContent={'flex-end'} alignItems={'center'}>
                         <Icon color='gold' as={MdOutlineStarPurple500}  />
-                        <Text fontSize={'12px'} color='#55A5FF' lineHeight={"150%"}>{functions.floatFormat(parseFloat(data?.satisfaction_score))}</Text>
+                        <CustomText fontSize={'12px'} color='#55A5FF' lineHeight={"150%"}>{functions.floatFormat(parseFloat(data?.satisfaction_score))}</CustomText>
                     </Box>
                     </Flex>
                     <ProgressBar colorScheme='green' height='8px' width={'100%'} value={parseFloat(data?.satisfaction_score)*20} borderRadius={'1rem'} bg={'#EFF2F7'} />
@@ -111,11 +111,11 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                 <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
                     <Flex flexDirection={'row'} justifyContent={'space-around'} alignItems={'center'} width={'100%'}>
                     <Box flex={1} display={'flex'}>
-                        <Text fontSize={'12px'} color='#5C5E69' lineHeight={"150%"}>쉬운 설명</Text>
+                        <CustomText fontSize={'12px'} color='#5C5E69' lineHeight={"150%"}>쉬운 설명</CustomText>
                     </Box>
                     <Box flex={1} display={'flex'} justifyContent={'flex-end'} alignItems={'center'}>
                         <Icon color='gold' as={MdOutlineStarPurple500}  />
-                        <Text fontSize={'12px'} color='#55A5FF' lineHeight={"150%"}>{functions.floatFormat(parseFloat(data?.explaination_score))}</Text>
+                        <CustomText fontSize={'12px'} color='#55A5FF' lineHeight={"150%"}>{functions.floatFormat(parseFloat(data?.explaination_score))}</CustomText>
                     </Box>
                     </Flex>
                     <ProgressBar colorScheme='green' height='8px' width={'100%'} value={parseFloat(data?.explaination_score)*20} borderRadius={'1rem'} bg={'#EFF2F7'} />
@@ -123,11 +123,11 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                 <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
                     <Flex flexDirection={'row'} justifyContent={'space-around'} alignItems={'center'} width={'100%'}>
                     <Box flex={1} display={'flex'}>
-                        <Text fontSize={'12px'} color='#5C5E69' lineHeight={"150%"}>추천 의향</Text>
+                        <CustomText fontSize={'12px'} color='#5C5E69' lineHeight={"150%"}>추천 의향</CustomText>
                     </Box>
                     <Box flex={1} display={'flex'} justifyContent={'flex-end'} alignItems={'center'}>
                         <Icon color='gold' as={MdOutlineStarPurple500}  />
-                        <Text fontSize={'12px'} color='#55A5FF' lineHeight={"150%"}>{functions.floatFormat(parseFloat(data?.recommand_score))}</Text>
+                        <CustomText fontSize={'12px'} color='#55A5FF' lineHeight={"150%"}>{functions.floatFormat(parseFloat(data?.recommand_score))}</CustomText>
                     </Box>
                     </Flex>
                     <ProgressBar colorScheme='green' height='8px' width={'100%'} value={parseFloat(data?.recommand_score)*20} borderRadius={'1rem'} bg={'#EFF2F7'} />
@@ -199,7 +199,7 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                                     />
                                 </Box>
                                 <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"50px"}>
-                                    <Text fontSize={'18px'} color="#212127" fontWeight={'bold'}>이 리뷰를 삭제하시겠습니까? 삭제된 리뷰는 복구할 수 없습니다.</Text>
+                                    <CustomTextBold700 fontSize={'18px'} color="#212127">이 리뷰를 삭제하시겠습니까? 삭제된 리뷰는 복구할 수 없습니다.</CustomTextBold700>
                                 </Box>
                             </Flex>
                         }
@@ -211,10 +211,10 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                         footerContent={
                             <Flex flexDirection={'row'} justifyContent={'center'} alignItems={'center'} py="20px" width={"100%"}>
                                 <Box width={"78px"} mr="5px" display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#F94848" borderRadius={'6px'} onClick={() => onHandleAlertConfirm()} cursor={'pointer'}>
-                                    <Text fontSize={'16px'} color="#ffffff" fontWeight={'bold'}>삭제</Text>
+                                    <CustomTextBold700 fontSize={'16px'} color="#ffffff">삭제</CustomTextBold700>
                                 </Box>
                                 <Box width={"78px"} ml="5px" display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#DFE3EA" borderRadius={'6px'} onClick={() => setOpenAlert(false)} cursor={'pointer'}>
-                                    <Text fontSize={'16px'} color="#000000" fontWeight={'bold'}>취소</Text>
+                                    <CustomTextBold700 fontSize={'16px'} color="#000000">취소</CustomTextBold700>
                                 </Box>
                             </Flex>
                         }

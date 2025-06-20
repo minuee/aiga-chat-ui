@@ -4,7 +4,7 @@ import { Flex, useColorModeValue,Text,Box } from '@chakra-ui/react';
 
 import { HorizonLogo,AigaLog } from '@/components/icons/Icons';
 import { HSeparator } from '@/components/separator/Separator';
-
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 export function HeadTitle(props: {title: string}) {
   const { title } = props;
   //   Chakra color mode
@@ -14,13 +14,13 @@ export function HeadTitle(props: {title: string}) {
     <Flex alignItems="left" flexDirection="column" >
       {/* <AigaLog h="26px" w="146px" my="30px" color={logoColor} /> */}
       <Box sx={{width:'100%',height:'100%',paddingLeft:'20px',marginTop:'20px'}}>
-        <Text
+        <CustomText
           color={logoColor}
           fontWeight="500"
           fontSize="xl"
         >
           {title}
-        </Text>
+        </CustomText>
       </Box>
       <HSeparator mt="10px" mb="10px" w="100%" />
     </Flex>

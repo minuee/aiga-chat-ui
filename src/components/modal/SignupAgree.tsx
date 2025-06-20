@@ -1,19 +1,27 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Checkbox,useColorModeValue} from '@chakra-ui/react';
+import { Box,Flex,Button,Icon,SkeletonCircle,SkeletonText,Checkbox,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,useColorModeValue} from '@chakra-ui/react';
 import mConstants from '@/utils/constants';
 import Image from 'next/image';
 import ImageJoinComplete from "@/assets/images/img-joinComplete.png";
 import functions from "@/utils/functions";
 import * as MemberService from "@/services/member/index";
-import { ModalSignupFinishStoreStore } from '@/store/modalStore';
+import YakwanContent from '@/components/modal/YakwanContent';
+import PolicyContent from '@/components/modal/PolicyContent'
+import MingamContent from '@/components/modal/MingamContent'
+
+import { ModalSignupFinishStoreStore,ModalMypagePolicyStore,ModalMypageYakwanStore,ModalMypageMingamStore } from '@/store/modalStore';
 import UserStateStore from '@/store/userStore';
 import NewChatStateStore from '@/store/newChatStore';
 import ConfigInfoStore from '@/store/configStore';
-
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import * as history from '@/utils/history';
+import { usePathname, useRouter } from 'next/navigation';
+import * as mCookie from "@/utils/cookies";
 import NextImage from 'next/legacy/image';
-import { loadingImage } from "@/components/icons/IconImage"
+import { loadingImage } from "@/components/icons/IconImage";
+import { MdOutlineClose,MdArrowBack,MdLogout } from 'react-icons/md';
 
 export interface SignupAgreeeModalProps extends PropsWithChildren {
   userInfo : any;
@@ -25,22 +33,39 @@ export interface SignupAgreeeModalProps extends PropsWithChildren {
 function SignupAgreeeModal(props: SignupAgreeeModalProps) {
 
   const { userInfo, isOpen, setClose,onHandleNextFinish } = props;
+  const policyBtnRef = React.useRef<any>();
+  const yakwanBtnRef = React.useRef<any>();
+  const mingamBtnRef = React.useRef<any>();
+  const pathname = usePathname();
+  const router = useRouter();
+  const pathnameRef = React.useRef(pathname);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isReceiving, setReceiving] = React.useState(false);
   const { isOpenSignupFinishModal } = ModalSignupFinishStoreStore(state => state);
   const setIsOpenSignupFinishModal = ModalSignupFinishStoreStore((state) => state.setIsOpenSignupFinishModal);
+
+  const { isOpenPolicyModal } = ModalMypagePolicyStore(state => state);
+  const setIsOpenPolicyModal = ModalMypagePolicyStore((state) => state.setIsOpenPolicyModal);
+  const { isOpenYakwanModal } = ModalMypageYakwanStore(state => state);
+  const setIsOpenYakwanModal = ModalMypageYakwanStore((state) => state.setIsOpenYakwanModal);
+  const { isOpenMingamModal } = ModalMypageMingamStore(state => state);
+  const setIsOpenMingamModal = ModalMypageMingamStore((state) => state.setIsOpenMingamModal);
+
   const setLoginUserInfo = UserStateStore((state) => state.setUserState);
   const { nickName, ...userBasicInfo } = UserStateStore(state => state);
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
   const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
 
+  
   const [inputs, setInputs] = React.useState<any>({
     isAgree : false,
     isAgree2 : false,
     isAgree3 : false,
     isAgree4 : false
   });
-  const bgColor = useColorModeValue('blue', 'white');
+  let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
+  const sidebarBackgroundColor = useColorModeValue('white', 'gray.700');
+  const titleColor = useColorModeValue('#212127', 'white');
   const skeletonColor = useColorModeValue('white', 'gray.700');
   const textColor = useColorModeValue('#0AA464', '#0AA464');
   const textColor2 = useColorModeValue('black', 'white');
@@ -90,6 +115,51 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
     }, 100);
   }
 
+  const onSendMypagePolicyButton = async(  ) => {
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_9_2}`);
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_9_2}`)
+    setIsOpenPolicyModal(true);
+  }
+
+  const fn_close_modal_mypage_policy = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenPolicyModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_11}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_11}`)
+    }, 200);
+  }
+
+  const onSendMypageYakwanButton = async(  ) => {
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_8_2}`);
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_8_2}`)
+    setIsOpenYakwanModal(true);
+  }
+
+  const fn_close_modal_mypage_yakwan = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenYakwanModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_11}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_11}`)
+    }, 200);
+  }
+
+  const onSendMypageMingamButton = async(  ) => {
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_12_2}`);
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_12_2}`)
+    setIsOpenMingamModal(true);
+  }
+
+  const fn_close_modal_mypage_mingam = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenMingamModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_11}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_11}`)
+    }, 200);
+  }
+
   if ( isLoading ) {
     return (
       <Box padding='6' boxShadow='lg' bg={skeletonColor}>
@@ -111,7 +181,6 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
                     src={loadingImage}
                     alt={'doctor1'}
                   />
-                  <Text color="#ffffff">등록중...</Text>
                 </Box>
               </Flex>
             )
@@ -119,20 +188,20 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
           <Flex flexDirection={'column'} minHeight={'calc( 100vh - 120px )'}  justifyContent={'space-between'} width={'100%'} > 
             <Flex flexDirection={'column'} justifyContent={'center'} minHeight={'100%'} width={'100%'} mt={'50px'}>
               <Box display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'}> 
-                <Text fontSize={'32px'} color={textColor} fontWeight={'bold'}>
+                <CustomTextBold700 fontSize={'32px'} color={textColor}>
                   회원가입이
-                </Text>
-                <Text fontSize={'32px'} color={textColor} fontWeight={'bold'}>
+                </CustomTextBold700>
+                <CustomTextBold700 fontSize={'32px'} color={textColor}>
                   완료되었습니다.
-                </Text>
+                </CustomTextBold700>
               </Box>
               <Box display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'} mt={'50px'}> 
-                <Text fontSize={'19px'} color={textColor2} fontWeight={'bold'} lineHeight={"200%"}>
+                <CustomTextBold700 fontSize={'19px'} color={textColor2} lineHeight={"200%"}>
                   {nickName}님
-                </Text>
-                <Text fontSize={'17px'} color={textColor3} >
+                </CustomTextBold700>
+                <CustomText fontSize={'17px'} color={textColor3} >
                  이제 맞춤형 의사 추천 AI서비스를 만나보세요
-                </Text>
+                </CustomText>
               </Box>
               <Box display={'flex'} alignItems={'center'} justifyContent={'center'}> 
                 <Image 
@@ -170,9 +239,10 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
                     colorScheme='blue'
                     isChecked={inputs.isAgree}
                     onChange={(e) => setInputs({...inputs, isAgree: e.target.checked})}
-                  >
-                    서비스 이용약관
-                  </Checkbox>
+                  />
+                  <Box onClick={() => onSendMypageYakwanButton()} cursor={'pointer'} pl="10px">
+                    <CustomTextBold400 fontSize={'17px'} color={titleColor}>서비스 이용약관</CustomTextBold400>
+                  </Box>
                 </Box>
               </Box>
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'}  width={'100%'} mt={5}>
@@ -181,9 +251,10 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
                     colorScheme='blue'
                     isChecked={inputs.isAgree2}
                     onChange={(e) => setInputs({...inputs, isAgree2: e.target.checked})}
-                  >
-                    개인정보 수집 및 이용 동의
-                  </Checkbox>
+                  />
+                  <Box onClick={() => onSendMypagePolicyButton()} cursor={'pointer'} pl="10px">
+                    <CustomTextBold400 fontSize={'17px'} color={titleColor}>개인정보 수집 및 이용 동의</CustomTextBold400>
+                  </Box>
                 </Box>
               </Box>
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} width={'100%'} mt={5}>
@@ -192,9 +263,10 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
                     colorScheme='blue'
                     isChecked={inputs.isAgree3}
                     onChange={(e) => setInputs({...inputs, isAgree3: e.target.checked})}
-                  >
-                    민감 정보 수집 및 이용 동의
-                  </Checkbox>
+                  />
+                  <Box onClick={() => onSendMypageMingamButton()} cursor={'pointer'} pl="10px">
+                    <CustomTextBold400 fontSize={'17px'} color={titleColor}>민감 정보 수집 및 이용 동의</CustomTextBold400>
+                  </Box>
                 </Box>
               </Box>
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} width={'100%'} mt={5}>
@@ -203,9 +275,10 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
                     colorScheme='blue'
                     isChecked={inputs.isAgree4}
                     onChange={(e) => setInputs({...inputs, isAgree4: e.target.checked})}
-                  >
-                    만 14세 이상입니다.
-                  </Checkbox>
+                  />
+                  <Box pl="10px">
+                    <CustomTextBold400 fontSize={'17px'} color={titleColor}>만 14세 이상입니다.</CustomTextBold400>
+                  </Box>
                 </Box>
               </Box>
             </Box>
@@ -225,6 +298,165 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
               </Button>
             </Box>
           </Flex>
+          {
+          isOpenPolicyModal && (
+            <Modal
+              onClose={() => fn_close_modal_mypage_policy()}
+              finalFocusRef={policyBtnRef}
+              isOpen={isOpenPolicyModal}
+              scrollBehavior={'inside'}
+              blockScrollOnMount={false}
+              preserveScrollBarGap={true}
+              trapFocus={false}
+              size={'full'}
+            >
+              <ModalOverlay />
+              <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
+                <ModalHeader bg={navbarBg} padding="basePadding">
+                  <Flex flexDirection={'row'} position={'relative'}>
+                    <Box 
+                      position={'absolute'}
+                      left={0}
+                      top={0}
+                      width="50px"
+                      height={'100%'}
+                      display={{base :'flex', md:'none'}} 
+                      alignItems={'center'}  
+                      onClick={() => fn_close_modal_mypage_policy()} cursor={'pointer'}
+                    >
+                      <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
+                    </Box>
+                    <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
+                      <CustomText color={'white'} noOfLines={1}>개인정보 처리방침</CustomText>
+                    </Box>
+                    <Box 
+                      position={'absolute'}
+                      right={0}
+                      top={0}
+                      width="50px"
+                      height={'100%'}
+                      display={{base :'none', md:'flex'}} 
+                      justifyContent={'flex-end'} 
+                      alignItems={'center'}  
+                      onClick={() => fn_close_modal_mypage_policy()}  cursor={'pointer'}
+                      >
+                      <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
+                    </Box>
+                  </Flex>
+                </ModalHeader>
+                <ModalBody overflowY="auto" maxH="100vh" padding="basePadding" margin="0">
+                  <PolicyContent />
+                </ModalBody>
+              </ModalContent>
+            </Modal>
+          )
+        }
+        {
+          isOpenYakwanModal && (
+            <Modal
+              onClose={() => fn_close_modal_mypage_yakwan()}
+              finalFocusRef={yakwanBtnRef}
+              isOpen={isOpenYakwanModal}
+              scrollBehavior={'inside'}
+              blockScrollOnMount={false}
+              preserveScrollBarGap={true}
+              trapFocus={false}
+              size={'full'}
+            >
+              <ModalOverlay />
+              <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
+                <ModalHeader bg={navbarBg} padding="basePadding">
+                  <Flex flexDirection={'row'} position={'relative'}>
+                    <Box 
+                      position={'absolute'}
+                      left={0}
+                      top={0}
+                      width="50px"
+                      height={'100%'}
+                      display={{base :'flex', md:'none'}} 
+                      alignItems={'center'}  
+                      onClick={() => fn_close_modal_mypage_yakwan()} cursor={'pointer'}
+                    >
+                      <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
+                    </Box>
+                    <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
+                      <CustomText color={'white'} noOfLines={1}>이용약관</CustomText>
+                    </Box>
+                    <Box 
+                      position={'absolute'}
+                      right={0}
+                      top={0}
+                      width="50px"
+                      height={'100%'}
+                      display={{base :'none', md:'flex'}} 
+                      justifyContent={'flex-end'} 
+                      alignItems={'center'}  
+                      onClick={() => fn_close_modal_mypage_yakwan()}  cursor={'pointer'}
+                      >
+                      <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
+                    </Box>
+                  </Flex>
+                </ModalHeader>
+                <ModalBody overflowY="auto" maxH="100vh">
+                  <YakwanContent />
+                </ModalBody>
+              </ModalContent>
+            </Modal>
+          )
+        }
+        {
+          isOpenMingamModal && (
+            <Modal
+              onClose={() => fn_close_modal_mypage_mingam()}
+              finalFocusRef={mingamBtnRef}
+              isOpen={isOpenMingamModal}
+              scrollBehavior={'inside'}
+              blockScrollOnMount={false}
+              preserveScrollBarGap={true}
+              trapFocus={false}
+              size={'full'}
+            >
+              <ModalOverlay />
+              <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
+                <ModalHeader bg={navbarBg} padding="basePadding">
+                  <Flex flexDirection={'row'} position={'relative'}>
+                    <Box 
+                      position={'absolute'}
+                      left={0}
+                      top={0}
+                      width="50px"
+                      height={'100%'}
+                      display={{base :'flex', md:'none'}} 
+                      alignItems={'center'}  
+                      onClick={() => fn_close_modal_mypage_mingam()} cursor={'pointer'}
+                    >
+                      <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
+                    </Box>
+                    <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
+                      <CustomText color={'white'} noOfLines={1}>민감 정보 수집 및 이용 동의</CustomText>
+                    </Box>
+                    <Box 
+                      position={'absolute'}
+                      right={0}
+                      top={0}
+                      width="50px"
+                      height={'100%'}
+                      display={{base :'none', md:'flex'}} 
+                      justifyContent={'flex-end'} 
+                      alignItems={'center'}  
+                      onClick={() => fn_close_modal_mypage_mingam()}  cursor={'pointer'}
+                      >
+                      <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
+                    </Box>
+                  </Flex>
+                </ModalHeader>
+                <ModalBody overflowY="auto" maxH="100vh">
+                  <MingamContent />
+                </ModalBody>
+              </ModalContent>
+            </Modal>
+          )
+        }
         </>
       )
     }

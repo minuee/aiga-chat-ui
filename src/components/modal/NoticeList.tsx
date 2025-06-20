@@ -1,7 +1,7 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import {Flex,Box,useColorModeValue,Accordion,AccordionItem,AccordionButton,AccordionPanel,AccordionIcon,SkeletonText,SkeletonCircle,Text } from '@chakra-ui/react';
+import {Flex,Box,useColorModeValue,SkeletonText,SkeletonCircle,Text } from '@chakra-ui/react';
 import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as CommonService from "@/services/common/index";
@@ -10,9 +10,10 @@ import * as mCookie from "@/utils/cookies";
 import { ModalMypageNoticeDetailStore } from '@/store/modalStore';
 import Image from 'next/image';
 import { loadingImage } from "@/components/icons/IconImage";
-import ImageNullList from "@/assets/icons/img-notice.png";
+import { IconNotice } from '@/components/icons/svgIcons';
+//import IconNotice from "@/assets/icons/img-notice.png";
 import NoticeDetail from "@/components/modal/NoticeDetail";
-
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
 const items = [
   { idx: 1, title: "First Item", content: "Some value 1..." , date:'2023-01-01'},
@@ -98,16 +99,12 @@ function NoticeListModal(props: NoticeListModalProps) {
               ?
               <Flex flexDirection={'column'} justifyContent={'center'} minHeight={'calc( 100vh - 300px )'} width={'100%'} mt={5}>
                 <Box display={'flex'} justifyContent={'center'} alignContent={'center'}> 
-                  <Image 
-                    src={ImageNullList}
-                    alt="ImageNullList"
-                    style={{width:'40px',objectFit: 'contain',maxWidth:"40px"}}
-                  />
+                  <IconNotice boxSize={'40px'}/>
                 </Box>
                 <Box display={'flex'} justifyContent={'center'} alignContent={'center'} mt="20px"> 
-                  <Text fontSize={'17px'} color={textColor2}>
+                  <CustomText fontSize={'17px'} color={textColor2}>
                     공지사항이 없습니다.
-                  </Text>
+                  </CustomText>
                 </Box>
               </Flex>
               :
@@ -121,8 +118,8 @@ function NoticeListModal(props: NoticeListModalProps) {
                       cursor={'pointer'} onClick={() => onSendNoticeListButton(element)}
                     >
                       <Box display={'flex'} flexDirection={'column'} justifyContent={'center'}>
-                        <Text fontSize={'17px'} color={titleColor} lineHeight={"150%"} fontWeight={'700'}>{element.title}</Text>
-                        <Text fontSize={'13px'} color={dateColor} lineHeight={"150%"}>{element.date}</Text>
+                        <CustomTextBold700 fontSize={'17px'} color={titleColor} lineHeight={"150%"}>{element.title}</CustomTextBold700>
+                        <CustomText fontSize={'13px'} color={dateColor} lineHeight={"150%"}>{element.date}</CustomText>
                       </Box>
                     </Flex>
                   )

@@ -18,6 +18,25 @@ export function getChatNewSession(): any {
     }
 }
 
+
+export function setRequestStop(session_id: string): any {
+    try{
+        console.log("apidata setRequestStop",session_id)
+        const res:any =  api.delete(`/chat/${session_id}`)
+        .then((response) => {
+            return response?.data;
+        }).catch((error) => {
+            console.log("eeeee",error)
+            return null;
+        });
+        return res;
+   }catch(error){
+        console.log("eeeee",error)
+        return null;   
+   }
+}
+
+
 export function getChatHistoryList(): any {
     try{
         const res:any =  api.get(`/history`)

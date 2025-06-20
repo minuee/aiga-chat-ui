@@ -4,7 +4,7 @@ import React from 'react';
 import { Box,Flex, useColorModeValue,Text,Input, Divider} from '@chakra-ui/react';
 import Image from 'next/image';
 import functions from '@/utils/functions';
-import CustomText, { CustomBoldText } from "@/components/text/CustomText";
+import CustomText, { CustomTextBold700 } from "@/components/text/CustomText";
 import DoctorAvatar from "@/assets/images/thumb_dr_basic.png";
 type DoctorListProps = {
     data: any;
@@ -20,10 +20,10 @@ const DoctorList = ({ data, onSendDoctorButton }:DoctorListProps) => {
         <>
             <Flex display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'100px'} py="15px">
                 <Box flex={3} flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} pr='15px' onClick={() => onSendDoctorButton(data,1)} cursor={'pointer'}>
-                    <Text fontSize={'15px'} color="#0AA464" fontWeight={'bold'}>{data?.hospital || ""}</Text>
-                    <Text fontSize={'24px'} color="#000000" fontWeight={'bold'} lineHeight={"200%"}>
+                    <CustomTextBold700 fontSize={'15px'} color="#0AA464">{data?.hospital || ""}</CustomTextBold700>
+                    <CustomTextBold700 fontSize={'24px'} color="#000000"  lineHeight={"200%"}>
                         {!functions.isEmpty(data?.name) ? data?.name : ""} 교수
-                    </Text>
+                    </CustomTextBold700>
                     <Flex mt="2" flexShrink={1} flexWrap={'wrap'}>
                         <Box display={'flex'} padding="2px 4px" bg="#DFF5ED" borderRadius={"4px"}  mr="1" mt="1">
                             <CustomText fontSize={'13px'} color="#5C5E69">{data?.deptname || ""}</CustomText>

@@ -16,12 +16,13 @@ import mConstants from '@/utils/constants';
 import DoctorDetail  from '@/components/modal/Doctor';
 import { ModalDoctorDetailStore,DoctorFromListStore } from '@/store/modalStore';
 
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import { MdArrowBack,MdInsertEmoticon,MdOutlineClose } from 'react-icons/md';
 import { TbBook2 } from "react-icons/tb";
 import { BsGeoAlt } from "react-icons/bs";
 import Image from 'next/image';
-import IconSearch from "@/assets/icons/img-search.png";
-
+//import IconSearch from "@/assets/icons/img-search.png";
+import { IconSearch } from '@/components/icons/svgIcons';
 const geolocationOptions = {
   enableHighAccuracy: true,
   timeout: 1000 * 10,
@@ -237,97 +238,40 @@ function DoctorListModal(props: DoctorListModalProps) {
             }}
           >
             <Flex 
-              width={"100%"} 
-              px="15px"
-              py="15px"
-              flexDirection={'row'} alignItems={'center'} 
-              fontSize={'14px'} minHeight={"40px"} 
-              borderBottom={"1px solid #ccc"} zIndex={1000} 
-              bg={isReLoading ? "transparent" : haederBgColor}
-              opacity={ isReLoading ? 0.7 : 1}
-              overflowX={'auto'} 
-              whiteSpace="nowrap"
-              ref={flexRef} 
+              width={"100%"} px="15px" py="15px" flexDirection={'row'} alignItems={'center'} fontSize={'14px'} minHeight={"40px"} borderBottom={"1px solid #ccc"} zIndex={1000} 
+              bg={isReLoading ? "transparent" : haederBgColor} opacity={ isReLoading ? 0.7 : 1} overflowX={'auto'} whiteSpace="nowrap" ref={flexRef} 
             >
-              <Tag
-                size={'lg'}
-                borderRadius='full'
-                px={5}
-                variant='solid'
-                bg={makeBgColor('all')}
-                onClick={() => onHandleSortChange('all')}
-                cursor={'pointer'}
-                flexShrink="0"
-              >
+              <Tag size={'lg'} borderRadius='full' px={5} variant='solid' bg={makeBgColor('all')} flexShrink="0" onClick={() => onHandleSortChange('all')} cursor={'pointer'}>
                 <TagLabel color={makeTextColor('all')}>
                   전체
                 </TagLabel>
               </Tag>
-              <Tag
-                size={'lg'}
-                borderRadius='full'
-                px={5}
-                ml={2}
-                variant='solid'
-                bg={makeBgColor('experience')}
-                onClick={() => onHandleSortChange('experience')}
-                cursor={'pointer'}
-                flexShrink="0"
-              >
+              <Tag size={'lg'} borderRadius='full' px={5} ml={2} variant='solid' bg={makeBgColor('experience')} onClick={() => onHandleSortChange('experience')} cursor={'pointer'} flexShrink="0">
                 <TagLeftIcon boxSize='17px' as={MdInsertEmoticon} color={makeTextColor('experience')} />
                 <TagLabel color={makeTextColor('experience')}>환자 경험</TagLabel>
               </Tag>
-              <Tag
-                size={'lg'}
-                borderRadius='full'
-                px={5}
-                ml={2}
-                variant='solid'
-                bg={makeBgColor('score')}
-                onClick={() => onHandleSortChange('score')}
-                cursor={'pointer'}
-                flexShrink="0"
-              >
+              <Tag size={'lg'} borderRadius='full' px={5} ml={2} variant='solid' bg={makeBgColor('score')} onClick={() => onHandleSortChange('score')} cursor={'pointer'} flexShrink="0">
                 <TagLeftIcon boxSize='17px' as={TbBook2} color={makeTextColor('score')} />
                 <TagLabel color={makeTextColor('score')}>논문 스코어</TagLabel>
               </Tag>
               {
                 ( functions.isEmpty(inputs.latitude) && functions.isEmpty(inputs.longitude) ) ? 
                 (
-                  <Tag
-                    size={'lg'}
-                    borderRadius='full'
-                    px={5}
-                    ml={2}
-                    variant='solid'
-                    bg={makeBgColor('distance')}
-                    onClick={() => onHandleSortChange('distance')}
-                    cursor={'pointer'}
-                    flexShrink="0"
-                  >
+                  <Tag size={'lg'} borderRadius='full' px={5} ml={2} variant='solid' bg={makeBgColor('distance')} onClick={() => onHandleSortChange('distance')} cursor={'pointer'} flexShrink="0">
                     <TagLeftIcon boxSize='17px' as={BsGeoAlt} color={makeTextColor('distance')} />
                     <TagLabel color={makeTextColor('distance')}>거리순</TagLabel>
                   </Tag>
                 )
                 :
                 (
-                  <Tag
-                    size={'lg'}
-                    borderRadius='full'
-                    px={5}
-                    ml={2}
-                    variant='solid'
-                    bg={makeBgColor('distance')}
-                    onClick={() => console.log("dddd")}
-                    cursor={'pointer'}
-                    flexShrink="0"
+                  <Tag size={'lg'} borderRadius='full' px={5} ml={2} variant='solid' bg={makeBgColor('distance')} onClick={() => console.log("dddd")} cursor={'pointer'} flexShrink="0"
                   >
                     <TagLeftIcon boxSize='17px' as={BsGeoAlt} color={makeTextColor('distance')} />
                     <TagLabel color={textColor}>
                     <Box display={'flex'} alignItems={'center'} ml={2} cursor={'pointer'}>
                       <Popover placement='top-start'>
                         <PopoverTrigger>
-                          <Text color={makeTextColor('distance')}>거리순<span style={{color: 'red'}}>*</span></Text>
+                          <CustomText color={makeTextColor('distance')}>거리순<span style={{color: 'red'}}>*</span></CustomText>
                         </PopoverTrigger>
                         <PopoverContent color='white' bg='#212127' borderColor='#212127'>
                           <PopoverHeader 
@@ -335,11 +279,11 @@ function DoctorListModal(props: DoctorListModalProps) {
                             bg='#212127'
                             color={textColor}
                           >
-                            <Text color={textColor} fontSize={"15px"}>안내</Text>
+                            <CustomText color={textColor} fontSize={"15px"}>안내</CustomText>
                           </PopoverHeader>
                           <PopoverArrow bg='#212127' />
                           <PopoverBody width={"100%"}>
-                            <Text 
+                            <CustomText 
                               color={textColor} 
                               fontSize={"13px"}
                               isTruncated // 긴 텍스트를 말줄임 처리
@@ -348,7 +292,7 @@ function DoctorListModal(props: DoctorListModalProps) {
                               whiteSpace="normal" // 줄바꿈 허용
                             >
                               자신의 위치정보를 수락하지 않을 경우 거리순으로 조회가 되지 않습니다.
-                            </Text>
+                            </CustomText>
                           </PopoverBody>
                         </PopoverContent>
                       </Popover>
@@ -364,13 +308,9 @@ function DoctorListModal(props: DoctorListModalProps) {
         {
           doctors?.length == 0 && (
           <Flex display={'flex'} flexDirection={'column'} minHeight={'200px'}  pt={10} overflowY={'auto'} justifyContent={'center'} alignItems={'center'}>
-            <Image 
-              src={IconSearch}
-              alt="IconSearch"
-              style={{width:'26px',objectFit: 'contain',maxWidth:"26px"}}
-            />
+            <IconSearch boxSize={'26px'}/>
             <Box display={'flex'} justifyContent={'center'} alignItems={'center'} mt="20px">
-              <Text color='#7F879B' fontSize={'17px'}>조회된 결과가 없습니다.</Text>
+              <CustomText color='#7F879B' fontSize={'17px'}>조회된 결과가 없습니다.</CustomText>
             </Box>
           </Flex>
           )
@@ -403,19 +343,13 @@ function DoctorListModal(props: DoctorListModalProps) {
                 <ModalHeader bg={navbarBg} padding="basePadding">
                   <Flex flexDirection={'row'} position={'relative'}>
                     <Box 
-                      position={'absolute'}
-                      left={0}
-                      top={0}
-                      width="50px"
-                      height={'100%'}
-                      display={{base :'flex', md:'none'}} 
-                      alignItems={'center'}  
+                      position={'absolute'} left={0} top={0} width="50px" height={'100%'} display={{base :'flex', md:'none'}} alignItems={'center'}  
                       onClick={() => fn_close_modal_doctor_detail()} cursor={'pointer'}
                     >
                       <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                     </Box>
                     <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                      <Text color={'white'} noOfLines={1}>{selectedDoctor?.name} 교수</Text>
+                      <CustomTextBold700 color={'white'} noOfLines={1}>{selectedDoctor?.name} 교수</CustomTextBold700>
                     </Box>
                     <Box position={'absolute'} right={0} top={0} width="50px" height={'100%'} display={{base :'none', md:'flex'}} justifyContent={'flex-end'} 
                       alignItems={'center'}  onClick={() => fn_close_modal_doctor_detail()}  cursor={'pointer'}

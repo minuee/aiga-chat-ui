@@ -4,6 +4,9 @@ import { MdOutlineMoreVert,MdMoreHoriz,MdOutlineEdit,MdOutlineDelete } from 'rea
 import Alert from '@/components/alert/Alert';
 import mConstants from '@/utils/constants';
 import functions from '@/utils/functions';
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import { ChatSesseionIdStore } from '@/store/newChatStore';
+
 type HistoryItemProps = {
     data: any;
     onDeleteHistory: (session_id: string) => void;
@@ -22,6 +25,7 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
         ...data,
         shareLink : `https://aiga.kormedi.com/share/minuee/${data.session_id}`
     });
+    const chatSessionId = ChatSesseionIdStore(state => state.chatSessionId);
     const textColor = useColorModeValue('navy.700', 'white');
     const borderColor = useColorModeValue('gray.200', 'whiteAlpha.300');
     const bgColor = useColorModeValue('white', 'navy.700');
@@ -55,7 +59,7 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
             minHeight={'42px'}
             px="10px"
             maxWidth={`${mConstants.modalMaxWidth}px`}
-            bg={editMode ?'#EAF4FF' : '#ffffff'}
+            bg={( editMode || chatSessionId == data?.session_id ) ?'#EAF4FF' : '#ffffff'}
             borderRadius={editMode ? '8px' : 0}
             _hover={{
                 bg: editMode ?'#EAF4FF' : '#EFF2F7',
@@ -85,13 +89,11 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
             </FormControl>
             :
             <Box onClick={() => onHandCallHistory(data)} bg='transparent' minWidth={"90%"} zIndex={2} cursor={'pointer'}>
-                <Text fontSize='17px' noOfLines={1} pr='20px' color='#212127'>
+                <CustomText fontSize='17px' noOfLines={1} pr='20px' color='#212127'>
                     {functions.isEmpty(title) ? "무제" :title }
-                </Text>
+                </CustomText>
             </Box>
-            
         }
-            
         { 
             !editMode && (
                 <Box position={"absolute"} left={'-5px'} top={"6px"} width={'100%'}  height={'42px'} zIndex={1}>
@@ -141,7 +143,7 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
                     bodyContent={
                         <Flex flexDirection={'column'}>
                             <Box mb={2}>
-                                <Text fontSize={'15px'}>이름,공유 후 추가하는 모든 메시지가 비공개로 유지됩니다.</Text>
+                                <CustomText fontSize={'15px'}>이름,공유 후 추가하는 모든 메시지가 비공개로 유지됩니다.</CustomText>
                             </Box>
                             <Input 
                                 type='text' 

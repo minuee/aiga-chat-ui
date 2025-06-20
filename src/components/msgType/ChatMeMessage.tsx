@@ -4,7 +4,7 @@ type ChatMeMessageProps = {
     msg: string;
     indexKey : any
 };
-
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 const ChatMeMessage = ({  msg = "대답이 중지되었습니다.", indexKey}: ChatMeMessageProps) => {
 
   const bgMeColor = useColorModeValue('#2B8FFF', 'white');
@@ -28,9 +28,9 @@ const ChatMeMessage = ({  msg = "대답이 중지되었습니다.", indexKey}: C
         w="auto" 
         zIndex={2}
       >
-        <Text color={textMeColor} fontWeight="normal" fontSize={'17px'} lineHeight={'150%'} whiteSpace="pre-line">
+        <CustomText color={textMeColor} fontSize={'17px'} lineHeight={'150%'} whiteSpace="pre-line">
           {msg}
-        </Text>
+        </CustomText>
       </Flex>
     </Flex>
   )

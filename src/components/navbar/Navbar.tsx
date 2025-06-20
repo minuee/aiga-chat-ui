@@ -8,7 +8,7 @@ import { isWindowAvailable } from '@/utils/navigation';
 import Image from 'next/image';
 import LogoImage from "@/assets/images/logo.png";
 import mConstants from '@/utils/constants';
-
+import CustomText, { CustomTextBold700 } from "@/components/text/CustomText";
 //새창열기 전역상태
 import NewChatStateStore from '@/store/newChatStore';
 
@@ -40,8 +40,8 @@ export default function AdminNavbar(props: {
   let navbarFilter = 'none';
   let navbarBackdrop = 'blur(20px)';
   let navbarShadow = 'none';
-  const basicColor = useColorModeValue('white', 'white');
-  let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
+  const basicColor = useColorModeValue('white', 'rgba(0, 59, 149, 1)');
+  let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgb(255, 255, 255)');
   let navbarBorder = 'transparent';
   let secondaryMargin = '0px';
   let gap = '0px';
@@ -60,15 +60,6 @@ export default function AdminNavbar(props: {
       position={navbarPosition}
       boxShadow={navbarShadow}
       bg={navbarBg}
-      //borderColor={navbarBorder}
-      //filter={navbarFilter}
-      //backdropFilter={navbarBackdrop}
-      //backgroundPosition="center"
-      //backgroundSize="cover"
-      //borderRadius="10px"
-      //borderWidth="1.5px"
-      //borderStyle="solid"
-  
       display={'flex'}
       minH="60px"
       justifyContent={{ xl: 'center' }}
@@ -92,7 +83,7 @@ export default function AdminNavbar(props: {
           <Icons.AigaWelcomeIcon h="40px" w="60px" color={basicColor} /> */}
         </Box>
         <Box display={'flex'} flex={1} pl={"10px"} alignItems={'center'} justifyContent={'center'}>
-          <Text fontSize={'17px'} color={basicColor} fontWeight={'bold'}>AIGA</Text>
+          <CustomTextBold700 fontSize={'17px'} color={basicColor}>AIGA</CustomTextBold700>
         </Box>
         <Box display={'flex'} flex={1} alignItems={'center'} justifyContent={'flex-end'} pr="10px">
           <NavbarLinks secondary={props.secondary} />

@@ -7,6 +7,7 @@ import Link from '@/components/link/Link';
 import Alert from '@/components/alert/Alert';
 import NextImage from 'next/legacy/image';
 import { loadingImage } from "@/components/icons/IconImage"
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
 export interface RequestModalProps extends PropsWithChildren {
   isReceiving : boolean;
@@ -58,15 +59,15 @@ function RequestModal(props: RequestModalProps) {
                     src={loadingImage}
                     alt={'doctor1'}
                   />
-                  <Text color="#ffffff">등록중...</Text>
+                  <CustomText color="#ffffff">등록중...</CustomText>
                 </Box>
               </Flex>
             )
           }
           <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'100%'}>
-            <Text fontSize={'17px'} color={textColor2}>
+            <CustomText fontSize={'17px'} color={textColor2}>
                 서비스 이용 중 궁금하신  점이나 개선 의견을 보내주세요
-            </Text>
+            </CustomText>
             {/* <Box my={2}>
               <FormControl variant="floatingLabel">
                 <Input 
@@ -105,17 +106,13 @@ function RequestModal(props: RequestModalProps) {
                 제출하기
               </Button>
             </Box>
-            <Text fontSize={'14px'} fontWeight={'bold'}>
-                안내 사항
-            </Text>
-            <Text fontSize={'12px'} color={textColor2}>
+            <CustomTextBold700 fontSize={'14px'}>안내 사항</CustomTextBold700>
+            <CustomText fontSize={'12px'} color={textColor2}>
             • 산업안전보건법에 따라 고객 응대 근로자 보호조치를 하고 있으며, 모든 문의는 기록으로 남습니다.
-            </Text>
+            </CustomText>
           </Box>
           <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'100%'} mt={5}>
-            <Text fontSize={'14px'} fontWeight={'bold'}>
-                개인정보 수집•이용에 대한 안내
-            </Text>
+            <CustomTextBold700 fontSize={'14px'}>개인정보 수집•이용에 대한 안내</CustomTextBold700>
             <Box display={'flex'} flexDirection={'row'} alignContent={'center'} minHeight={'50px'} width={'100%'}>
               <Checkbox
                 colorScheme='blue'
@@ -133,37 +130,37 @@ function RequestModal(props: RequestModalProps) {
                       <Heading size='xs' textTransform='uppercase'>
                         수집항목
                       </Heading>
-                      <Text pt='2' fontSize='sm'>
+                      <CustomText pt='2' fontSize='sm'>
                         답변 받을 이메일주소
-                      </Text>
+                      </CustomText>
                     </Box>
                     <Box>
                       <Heading size='xs' textTransform='uppercase'>
                         수집목적
                       </Heading>
-                      <Text pt='2' fontSize='sm'>
+                      <CustomText pt='2' fontSize='sm'>
                         문의요청불편사항 확인 및 처리 결과 회신
-                      </Text>
+                      </CustomText>
                     </Box>
                     <Box>
                       <Heading size='xs' textTransform='uppercase'>
                         보유기간
                       </Heading>
-                      <Text pt='2' fontSize='sm'>
+                      <CustomText pt='2' fontSize='sm'>
                        3년간 보관 후 지체없이 파기
-                      </Text>
+                      </CustomText>
                     </Box>
                   </Stack>
                 </CardBody>
               </Card>
             </Box>
             <Box display={'flex'} flexDirection={'column'} alignContent={'center'} minHeight={'50px'} width={'100%'} mt={2}>
-              <Text fontSize={'12px'} color={textColor2}>
+              <CustomText fontSize={'12px'} color={textColor2}>
                 위 동의를 거부할 권리가 있으며, 동의를 거부하실 경우 문의처리 및 결과 회신이 제한됩니다. 요구하지 않은 개인정보는 입력하지 않도록 주의해 주세요
-              </Text>
-              <Text fontSize={'12px'} color={textColor2} >
-                더 자세한 내용에 대해서는 <Link fontWeight="500" fontSize={'12px'} color={textColor} href="https://kormedi.com/%ea%b0%9c%ec%9d%b8%ec%a0%95%eb%b3%b4%ec%b2%98%eb%a6%ac%eb%b0%a9%ec%b9%a8-%ec%bd%94%eb%a9%94%eb%94%94%eb%8b%b7%ec%bb%b4/" target='_blank' ><Text as={'span'} color={textColor}>AIGA 개인정보처리방침</Text></Link>을 참고하시기 바랍니다.
-              </Text>
+              </CustomText>
+              <CustomText fontSize={'12px'} color={textColor2} >
+                더 자세한 내용에 대해서는 <Link fontWeight="500" fontSize={'12px'} color={textColor} href="https://kormedi.com/%ea%b0%9c%ec%9d%b8%ec%a0%95%eb%b3%b4%ec%b2%98%eb%a6%ac%eb%b0%a9%ec%b9%a8-%ec%bd%94%eb%a9%94%eb%94%94%eb%8b%b7%ec%bb%b4/" target='_blank' ><CustomText as={'span'} color={textColor}>AIGA 개인정보처리방침</CustomText></Link>을 참고하시기 바랍니다.
+              </CustomText>
             </Box>
           </Box>
           

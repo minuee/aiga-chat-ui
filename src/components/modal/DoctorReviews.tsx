@@ -15,14 +15,15 @@ import { MdInfoOutline } from 'react-icons/md';
 import ProgressBar from '@/components/fields/ProgressBar';
 import NewRating from "@/components/icons/newStar"
 import functions from '@/utils/functions';
-import IconVote1 from "@/assets/icons/vote_1.png";
-import IconVote2 from "@/assets/icons/vote_2.png";
-import IconVote3 from "@/assets/icons/vote_3.png";
-import IconVote4 from "@/assets/icons/vote_4.png";
+import { IconVote1,IconVote2,IconVote3,IconVote4 } from '@/components/icons/svgIcons';
+//import IconVote1 from "@/assets/icons/vote_1.png";
+//import IconVote2 from "@/assets/icons/vote_2.png";
+//import IconVote3 from "@/assets/icons/vote_3.png";
+//import IconVote4 from "@/assets/icons/vote_4.png";
 
 import mConstants from '@/utils/constants';
 import ReviewItem from "@/components/text/ReviewItem";
-import CustomText, { CustomBoldText } from "@/components/text/CustomText";
+import CustomText, { CustomTextBold700 } from "@/components/text/CustomText";
 import { ModalDoctorReviewStore,ModalDoctorRequestStore,DoctorFromListStore } from '@/store/modalStore';
 
 export interface DoctorModalProps extends PropsWithChildren {
@@ -135,7 +136,7 @@ function DoctorReview( props: DoctorModalProps ) {
       <>
         <Flex display={'flex'} flexDirection={'column'} bg="#FAFBFD" minHeight={'100px'} padding={'0 10px'} mt={5}>
           <Box display={'flex'} flexDirection={'row'} alignItems={'center'} pt="10px">
-            <Text fontSize={"17px"} fontWeight={'bold'} color={'#0AA464'}>AI 소셜리뷰</Text>
+            <CustomTextBold700 fontSize={"17px"} color={'#0AA464'}>AI 소셜리뷰</CustomTextBold700>
             <Box display={'flex'} alignItems={'center'} ml={2} cursor={'pointer'}>
               <Popover placement='top-start'>
                 <PopoverTrigger>
@@ -154,61 +155,45 @@ function DoctorReview( props: DoctorModalProps ) {
           <SimpleGrid spacing={3} templateColumns={{base : 'repeat(2, 1fr)' , sm : 'repeat(4, 1fr)'}}>
             <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
               <Box display='flex' justifyContent={'center'} alignItems={'center'} py="10px" minH={"50px"}>
-                <Image 
-                  src={IconVote1}
-                  alt="IconVote1"
-                  style={{width:'26px',objectFit: 'contain',maxWidth:"26px"}}
-                />
+                <IconVote1 boxSize={'32px'} />
               </Box>
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} pb="10px">
-                <Text fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>친절 • 배려</Text>
-                <Text fontSize={'15px'} color='#212127' lineHeight={"150%"} fontWeight={'bold'}>4.5</Text>
+                <CustomText fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>친절 • 배려</CustomText>
+                <CustomTextBold700 fontSize={'15px'} color='#212127' lineHeight={"150%"} >4.5</CustomTextBold700>
               </Box>
             </Box>
             <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
               <Box display='flex' justifyContent={'center'} alignItems={'center'} py="10px" minH={"50px"}>
-                <Image 
-                  src={IconVote2}
-                  alt="IconVote2"
-                  style={{width:'26px',objectFit: 'contain',maxWidth:"26px"}}
-                />
+                <IconVote2 boxSize={'32px'} />
               </Box>
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} pb="10px">
-                <Text fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>치료 만족</Text>
-                <Text fontSize={'15px'} color='#212127' lineHeight={"150%"} fontWeight={'bold'}>4.5</Text>
+                <CustomText fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>치료 만족</CustomText>
+                <CustomTextBold700 fontSize={'15px'} color='#212127' lineHeight={"150%"}>4.5</CustomTextBold700>
               </Box>
             </Box>
             <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
               <Box display='flex' justifyContent={'center'} alignItems={'center'} py="10px" minH={"50px"}>
-                <Image 
-                  src={IconVote3}
-                  alt="IconVote3"
-                  style={{width:'26px',objectFit: 'contain',maxWidth:"26px"}}
-                />
+                <IconVote3 boxSize={'32px'} />
               </Box>
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} pb="10px">
-                <Text fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>쉬운 설명</Text>
-                <Text fontSize={'15px'} color='#212127' lineHeight={"150%"} fontWeight={'bold'}>4.5</Text>
+                <CustomText fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>쉬운 설명</CustomText>
+                <CustomTextBold700 fontSize={'15px'} color='#212127' lineHeight={"150%"}>4.5</CustomTextBold700>
               </Box>
             </Box>
             <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
               <Box display='flex' justifyContent={'center'} alignItems={'center'} py="10px" minH={"50px"}>
-                <Image 
-                  src={IconVote4}
-                  alt="IconVote4"
-                  style={{width:'26px',objectFit: 'contain',maxWidth:"26px"}}
-                />
+                <IconVote4 boxSize={'32px'} />
               </Box>
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} pb="10px">
-                <Text fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>추천 의향</Text>
-                <Text fontSize={'15px'} color='#212127' lineHeight={"150%"} fontWeight={'bold'}>4.5</Text>
+                <CustomText fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>추천 의향</CustomText>
+                <CustomTextBold700 fontSize={'15px'} color='#212127' lineHeight={"150%"}>4.5</CustomTextBold700>
               </Box>
             </Box>
           </SimpleGrid>
         </Flex>
         <Flex display={'flex'} flexDirection={'column'} bg={{base : "#FAFBFD", sm:'#FAFBFD'}}  minHeight={'100px'} padding={'0 10px'} mt={5}>
           <Box display={'flex'} flexDirection={'row'} alignItems={'center'} pt="10px">
-            <Text fontWeight={'bold'} color={'green.600'}>AIGA 리뷰</Text>
+            <CustomText fontWeight={'bold'} color={'green.600'}>AIGA 리뷰</CustomText>
             <Box display={'flex'} alignItems={'center'} ml={2} cursor={'pointer'}>
               <Popover placement='top-start'>
                 <PopoverTrigger>
@@ -224,25 +209,10 @@ function DoctorReview( props: DoctorModalProps ) {
             </Box>
           </Box>
           <Divider orientation='horizontal' my={2}/>
-          <Flex 
-            flexDirection={{base : 'column', sm2 : "row"}} 
-            justifyContent={{base : 'space-evenly', sm2:'center'}} 
-            alignItems={{base : 'center', sm2:'center'}} 
-            minHeight={'100px'} 
-            width={'100%'}
-          >
-            <Box 
-              flex={1} 
-              display={'flex'} 
-              flexDirection={'column'} 
-              alignItems={'center'} 
-              justifyContent={'space-evenly'} 
-              height={'100%'} 
-              width={{base : '100%', sm2:'auto'}}
-              mb={{base : 4, sm2 : 0}}
-            >
+          <Flex flexDirection={{base : 'column', sm2 : "row"}} justifyContent={{base : 'space-evenly', sm2:'center'}} alignItems={{base : 'center', sm2:'center'}} minHeight={'100px'} width={'100%'}>
+            <Box flex={1} display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'space-evenly'} height={'100%'} width={{base : '100%', sm2:'auto'}} mb={{base : 4, sm2 : 0}}>
               <Flex flex={1}>
-                <Text fontSize={'40px'} color={'#000000'} fontWeight={'bold'}>4.5</Text>
+                <CustomTextBold700 fontSize={'40px'} color={'#000000'} >4.5</CustomTextBold700>
               </Flex>
               <Flex flex={1} >
                 <NewRating 
@@ -253,46 +223,46 @@ function DoctorReview( props: DoctorModalProps ) {
             <Box flex={2} display={'flex'} flexDirection={'column'}  alignItems={'center'} justifyContent={'flex-end'} width={{base : '100%', sm2:'auto'}}>
               <Box display={'flex'} flexDirection={'row'}  alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
                 <Box flex={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} pr={'15px'}>
-                  <Text fontSize={'13px'} color={'#5C5E69'}>친절•배려</Text>
+                  <CustomText fontSize={'13px'} color={'#5C5E69'}>친절•배려</CustomText>
                 </Box>
                 <Box flex={2}>
                   <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={80} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box flex={1} padding={'0 5px'}>
-                  <Text fontSize={'13px'} color='#1D73DC'>4.0</Text>
+                  <CustomText fontSize={'13px'} color='#1D73DC'>4.0</CustomText>
                 </Box>
               </Box>
               <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
                 <Box flex={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} pr={'15px'}>
-                  <Text fontSize={'13px'} color={'#5C5E69'}>치료 만족</Text>
+                  <CustomText fontSize={'13px'} color={'#5C5E69'}>치료 만족</CustomText>
                 </Box>
                 <Box flex={2}>
                   <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={80} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box flex={1} padding={'0 5px'}>
-                  <Text fontSize={'13px'} color='#1D73DC'>4.0</Text>
+                  <CustomText fontSize={'13px'} color='#1D73DC'>4.0</CustomText>
                 </Box>
               </Box>
               <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
                 <Box flex={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} pr={'15px'}>
-                  <Text fontSize={'13px'} color={'#5C5E69'}>쉬운 설명</Text>
+                  <CustomText fontSize={'13px'} color={'#5C5E69'}>쉬운 설명</CustomText>
                 </Box>
                 <Box flex={2}>
                   <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={80} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box flex={1} padding={'0 5px'}>
-                  <Text fontSize={'13px'} color='#1D73DC'>4.0</Text>
+                  <CustomText fontSize={'13px'} color='#1D73DC'>4.0</CustomText>
                 </Box>
               </Box>
               <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
                 <Box flex={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} pr={'15px'}>
-                  <Text fontSize={'13px'} color={'#5C5E69'}>추천 의향</Text>
+                  <CustomText fontSize={'13px'} color={'#5C5E69'}>추천 의향</CustomText>
                 </Box>
                 <Box flex={2}>
                   <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={20} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box flex={1} padding={'0 5px'}>
-                  <Text fontSize={'13px'} color='#1D73DC'>1.0</Text>
+                  <CustomText fontSize={'13px'} color='#1D73DC'>1.0</CustomText>
                 </Box>
               </Box>
             </Box>

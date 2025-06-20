@@ -2,11 +2,11 @@ import NextImage from 'next/legacy/image';
 import { Flex,useColorModeValue,Text,Box,Icon} from '@chakra-ui/react';
 import { MdFitbit } from 'react-icons/md';
 import { loadingImage } from "@/components/icons/IconImage";
-
+import ProcessingBar from "@/assets/icons/processing.gif";
 type ProcessingProps = {
     msg: string;
 };
-
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 const Processing = ({ msg = "증상 분석 중"}: ProcessingProps) => {
 
   const textColor = useColorModeValue('navy.700', 'white')
@@ -26,10 +26,10 @@ const Processing = ({ msg = "증상 분석 중"}: ProcessingProps) => {
         <Icon as={MdFitbit} width="20px" height="20px" color="white" />
       </Flex>
       <Box ml={2} pt={2}>
-        <NextImage width="25" height="25" src={loadingImage} alt={'loading'} />
+        <NextImage width="60" height="20" src={ProcessingBar} alt={'loading'} />
       </Box>
       <Box ml={2} pt={1}>
-        <Text color={textColor}>{msg}</Text>
+        <CustomText color={textColor}>{msg}</CustomText>
       </Box>
     </Flex>
   )

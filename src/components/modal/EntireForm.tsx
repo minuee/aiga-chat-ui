@@ -5,6 +5,7 @@ import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Checkbox,useColorModeV
 import mConstants from '@/utils/constants';
 import Image from 'next/image';
 import ImageEntire from "@/assets/images/img-entire.png";
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
 export interface EntireModalProps extends PropsWithChildren {
   isOpen : boolean;
@@ -46,9 +47,9 @@ function EntireModal(props: EntireModalProps) {
           <Box flex={1} display={'flex'} flexDirection={'column'} justifyContent={'flex-start'} minHeight={'50px'} width={'100%'}>
             <Flex  justifyContent={'center'} minHeight={'50px'} width={'98%'} mt={5}>
               <Box flex={3} pr={'20px'}> 
-                <Text fontSize={'24px'} color={textColor2} fontWeight={'bold'}>
+                <CustomTextBold700 fontSize={'24px'} color={textColor2}>
                   탈퇴 전, 다음 사항을 꼭 확인해 주세요
-                </Text>
+                </CustomTextBold700>
               </Box>
               <Box flex={1} minWidth={"104px"}> 
                 <Image 
@@ -65,9 +66,9 @@ function EntireModal(props: EntireModalProps) {
                   isChecked={inputs.isAgree}
                   onChange={(e) => setInputs({...inputs, isAgree: e.target.checked})}
                 >
-                  <Text color='#7F879B' fontSize={'13px'} lineHeight={'150%'}>
+                  <CustomText color='#7F879B' fontSize={'13px'} lineHeight={'150%'}>
                     리뷰에 기여하신 글과 댓글들은 삭제되지 않습니다. 삭제를 원하시는 내용이 있다면 탈퇴하기 전에 삭제 처리를 부탁드립니다.
-                  </Text>
+                  </CustomText>
                 </Checkbox>
               </Box>
             </Box>
@@ -78,9 +79,9 @@ function EntireModal(props: EntireModalProps) {
                   isChecked={inputs.isAgree2}
                   onChange={(e) => setInputs({...inputs, isAgree2: e.target.checked})}
                 >
-                  <Text color='#7F879B' fontSize={'13px'} lineHeight={'150%'}>
+                  <CustomText color='#7F879B' fontSize={'13px'} lineHeight={'150%'}>
                     삭제된 정보는 다시 되살릴 수 없습니다. 또한 탈퇴 후 24시간 동안 재가입이 어렵습니다.
-                  </Text>
+                  </CustomText>
                 </Checkbox>
               </Box>
             </Box>

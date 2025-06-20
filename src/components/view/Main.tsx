@@ -13,7 +13,26 @@ import MainBgImage from "@/assets/images/etc/bg_1.png";
 import MainBgImage2 from "@/assets/images/etc/bg_2.png";
 import MiniMiddle12F from "@/assets/images/etc/mini_middle_12f.png";
 import MiniSmall3F from "@/assets/images/etc/mini_small_3f.png";
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
+const sungwonjungThumb = [
+  {
+    idx : 1,
+    name : '서브 안내 1',
+  },
+  {
+    idx : 2,
+    name : '서브 안내 2',
+  },
+  {
+    idx : 3,
+    name : '서브 안내 3',
+  },
+  {
+    idx : 4,
+    name : '서브 안내 4',
+  }
+]
 export default function MainPage() {
 
   const [activeIndex, setActiveIndex] = React.useState(0);
@@ -33,64 +52,6 @@ export default function MainPage() {
     },
     [activeIndex]
   );
-
-/* 
-  React.useEffect(() => {
-    intervalRef.current = setInterval(() => {
-  
-      setProgress((oldProgress) => {
-          
-        if (oldProgress === 100) {
-          if ( activeIndex == mConst.sungwonjungThumb.length ) {
-            valueRef.current =  1
-          }else{
-            valueRef.current += 1; 
-          }
-          return 0;
-        }
-        const diff = 1;
-        return oldProgress + diff;
-      });
-    }, 100);
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, []); */
-
-/* 
-  React.useEffect(() => {
-    setProgress(0);
-    const timer = setInterval(() => {
-      setProgress((oldProgress) => {
-          
-        if (oldProgress === 100) {
-          if ( activeIndex == mConst.sungwonjungThumb.length ) {
-              setActiveIndex(0)
-          }else{
-              setActiveIndex(activeIndex+1)
-          }
-          return 0;
-        }
-        const diff = 1;
-        return oldProgress + diff;
-      });
-    }, 100);
-
-    if ( showPopDetail != 9  ) {
-      setProgress(0);
-      setActiveIndex(9)
-      clearInterval(timer);
-    }else{
-      setProgress(0);
-      setActiveIndex(activeIndex == 9 ? 0 : activeIndex)
-    }
-    return () => {
-      clearInterval(timer);
-    };
-  }, [activeIndex,showPopDetail]); */
 
   const openQuickMenu = (val:number) => {
       setShowPopDetail(val);
@@ -117,30 +78,30 @@ export default function MainPage() {
           />
         </Stack>
         <Box sx={styles.contentWrapper} minWidth={{base:'100%', md:`${mConstants.desktopMinWidth}px` }} height='calc( 100vh - 200px )'>
-          <Text variant="sourceHanSans" sx={{color:'#fff',fontSize:'48px',lineHeight:'3em'}}>
+          <CustomText variant="sourceHanSans" sx={{color:'#fff',fontSize:'48px',lineHeight:'3em'}}>
             {activeIndex%2 == 0 ? t('title') : '병원추천 AIGA'}
-          </Text>
-          <Text variant="sourceHanSans" sx={{color:'#fff',fontSize:'22px'}}>
+          </CustomText>
+          <CustomText variant="sourceHanSans" sx={{color:'#fff',fontSize:'22px'}}>
           {
             activeIndex %2 == 0?  
             `의사추천 안내 메시지 1 의사추천 안내 메시지 1 의사 추천합시다`
             :
             `의사추천 안내 메시지 2 의사추천 안내 메시지 2 의사 추천합시다`
           }
-          </Text>
-          <Text variant="sourceHanSans" sx={{color:'#fff',fontSize:'22px'}}>
+          </CustomText>
+          <CustomText variant="sourceHanSans" sx={{color:'#fff',fontSize:'22px'}}>
           {
             activeIndex %2 == 0?  
             `느껴지는 구성으로 매일 신선하고 건강한 상차림을 제공합니다.`
             :
             `풍부한 육즙과 부드러운 육질을 제공합니다.`
           }
-          </Text>
+          </CustomText>
         </Box>
         <Box sx={styles.miniWrapper} minWidth={{base:'100%', md:`${mConstants.desktopMinWidth}px` }} ref={elementRef} >
           <Box sx={styles.miniInsideWrapper} minWidth={{base:'100%', md:`${mConstants.desktopMinWidth}px`}} >
             {
-              mConst.sungwonjungThumb.map((item:any,index:number) => {
+              sungwonjungThumb.map((item:any,index:number) => {
                 return (
                   <Box
                     key={index} 

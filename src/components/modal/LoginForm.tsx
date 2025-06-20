@@ -3,7 +3,7 @@ import React, { PropsWithChildren } from 'react';
 // chakra imports
 import { Icon,Flex,Text,Box,Drawer,DrawerBody,useColorModeValue,DrawerOverlay,DrawerContent,DrawerCloseButton,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody } from '@chakra-ui/react';
 import * as mCookie from "@/utils/cookies";
-import axios from 'axios';
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import { renderThumb,renderTrack,renderView } from '@/components/scrollbar/Scrollbar';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 import * as history from '@/utils/history';
@@ -209,32 +209,13 @@ function LoginModal(props: LoginModalProps) {
             <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000} margin={0} padding={0}>
               <ModalHeader bg={navbarBg} padding="basePadding">
                 <Flex flexDirection={'row'} position={'relative'}>
-                  <Box 
-                    position={'absolute'}
-                    left={0}
-                    top={0}
-                    width="50px"
-                    height={'100%'}
-                    display={{base :'flex', md:'none'}} 
-                    alignItems={'center'}  
-                    onClick={() => fn_close_modal_signup_agree()} cursor={'pointer'}
-                  >
+                  <Box position={'absolute'} left={0} top={0} width="50px" height={'100%'} display={{base :'flex', md:'none'}} alignItems={'center'} onClick={() => fn_close_modal_signup_agree()} cursor={'pointer'}>
                     <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                   </Box>
                   <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                    <Text color={'white'} noOfLines={1}>이용동의</Text>
+                    <CustomText color={'white'} noOfLines={1}>이용동의</CustomText>
                   </Box>
-                  <Box 
-                    position={'absolute'}
-                    right={0}
-                    top={0}
-                    width="50px"
-                    height={'100%'}
-                    display={{base :'none', md:'flex'}} 
-                    justifyContent={'flex-end'} 
-                    alignItems={'center'}  
-                    onClick={() => fn_close_modal_signup_agree()}  cursor={'pointer'}
-                    >
+                  <Box position={'absolute'} right={0} top={0} width="50px" height={'100%'} display={{base :'none', md:'flex'}} justifyContent={'flex-end'} alignItems={'center'} onClick={() => fn_close_modal_signup_agree()}  cursor={'pointer'}>
                     <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
                   </Box>
                 </Flex>

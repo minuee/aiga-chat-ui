@@ -6,6 +6,7 @@ import Card from '@/components/card/Card';
 import TypeAnimation  from'@/components/text/TypeAnimation2';
 import LogoImage from "@/assets/images/logo.png";
 import Image from "next/image";
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
 const MessageBox = React.memo(function MessageBox({ output }: { output: any }) {
   
@@ -51,7 +52,7 @@ const MessageBox = React.memo(function MessageBox({ output }: { output: any }) {
           ?
           <ReactMarkdown
             components={{
-              p: ({ children }) => <Text whiteSpace="pre-line">{children}</Text>
+              p: ({ children }) => <CustomText whiteSpace="pre-line">{children}</CustomText>
             }}
           >
             {output ? output : ''}

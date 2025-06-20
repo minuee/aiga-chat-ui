@@ -27,6 +27,7 @@ import UserStateStore from '@/store/userStore';
 import NewChatStateStore,{ ChatSesseionIdStore,CallHistoryDataStore } from '@/store/newChatStore';
 import { ModalMypageStore,DrawerHistoryStore } from '@/store/modalStore';
 import HistoryItem from '@/components/text/HistoryItem';
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
 interface SidebarContent extends PropsWithChildren {
   routes: IRoute[];
@@ -66,7 +67,7 @@ function SidebarContent(props: SidebarContent) {
   const setOpenHistoryDrawer = DrawerHistoryStore((state) => state.setOpenHistoryDrawer);
   
   React.useEffect(() => {
-    //setIsLoading(false)
+    setIsLoading(false)
     getMyHistoryData();
   }, []);
 
@@ -142,16 +143,29 @@ function SidebarContent(props: SidebarContent) {
   }
 
   const onHandReplaceHistory = async( data:any) => {
-    setOldHistoryData(data)
+
+    let newData = [] as any;
+    data?.sessions.forEach((sessions:any) => {
+      sessions.forEach((conversations:any) => {
+        if ( mConstants.chatAnswerType.includes(conversations?.chat_type) ) {
+          newData.push({
+            ismode : 'server',
+            id: conversations?.session_id,
+            msg: conversations?.chat_type,
+            ...conversations
+          })
+        }
+      });
+    })
+
+    setOldHistoryData(newData)
   }
 
   const onHandleUpdateTitle = async(inputs: any) => {
 
     try{
       setIsReceiving(true)
-      console.log('getMyHistoryData inputs?.title',inputs?.title)
       const res:any = await ChatService.updateChatHistoryTitle(inputs.session_id,inputs?.title);
-      console.log('getMyHistoryData onHandleUpdateTitle',res)
       if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
         setIsReceiving(false)
         const newHistoryData = await historyData.map((item:any) => {
@@ -170,7 +184,6 @@ function SidebarContent(props: SidebarContent) {
       }           
     }catch(e:any){
       setIsReceiving(false)
-      console.log("error of onHandleUpdateTitle",e)
     }
   } 
 
@@ -181,7 +194,6 @@ function SidebarContent(props: SidebarContent) {
   }
 
   const fn_close_modal_mypage = async( isLogout = false) => {
-    console.log("apidata isLogout", isLogout)
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenSetupModal(false);
     setOpenHistoryDrawer(false)
@@ -241,9 +253,9 @@ function SidebarContent(props: SidebarContent) {
               <Flex key={date} flexDirection={'column'} width={'100%'}>
                 <HSeparator mt="20px" mb="15px" w="100%"  />
                 <Box display={'flex'} width={'100%'} mt={1} py="basePadding" px="25px">
-                  <Text fontSize={'15px'} color={textColor2} fontWeight={'semibold'}>
+                  <CustomTextBold400 fontSize={'15px'} color={textColor2}>
                     {date? date.toString() : "YYYY-MM-DD"}
-                  </Text>
+                  </CustomTextBold400>
                 </Box>
                 <Flex flexDirection={'column'} justifyContent={'flex-start'} minHeight={'50px'} width="100%"  px="basePadding">
                   <Stack>
@@ -266,19 +278,7 @@ function SidebarContent(props: SidebarContent) {
         </Stack>
       }
 
-      <Flex 
-        position={'fixed'}
-        left={0}
-        bottom={0}
-        width='100%'
-        maxWidth={`${mConstants.modalMaxWidth}px`}
-        height={'80px'}
-        alignItems="center" 
-        justifyContent={'space-between'} 
-        bg='#e9edf3' 
-        px="20px"
-        zIndex={10}
-      >
+      <Flex position={'fixed'} left={0} bottom={0} width='100%' maxWidth={`${mConstants.modalMaxWidth}px`} height={'80px'} alignItems="center"  justifyContent={'space-between'} bg='#e9edf3'  px="20px" zIndex={10}>
         <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
           {
             functions.isEmpty(userBaseInfo?.profileImage) 
@@ -288,9 +288,9 @@ function SidebarContent(props: SidebarContent) {
             <NextImage  src={userBaseInfo?.profileImage} alt="프로필이미지" style={{ borderRadius: '50%', objectFit: 'cover' }}  width={34} height={34}/>
           }
           <Box pl="10px">
-            <Text color={textColor} fontSize="xs" fontWeight="600" me="10px">
+            <CustomTextBold700 color={textColor} fontSize="xs" me="10px">
               {userBaseInfo?.nickName}
-            </Text>
+            </CustomTextBold700>
           </Box>
         </Box>
         <Box>
@@ -337,13 +337,7 @@ function SidebarContent(props: SidebarContent) {
               <ModalHeader bg={navbarBg} padding="basePadding">
                 <Flex flexDirection={'row'} position={'relative'}>
                   <Box 
-                    position={'absolute'}
-                    left={0}
-                    top={0}
-                    width="50px"
-                    height={'100%'}
-                    display={{base :'flex', md:'none'}} 
-                    alignItems={'center'}  
+                    position={'absolute'} left={0} top={0} width="50px" height={'100%'} display={{base :'flex', md:'none'}}  alignItems={'center'}  
                     onClick={() => fn_close_modal_mypage(false)} cursor={'pointer'}
                   >
                     <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
@@ -352,16 +346,9 @@ function SidebarContent(props: SidebarContent) {
                     <Text color={'white'} noOfLines={1}>마이페이지</Text>
                   </Box>
                   <Box 
-                    position={'absolute'}
-                    right={0}
-                    top={0}
-                    width="50px"
-                    height={'100%'}
-                    display={{base :'none', md:'flex'}} 
-                    justifyContent={'flex-end'} 
-                    alignItems={'center'}  
+                    position={'absolute'} right={0} top={0} width="50px" height={'100%'} display={{base :'none', md:'flex'}} justifyContent={'flex-end'} alignItems={'center'}  
                     onClick={() => fn_close_modal_mypage(false)}  cursor={'pointer'}
-                    >
+                  >
                     <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
                   </Box>
                 </Flex>

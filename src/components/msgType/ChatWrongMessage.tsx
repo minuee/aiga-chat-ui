@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Box,Flex,Text,useColorModeValue ,Icon} from '@chakra-ui/react';
 import { AiOutlineMeh } from "react-icons/ai";
 import LogoImage from "@/assets/images/logo.png";
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
 type ChatWrongMessageProps = {
     msg: string;
@@ -40,9 +41,9 @@ const ChatWrongMessage = ({  msg = "흠..뭔가 잘못된 것 같습니다.", in
         alignItems={'center'}
       > 
         <Icon as={AiOutlineMeh} width="20px" height="20px" color={textSystemStopIconColor} />
-        <Text color={textSystemStopColor} fontWeight="normal" fontSize={'17px'} lineHeight={'150%'} whiteSpace="pre-line" pl="5px">
+        <CustomText color={textSystemStopColor} fontSize={'17px'} lineHeight={'150%'} whiteSpace="pre-line" pl="5px">
           {msg}
-        </Text>
+        </CustomText>
       </Flex>
     </Flex>
   )

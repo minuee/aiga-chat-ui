@@ -4,6 +4,7 @@ const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: false });
 import { useColorModeValue,Text } from '@chakra-ui/react'
 import Card from '@/components/card/Card';
 import TypeAnimation  from'@/components/text/TypeAnimation';
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
 const MessageBox = React.memo(function MessageBox({ output }: { output: any }) {
   
@@ -29,7 +30,7 @@ const MessageBox = React.memo(function MessageBox({ output }: { output: any }) {
         ?
         <ReactMarkdown
           components={{
-            p: ({ children }) => <Text whiteSpace="pre-line">{children}</Text>
+            p: ({ children }) => <CustomText whiteSpace="pre-line">{children}</CustomText>
           }}
         >
           {output ? output : ''}

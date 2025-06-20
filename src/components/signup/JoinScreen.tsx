@@ -5,6 +5,7 @@ import { Box,Flex,chakra,Button,Step,StepDescription,StepIcon,StepIndicator,Step
   InputLeftElement,Input,LinkBox,LinkOverlay,Heading,Text,AlertDialog,AlertDialogBody,AlertDialogFooter,AlertDialogHeader,AlertDialogContent,AlertDialogOverlay,Spinner } from '@chakra-ui/react';
 import { FaUserAlt, FaLock } from "react-icons/fa";
 const CFaUserAlt = chakra(FaUserAlt);
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
 export interface JoinScreenProps {
   socialType : string;
@@ -184,9 +185,9 @@ function JoinScreen(props: JoinScreenProps) {
                                   제 1조 1항
                                 </LinkOverlay>
                               </Heading>
-                              <Text mb='3'>
+                              <CustomText mb='3'>
                                 동해물과 백두산이 마르고 닳도록...
-                              </Text>
+                              </CustomText>
                               <Box as='a' color='teal.400' href='https://kormedi.com/%ec%9d%b4%ec%9a%a9%ec%95%bd%ea%b4%80-%ec%bd%94%eb%a9%94%eb%94%94%eb%8b%b7%ec%bb%b4/' fontWeight='bold' target='_blank'>
                                 자세히 보기
                               </Box>
@@ -228,9 +229,9 @@ function JoinScreen(props: JoinScreenProps) {
                             <Box as='time' dateTime='2021-01-15 15:30:00 +0000 UTC'>
                               14세 이상 이용동의
                             </Box>
-                            <Text mb='3'>
+                            <CustomText mb='3'>
                               동해물과 백두산이 마르고 닳도록...
-                            </Text>
+                            </CustomText>
                             <Box as='a' color='teal.400' href='https://kormedi.com/%ec%9d%b4%ec%9a%a9%ec%95%bd%ea%b4%80-%ec%bd%94%eb%a9%94%eb%94%94%eb%8b%b7%ec%bb%b4/' fontWeight='bold' target='_blank'>
                               자세히 보기
                             </Box>

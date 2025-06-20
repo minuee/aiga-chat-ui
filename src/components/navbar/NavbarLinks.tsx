@@ -35,7 +35,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
   const [buttonText, setButtonText] = React.useState<string>('구독하기');
   const [myToken, setMyToken] = React.useState<PushSubscription | null>(null);
   // Chakra Color Mode
-  const navbarIcon = useColorModeValue('gray.500', 'white');
+  const navbarIcon = useColorModeValue('white', 'navy.800');
   let menuBg = useColorModeValue('white', 'navy.800');
   const textColor = useColorModeValue('navy.700', 'white');
   const borderColor = useColorModeValue('#E6ECFA', 'rgba(135, 140, 189, 0.3)');
@@ -158,41 +158,14 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
   }
 
   return (
-    <Flex
-      zIndex="100"
-      //w={{ sm: '100%', md: 'auto' }}
-      w={'auto'}
-      alignItems="center"
-      justifyContent={'flex-end'}
-      flexDirection="row"
-      flexWrap={secondary ? { base: 'wrap', md: 'nowrap' } : 'unset'}
-      p="10px"
-    >
-      {/* <Button
-        value={"dark-mode"}
-        aria-label=''
-        aria-labelledby='nonexistent'
-        variant="no-hover"
-        bg="transparent"
-        p="0px"
-        minW="unset"
-        minH="unset"
-        h="18px"
-        w="max-content"
-        onClick={toggleColorMode}
-        id="button_toggle_mode"
-        name="button_toggle_mode"
+    <Flex zIndex="100" w={'auto'} alignItems="center" justifyContent={'flex-end'} flexDirection="row" flexWrap={secondary ? { base: 'wrap', md: 'nowrap' } : 'unset'} p="10px">
+     {/*  <Button
+        value={"dark-mode"} aria-label='' aria-labelledby='nonexistent' variant="no-hover" bg="transparent" p="0px"
+        minW="unset" minH="unset" h="18px" w="max-content" onClick={toggleColorMode} id="button_toggle_mode" name="button_toggle_mode"
       >
-        <Icon
-          me="10px"
-          h="18px"
-          w="18px"
-          color={navbarIcon}
-          as={colorMode === 'light' ? IoMdMoon : IoMdSunny}
-        />
+        <Icon me="10px" h="18px" w="18px" color={navbarIcon} as={colorMode === 'light' ? IoMdMoon : IoMdSunny} />
       </Button> */}
       <SidebarResponsive routes={routes} />
-      
       {
         isOpenNoticeModal && (
           <NoticerModal

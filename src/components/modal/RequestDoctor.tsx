@@ -7,7 +7,7 @@ import functions from '@/utils/functions';
 import mConstants from '@/utils/constants';
 import Alert from '@/components/alert/CustomAlert';
 import NextImage from 'next/legacy/image';
-
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import * as DoctorService from "@/services/doctor/index";
 
 import { loadingImage,iconAlertModify } from "@/components/icons/IconImage"
@@ -95,7 +95,7 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
       <>
         <Flex display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'20px'}>
           <Box flex={3} flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} padding={'0 10px'} fontSize={'14px'}>
-            <Text fontSize={'13px'} color="#7F879B">의사 프로필에 수정이 필요한 내용을 알려주세요</Text>
+            <CustomText fontSize={'13px'} color="#7F879B">의사 프로필에 수정이 필요한 내용을 알려주세요</CustomText>
           </Box>
         </Flex>
        
@@ -185,13 +185,13 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
           </Box>
           <Flex display={'flex'} flexDirection={'column'} justifyContent={'center'}  minHeight={'20px'} mt={10}>
             <Box flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} padding={'0 10px'}>
-              <Text fontSize={'15px'} color="#7F879B" fontWeight={'bold'}>안내 사항</Text>
+              <CustomTextBold700 fontSize={'15px'} color="#7F879B" >안내 사항</CustomTextBold700>
             </Box>
             <Box flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} padding={'0 10px'}>
-              <Text fontSize={'15px'} color="#7F879B" >• 산업안전보건법에 따라 고객 응대 근로자 보호조치를 시행하고 있으며 모든 문의는 기록으로 남습니다.</Text>
+              <CustomText fontSize={'15px'} color="#7F879B" >• 산업안전보건법에 따라 고객 응대 근로자 보호조치를 시행하고 있으며 모든 문의는 기록으로 남습니다.</CustomText>
             </Box>
             <Box flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} padding={'0 10px'}>
-              <Text fontSize={'15px'} color="#7F879B" >• 본 요청은 비회원도 개인정보 제공 없이 제출하실 수 있으므로 이름, 연락처, 주민등록 번호 등 개인을 식별 할 수 있는 정보는 입력하지 마십시오.</Text>
+              <CustomText fontSize={'15px'} color="#7F879B" >• 본 요청은 비회원도 개인정보 제공 없이 제출하실 수 있으므로 이름, 연락처, 주민등록 번호 등 개인을 식별 할 수 있는 정보는 입력하지 마십시오.</CustomText>
             </Box>
           </Flex>
         </Flex>
@@ -212,10 +212,10 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
                     />
                   </Box>
                   <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"50px"}>
-                    <Text fontSize={'18px'} color="#212127" fontWeight={'bold'}>소중한 의견 감사합니다!</Text>
+                    <CustomTextBold700 fontSize={'18px'} color="#212127">소중한 의견 감사합니다!</CustomTextBold700>
                   </Box>
                   <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"60px"}>
-                    <Text fontSize={'17px'} color="#212127">의사 정보 수정 요청이 성공적으로 제출되었습니다. 검토 후 반영될 예정입니다.</Text>
+                    <CustomText fontSize={'17px'} color="#212127">의사 정보 수정 요청이 성공적으로 제출되었습니다. 검토 후 반영될 예정입니다.</CustomText>
                   </Box>
                 </Flex>
               }
@@ -227,7 +227,7 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
               footerContent={
                 <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} py="20px" width={"100%"}>
                   <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#2B8FFF" borderRadius={'6px'} onClick={() => onHandleAlertConfirm()} cursor={'pointer'}>
-                    <Text fontSize={'16px'} color="#ffffff" fontWeight={'bold'}>확인</Text>
+                    <CustomTextBold700 fontSize={'16px'} color="#ffffff">확인</CustomTextBold700>
                   </Box>
                 </Flex>
               }

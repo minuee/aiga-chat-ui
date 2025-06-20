@@ -2,6 +2,8 @@ import React from 'react';
 import { Flex,Text,Divider,Box,List,ListItem,Icon,Button } from '@chakra-ui/react';
 import { MdKeyboardDoubleArrowDown,MdKeyboardDoubleArrowUp } from 'react-icons/md';
 import functions from '@/utils/functions';
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+
 type ListItemScreenProps = {
     title: string;
     content: any;
@@ -17,7 +19,7 @@ const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 ,is
   
     return (
         <Flex  flexDirection={'column'} justifyContent={'center'} mt={marginTop}>
-            <Text fontSize={'15px'} fontWeight={'bold'} color="#000000">{title}</Text>
+            <CustomTextBold700 fontSize={'15px'} color="#000000">{title}</CustomTextBold700>
             {/* <Divider orientation='horizontal' my={2}/> */}
             <Box 
                 noOfLines={expandedCount}
@@ -26,7 +28,7 @@ const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 ,is
                 <List spacing={2}>
                     {content.map((item:any, index:number) => (
                         <ListItem key={index}>
-                            <Text fontSize={'15px'} fontWeight={'normal'} color="#5C5E69" letterSpacing={"-5%"}>
+                            <CustomText fontSize={'15px'}  color="#5C5E69" letterSpacing={"-5%"}>
                                 {
                                     isType == 'education' 
                                     ?
@@ -38,7 +40,7 @@ const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 ,is
                                     :
                                     functions.stripHtmlTags(item)
                                 }
-                            </Text>
+                            </CustomText>
                         </ListItem>
                     ))}
                 </List>

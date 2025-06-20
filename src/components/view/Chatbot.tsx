@@ -15,20 +15,26 @@ import DoctorDetail  from '@/components/modal/Doctor';
 import SelectBody  from '@/components/msgType/SelectBody';
 import SelectDoctor  from '@/components/msgType/SelectDoctor';
 import RecommandDoctor  from '@/components/msgType/RecommandDoctor';
+import SearchDoctor  from '@/components/msgType/SearchDoctor';
 import SelectName  from '@/components/msgType/SelectName';
 import ForceStop  from '@/components/msgType/ForceStop';
 import ChatMeMessage from '@/components/msgType/ChatMeMessage';
 import ChatWrongMessage from '@/components/msgType/ChatWrongMessage';
 import GeneralMessage from "@/components/msgType/GeneralMessage";
+import SimpleListMessage from '@/components/msgType/SimpleListMessage';
 import Welcome  from '@/components/msgType/Welcome';
 import { ChatDisable,ChatWarningInfo }  from '@/components/msgType/ChatOptionView';
 import MotionWelcome,{MotionWelcomeImage}  from '@/components/msgType/MotionWelcome';
 import Processing  from '@/components/msgType/Processing';
 import SkeletonDefaultText from "@/components/fields/LoadingBar";
 
+
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+
 import SelectType  from '@/components/msgType/SelectType';
 import { useTranslations } from 'next-intl';
 import LoadingBar from "@/assets/icons/loading.gif";
+
 import mConstants from '@/utils/constants';
 
 import { ChatSystemMessageType } from "@/types/types";
@@ -37,12 +43,13 @@ import NewChatStateStore,{ ChatSesseionIdStore,CallHistoryDataStore } from '@/st
 import historyStore from '@/store/historyStore';
 import { 
   ModalDoctorDetailStore,ModalDoctorReviewStore,ModalDoctorRequestStore,ModalDoctorListStore,DrawerHistoryStore,ModalMypageStore,ModalMypageNoticeStore,ModalMypageNoticeDetailStore,
-  ModalMypageRequestStore,ModalMypageEntireStore,ModalMypagePolicyStore,ModalMypageYakwanStore,ModalSignupStoreStore,ModalSignupAgreeStoreStore,DoctorFromListStore
+  ModalMypageRequestStore,ModalMypageEntireStore,ModalMypagePolicyStore,ModalMypageYakwanStore,ModalMypageMingamStore,ModalSignupStoreStore,ModalSignupAgreeStoreStore,DoctorFromListStore
  } from '@/store/modalStore';
 
 import * as ChatService from "@/services/chat/index";
-import SendButtonOff from "@/assets/icons/send_btn_off.png";
-import SendButtonOn from "@/assets/icons/send_btn_on.png";
+import { SendButtonOff,SendButtonOn } from '@/components/icons/svgIcons';
+//import SendButtonOff from "@/assets/icons/send_btn_off.png";
+//import SendButtonOn from "@/assets/icons/send_btn_on.png";
 import LogoImage from "@/assets/images/logo.png";
 
 export default function ChatBot() {
@@ -82,6 +89,7 @@ export default function ChatBot() {
   const setOldHistoryData = CallHistoryDataStore((state) => state.setOldHistoryData);
 
   const { isFromDoctorDepth2 } = DoctorFromListStore(state => state);
+  const setFromDoctorDepth2 = DoctorFromListStore((state) => state.setFromDoctorDepth2);
   const setCurrentPathname = historyStore((state) => state.setCurrentPathname);
   const setIsOpenReview = ModalDoctorReviewStore((state) => state.setModalState);
   const setIsOpenRequestModal = ModalDoctorRequestStore((state) => state.setModalState);
@@ -95,10 +103,10 @@ export default function ChatBot() {
   const setIsOpenEntireModal = ModalMypageEntireStore((state) => state.setIsOpenEntireModal);
   const setIsOpenPolicyModal = ModalMypagePolicyStore((state) => state.setIsOpenPolicyModal);
   const setIsOpenYakwanModal = ModalMypageYakwanStore((state) => state.setIsOpenYakwanModal);
+  const setIsOpenMingamModal = ModalMypageMingamStore((state) => state.setIsOpenMingamModal);
   const setIsOpenSignupModal = ModalSignupStoreStore((state) => state.setIsOpenSignupModal)
   const setIsOpenSignupAgreeModal = ModalSignupAgreeStoreStore((state) => state.setIsOpenSignupAgreeModal)
   
-
   const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
   const borderColor = useColorModeValue('gray.200', 'gray');
   const inputColor = useColorModeValue('navy.700', 'white');
@@ -138,9 +146,11 @@ export default function ChatBot() {
     setIsOpenEntireModal(false);
     setIsOpenPolicyModal(false);
     setIsOpenYakwanModal(false);
+    setIsOpenMingamModal(false);
     setIsOpenSignupModal(false);
     setIsOpenSignupAgreeModal(false);
     setOldHistoryData(null)
+    setFromDoctorDepth2(false)
   }
 
   useEffect(() => {
@@ -153,7 +163,7 @@ export default function ChatBot() {
       
       setTimeout(() => {
         setIsLoading(false);
-        const msgLen = outputCode?.length;
+        /* const msgLen = outputCode?.length;
         const sampleMsg1 = mConstants.sample_msg_2;
         setOutputCode((prevCode: any[]) => {
           const newArray = [...prevCode];
@@ -167,7 +177,7 @@ export default function ChatBot() {
             used_token : sampleMsg1?.used_token
           };
           return newArray;
-        })
+        }) */
       }, 300);
     }
   }, []);
@@ -301,12 +311,42 @@ export default function ChatBot() {
     }, 200);
   }
 
+  const fn_close_modal_mypage_policy2 = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setIsOpenPolicyModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_11}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_11}`) 
+    }, 200);
+  }
+
   const fn_close_modal_mypage_yakwan = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    window.alert(1)
     setIsOpenYakwanModal(false);
     router.replace(`/${locale}/chat#${mConstants.pathname_modal_10}`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`) 
+    }, 200);
+  }
+
+  const fn_close_modal_mypage_yakwan2 = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    window.alert(1)
+    setIsOpenYakwanModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_11}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_11}`) 
+    }, 200);
+  }
+
+  const fn_close_modal_mypage_mingam2 = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    window.alert(1)
+    setIsOpenMingamModal(false);
+    router.replace(`/${locale}/chat#${mConstants.pathname_modal_11}`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_11}`) 
     }, 200);
   }
 
@@ -413,9 +453,21 @@ export default function ChatBot() {
           event.preventDefault(); // modal_mypage_use_yakwan 기본 뒤로가기 방지
           fn_close_modal_mypage_yakwan();
           break;
+        case `${mConstants.pathname_modal_8_2}` : 
+          event.preventDefault(); // modal_mypage_use_yakwan 기본 뒤로가기 방지
+          fn_close_modal_mypage_yakwan2();
+          break;
         case `${mConstants.pathname_modal_9}` : 
           event.preventDefault(); // modal_mypage_use_policy 기본 뒤로가기 방지
           fn_close_modal_mypage_policy();
+          break;
+        case `${mConstants.pathname_modal_9_2}` : 
+          event.preventDefault(); // modal_mypage_use_policy 기본 뒤로가기 방지
+          fn_close_modal_mypage_policy2();
+          break;
+        case `${mConstants.pathname_modal_12_2}` : 
+          event.preventDefault(); // modal_mypage_use_policy 기본 뒤로가기 방지
+          fn_close_modal_mypage_mingam2();
           break;
         case `${mConstants.pathname_modal_11}` : 
           event.preventDefault(); // modal_signup_agree 기본 뒤로가기 방지
@@ -538,7 +590,17 @@ export default function ChatBot() {
     }
   };
 
-  const onHandleStopRequest = () => {
+  const onHandleStopInquiry = async() => {
+    try{
+      if ( !functions.isEmpty(chatSessionId)  ) {
+        const res:any = await ChatService.setRequestStop(chatSessionId);     
+      }
+    }catch(e:any){
+      setReceiving(false)
+    }
+  }
+  const onHandleStopRequest = async() => {
+    await onHandleStopInquiry();
     const forceMsg = "대답이 중지되었습니다."
     setReceiving(false);
     setIsLoading(false)
@@ -771,7 +833,7 @@ export default function ChatBot() {
             />
             <MotionWelcome 
               msg={`안녕하세요!`}
-              pt="20px"
+              pt="30px"
               classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
             />
             <MotionWelcome 
@@ -785,11 +847,11 @@ export default function ChatBot() {
               classNames="opening_box_gray"
             />
           </Box>
-          <Box>
+          {/* <Box>
             <SelectType 
               onSendButton={onSendTypeButton}
             />
-          </Box>
+          </Box> */}
           { 
             outputCode.map((element:any,index:number) => {
               if ( element.ismode == 'me') {
@@ -811,11 +873,23 @@ export default function ChatBot() {
                       />
                     </Box>
                   )
+                }else if ( element.msg === "search_doctor" ) {
+                  return (
+                    <Box key={index}>
+                      <SearchDoctor 
+                        data={element}
+                        onSendButton={onSendDoctorButton}
+                      />
+                    </Box>
+                  )
                 }else if ( element.msg === "recommand_hospital" ) {
                   return (
                     <Box key={index}>
                       <Flex w="100%" key={index}>
-                        <GeneralMessage output={element.answer} />
+                        <SimpleListMessage 
+                          indexKey={index}
+                          msg={element.answer} 
+                        />
                       </Flex>
                     </Box>
                   )
@@ -986,9 +1060,9 @@ export default function ChatBot() {
                 {
                   isFocus 
                   ?
-                  <Image src={SendButtonOn} alt="send" style={{width:'32px',objectFit: 'contain'}} />
+                  <SendButtonOn boxSize={'32px'} />
                   :
-                  <Image src={SendButtonOff} alt="send" style={{width:'32px',objectFit: 'contain'}} />
+                  <SendButtonOff boxSize={'32px'} />
                 }
                 </Box>
               }
@@ -1020,7 +1094,7 @@ export default function ChatBot() {
                       <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                     </Box>
                     <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                      <Text color={'white'} noOfLines={1}>{selectedDoctor?.name} 의사</Text>
+                      <CustomTextBold700 color={'white'} noOfLines={1}>{selectedDoctor?.name} 의사</CustomTextBold700>
                     </Box>
                     <Box 
                       position={'absolute'}

@@ -1,4 +1,9 @@
 import { extendTheme, HTMLChakraProps, ThemingProps } from '@chakra-ui/react';
+import '@fontsource/noto-sans';
+import '@fontsource/noto-sans/400.css';
+import '@fontsource/noto-sans/700.css';
+import '@fontsource/noto-sans-kr'; // 기본 weight
+import '@fontsource/noto-sans-kr/700.css'; // 굵은 weight
 import { CardComponent } from './additions/card/card';
 import { buttonStyles } from './components/button';
 import { badgeStyles } from './components/badge';
@@ -39,8 +44,16 @@ export default extendTheme(
       baseTopContentPadding : '24px' 
     },
     fonts: {
-      heading: `'Heading Font Name', sans-serif`,
-      body: `'Body Font Name', sans-serif`,
+      heading: `Noto Sans, sans-serif`,
+      body: 'Noto Sans, sans-serif',
+      body_notosans : "Noto Sans"
+    },
+    fontWeights: {
+      normal: 400,
+      medium: 500,
+      bold: 700,
+      body_medium_400: 400, // 이렇게 정의는 가능
+      body_medium_700: 700, // 이렇게 정의는 가능
     },
     Progress: {
       baseStyle: {

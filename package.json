@@ -19,6 +19,8 @@
     "@codemirror/legacy-modes": "^6.3.2",
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
+    "@fontsource/noto-sans": "^5.2.7",
+    "@fontsource/noto-sans-kr": "^5.2.6",
     "@heroicons/react": "^2.0.17",
     "@material-tailwind/react": "^1.4.2",
     "@noble/hashes": "^1.8.0",

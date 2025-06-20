@@ -8,7 +8,7 @@ import { Box,Button,Flex,Icon,Img,Input,Text,Progress,} from '@chakra-ui/react';
 import * as mCookie from "@/utils/cookies";
 import PopWondowScreen from "@/components/modal/PopWindow";
 import ChatScreenModal  from '@/components/modal/ChatScreen';
-
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import BgImage from "@/assets/images/etc/sub-quick-bar-box.png";
 import IconInfo from "@/assets/images/etc/icon-sub-quick-info.png";
 import IconEvent from "@/assets/images/etc/icon-sub-quick-event.png";
@@ -45,9 +45,9 @@ const QuickRight : React.FC = () => {
                 alt="slide" 
                 style={{width:'25px',objectFit: 'contain',marginBottom:'3px'}}
               />  
-              <Text variant="sourceHanSans" sx={styles.titleStyle}>
+              <CustomTextBold700 variant="sourceHanSans" sx={styles.titleStyle}>
                 Page이동
-              </Text>
+              </CustomTextBold700>
             </Flex>
           </Link>
         </Box>
@@ -63,9 +63,9 @@ const QuickRight : React.FC = () => {
                 alt="slide" 
                 style={{width:'25px',objectFit: 'contain',marginBottom:'3px'}}
               />  
-              <Text variant="sourceHanSans" sx={styles.titleStyle}>
+              <CustomTextBold700 variant="sourceHanSans" sx={styles.titleStyle}>
                 Window
-              </Text>
+              </CustomTextBold700>
             </Flex>
           </PopWondowScreen>
         </Box>
@@ -76,9 +76,9 @@ const QuickRight : React.FC = () => {
                 alt="slide" 
                 style={{width:'25px',objectFit: 'contain',marginBottom:'3px'}}
               />  
-              <Text variant="sourceHanSans" sx={styles.titleStyle}>
+              <CustomTextBold700 variant="sourceHanSans" sx={styles.titleStyle}>
                 Drawer
-              </Text>
+              </CustomTextBold700>
             </Flex>
         </Box>
         {

@@ -77,7 +77,7 @@ export default function Index() {
 
   return (
     <PageLayout title="AIGA Chatbot">
-      <Box display={'flex'} justifyContent={'center'} >
+      <Box display={'flex'} justifyContent={'center'}>
         <Box
           minHeight="100vh"
           height="100%"

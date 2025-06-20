@@ -5,6 +5,8 @@ import { Icon,Box,Flex,Button,Text,FormControl,FormLabel,Input,useToast,Modal,Mo
 import mConstants from '@/utils/constants';
 import RequestForm from '@/components/modal/RequestForm';
 import EntireForm from '@/components/modal/EntireForm';
+import YakwanContent from '@/components/modal/YakwanContent';
+import PolicyContent from '@/components/modal/PolicyContent'
 import Alert from '@/components/alert/Alert';
 import CustomAlert from '@/components/alert/CustomAlert';
 import NoticerModal  from '@/components/modal/NoticeList';
@@ -12,7 +14,7 @@ import functions from '@/utils/functions';
 import NextImage from 'next/legacy/image';
 import * as RequestService from "@/services/request/index";
 import * as MemberService from "@/services/member/index";
-
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 //로그인 전역상태
 import UserStateStore from '@/store/userStore';
 import NewChatStateStore from '@/store/newChatStore';
@@ -26,12 +28,8 @@ import defaultProfile from '@/assets/images/avatar0.png';
 import { NextAvatar } from '@/components/image/Avatar';
 import Image from 'next/image';
 import { MdOutlineClose,MdArrowBack,MdLogout } from 'react-icons/md';
+import { BiDetail,BiInfoCircle,BiGroup,BiEdit,BiChevronRight } from "react-icons/bi";
 import { iconAlertEntire } from "@/components/icons/IconImage"
-import IconNotice from "@/assets/icons/icon_notice.png";
-import IconPolicy from "@/assets/icons/icon_policy.png";
-import IconPerson from "@/assets/icons/icon_person.png";
-import IconRequest from "@/assets/icons/icon_request.png";
-import IconDetail from "@/assets/icons/BiChevronRight.png";
 
 export interface ProfileSettingModalProps extends PropsWithChildren {
   isOpen : boolean;
@@ -65,7 +63,6 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   const { isOpenNoticeDetailModal } = ModalMypageNoticeDetailStore(state => state);
   const setIsOpenNoticeDetailModal = ModalMypageNoticeDetailStore((state) => state.setIsOpenNoticeDetailModal);
   const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
-
 
   const reviewBtnRef = React.useRef<any>();
   const entireBtnRef = React.useRef<any>();
@@ -362,9 +359,9 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               />
             }
               <Box pl="10px">
-                <Text color={textColor} fontSize="xs" fontWeight="600" me="10px">
+                <CustomTextBold700 color={textColor} fontSize="xs" me="10px">
                   {userBaseInfo?.email}
-                </Text>
+                </CustomTextBold700>
               </Box>
             </Box>
             <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} onClick={() => setIsOpenLogoutModal(true)} cursor={'pointer'}>
@@ -416,89 +413,47 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
             <Flex justifyContent={'center'} flexDirection={'column'} pb="20px">
               <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px">
                 <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => onSendNoticeListButton()} cursor={'pointer'}>
-                  <Image 
-                    src={IconNotice}
-                    alt="IconNotice"
-                    style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
-                  />
-                  <Text fontSize={'15px'} ml={2}>공지사항</Text>
+                  <Icon as={BiDetail} width="20px" height="20px" color="#AFB5C3" />
+                  <CustomText fontSize={'15px'} ml={2}>공지사항</CustomText>
                 </Box>
                 <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => onSendNoticeListButton()} cursor={'pointer'}>
-                  <Image 
-                    src={IconDetail}
-                    alt="IconDetail"
-                    style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
-                  />
+                  <Icon as={BiChevronRight} width="20px" height="20px" color="#AFB5C3" />
                 </Box>
               </Box>
               <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
                 <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => onSendMypageYakwanButton()} cursor={'pointer'}>
-                  <Image 
-                    src={IconPolicy}
-                    alt="IconPolicy"
-                    style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
-                  />
-                  <Text fontSize={'15px'} ml={2}>이용약관</Text>
+                  <Icon as={BiInfoCircle} width="20px" height="20px" color="#AFB5C3" />
+                  <CustomText fontSize={'15px'} ml={2}>이용약관</CustomText>
                 </Box>
                 <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => onSendMypageYakwanButton()} cursor={'pointer'}>
-                  <Image 
-                    src={IconDetail}
-                    alt="IconDetail"
-                    style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
-                  />
+                  <Icon as={BiChevronRight} width="20px" height="20px" color="#AFB5C3" />
                 </Box>
               </Box>
               <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
                 <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => onSendMypagePolicyButton()} cursor={'pointer'}>
-                  <Image 
-                    src={IconPerson}
-                    alt="IconPerson"
-                    style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
-                  />
-                  <Text fontSize={'15px'} ml={2}>개인정보 처리방침</Text>
+                  <Icon as={BiGroup} width="20px" height="20px" color="#AFB5C3" />
+                  <CustomText fontSize={'15px'} ml={2}>개인정보 처리방침</CustomText>
                 </Box>
                 <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => onSendMypagePolicyButton()} cursor={'pointer'}>
-                  <Image 
-                    src={IconDetail}
-                    alt="IconDetail"
-                    style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
-                  />
+                  <Icon as={BiChevronRight} width="20px" height="20px" color="#AFB5C3" />
                 </Box>
               </Box>
               <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
                 <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => onSendMyPageRequestButton()} cursor={'pointer'}>
-                  <Image 
-                    src={IconRequest}
-                    alt="IconRequest"
-                    style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
-                  />
-                  <Text fontSize={'15px'} ml={2}>의견 보내기</Text>
+                  <Icon as={BiEdit} width="20px" height="20px" color="#AFB5C3" />
+                  <CustomText fontSize={'15px'} ml={2}>의견 보내기</CustomText>
                 </Box>
                 <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => onSendMyPageRequestButton()} cursor={'pointer'}>
-                  <Image 
-                    src={IconDetail}
-                    alt="IconDetail"
-                    style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
-                  />
+                  <Icon as={BiChevronRight} width="20px" height="20px" color="#AFB5C3" />
                 </Box>
               </Box>
-              
             </Flex>
           </Flex>
-
           <Flex 
-            display={'flex'} 
-            height={'50px'} 
-            width="100%"
-            position={'absolute'}
-            right={0}
-            bottom={0}
-            justifyContent={'flex-end'}
-            onClick={() => onSendMyPageEntireButton()} 
-            cursor={'pointer'}
-            pr="20px"
+            display={'flex'} height={'50px'} width="100%" position={'absolute'} right={0} bottom={0} justifyContent={'flex-end'}
+            onClick={() => onSendMyPageEntireButton()} cursor={'pointer'} pr="20px"
           >
-            <Text fontSize={'17px'} fontWeight={'normal'} textDecoration={'underline'} color='#5c5e69'>탈퇴하기</Text>
+            <CustomText fontSize={'17px'} textDecoration={'underline'} color='#5c5e69'>탈퇴하기</CustomText>
           </Flex>
         </Flex>
         <Box height={'100px'} />
@@ -519,31 +474,18 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                 <ModalHeader bg={navbarBg} padding="basePadding">
                   <Flex flexDirection={'row'} position={'relative'}>
                     <Box 
-                      position={'absolute'}
-                      left={0}
-                      top={0}
-                      width="50px"
-                      height={'100%'}
-                      display={{base :'flex', md:'none'}} 
-                      alignItems={'center'}  
+                      position={'absolute'} left={0} top={0} width="50px" height={'100%'} display={{base :'flex', md:'none'}} alignItems={'center'}  
                       onClick={() => fn_close_modal_mypage_request()} cursor={'pointer'}
                     >
                       <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                     </Box>
                     <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                      <Text color={'white'} noOfLines={1}>의견 보내기</Text>
+                      <CustomText color={'white'} noOfLines={1}>의견 보내기</CustomText>
                     </Box>
                     <Box 
-                      position={'absolute'}
-                      right={0}
-                      top={0}
-                      width="50px"
-                      height={'100%'}
-                      display={{base :'none', md:'flex'}} 
-                      justifyContent={'flex-end'} 
-                      alignItems={'center'}  
+                      position={'absolute'} right={0} top={0} width="50px" height={'100%'} display={{base :'none', md:'flex'}} justifyContent={'flex-end'} alignItems={'center'}  
                       onClick={() => fn_close_modal_mypage_request()}  cursor={'pointer'}
-                      >
+                    >
                       <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
                     </Box>
                   </Flex>
@@ -577,31 +519,18 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                 <ModalHeader bg={navbarBg} padding="basePadding">
                   <Flex flexDirection={'row'} position={'relative'}>
                     <Box 
-                      position={'absolute'}
-                      left={0}
-                      top={0}
-                      width="50px"
-                      height={'100%'}
-                      display={{base :'flex', md:'none'}} 
-                      alignItems={'center'}  
+                      position={'absolute'} left={0} top={0} width="50px" height={'100%'} display={{base :'flex', md:'none'}} alignItems={'center'}  
                       onClick={() => fn_close_modal_mypage_entire()} cursor={'pointer'}
                     >
                       <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                     </Box>
                     <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                      <Text color={'white'} noOfLines={1}>회원탈퇴</Text>
+                      <CustomText color={'white'} noOfLines={1}>회원탈퇴</CustomText>
                     </Box>
                     <Box 
-                      position={'absolute'}
-                      right={0}
-                      top={0}
-                      width="50px"
-                      height={'100%'}
-                      display={{base :'none', md:'flex'}} 
-                      justifyContent={'flex-end'} 
-                      alignItems={'center'}  
+                      position={'absolute'} right={0} top={0} width="50px" height={'100%'} display={{base :'none', md:'flex'}} justifyContent={'flex-end'} alignItems={'center'}  
                       onClick={() => fn_close_modal_mypage_entire()}  cursor={'pointer'}
-                      >
+                    >
                       <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
                     </Box>
                   </Flex>
@@ -647,31 +576,18 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                 <ModalHeader bg={navbarBg} padding="basePadding">
                   <Flex flexDirection={'row'} position={'relative'}>
                     <Box 
-                      position={'absolute'}
-                      left={0}
-                      top={0}
-                      width="50px"
-                      height={'100%'}
-                      display={{base :'flex', md:'none'}} 
-                      alignItems={'center'}  
+                      position={'absolute'} left={0} top={0} width="50px" height={'100%'} display={{base :'flex', md:'none'}} alignItems={'center'}  
                       onClick={() => fn_close_modal_mypage_notice()} cursor={'pointer'}
                     >
                       <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                     </Box>
                     <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                      <Text color={'white'} noOfLines={1}>공지사항</Text>
+                      <CustomText color={'white'} noOfLines={1}>공지사항</CustomText>
                     </Box>
                     <Box 
-                      position={'absolute'}
-                      right={0}
-                      top={0}
-                      width="50px"
-                      height={'100%'}
-                      display={{base :'none', md:'flex'}} 
-                      justifyContent={'flex-end'} 
-                      alignItems={'center'}  
+                      position={'absolute'} right={0} top={0} width="50px" height={'100%'} display={{base :'none', md:'flex'}} justifyContent={'flex-end'} alignItems={'center'}  
                       onClick={() => fn_close_modal_mypage_notice()}  cursor={'pointer'}
-                      >
+                    >
                       <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
                     </Box>
                   </Flex>
@@ -703,37 +619,24 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                 <ModalHeader bg={navbarBg} padding="basePadding">
                   <Flex flexDirection={'row'} position={'relative'}>
                     <Box 
-                      position={'absolute'}
-                      left={0}
-                      top={0}
-                      width="50px"
-                      height={'100%'}
-                      display={{base :'flex', md:'none'}} 
-                      alignItems={'center'}  
+                      position={'absolute'} left={0} top={0} width="50px" height={'100%'} display={{base :'flex', md:'none'}} alignItems={'center'}  
                       onClick={() => fn_close_modal_mypage_policy()} cursor={'pointer'}
                     >
                       <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                     </Box>
                     <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                      <Text color={'white'} noOfLines={1}>개인정보 처리방침</Text>
+                      <CustomText color={'white'} noOfLines={1}>개인정보 처리방침</CustomText>
                     </Box>
                     <Box 
-                      position={'absolute'}
-                      right={0}
-                      top={0}
-                      width="50px"
-                      height={'100%'}
-                      display={{base :'none', md:'flex'}} 
-                      justifyContent={'flex-end'} 
-                      alignItems={'center'}  
+                      position={'absolute'} right={0} top={0} width="50px" height={'100%'} display={{base :'none', md:'flex'}} justifyContent={'flex-end'} alignItems={'center'}  
                       onClick={() => fn_close_modal_mypage_policy()}  cursor={'pointer'}
-                      >
+                    >
                       <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
                     </Box>
                   </Flex>
                 </ModalHeader>
                 <ModalBody overflowY="auto" maxH="100vh" padding="basePadding" margin="0">
-                  <Text>준비중...</Text>
+                  <PolicyContent />
                 </ModalBody>
               </ModalContent>
             </Modal>
@@ -756,37 +659,24 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                 <ModalHeader bg={navbarBg} padding="basePadding">
                   <Flex flexDirection={'row'} position={'relative'}>
                     <Box 
-                      position={'absolute'}
-                      left={0}
-                      top={0}
-                      width="50px"
-                      height={'100%'}
-                      display={{base :'flex', md:'none'}} 
-                      alignItems={'center'}  
+                      position={'absolute'} left={0} top={0} width="50px" height={'100%'} display={{base :'flex', md:'none'}}  alignItems={'center'}  
                       onClick={() => fn_close_modal_mypage_yakwan()} cursor={'pointer'}
                     >
                       <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                     </Box>
                     <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                      <Text color={'white'} noOfLines={1}>이용약관</Text>
+                      <CustomText color={'white'} noOfLines={1}>이용약관</CustomText>
                     </Box>
                     <Box 
-                      position={'absolute'}
-                      right={0}
-                      top={0}
-                      width="50px"
-                      height={'100%'}
-                      display={{base :'none', md:'flex'}} 
-                      justifyContent={'flex-end'} 
-                      alignItems={'center'}  
+                      position={'absolute'} right={0} top={0}width="50px" height={'100%'} display={{base :'none', md:'flex'}} justifyContent={'flex-end'} alignItems={'center'}  
                       onClick={() => fn_close_modal_mypage_yakwan()}  cursor={'pointer'}
-                      >
+                    >
                       <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
                     </Box>
                   </Flex>
                 </ModalHeader>
                 <ModalBody overflowY="auto" maxH="100vh">
-                  <Text>준비중...</Text>
+                  <YakwanContent />
                 </ModalBody>
               </ModalContent>
             </Modal>
@@ -808,8 +698,8 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                     />
                   </Box>
                   <Flex width={"100%"}  flexDirection={'column'} justifyContent={'center'} alignItems={'center'} minHeight={"60px"}>
-                    <Text fontSize={'17px'} color="#212127" lineHeight={'200%'}>회원 탈퇴가 완료되었습니다.</Text>
-                    <Text fontSize={'17px'} color="#212127"  lineHeight={'200%'}>24시간 이후 재가입 부탁드립니다.</Text>
+                    <CustomText fontSize={'17px'} color="#212127" lineHeight={'200%'}>회원 탈퇴가 완료되었습니다.</CustomText>
+                    <CustomText fontSize={'17px'} color="#212127" lineHeight={'200%'}>24시간 이후 재가입 부탁드립니다.</CustomText>
                   </Flex>
                 </Flex>
               }
@@ -821,7 +711,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               footerContent={
                 <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} py="20px" width={"100%"}>
                   <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#2B8FFF" borderRadius={'6px'} onClick={() => onHandleAlertConfirm()} cursor={'pointer'}>
-                    <Text fontSize={'16px'} color="#ffffff" fontWeight={'bold'}>확인</Text>
+                    <CustomTextBold700 fontSize={'16px'} color="#ffffff">확인</CustomTextBold700>
                   </Box>
                 </Flex>
               }

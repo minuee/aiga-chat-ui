@@ -2,7 +2,7 @@ import { useColorModeValue, Flex, useColorMode} from '@chakra-ui/react';
 import { motion } from "framer-motion";
 import WelcomeLogoImage from "@/assets/images/welcom-logo.png";
 import Image from "next/image";
-
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 type MotionWelcomeProps = {
     msg: string;
     pt : string;
@@ -24,7 +24,7 @@ const MotionWelcome = ({
           animate={{ scale: [1, 1.5, 1.1] }}
           transition={{ duration: 3, times: [0, 0.2, 1] }}
         >
-          {msg}
+          <CustomTextBold700>{msg}</CustomTextBold700>
         </motion.div>
       </div>
     </Flex>

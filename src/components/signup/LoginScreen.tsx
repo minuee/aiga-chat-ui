@@ -5,14 +5,16 @@ import { useGeoLocation } from '@/hooks/useGeoLocation';
 import Image from "next/image";
 import { MdCoPresent } from "react-icons/md";
 // chakra imports
-import { Box,Flex,Text,Heading,Input,Button,InputGroup,Stack,InputLeftElement,chakra,Divider,Link,Avatar,FormControl,FormHelperText,InputRightElement,Spinner,useToast } from '@chakra-ui/react';
+import { Box,Flex,Text,Heading,Input,Button,InputGroup,Stack,InputLeftElement,chakra,Divider,useColorModeValue,Avatar,FormControl,FormHelperText,InputRightElement,Spinner,useToast } from '@chakra-ui/react';
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import UserStateStore from '@/store/userStore';
 import ConfigInfoStore from '@/store/configStore';
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
 import BaseImage from "@/assets/images/img-login.png";
-import IconKakao from "@/assets/icons/ico-kakao.png";
-import IconNaver from "@/assets/icons/ico-naver.png";
+import { IconKakao,IconNaver } from '@/components/icons/svgIcons';
+//import IconKakao from "@/assets/icons/ico-kakao.png";
+//import IconNaver from "@/assets/icons/ico-naver.png";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -41,7 +43,8 @@ function LoginScreen(props: LoginScreenProps) {
   const { location, error } = useGeoLocation(geolocationOptions)
   const setLoginUserInfo = UserStateStore((state) => state.setUserState);
   const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
-
+  const fontColor = useColorModeValue('#17191D', 'white');
+  const fontColor2 = useColorModeValue('#7F879B', 'white');
   const handleShowClick = () => setShowPassword(!showPassword);
   const handleSubmit = async (e:any) => {
     e.preventDefault();
@@ -50,34 +53,25 @@ function LoginScreen(props: LoginScreenProps) {
 
   if ( isProduction ) {
     return (
-      <Flex flexDirection="column" width="100%" height="100%" justifyContent="flex-start" alignItems="center">
+      <Flex flexDirection="column" width="100%" height="100%" justifyContent="flex-start" alignItems="center" >
         <Stack flexDir="column" pt="10" mb="2" width="100%" height="100%" justifyContent="center" alignItems="center">
           <Box display={'flex'} flexDirection={'column'} flex={2} alignItems={'center'}>
-            <Text color="#17191D" fontSize={"21px"} fontWeight={'bold'} lineHeight={"150%"}>AIGA 로그인</Text>
-            <Text color="#7F879B" fontSize={"16px"} lineHeight={"200%"}>SNS 계정으로 편리하게 AIGA를 시작하세요</Text>
+            <CustomTextBold700 color={fontColor} fontSize={"21px"} lineHeight={"150%"}>AIGA 로그인</CustomTextBold700>
+            <CustomText color={fontColor2} fontSize={"16px"} lineHeight={"200%"}>SNS 계정으로 편리하게 AIGA를 시작하세요</CustomText>
             <Image 
               src={BaseImage}
               alt="BaseImage"
               style={{width:'200px',objectFit: 'contain',maxWidth:"200px"}}
             />
           </Box>
-          
           <Box display='flex' flex={1} flexDirection={'column'} w={"100%"} minW={"100%"} justifyContent={'flex-end'}> 
             <Box display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'center'} onClick={() => onClickJoin('kakao')} bg='#F9DF32' py="10px" mb="10px" cursor={'pointer'}>
-              <Image 
-                src={IconKakao}  
-                alt="kakao" 
-                style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
-              /> 
-              <Text color="#212127" fontSize={"16px"} pl="10px">카카오톡 로그인</Text>
+              <IconKakao boxSize={"30px"}  /> 
+              <CustomText color="#212127" fontSize={"16px"}>카카오톡 로그인</CustomText>
             </Box>
             <Box display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'center'} onClick={() => onClickJoin('naver')} bg='#1EC800' py="10px"  cursor={'pointer'}>
-              <Image 
-                src={IconNaver}  
-                alt="naver" 
-                style={{width:'20px',objectFit: 'contain',maxWidth:"20px"}}
-              /> 
-              <Text color="#ffffff" fontSize={"16px"} pl="10px">네이버 로그인</Text>
+              <IconNaver boxSize={"30px"} /> 
+              <CustomText color="#ffffff" fontSize={"16px"}>네이버 로그인</CustomText>
             </Box>
           </Box>
         </Stack>
@@ -152,10 +146,10 @@ function LoginScreen(props: LoginScreenProps) {
           </form>
         </Box>
       </Stack>
-      <Box display={isProduction ? 'none' : 'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
-        <Text>{`위도 : ${location?.latitude}`}</Text>
-        <Text>{`경도 : ${location?.longitude}`}</Text>
-      </Box>
+     {/*  <Box display={isProduction ? 'none' : 'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
+        <Text>{`위도 : ${location?.latitude}`}</CustomText>
+        <CustomText>{`경도 : ${location?.longitude}`}</CustomText>
+      </Box> */}
     </Flex>       
   );
 }

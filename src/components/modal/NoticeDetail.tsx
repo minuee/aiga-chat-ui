@@ -5,6 +5,7 @@ import React, { PropsWithChildren } from 'react';
 import { Box,Text,Flex,Stack,useColorModeValue,} from '@chakra-ui/react';
 import { SkeletonText } from '@chakra-ui/react'
 import mConstants from '@/utils/constants';
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
 export interface NoticerDetailModalProps extends PropsWithChildren {
   noticeID : any;
@@ -37,12 +38,12 @@ function NoticerDetailModal(props: NoticerDetailModalProps) {
     <Flex flexDirection={'column'}  width="100%" height='100%' >
       <Flex width="100%" flexDirection={'column'}  borderBottom={'1px solid #DFE3EA'} pb="10px">
         <Box display={'flex'} flexDirection={'column'} justifyContent={'center'}>
-          <Text fontSize={'15px'} color={dateColor} lineHeight={"150%"}>{"YYYYY-MM-DD"}</Text>
-          <Text fontSize={'21px'} color={titleColor} lineHeight={"200%"} fontWeight={'700'}>공지사항 타이틀</Text>
+          <CustomText fontSize={'15px'} color={dateColor} lineHeight={"150%"}>{"YYYYY-MM-DD"}</CustomText>
+          <CustomTextBold700 fontSize={'21px'} color={titleColor} lineHeight={"200%"}>공지사항 타이틀</CustomTextBold700>
         </Box>
       </Flex>
       <Flex width="100%" flexDirection={'column'} mt="10px" overflowY='auto'>
-          <Text fontSize={'17px'} color={titleColor} lineHeight={"150%"}>본문내용...</Text>
+          <CustomText fontSize={'17px'} color={titleColor} lineHeight={"150%"}>본문내용...</CustomText>
       </Flex>
     </Flex>
   );

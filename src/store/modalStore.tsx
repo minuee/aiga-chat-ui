@@ -346,6 +346,32 @@ export const ModalMypageYakwanStore = create<ModalMypageYakwanStoreState>()(
     )
 );
 
+interface ModalMypageMingamStoreState {
+    isOpenMingamModal : boolean;
+    setIsOpenMingamModal: (isOpenMingamModal: boolean) => void;
+}
+
+export const ModalMypageMingamStore = create<ModalMypageMingamStoreState>()(
+    devtools(
+        persist(
+            (set) => ({
+                isOpenMingamModal: false,
+                setIsOpenMingamModal: (isOpenMingamModal:boolean) => {
+                    set({isOpenMingamModal});
+                },
+                hasHydrated: false,
+            }),
+            { 
+                name: 'ModalMypageMingamStore',
+                storage: createJSONStorage(() => localStorage),
+                onRehydrateStorage: () => (state:any) => {
+                    state?.set({ hasHydrated: true });
+                }
+            }
+        )
+    )
+);
+
 interface ModalSignupStoreState {
     isOpenLoginModal : boolean;
     setIsOpenSignupModal: (isOpenLoginModal: boolean) => void;

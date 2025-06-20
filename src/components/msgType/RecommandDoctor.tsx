@@ -11,7 +11,7 @@ import { ModalDoctorListStore } from '@/store/modalStore';
 import DoctorList from "@/components/modal/DoctorList";
 import { sampleDoctor1, sampleDoctor2,sampleDoctor3 } from "@/components/icons/IconImage";
 import { MdArrowBack,MdOutlineClose } from 'react-icons/md';
-
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
 import DoctorAvatar from "@/assets/images/doctor_default_white.png";
 type RecommandDoctorProps = {
@@ -121,19 +121,19 @@ const RecommandDoctor = ({  onSendButton , data }: RecommandDoctorProps) => {
                 />
               </Box>
               <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'26px'} pb="16px">
-                <Text fontSize={'17px'} fontWeight={'700'} color='#17191D' lineHeight={"150%"} noOfLines={1}>
+                <CustomTextBold700 fontSize={'17px'} color='#17191D' lineHeight={"150%"} noOfLines={1}>
                   {element?.name}
-                </Text>
+                </CustomTextBold700>
               </Box>
               <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'26px'} pb="16px">
-                <Text fontSize={'12px'} fontWeight={'700'} color='#0AA464' lineHeight={"150%"} noOfLines={1}>
+                <CustomTextBold700 fontSize={'12px'} color='#0AA464' lineHeight={"150%"} noOfLines={1}>
                   {element?.hospital}
-                </Text>
+                </CustomTextBold700>
               </Box>
               <Box display={'flex'} justifyContent={'center'} alignItems={'center'} pb="32px" height={'26px'}>
-                <Text fontSize={'12px'} fontWeight={'700'} color='#7F879B' lineHeight={"150%"} letterSpacing={'-5%'} noOfLines={1}>
+                <CustomTextBold700 fontSize={'12px'} color='#7F879B' lineHeight={"150%"} letterSpacing={'-5%'} noOfLines={1}>
                   {element?.deptname}
-                </Text>
+                </CustomTextBold700>
               </Box>
               
             </Flex>
