@@ -9,7 +9,6 @@ import mConstants from '@/utils/constants';
 import * as mCookie from "@/utils/cookies";
 import { ModalMypageNoticeDetailStore } from '@/store/modalStore';
 import Image from 'next/image';
-import { loadingImage } from "@/components/icons/IconImage";
 import { IconNotice } from '@/components/icons/svgIcons';
 //import IconNotice from "@/assets/icons/img-notice.png";
 import NoticeDetail from "@/components/modal/NoticeDetail";

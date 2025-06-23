@@ -7,8 +7,8 @@ import TypeAnimation  from'@/components/text/TypeAnimation2';
 import LogoImage from "@/assets/images/logo.png";
 import Image from "next/image";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
-
-const GeneralMessage = React.memo(function GeneralMessage({ output }: { output: any }) {
+import { IconChatAiga} from '@/components/icons/svgIcons';
+const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory }: { output: any ,isHistory:boolean}) {
   
   const textColor = useColorModeValue('navy.700', 'white');
   const bgMeColor = useColorModeValue('#2B8FFF', 'white');
@@ -29,11 +29,12 @@ const GeneralMessage = React.memo(function GeneralMessage({ output }: { output: 
   return (
    <Flex w="100%" flexDirection={'column'} mt="10px">
       <Box my="5px">
-        <Image 
+       {/*  <Image 
           src={LogoImage}
           alt="Aiga Logo"
           style={{width:'45px',objectFit: 'contain'}}
-        />
+        /> */}
+        <IconChatAiga width={'46px'} height={"12px"} />
       </Box>
       <Flex 
         padding="12px 20px" 
@@ -57,6 +58,10 @@ const GeneralMessage = React.memo(function GeneralMessage({ output }: { output: 
           >
             {output ? output : ''}
           </ReactMarkdown>
+          :
+          isHistory
+          ?
+          <CustomText fontSize={'17px'} style={{ whiteSpace: 'pre-line' }} >{output.replaceAll(/<br\s*\/?>/gi, '\n')}</CustomText>
           :
           <ReactMarkdown
             components={{

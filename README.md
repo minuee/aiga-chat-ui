@@ -395,3 +395,5 @@ recommand_hospital
     },
     "used_token": 528
 }
+
+한양대병원에서 내과의중 가장 잘하는 의사 1명을 소개해줘

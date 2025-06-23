@@ -28,45 +28,17 @@ const geolocationOptions = {
   timeout: 1000 * 10,
   maximumAge: 1000 * 3600 * 24,
 }
-
-import { loadingImage } from "@/components/icons/IconImage"
-
-const mockupDoctors = [
-  {
-    doctor_id : 1,
-    doctor_name : "홍길동",
-    profileimgurl : "",
-    hospitalName : "활빈대학교병원",
-    depthName : "정신의학과",
-    speciality : "불면증,자기망상"
-  },
-  {
-    doctor_id : 2,
-    doctor_name : "홍길순",
-    profileimgurl : "https://avatars.githubusercontent.com/u/0?v=4",
-    hospitalName : "단군대학교병원",
-    depthName : "가정의학과",
-    speciality : "불면증,자기망상"
-  },
-  {
-    doctor_id : 3,
-    doctor_name : "홍길동",
-    profileimgurl : "https://avatars.githubusercontent.com/u/0?v=3",
-    hospitalName : "활빈대학교병원",
-    depthName : "내과",
-    speciality : "간경화,기타등등"
-  }
-]
+import ProcessingBar from '@/assets/icons/processing2x.gif';
 
 export interface DoctorListModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
-  doctorData : any;
+  originDoctorData : any;
 }
 
 function DoctorListModal(props: DoctorListModalProps) {
   
-  const { isOpen, setClose, doctorData } = props;
+  const { isOpen, setClose, originDoctorData } = props;
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
@@ -78,12 +50,12 @@ function DoctorListModal(props: DoctorListModalProps) {
   const [isLoading, setIsLoading] = React.useState(true);
   const [isReLoading, setIsReLoading] = React.useState(false);
   const [selectedDoctor, setSelectedDoctor] = React.useState<any>(null);
-  const [inputs, setInputs] = React.useState<any>({
-    sortType : 'all',
-    latitude : null,
-    longitude : null
+  const [inputs, setInputs] = React.useState({
+    sortType : [],
+    latitude : 0,
+    longitude : 0
   });
-  const [doctors, setDoctors] = React.useState<any>([]);
+  const [doctors, setDoctors] = React.useState([]);
   const [showGradient, setShowGradient] = React.useState(true);
   const isDark = useColorModeValue(false, true);
   const { location, error } = useGeoLocation(geolocationOptions)
@@ -112,65 +84,137 @@ function DoctorListModal(props: DoctorListModalProps) {
   };
   
   React.useEffect(() => {
-    setDoctors(doctorData)
+    //console.log('originDoctorData',originDoctorData)
+    setDoctors(originDoctorData)
     setTimeout(() => {
       setIsLoading(false);
-    }, 1000);
+    }, 500);
   }, [isOpen]);
 
   React.useEffect(() => {
-    try{
-      if ( !functions.isEmpty( location?.latitude && location?.longitude )) {
-        setInputs({
-          ...inputs,
-          latitude : location?.latitude,
-          longitude : location?.longitude
-        })
-      }
-    }catch(e){
-      console.log("location eror",e)
+    if (location?.latitude && location?.longitude) {
+      setInputs((prevInputs) => ({
+        ...prevInputs,
+        latitude: location.latitude,
+        longitude: location.longitude,
+      }));
     }
   }, [location]);
 
-  const makeBgColor = (sortType:string = 'all') => {
-    if ( sortType == inputs.sortType ) {
+  const makeBgColor = (sortType: string = 'all') => {
+    if (Array.isArray(inputs.sortType) && inputs.sortType.includes(sortType)) {
       return tabSelectedBgColor;
-    }else{
-      return tabDefaultBgColor
+    } else {
+      return tabDefaultBgColor;
     }
-  }
+  };
 
-  const makeTextColor = (sortType:string = 'all') => {
-    if ( sortType == inputs.sortType ) {
+  const makeTextColor = (sortType: string = 'all') => {
+    if (Array.isArray(inputs.sortType) && inputs.sortType.includes(sortType)) {
       return tabSelectedTextColor;
-    }else{
-      return tabDefaultTextColor
+    } else {
+      return tabDefaultTextColor;
     }
-  }
+  };
 
-  const onHandleSortChange  = ( sortType:string) => {
-    if ( sortType !== inputs.sortType ) {
-      setIsReLoading(true);
-      setDoctors([
-        ...doctors,
-        {
-          doctor_id : doctors.length + 1,
-          doctor_name : "장무기",
-          profileimgurl : "",
-          hospitalName : "무당대학교병원",
-          depthName : "재활의학과",
-          speciality : "재활"
-        },
-      ])
+  const onHandleSortChange  = async( sortType:string) => {
+
+    const isExist = ( Array.isArray(inputs.sortType) && inputs?.sortType.includes(sortType) ) ? true : false ;
+    const updatedSortTypeList = isExist ? inputs.sortType.filter((item) => item !== sortType) : [...inputs.sortType, sortType]
+    if (updatedSortTypeList.length === 0) {
+      setDoctors(originDoctorData);
       setInputs({
         ...inputs,
-        sortType
-      })
-      setTimeout(() => {
-        setIsReLoading(false);
-      },1000)
+        sortType: []
+      });
+      return;
+    }
+    
+    const userLat = inputs?.latitude;
+    const userLng = inputs?.longitude;
+
+    setIsReLoading(true);
+    const sorted = await sortDoctors(originDoctorData,userLat,userLng,updatedSortTypeList);
+    setDoctors(sorted);
+    setInputs((prev) => ({
+      ...prev,
+      sortType: updatedSortTypeList
+    }));
+
+    setTimeout(() => {
+      setIsReLoading(false);
+    },500)
+  }
+
+  const sortDoctors = async( doctorData: any,userLat: number,userLng: number, selectedCriteria: ("experience" | "score" | "distance")[]
+  ): Doctor[] => {
+    if (selectedCriteria.length === 0) return doctorData;
+  
+    // 거리 포함 시 계산
+    const withDistance = doctorData.map((doctor) => ({
+      ...doctor,
+      distance: functions.getDistance(userLat, userLng, doctor.lat, doctor.lon),
+    }));
+  
+    // 정규화용 min/max 계산
+    const allValues = {
+      experience: withDistance.map(d => summaryRankSocre(d.doctor_score,'experience')),
+      score: withDistance.map(d => summaryRankSocre(d.doctor_score,'scroe')),
+      distance: withDistance.map(d => d.distance),
+    };
+  
+    const minMax = {
+      experience: [Math.min(...allValues.experience), Math.max(...allValues.experience)],
+      score: [Math.min(...allValues.score), Math.max(...allValues.score)],
+      distance: [Math.min(...allValues.distance), Math.max(...allValues.distance)],
+    };
+  
+    const normalize = (value: number, min: number, max: number) => {
+      if (max === min) return 1;
+      return (value - min) / (max - min);
+    };
+  
+    // 가중치 분배
+    const weightPerCriterion = 1 / selectedCriteria.length;
+  
+    return withDistance.sort((a, b) => {
+      const getScore = (doctor: typeof a) => {
+        return selectedCriteria.reduce((acc:any, criterion:"experience" | "score" | "distance") => {
+          let normalized = 0;
+          const [min, max] = minMax[criterion];
+  
+          if (criterion === "distance") {
+            normalized = 1 - normalize(doctor.distance, min, max); // 거리는 작을수록 높게
+          } else {
+            normalized = normalize(doctor[criterion], min, max);
+          }
+          return acc + normalized * weightPerCriterion;
+        }, 0);
+      };
+  
+      const scoreA = getScore(a);
+      const scoreB = getScore(b);
+  
+      return scoreB - scoreA; // 높은 점수가 앞에 오게 내림차순
+    });
+  };
+
+  const summaryRankSocre =  async(data:any, gubun:string) => {
+    if ( gubun == 'score') {
+      if ( !functions.isEmpty(data?.paper_score)){
+        return data?.paper_score;
+      }else {
+        0
+      }
+    }else{
+      if ( !functions.isEmpty(data?.patient_score)){
+        return data?.patient_score;
+      }else {
+        0
+      }
     }
   }
+  
 
   React.useEffect(() => {
     const flexElement = flexRef.current;
@@ -217,7 +261,7 @@ function DoctorListModal(props: DoctorListModalProps) {
             isReLoading && (
               <Flex position='absolute' left={0} top={0} width='100%' height='100%'  justifyContent={'center'}  backgroundColor={'#000000'} opacity={0.7} zIndex="100">
                 <Box padding='6' boxShadow='lg' width={"300px"} height={"calc( 100vh / 2 )"} display={'flex'} flexDirection={'column'}  justifyContent={'center'} alignItems={'center'}>
-                  <NextImage width="100" height="100" src={loadingImage} alt={'doctor1'}/>
+                  <NextImage width="60" height="20" src={ProcessingBar} alt={'doctor1'}/>
                 </Box>
               </Flex>
             )
@@ -241,11 +285,11 @@ function DoctorListModal(props: DoctorListModalProps) {
               width={"100%"} px="15px" py="15px" flexDirection={'row'} alignItems={'center'} fontSize={'14px'} minHeight={"40px"} borderBottom={"1px solid #ccc"} zIndex={1000} 
               bg={isReLoading ? "transparent" : haederBgColor} opacity={ isReLoading ? 0.7 : 1} overflowX={'auto'} whiteSpace="nowrap" ref={flexRef} 
             >
-              <Tag size={'lg'} borderRadius='full' px={5} variant='solid' bg={makeBgColor('all')} flexShrink="0" onClick={() => onHandleSortChange('all')} cursor={'pointer'}>
+             {/*  <Tag size={'lg'} borderRadius='full' px={5} variant='solid' bg={makeBgColor('all')} flexShrink="0" onClick={() => onHandleSortChange('all')} cursor={'pointer'}>
                 <TagLabel color={makeTextColor('all')}>
                   전체
                 </TagLabel>
-              </Tag>
+              </Tag> */}
               <Tag size={'lg'} borderRadius='full' px={5} ml={2} variant='solid' bg={makeBgColor('experience')} onClick={() => onHandleSortChange('experience')} cursor={'pointer'} flexShrink="0">
                 <TagLeftIcon boxSize='17px' as={MdInsertEmoticon} color={makeTextColor('experience')} />
                 <TagLabel color={makeTextColor('experience')}>환자 경험</TagLabel>
@@ -255,7 +299,7 @@ function DoctorListModal(props: DoctorListModalProps) {
                 <TagLabel color={makeTextColor('score')}>논문 스코어</TagLabel>
               </Tag>
               {
-                ( functions.isEmpty(inputs.latitude) && functions.isEmpty(inputs.longitude) ) ? 
+                ( !functions.isEmpty(inputs.latitude) && !functions.isEmpty(inputs.longitude) ) ? 
                 (
                   <Tag size={'lg'} borderRadius='full' px={5} ml={2} variant='solid' bg={makeBgColor('distance')} onClick={() => onHandleSortChange('distance')} cursor={'pointer'} flexShrink="0">
                     <TagLeftIcon boxSize='17px' as={BsGeoAlt} color={makeTextColor('distance')} />
@@ -304,6 +348,7 @@ function DoctorListModal(props: DoctorListModalProps) {
               <Tag width="40px" border="0px" backgroundColor={"transparent"}></Tag>
             </Flex>
           </Stack>
+          
         </Flex>
         {
           doctors?.length == 0 && (
@@ -315,9 +360,15 @@ function DoctorListModal(props: DoctorListModalProps) {
           </Flex>
           )
         }
+        {/* <Flex display={'flex'} flexDirection={'column'} minHeight={'40px'}  pt={10}>
+          <Box display={process.env.NODE_ENV == 'production' ? 'none' : 'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
+            <CustomText color='#000000'>{`위도 : ${location?.latitude}`}</CustomText>
+            <CustomText color='#000000'>{`경도 : ${location?.longitude}`}</CustomText>
+          </Box>
+        </Flex> */}
         <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'}  pt={10} overflowY={'auto'}>
           {
-            doctors.map((item:any,index:number) => {
+            doctors?.map((item:any,index:number) => {
               return (
                 <Box key={index}>
                   <DoctorItems

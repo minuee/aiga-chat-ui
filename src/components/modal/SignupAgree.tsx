@@ -20,7 +20,7 @@ import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
 import NextImage from 'next/legacy/image';
-import { loadingImage } from "@/components/icons/IconImage";
+import ProcessingBar from "@/assets/icons/processing2x.gif";
 import { MdOutlineClose,MdArrowBack,MdLogout } from 'react-icons/md';
 
 export interface SignupAgreeeModalProps extends PropsWithChildren {
@@ -175,12 +175,7 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
             isReceiving && (
               <Flex position='absolute' left={0} top={0} width='100%' height='100%' display={'flex'} justifyContent={'center'}  backgroundColor={'#000000'} opacity={0.7} zIndex={100}>
                 <Box padding='6' boxShadow='lg' width={"300px"} height={"calc( 100vh / 2 )"} display={'flex'} flexDirection={'column'}  justifyContent={'center'} alignItems={'center'}>
-                  <NextImage
-                    width="100"
-                    height="100"
-                    src={loadingImage}
-                    alt={'doctor1'}
-                  />
+                  <NextImage width="60" height="20" src={ProcessingBar} alt={'loading'} />
                 </Box>
               </Flex>
             )

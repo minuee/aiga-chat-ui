@@ -6,9 +6,8 @@ import functions from '@/utils/functions';
 import Link from '@/components/link/Link';
 import Alert from '@/components/alert/Alert';
 import NextImage from 'next/legacy/image';
-import { loadingImage } from "@/components/icons/IconImage"
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
-
+import ProcessingBar from "@/assets/icons/processing2x.gif";
 export interface RequestModalProps extends PropsWithChildren {
   isReceiving : boolean;
   isOpen : boolean;
@@ -53,13 +52,7 @@ function RequestModal(props: RequestModalProps) {
             isReceiving && (
               <Flex position='absolute' left={0} top={0} width='100%' height='100%' display={'flex'} justifyContent={'center'}  backgroundColor={'#000000'} opacity={0.7} zIndex={100}>
                 <Box padding='6' boxShadow='lg' width={"300px"} height={"calc( 100vh / 2 )"} display={'flex'} flexDirection={'column'}  justifyContent={'center'} alignItems={'center'}>
-                  <NextImage
-                    width="100"
-                    height="100"
-                    src={loadingImage}
-                    alt={'doctor1'}
-                  />
-                  <CustomText color="#ffffff">등록중...</CustomText>
+                 <NextImage width="60" height="20" src={ProcessingBar} alt={'loading'} />
                 </Box>
               </Flex>
             )

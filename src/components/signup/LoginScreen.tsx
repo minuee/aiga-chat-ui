@@ -1,7 +1,6 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 import { signIn } from 'next-auth/react';
-import { useGeoLocation } from '@/hooks/useGeoLocation';
 import Image from "next/image";
 import { MdCoPresent } from "react-icons/md";
 // chakra imports
@@ -40,7 +39,7 @@ function LoginScreen(props: LoginScreenProps) {
   const [ isLoading, setLoading] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const toast = useToast();
-  const { location, error } = useGeoLocation(geolocationOptions)
+
   const setLoginUserInfo = UserStateStore((state) => state.setUserState);
   const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
   const fontColor = useColorModeValue('#17191D', 'white');
@@ -146,10 +145,6 @@ function LoginScreen(props: LoginScreenProps) {
           </form>
         </Box>
       </Stack>
-     {/*  <Box display={isProduction ? 'none' : 'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
-        <Text>{`위도 : ${location?.latitude}`}</CustomText>
-        <CustomText>{`경도 : ${location?.longitude}`}</CustomText>
-      </Box> */}
     </Flex>       
   );
 }

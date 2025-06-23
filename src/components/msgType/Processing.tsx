@@ -1,8 +1,7 @@
 import NextImage from 'next/legacy/image';
 import { Flex,useColorModeValue,Text,Box,Icon} from '@chakra-ui/react';
 import { MdFitbit } from 'react-icons/md';
-import { loadingImage } from "@/components/icons/IconImage";
-import ProcessingBar from "@/assets/icons/processing.gif";
+import ProcessingBar from "@/assets/icons/processing2x.gif";
 type ProcessingProps = {
     msg: string;
 };
@@ -13,7 +12,7 @@ const Processing = ({ msg = "증상 분석 중"}: ProcessingProps) => {
   
   return (
     <Flex w="100%" mt="10px" alignItems={'center'}>
-      <Flex
+      {/* <Flex
         borderRadius="full"
         justify="center"
         align="center"
@@ -24,7 +23,7 @@ const Processing = ({ msg = "증상 분석 중"}: ProcessingProps) => {
         minW="40px"
       >
         <Icon as={MdFitbit} width="20px" height="20px" color="white" />
-      </Flex>
+      </Flex> */}
       <Box ml={2} pt={2}>
         <NextImage width="60" height="20" src={ProcessingBar} alt={'loading'} />
       </Box>

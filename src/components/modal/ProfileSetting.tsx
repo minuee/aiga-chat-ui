@@ -93,6 +93,20 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
 
   const onHandleSave = async() => {
     try{
+      const regex = mConstants.nickNameAbleString;
+      if (!regex.test(inputs.nickName)) {
+        toast({
+          title: "닉네임은 한글, 영문, 숫자, 언더스코어만 가능해요!",
+          position: 'top-right',
+          status: 'success',
+          containerStyle: {
+            color: '#ffffff',
+          },
+          isClosable: true,
+          duration:1500
+        });
+        return;
+      }
       if ( !functions.isEmpty(inputs?.nickName) ) {
         setReceiving(true)
         const res:any = await MemberService.setNickname(inputs.nickName);
@@ -177,7 +191,6 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
 
   const onHandleAlertConfirm = () => {
     onHandleLogout();
-
   }
 
   const onHandleLogout = async() => {
@@ -241,11 +254,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   }
 
   const onHandleNickname = ( str: string ) => {
-    if ( str == "" ) {
-      setInputs({...inputs, nickName: str }) 
-    }else if ( mConstants.nickNameAbleString.test(str)) { 
-      setInputs({...inputs, nickName: str }) 
-    }
+    setInputs({...inputs, nickName: str }) 
   }
 
   const onSendNoticeListButton = async(  ) => {

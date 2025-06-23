@@ -3,6 +3,7 @@ import { Box,Flex,Text,useColorModeValue ,Icon} from '@chakra-ui/react';
 import { AiOutlineMeh } from "react-icons/ai";
 import LogoImage from "@/assets/images/logo.png";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import { IconChatAiga} from '@/components/icons/svgIcons';
 
 type ChatWrongMessageProps = {
     msg: string;
@@ -22,11 +23,7 @@ const ChatWrongMessage = ({  msg = "흠..뭔가 잘못된 것 같습니다.", in
   return (
     <Flex w="100%" key={indexKey} flexDirection={'column'} mt="10px">
       <Box my="5px">
-        <Image 
-          src={LogoImage}
-          alt="Aiga Logo"
-          style={{width:'45px',objectFit: 'contain'}}
-        />
+        <IconChatAiga width={'46px'} height={"12px"} />
       </Box>
       <Flex 
         padding="12px 20px" 

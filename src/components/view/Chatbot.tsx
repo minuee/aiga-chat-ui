@@ -164,17 +164,35 @@ export default function ChatBot() {
       setTimeout(() => {
         setIsLoading(false);
         /* const msgLen = outputCode?.length;
-        const sampleMsg1 = mConstants.sample_msg_3;
+        const sampleMsg1 = mConstants.sample_msg_1;
+        const sampleMsg2 = mConstants.sample_msg_2;
+        const sampleMsg3 = mConstants.sample_msg_3;
         setOutputCode((prevCode: any[]) => {
           const newArray = [...prevCode];
           const lastIndex = msgLen;
           newArray[lastIndex] = {
             ismode : 'server',
-            id: sampleMsg1?.session_id,
+            id: sampleMsg1?.chat_id,
             user_question : sampleMsg1?.question,
             answer : sampleMsg1?.answer,
-            msg: sampleMsg1?.chat_type,
+            chat_type: sampleMsg1?.chat_type,
             used_token : sampleMsg1?.used_token
+          };
+          newArray[lastIndex+1] = {
+            ismode : 'server',
+            id: sampleMsg2?.chat_id,
+            user_question : sampleMsg2?.question,
+            answer : sampleMsg2?.answer,
+            chat_type: sampleMsg2?.chat_type,
+            used_token : sampleMsg2?.used_token
+          };
+          newArray[lastIndex+2] = {
+            ismode : 'server',
+            id: sampleMsg3?.chat_id,
+            user_question : sampleMsg3?.question,
+            answer : sampleMsg3?.answer,
+            chat_type: sampleMsg3?.chat_type,
+            used_token : sampleMsg3?.used_token
           };
           return newArray;
         }) */
@@ -322,7 +340,6 @@ export default function ChatBot() {
 
   const fn_close_modal_mypage_yakwan = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
-    window.alert(1)
     setIsOpenYakwanModal(false);
     router.replace(`/${locale}/chat#${mConstants.pathname_modal_10}`);
     setTimeout(() => {
@@ -332,7 +349,7 @@ export default function ChatBot() {
 
   const fn_close_modal_mypage_yakwan2 = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
-    window.alert(1)
+
     setIsOpenYakwanModal(false);
     router.replace(`/${locale}/chat#${mConstants.pathname_modal_11}`);
     setTimeout(() => {
@@ -342,7 +359,6 @@ export default function ChatBot() {
 
   const fn_close_modal_mypage_mingam2 = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
-    window.alert(1)
     setIsOpenMingamModal(false);
     router.replace(`/${locale}/chat#${mConstants.pathname_modal_11}`);
     setTimeout(() => {
@@ -486,9 +502,7 @@ export default function ChatBot() {
   const getNewSessionID =  async() => {
     try{
       const res:any = await ChatService.getChatNewSession();
-      console.log("getNewSessionID",res.data)
       if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
-        console.log("getNewSessionID res?.data?.session_id",res?.data?.session_id)
         setChatSessionId(res?.data?.session_id?.session_id)
         return res?.data?.session_id?.session_id
       }else{
@@ -501,7 +515,6 @@ export default function ChatBot() {
   }
 
   useEffect(() => {
-    console.log("chatbot.tsx ",isNewChat,outputCode.length)
     if ( isNewChat && outputCode.length > 0 ) {
       // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
       
@@ -521,7 +534,6 @@ export default function ChatBot() {
   }, [isNewChat]);
 
   useEffect(() => {
-    console.log("oldHistoryData",oldHistoryData)
     if ( !functions.isEmpty(oldHistoryData) ) {
       if ( !functions.isEmpty(oldHistoryData?.session_id) ) {
         setChatSessionId(oldHistoryData?.session_id)
@@ -537,7 +549,7 @@ export default function ChatBot() {
   }, [oldHistoryData]);
   /* 대화 불능 상태 컨트롤 */
   useEffect(() => {
-    console.log('outputCode,chatSessionId chatSessionId',chatSessionId,outputCode.length, mConstants.userMaxToken)
+    console.log('handleTranslate outputCode,chatSessionId chatSessionId',chatSessionId,outputCode.length, mConstants.userMaxToken)
     /* if ( functions.isEmpty(chatSessionId) ) {
       console.log('outputCode,chatSessionId chatSessionId if')
       if ( functions.isEmpty(chatSessionId) ) {
@@ -548,7 +560,7 @@ export default function ChatBot() {
       }
     }else */ 
     if ( outputCode.length == mConstants.userMaxToken && !functions.isEmpty(chatSessionId)) {
-      console.log('outputCode,chatSessionId chatSessionId else')
+      console.log('handleTranslate outputCode,chatSessionId chatSessionId else')
       setChatDisabled({
         isState : false,
         isAlertMsg : false
@@ -600,19 +612,38 @@ export default function ChatBot() {
     }
   }
   const onHandleStopRequest = async() => {
-    await onHandleStopInquiry();
-    const forceMsg = "대답이 중지되었습니다."
-    setReceiving(false);
-    setIsLoading(false)
-    setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system_stop", msg: forceMsg }]);
+    console.log("handleTranslate onHandleStopRequest" ,isReceiving)
+    if ( isReceiving ) {
+      await onHandleStopInquiry();
+      const forceMsg = "대답이 중지되었습니다."
+      setReceiving(false);
+      setIsLoading(false)
+      setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system_stop", msg: forceMsg }]);
+    }
   }
 
+  const handleSendMessage = () => {
+    if (!isReceiving) {
+      handleTranslate(inputCode);
+    } else {
+      toast({
+        title: 'AIGA',
+        position: 'top-right',
+        description: '수신중입니다. 잠시만 기다려주세요',
+        status: 'info',
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  }
 
   const handleTranslate = async( isText:any = '') => {
-   
+    //console.log("handleTranslate top",inputCode,isText)
     if ( functions.isEmpty(inputCode) && functions.isEmpty(isText) ) return;
     
-    console.log("handleTranslate chatSessionId", chatSessionId)
+    
+    //console.log("handleTranslate chatSessionId", chatSessionId)
+    //return;
     let chat_sessinn_id = chatSessionId;
     if ( functions.isEmpty(chat_sessinn_id)) {
       chat_sessinn_id = await getNewSessionID();
@@ -621,6 +652,8 @@ export default function ChatBot() {
     setReceiving(true);
     const msgLen = parseInt(outputCode.length+1);
     const inputCodeText = inputCode || isText;
+
+    console.log("handleTranslate 1111",isSystemText.includes(inputCodeText))
     //고혈압 치료를 잘하는 의사를 소개해줘
     if ( isSystemText.includes(inputCodeText) ) {
       if( inputCodeText != outputCode[outputCode?.length -1]?.msg) { 
@@ -634,11 +667,12 @@ export default function ChatBot() {
         return;
       }
     }else{
-      setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(),ismode: "me", msg: inputCodeText }]);
+      console.log("handleTranslate inputCodeText",inputCodeText)
+      setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(),ismode: "me", question: inputCodeText }]);
     }
     setInputCode('')
     try{
-      const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText);
+      const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText.trim());
       console.log("handleTranslate questionResult",questionResult)
       if ( mConstants.apiSuccessCode.includes(questionResult?.statusCode) ) {
         const answerMessage = questionResult?.data
@@ -649,10 +683,11 @@ export default function ChatBot() {
           const lastIndex = msgLen;
           newArray[lastIndex] = {
             ismode : 'server',
+            isHistory : false,
             id: answerMessage?.chat_id,
             user_question : answerMessage?.question,
             answer : answerMessage?.answer,
-            msg: answerMessage?.chat_type,
+            chat_type: answerMessage?.chat_type,
             used_token : answerMessage?.used_token
           };
           return newArray;
@@ -663,10 +698,12 @@ export default function ChatBot() {
           const lastIndex = msgLen;
           newArray[lastIndex] = {
             ismode : 'system',
+            isHistory : false,
             id: functions.getUUID(),
             user_question : inputCodeText,
             answer : null,
             msg: `${inputCodeText}의 대한 답변`,
+            chat_type : 'system',
             used_token : 0
           };
           return newArray;
@@ -783,6 +820,7 @@ export default function ChatBot() {
   }, [outputCode]);
 
   const handleChange = (Event: any) => {
+    console.log("handleTranslate handleChange")
     setInputCode(Event.target.value);
   };
 
@@ -860,45 +898,51 @@ export default function ChatBot() {
                   <Box key={index}>
                     <ChatMeMessage
                       indexKey={index}
-                      msg={element.msg}
+                      question={element.question}
                     />
                   </Box>
                 )
               }else if ( element.ismode == 'server') {
-                if ( element.msg === "recommand_doctor" ) {
+                if ( element.chat_type === "recommand_doctor" ) {
                   return (
-                    <Box key={index}>
+                    <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
                       <RecommandDoctor 
                         data={element}
+                        isHistory={element?.isHistory}
                         onSendButton={onSendDoctorButton}
                       />
                     </Box>
                   )
-                }else if ( element.msg === "search_doctor" ) {
+                }else if ( element.chat_type === "search_doctor" ) {
                   return (
-                    <Box key={index}>
+                    <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
                       <SearchDoctor 
                         data={element}
+                        isHistory={element?.isHistory}
                         onSendButton={onSendDoctorButton}
                       />
                     </Box>
                   )
-                }else if ( element.msg === "recommand_hospital" ) {
+                }else if ( element.chat_type === "recommand_hospital" ) {
                   return (
-                    <Box key={index}>
+                    <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
                       <Flex w="100%" key={index}>
                         <SimpleListMessage 
                           indexKey={index}
+                          isHistory={element?.isHistory}
                           msg={element.answer} 
                         />
                       </Flex>
                     </Box>
                   )
-                }else if ( element.msg === "general" ) {
+                }else if ( element.chat_type === "general" ) {
                   return (
-                    <Box key={index}>
+                    <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
                       <Flex w="100%" key={index}>
-                        <GeneralMessage output={element.answer.replaceAll('\n','<br />')} />
+                        <GeneralMessage 
+                          output={element.answer.replaceAll('\n','<br />')} 
+                          isHistory={element?.isHistory}
+                        />
                       </Flex>
                     </Box>
                   )
@@ -918,48 +962,12 @@ export default function ChatBot() {
                   />
                 )
               }else if ( element.ismode == 'system') {
-                if ( element.msg === "system_doctors" ) {
-                  return (
-                    <Box key={index}>
-                      <SelectDoctor 
-                        onSendButton={onSendDoctorButton}
-                      />
-                    </Box>
-                  )
-                }else if ( element.msg === "system_list" ) {
-                  return (
-                  <Box key={index}>
-                    <SelectName 
-                      data={[]}
-                      onSendButton={onSendNameButton}
-                    /> 
-                  </Box>
-                  )
-                }else if ( element.msg === "system_select" ) {
-                  return (
-                    <Box key={index}>
-                      <Welcome 
-                        msg={`안녕하세요? 건강AI AIGA에요\r\n누가 아프신가요?`}
-                        onSendButton={onSendButton}
-                      />
-                    </Box>
-                  )
-                }else if ( element.msg === "system_image" ) {
-                  return (
-                    <Box key={index}>
-                      <SelectBody 
-                        onSendButton={onSendWelcomeButton}
-                      />
-                    </Box>
-                  )
-                }else {
-                  return (
-                    <ChatWrongMessage
-                      indexKey={index}
-                      msg={'흠..뭔가 잘못된 것 같습니다'}
-                    />
-                  )
-                }
+                return (
+                  <ChatWrongMessage
+                    indexKey={index}
+                    msg={'흠..뭔가 잘못된 것 같습니다'}
+                  />
+                )
               }else{
                 return (
                   <Flex w="100%" key={index} mb="10px">
@@ -1034,36 +1042,24 @@ export default function ChatBot() {
               {
                 isReceiving
                 ?
-                <Box onClick={() => onHandleStopRequest()}>
+                <Box onClick={() => onHandleStopRequest()}  cursor={'pointer'} zIndex={10}>
                   <Image src={LoadingBar} alt="LoadingBar" style={{width:'30px', height:'30px'}} /> 
                 </Box>
                 :
                 <Box
-                  zIndex={444}
-                  onClick={() => { 
-                    if ( !isReceiving ) {
-                      handleTranslate(inputCode);
-                    }else {
-                      toast({
-                        title: 'AIGA',
-                        position: 'top-right',
-                        description: '수신중입니다. 잠시만 기달주세요',
-                        status: 'info',
-                        containerStyle: {
-                          color: '#ffffff',
-                        },
-                        duration: 2000,
-                        isClosable: true,
-                      });
-                    }
+                  zIndex={10}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    handleSendMessage();
                   }}
+                  onTouchStart={(e) => {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }}
+                  cursor={'pointer'}
                 >
                 {
-                  isFocus 
-                  ?
-                  <SendButtonOn boxSize={'32px'} />
-                  :
-                  <SendButtonOff boxSize={'32px'} />
+                  isFocus ? <SendButtonOn boxSize={'32px'} /> : <SendButtonOff boxSize={'32px'} />
                 }
                 </Box>
               }

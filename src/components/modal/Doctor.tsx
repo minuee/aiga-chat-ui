@@ -92,12 +92,13 @@ function DoctorModal(props: DoctorModalProps) {
 
   
   React.useEffect(() => {
+    //console.log("selected_doctor",selected_doctor)
     setDoctorBasicData({
       ...doctorBasicData,
       ...selected_doctor
     });
     if ( process.env.NODE_ENV == 'development') {
-      getDoctorBasicData()
+      //getDoctorBasicData()
     }
     setSelectedDoctorId(selected_doctor?.doctor_id);
     if ( !functions.isEmpty(selected_doctor?.education)) {
@@ -252,9 +253,12 @@ function DoctorModal(props: DoctorModalProps) {
         <Flex flexDirection={'row'} justifyContent={'space-evenly'} alignItems={'center'} minHeight={'100px'}>
           <Box 
             display={'flex'} flex={1} justifyContent={'center'} alignItems={'center'} mr={1}
-            bg='#DFF2FF' borderRadius={'8px'}
+            bg='#DFF2FF' 
+            borderRadius={'8px'}
             height={"50px"}
-            onClick={() => window.open('https://www.snubh.org/member/login.do?prevURI=/reserve/onlineReserve.do')}
+            onClick={() => {
+              !functions.isEmpty(doctorBasicData?.url) ? window.open(doctorBasicData?.url) : console.log("")
+            }}
             cursor={'pointer'}
           >
             <Icon as={MdComputer} color={'#2B8FFF'} size="4em" />
@@ -263,7 +267,7 @@ function DoctorModal(props: DoctorModalProps) {
           { ( isMobileOnly || process.env.NODE_ENV === 'development' ) && (
           <Box 
             display={'flex'} flex={1} justifyContent={'center'} alignItems={'center'} ml={1}  bg='#DFF2FF' borderRadius={'8px'} height={"50px"}
-            onClick={() => !functions.isEmpty(doctorBasicData?.contact) ? window.open(`tel:${doctorBasicData?.contact}`) : null} cursor={'pointer'}
+            onClick={() => !functions.isEmpty(doctorBasicData?.contact) ? window.open(`tel:${doctorBasicData?.telephone}`) : null} cursor={'pointer'}
           >
             <Icon as={BiPhone} color={'#2B8FFF'} />
             <CustomTextBold700 fontSize={'15px'}  color="#2B8FFF" ml="2"> 전화 예약</CustomTextBold700>

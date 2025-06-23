@@ -28,6 +28,7 @@ import NewChatStateStore,{ ChatSesseionIdStore,CallHistoryDataStore } from '@/st
 import { ModalMypageStore,DrawerHistoryStore } from '@/store/modalStore';
 import HistoryItem from '@/components/text/HistoryItem';
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import { IconNotice } from '@/components/icons/svgIcons';
 
 interface SidebarContent extends PropsWithChildren {
   routes: IRoute[];
@@ -142,23 +143,41 @@ function SidebarContent(props: SidebarContent) {
     }, 300);
   }
 
-  const onHandReplaceHistory = async( data:any) => {
-
-    let newData = [] as any;
-    data?.sessions.forEach((sessions:any) => {
-      sessions.forEach((conversations:any) => {
+  const onHandReplaceHistory = async( data:any ) => {
+    try{
+      console.log("newData 1",data)
+      let newData = [] as any;
+      data?.chattings.forEach((conversations:any) => {
         if ( mConstants.chatAnswerType.includes(conversations?.chat_type) ) {
           newData.push({
+            ...conversations,
+            ismode : 'me',
+            isHistory : true,
+            id: conversations?.chat_id,
+            question : conversations?.question
+          })
+          newData.push({
+            ...conversations,
             ismode : 'server',
-            id: conversations?.session_id,
-            msg: conversations?.chat_type,
-            ...conversations
+            isHistory : true,
+            id: conversations?.chat_id,
+            user_question : conversations?.question,
+            answer : !functions.isEmpty(conversations?.answer) ?  functions.parseMaybeJson(conversations?.answer) : [],
+            chat_type: conversations?.chat_type,
+            used_token : conversations?.used_token
           })
         }
-      });
-    })
+      })
 
-    setOldHistoryData(newData)
+      console.log("newData 2",newData)
+      setOldHistoryData({
+        session_id : data?.session_id,
+        session_title : data?.title,
+        chattings: newData
+      });
+    }catch(e){
+      console.log("newData e",e)
+    }
   }
 
   const onHandleUpdateTitle = async(inputs: any) => {
@@ -249,6 +268,19 @@ function SidebarContent(props: SidebarContent) {
           }
           <Flex flexDirection={'column'} alignItems={'center'}  width={'100%'} pb="100px">
             {
+              historyData?.length == 0 
+              ?
+              <Flex flexDirection={'column'} justifyContent={'center'} minHeight={'calc( 100vh - 300px )'} width={'100%'}>
+                <Box display={'flex'} justifyContent={'center'} alignContent={'center'}> 
+                  <IconNotice boxSize={'40px'}/>
+                </Box>
+                <Box display={'flex'} justifyContent={'center'} alignContent={'center'} mt="20px"> 
+                  <CustomText fontSize={'17px'} color={textColor2}>
+                    이력내용이 없습니다.
+                  </CustomText>
+                </Box>
+              </Flex>
+              :
               historyData.map(({ date, sessions } : any) => (
               <Flex key={date} flexDirection={'column'} width={'100%'}>
                 <HSeparator mt="20px" mb="15px" w="100%"  />
@@ -273,7 +305,7 @@ function SidebarContent(props: SidebarContent) {
               </Flex>
               ))
             }
-            <HSeparator mt="20px" mb="20px" w="calc( 100% - 40px )" px="20px" />
+            {historyData?.length > 0 && <HSeparator mt="20px" mb="20px" w="calc( 100% - 40px )" px="20px" />}
           </Flex>
         </Stack>
       }

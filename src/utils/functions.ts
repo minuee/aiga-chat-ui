@@ -25,6 +25,35 @@ const functions = {
     return outputArray;
   },
 
+  getDistance(lat1:any, lon1:any, lat2:any, lon2:any) {
+    if ([lat1, lon1, lat2, lon2].some(coord => typeof coord !== 'number' || isNaN(coord))) {
+      return Infinity; // 거리 비교에서 항상 뒤로 밀리게
+    }
+    const R = 6371; // 지구 반지름 (km)
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) ** 2;
+  
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // km 단위 거리 반환
+  },
+
+  parseMaybeJson(str:any) {
+    try {
+      const parsed = JSON.parse(str);
+      // 객체 또는 배열만 통과
+      if (typeof parsed === 'object' && parsed !== null) {
+        return parsed;
+      }
+    } catch (_) {}
+  
+    // JSON이 아니면 그냥 원본 리턴
+    return str;
+  },
+
   stripHtmlTags(str:any) {
     if (typeof str !== 'string') return '';
     return str.replace(/<[^>]*>/g, '');

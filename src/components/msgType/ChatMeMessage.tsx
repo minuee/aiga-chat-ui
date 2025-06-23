@@ -1,11 +1,11 @@
 import { Box,Flex,Text,useColorModeValue ,Icon} from '@chakra-ui/react';
 
 type ChatMeMessageProps = {
-    msg: string;
+  question: string;
     indexKey : any
 };
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
-const ChatMeMessage = ({  msg = "대답이 중지되었습니다.", indexKey}: ChatMeMessageProps) => {
+const ChatMeMessage = ({  question = "대답이 중지되었습니다.", indexKey}: ChatMeMessageProps) => {
 
   const bgMeColor = useColorModeValue('#2B8FFF', 'white');
   const textMeColor = useColorModeValue('white', 'navy.800');
@@ -29,7 +29,7 @@ const ChatMeMessage = ({  msg = "대답이 중지되었습니다.", indexKey}: C
         zIndex={2}
       >
         <CustomText color={textMeColor} fontSize={'17px'} lineHeight={'150%'} whiteSpace="pre-line">
-          {msg}
+          {question}
         </CustomText>
       </Flex>
     </Flex>

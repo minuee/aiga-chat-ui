@@ -16,8 +16,8 @@ import ImageEntire from "@/assets/images/img-entire.png";
 //import IconVote3 from "@/assets/icons/vote_3.png";
 //import IconVote4 from "@/assets/icons/vote_4.png";
 import Alert from '@/components/alert/CustomAlert';
-import { loadingImage,iconAlertModify,iconAlertReview } from "@/components/icons/IconImage"
-
+import { iconAlertModify,iconAlertReview } from "@/components/icons/IconImage"
+import ProcessingBar from "@/assets/icons/processing2x.gif";
 export interface ReviewModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
@@ -149,12 +149,7 @@ function ReviewModal(props: ReviewModalProps) {
           isReceiving && (
             <Flex position='absolute' left={0} top={0} width='100%' height='100%'  justifyContent={'center'}  backgroundColor={'#000000'} opacity={0.7} zIndex="100">
               <Box padding='6' boxShadow='lg' width={"300px"} height={"calc( 100vh / 2 )"} display={'flex'} flexDirection={'column'}  justifyContent={'center'} alignItems={'center'}>
-                <NextImage
-                    width="100"
-                    height="100"
-                    src={loadingImage}
-                    alt={'doctor1'}
-                />
+                <NextImage width="60" height="20" src={ProcessingBar} alt={'loading'} />
               </Box>
             </Flex>
           )

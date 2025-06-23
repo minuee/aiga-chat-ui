@@ -14,10 +14,11 @@ import LogoImage from "@/assets/images/logo.png";
 
 type SearchDoctorProps = {
     data : any;
+    isHistory : boolean;
     onSendButton: (data: any,id:number) => void; 
 };
 
-const SearchDoctor = ({  onSendButton , data }: SearchDoctorProps) => {
+const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = useRef(pathname);

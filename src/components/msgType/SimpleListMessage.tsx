@@ -5,13 +5,14 @@ import functions from "@/utils/functions";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import LogoImage from "@/assets/images/logo.png";
 import Image from "next/image";
-
+import { IconChatAiga} from '@/components/icons/svgIcons';
 type SimpleListMessageProps = {
     msg: any;
+    isHistory : boolean;
     indexKey : any
 };
 
-const SimpleListMessage = ({  msg = [], indexKey}: SimpleListMessageProps) => {
+const SimpleListMessage = ({  msg = [], indexKey, isHistory = false}: SimpleListMessageProps) => {
 
   const bgMeColor = useColorModeValue('#2B8FFF', 'white');
   const textMeColor = useColorModeValue('white', 'navy.800');
@@ -20,32 +21,48 @@ const SimpleListMessage = ({  msg = [], indexKey}: SimpleListMessageProps) => {
   const bgSystemStopColor = useColorModeValue('#FFF0F0', 'white');
   const textSystemStopColor = useColorModeValue('#F94848', 'navy.800');
   const textSystemStopIconColor = useColorModeValue('#5E0018', 'navy.800');
-  
+  const [hospitalsList, setHospitalsList] = React.useState([]);
+
   React.useEffect(() => {
     console.log('msg',msg)
+    if ( functions.isEmpty(msg?.hospitals) ) {
+      const reData = functions.parseMaybeJson(msg?.hospitals)
+      setHospitalsList(reData);
+    }else{
+      setHospitalsList(msg?.hospitals);
+    }
   }, [indexKey]);
-  indexKey
+
+  
   return (
     <Flex w="100%" flexDirection={'column'} mt="10px" px="5px">
       <Box my="5px">
-        <Image 
-          src={LogoImage}
-          alt="Aiga Logo"
-          style={{width:'45px',objectFit: 'contain'}}
-        />
+        <IconChatAiga width={'46px'} height={"12px"} />
       </Box>
-      <UnorderedList>
-      { 
-        !functions.isEmpty(msg?.hospitals) && 
-        msg.hospitals.map((element:any,index:number) => {
-          return (
-            <Box key={index}>
-              <ListItem><CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'170%'}>{element?.name}</CustomText></ListItem>
-            </Box>
-          )
-        })
-      }
-      </UnorderedList>
+      <Flex 
+        padding="12px 20px" 
+        border={`1px solid ${bgSystemColor}`} 
+        bgColor={bgSystemColor} 
+        borderTopLeftRadius="2px" 
+        borderTopRightRadius="20px" 
+        borderBottomLeftRadius="20px"
+        borderBottomRightRadius="20px" 
+        w="auto" 
+        zIndex={2}
+        alignItems={'center'}
+      > 
+        <UnorderedList>
+        { 
+          hospitalsList.map((element:any,index:number) => {
+            return (
+              <Box key={index}>
+                <ListItem><CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'170%'}>{element?.name}</CustomText></ListItem>
+              </Box>
+            )
+          })
+        }
+        </UnorderedList>
+      </Flex>
     </Flex>
   )
 };

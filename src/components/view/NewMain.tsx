@@ -22,7 +22,7 @@ export default function MainPage() {
     </div>
 
 
-    <section className="hero" id="home">
+    {/* <section className="hero" id="home">
         <div className="root_container">
             <div className="hero-content">
                 <h1>AI 기반 맞춤형<br />의료진 추천 서비스</h1>
@@ -35,7 +35,7 @@ export default function MainPage() {
                 <a href="#about" className="cta-button">서비스 알아보기</a>
             </div>
         </div>
-    </section>
+    </section> */}
 
 
     <section className="features">
@@ -347,9 +347,9 @@ export default function MainPage() {
             </div>
             <div className="footer-bottom">
                 <p>&copy; 2025 AIGA Inc. All rights reserved. | 사업자등록번호: 123-45-67890 | 대표: 김의료</p>
-                <p style={{marginTop: '10px', color:' #ff6b6b', fontWeight: 'bold'}}>
+                {/* <p style={{marginTop: '10px', color:' #ff6b6b', fontWeight: 'bold'}}>
                     ⚠️ 본 서비스는 의료행위를 대체하지 않으며, 응급상황 시 즉시 119 또는 응급실로 연락하시기 바랍니다.
-                </p>
+                </p> */}
             </div>
         </div>
     </footer>

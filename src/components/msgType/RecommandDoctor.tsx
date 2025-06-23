@@ -12,14 +12,16 @@ import DoctorList from "@/components/modal/DoctorList";
 import { sampleDoctor1, sampleDoctor2,sampleDoctor3 } from "@/components/icons/IconImage";
 import { MdArrowBack,MdOutlineClose } from 'react-icons/md';
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
-
+import LogoImage from "@/assets/images/logo.png";
+import { IconChatAiga} from '@/components/icons/svgIcons';
 import DoctorAvatar from "@/assets/images/doctor_default_white.png";
 type RecommandDoctorProps = {
     data : any;
+    isHistory : boolean;
     onSendButton: (data: any,id:number) => void; 
 };
 
-const RecommandDoctor = ({  onSendButton , data }: RecommandDoctorProps) => {
+const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = useRef(pathname);
@@ -97,7 +99,10 @@ const RecommandDoctor = ({  onSendButton , data }: RecommandDoctorProps) => {
         },
       }}
     >
-      <Flex  alignItems={"center"} mt="20px" justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"50px"} maxHeight={"250px"} overflowX={'auto'} ref={flexRef} >
+      <Box mt="5px">
+        <IconChatAiga width={'46px'} height={"12px"} />
+      </Box>
+      <Flex  alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"50px"} maxHeight={"250px"} overflowX={'auto'} ref={flexRef} >
         {
           doctorList.map((element: any, index: number) => (
             <Flex 
@@ -217,7 +222,7 @@ const RecommandDoctor = ({  onSendButton , data }: RecommandDoctorProps) => {
                 <DoctorList
                   isOpen={isOpenDocListModal}
                   setClose={() => fn_close_modal_doctor_list()}
-                  doctorData={doctorList}
+                  originDoctorData={doctorList}
                 />
               </ModalBody>
             </ModalContent>
