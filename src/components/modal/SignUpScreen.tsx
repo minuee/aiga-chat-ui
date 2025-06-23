@@ -221,26 +221,10 @@ function LoginModal(props: LoginModalProps) {
           }
           popup?.close();
           window.removeEventListener('message', receiveMessage);
-        }else{
-          console.log(`apidata ✅ 회원가입 실패 :`, event);
-        
-          toast({
-            title: 'AIGA',
-            position: 'top-right',
-            description: '회원가입/로그인중 오류가 발생하였습니다. 잠시뒤에 이용해주세요. ',
-            status: 'info',
-            containerStyle: {
-              color: '#ffffff',
-            },
-            duration: 2000,
-            isClosable: true,
-          });
-          window.removeEventListener('message', receiveMessage);
         }
       };
 
-      window.addEventListener('message', receiveMessage);
-    }catch(e:any){
+      }catch(e:any){
       console.log(`apidata ✅ 회원가입 실패 errrrr :`, e);
       toast({
         title: 'AIGA',

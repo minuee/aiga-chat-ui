@@ -1,11 +1,13 @@
-import { Button,Flex,Stack,useColorModeValue } from '@chakra-ui/react';
+import { Button,Flex,Stack,useColorModeValue,Box } from '@chakra-ui/react';
 import { Md13Mp, MdFamilyRestroom, MdHub, MdEarbuds,MdGridView } from 'react-icons/md';
 type SelectTypeProps = {
     onSendButton: (str: string) => void; 
+    isDevelope : boolean
 };
 
 const SelectType = ({
-    onSendButton 
+    onSendButton,
+    isDevelope = false
   }: SelectTypeProps) => {
 
   const textColor = useColorModeValue('navy.700', 'white')
@@ -14,13 +16,13 @@ const SelectType = ({
     <Flex 
       w="100%" 
       maxWidth={"600px"}
-      mt="50px" 
+      mt="40px" 
       flexDirection={'column'}
       justifyContent={'center'}
       alignItems={"flex-start"}
       overflowX={'auto'}
     >
-      <Flex pl="0px" pt="10px">
+      <Box pl="0px" pt="10px" display={isDevelope ? 'flex' : 'none'} >
         <Stack direction='row' spacing={4}>
           <Button rightIcon={<Md13Mp />} colorScheme='teal' variant='outline' onClick={() => onSendButton('system_text')} id="button_type_text">
             텍스트
@@ -38,7 +40,7 @@ const SelectType = ({
             그림선택
           </Button>
         </Stack>
-      </Flex>
+      </Box>
     </Flex>
   )
     

@@ -318,9 +318,27 @@ export default function MainPage() {
                 </div>
                 <div className="footer-section">
                     <h4>법적 정보</h4>
-                    <a href="#">이용약관</a><br />
-                    <a href="#">개인정보처리방침</a><br />
-                    <a href="#">민감정보 이용 동의</a>
+                    <Link
+                        href="/regulation"
+                        target='_self'
+                        className="bubble-link"
+                    >
+                        이용약관
+                    </Link><br />
+                    <Link
+                        href="/policy"
+                        target='_self'
+                        className="bubble-link"
+                    >
+                        개인정보처리방침
+                    </Link><br />
+                    <Link
+                        href="/sensitive"
+                        target='_self'
+                        className="bubble-link"
+                    >
+                        민감정보 이용
+                    </Link>
                 </div>
                 <div className="footer-section">
                     <h4>고객지원</h4>

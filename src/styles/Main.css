@@ -10,6 +10,26 @@
     padding: 0 20px;
 }
 
+.mainContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+.mainContainer_title_wrap {
+   
+    background: white;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 20px 0 20px;
+    border-bottom: 2px solid rgba(255, 107, 107, 0.5);
+}
+
+.main-title {
+    font-size: 21px;
+    color: #1a202c;
+    position: relative;
+    font-weight: 600;
+}
 /* Navigation */
 .fix_nav {
     background: rgba(255, 255, 255, 0.95);

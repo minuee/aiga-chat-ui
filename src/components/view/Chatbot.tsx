@@ -164,7 +164,7 @@ export default function ChatBot() {
       setTimeout(() => {
         setIsLoading(false);
         /* const msgLen = outputCode?.length;
-        const sampleMsg1 = mConstants.sample_msg_2;
+        const sampleMsg1 = mConstants.sample_msg_3;
         setOutputCode((prevCode: any[]) => {
           const newArray = [...prevCode];
           const lastIndex = msgLen;
@@ -823,7 +823,7 @@ export default function ChatBot() {
           maxH="calc(100vh - 100px)" /* 여기가 하단 스크롤 영역 영향 받음 */
           minH="calc(100vh - 100px)" overflowY='auto' display={outputCode ? 'flex' : 'none'} ref={scrollRef}
         >
-          <Box display={outputCode?.length == 0 ? 'flex' : 'none'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}  paddingTop={{base : "70px", md : "60px"}}>
+          <Box display={outputCode?.length == 0 ? 'flex' : 'none'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}  paddingTop={{base : "70px", md : "60px"}} >
             {/* <Welcome 
               msg={`${t("welcome_msg",{app_name:"AIGA"})}`}
               onSendButton={onSendButton}
@@ -847,11 +847,12 @@ export default function ChatBot() {
               classNames="opening_box_gray"
             />
           </Box>
-          {/* <Box>
+          <Box>
             <SelectType 
               onSendButton={onSendTypeButton}
+              isDevelope={false}
             />
-          </Box> */}
+          </Box>
           { 
             outputCode.map((element:any,index:number) => {
               if ( element.ismode == 'me') {

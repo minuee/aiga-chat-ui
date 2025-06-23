@@ -10,6 +10,7 @@ import functions from "@/utils/functions";
 import { BiChevronRight } from "react-icons/bi";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import DoctorAvatar from "@/assets/images/doctor_default_white.png";
+import LogoImage from "@/assets/images/logo.png";
 
 type SearchDoctorProps = {
     data : any;
@@ -63,6 +64,13 @@ const SearchDoctor = ({  onSendButton , data }: SearchDoctorProps) => {
 
   return (
     <Stack minWidth={'100%'} width={'auto'} minHeight={"50px"} maxHeight={"300px"} position={'relative'}>
+      <Box my="5px">
+        <Image 
+          src={LogoImage}
+          alt="Aiga Logo"
+          style={{width:'45px',objectFit: 'contain'}}
+        />
+      </Box>
       <Flex  alignItems={"center"} mt="20px" justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"50px"} maxHeight={"250px"} overflowX={'auto'} ref={flexRef} >
         {
           doctorList.map((element: any, index: number) => (
