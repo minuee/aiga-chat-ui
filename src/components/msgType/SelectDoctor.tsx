@@ -187,7 +187,7 @@ const SelectDoctor = ({  onSendButton  }: SelectDoctorProps) => {
                 <DoctorList
                   isOpen={isOpenDocListModal}
                   setClose={() => fn_close_modal_doctor_list()}
-                  doctorData={[]}
+                  originDoctorData={[]}
                 />
               </ModalBody>
             </ModalContent>

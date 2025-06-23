@@ -102,7 +102,7 @@ function DoctorListModal(props: DoctorListModalProps) {
   }, [location]);
 
   const makeBgColor = (sortType: string = 'all') => {
-    if (Array.isArray(inputs.sortType) && inputs.sortType.includes(sortType)) {
+    if (Array.isArray(inputs.sortType) && (inputs.sortType as string[]).includes(sortType)) {
       return tabSelectedBgColor;
     } else {
       return tabDefaultBgColor;
@@ -110,57 +110,28 @@ function DoctorListModal(props: DoctorListModalProps) {
   };
 
   const makeTextColor = (sortType: string = 'all') => {
-    if (Array.isArray(inputs.sortType) && inputs.sortType.includes(sortType)) {
+    if (Array.isArray(inputs.sortType) && (inputs.sortType as string[]).includes(sortType)) {
       return tabSelectedTextColor;
     } else {
       return tabDefaultTextColor;
     }
   };
 
-  const onHandleSortChange  = async( sortType:string) => {
 
-    const isExist = ( Array.isArray(inputs.sortType) && inputs?.sortType.includes(sortType) ) ? true : false ;
-    const updatedSortTypeList = isExist ? inputs.sortType.filter((item) => item !== sortType) : [...inputs.sortType, sortType]
-    if (updatedSortTypeList.length === 0) {
-      setDoctors(originDoctorData);
-      setInputs({
-        ...inputs,
-        sortType: []
-      });
-      return;
-    }
-    
-    const userLat = inputs?.latitude;
-    const userLng = inputs?.longitude;
-
-    setIsReLoading(true);
-    const sorted = await sortDoctors(originDoctorData,userLat,userLng,updatedSortTypeList);
-    setDoctors(sorted);
-    setInputs((prev) => ({
-      ...prev,
-      sortType: updatedSortTypeList
-    }));
-
-    setTimeout(() => {
-      setIsReLoading(false);
-    },500)
-  }
-
-  const sortDoctors = async( doctorData: any,userLat: number,userLng: number, selectedCriteria: ("experience" | "score" | "distance")[]
-  ): Doctor[] => {
+  const sortDoctors = async( doctorData: any,userLat: number,userLng: number, selectedCriteria:any ) => {
     if (selectedCriteria.length === 0) return doctorData;
   
     // 거리 포함 시 계산
-    const withDistance = doctorData.map((doctor) => ({
+    const withDistance = doctorData.map((doctor:any) => ({
       ...doctor,
       distance: functions.getDistance(userLat, userLng, doctor.lat, doctor.lon),
     }));
   
     // 정규화용 min/max 계산
     const allValues = {
-      experience: withDistance.map(d => summaryRankSocre(d.doctor_score,'experience')),
-      score: withDistance.map(d => summaryRankSocre(d.doctor_score,'scroe')),
-      distance: withDistance.map(d => d.distance),
+      experience: withDistance.map((d:any) => summaryRankSocre(d.doctor_score,'experience')),
+      score: withDistance.map((d:any) => summaryRankSocre(d.doctor_score,'scroe')),
+      distance: withDistance.map((d:any) => d.distance),
     };
   
     const minMax = {
@@ -177,7 +148,7 @@ function DoctorListModal(props: DoctorListModalProps) {
     // 가중치 분배
     const weightPerCriterion = 1 / selectedCriteria.length;
   
-    return withDistance.sort((a, b) => {
+    return withDistance.sort((a:any, b:any) => {
       const getScore = (doctor: typeof a) => {
         return selectedCriteria.reduce((acc:any, criterion:"experience" | "score" | "distance") => {
           let normalized = 0;
@@ -215,6 +186,36 @@ function DoctorListModal(props: DoctorListModalProps) {
     }
   }
   
+
+  const onHandleSortChange  = async(sortType: string = 'all') => {
+
+    const isExist = ( Array.isArray(inputs.sortType) && (inputs.sortType as string[]).includes(sortType) ) ? true : false ;
+    const updatedSortTypeList = isExist ? inputs.sortType.filter((item:any) => item !== sortType) : [...inputs.sortType, sortType]
+    if (updatedSortTypeList.length === 0) {
+      setDoctors(originDoctorData);
+      setInputs({
+        ...inputs,
+        sortType: []
+      });
+      return;
+    }
+    
+    const userLat = inputs?.latitude;
+    const userLng = inputs?.longitude;
+
+    setIsReLoading(true);
+    const sorted = await sortDoctors(originDoctorData,userLat,userLng,updatedSortTypeList);
+    setDoctors(sorted);
+    setInputs((prev:any) => ({
+      ...prev,
+      sortType: updatedSortTypeList
+    }));
+
+    setTimeout(() => {
+      setIsReLoading(false);
+    },500)
+  }
+
 
   React.useEffect(() => {
     const flexElement = flexRef.current;

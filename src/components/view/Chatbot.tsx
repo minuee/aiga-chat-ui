@@ -862,10 +862,6 @@ export default function ChatBot() {
           minH="calc(100vh - 100px)" overflowY='auto' display={outputCode ? 'flex' : 'none'} ref={scrollRef}
         >
           <Box display={outputCode?.length == 0 ? 'flex' : 'none'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}  paddingTop={{base : "70px", md : "60px"}} >
-            {/* <Welcome 
-              msg={`${t("welcome_msg",{app_name:"AIGA"})}`}
-              onSendButton={onSendButton}
-            /> */}
             <MotionWelcomeImage
               pt="20px"
             />
