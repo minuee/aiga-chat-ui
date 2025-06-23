@@ -22,20 +22,20 @@ export default function MainPage() {
     </div>
 
 
-    {/* <section className="hero" id="home">
+    <section className="hero" id="home">
         <div className="root_container">
             <div className="hero-content">
                 <h1>AI 기반 맞춤형<br />의료진 추천 서비스</h1>
                 <p>인공지능이 당신의 증상을 분석하여 가장 적합한 의료진을 추천해드립니다.<br />더 빠르고 정확한 의료 서비스의 첫걸음을 시작하세요.</p>
                 
-                <div className="disclaimer">
+                {/* <div className="disclaimer">
                     <strong>중요 안내:</strong> 본 서비스는 의료진 정보 제공 목적으로, 의료 진단이나 처방을 대체하지 않습니다. 응급상황 시 즉시 119 또는 가까운 응급실로 연락하세요.
-                </div>
+                </div> */}
                 
                 <a href="#about" className="cta-button">서비스 알아보기</a>
             </div>
         </div>
-    </section> */}
+    </section>
 
 
     <section className="features">
