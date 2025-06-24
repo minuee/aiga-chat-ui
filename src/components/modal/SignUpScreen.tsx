@@ -112,6 +112,7 @@ function LoginModal(props: LoginModalProps) {
       }, 500);
 
       const receiveMessage = async(event: MessageEvent) => {
+
         if ( !mConstants.apiAllowOriginCode.includes(event.origin) ) {
           console.warn('apidata 허용되지 않은 출처:', event.origin);
           popup?.close();
@@ -223,21 +224,22 @@ function LoginModal(props: LoginModalProps) {
           window.removeEventListener('message', receiveMessage);
         }
       };
-
+      window.addEventListener('message', receiveMessage);
       }catch(e:any){
-      console.log(`apidata ✅ 회원가입 실패 errrrr :`, e);
-      toast({
-        title: 'AIGA',
-        position: 'top-right',
-        description: '회원가입/로그인중 오류가 발생하였습니다. 잠시뒤에 이용해주세요. ',
-        status: 'info',
-        containerStyle: {
-          color: '#ffffff',
-        },
-        duration: 2000,
-        isClosable: true,
-      });
+        console.log(`apidata ✅ 회원가입 실패 errrrr :`, e);
+        toast({
+          title: 'AIGA',
+          position: 'top-right',
+          description: '회원가입/로그인중 오류가 발생하였습니다. 잠시뒤에 이용해주세요. ',
+          status: 'info',
+          containerStyle: {
+            color: '#ffffff',
+          },
+          duration: 2000,
+          isClosable: true,
+        });
     }
+    
   };
 
   const setClcikClose = async(str:string) => {

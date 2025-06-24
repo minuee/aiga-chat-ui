@@ -958,7 +958,7 @@ export default function ChatBot() {
         >
           <Box display={outputCode?.length == 0 ? 'flex' : 'none'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} >
             <MotionWelcomeImage
-              pt="20px"
+              pt="120px"
             />
             <MotionWelcome 
               msg={`안녕하세요!`}
