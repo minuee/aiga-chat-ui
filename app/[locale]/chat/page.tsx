@@ -4,7 +4,7 @@ import React, { Children } from 'react';
 import Head from 'next/head';
 import PageLayout from '@/components/layout/PageLayout';
 import SubPage from '@/components/view/Chatbot';
-import { Box, SkeletonCircle, useDisclosure } from '@chakra-ui/react';
+import { Flex,Box, SkeletonCircle, useDisclosure } from '@chakra-ui/react';
 import { usePathname } from 'next/navigation';
 import routes from '@/routes';
 import { getActiveRoute, getActiveNavbar } from '@/utils/navigation';
@@ -77,8 +77,8 @@ export default function Index() {
 
   return (
     <PageLayout title="AIGA Chatbot">
-      <Box display={'flex'} justifyContent={'center'}>
-        <Box
+      <Flex  justifyContent={'center'}>
+        <Flex
           minHeight="100vh"
           height="100%"
           overflow="hidden" /* 여기가 중요 */
@@ -87,7 +87,17 @@ export default function Index() {
           w={{ base: '100%', md : `${mConstants.desktopMinWidth}px`  }}
           maxW={`${mConstants.desktopMinWidth}px` }
         >
-          <Box width="100%" maxWidth={`${mConstants.desktopMinWidth}px`}>
+          <Box 
+            position={'absolute'}
+            top={0}
+            left={0}
+            right={0}
+            height={'60px'}
+            width="100%" 
+            maxWidth={`${mConstants.desktopMinWidth}px`}
+            display={'flex'}
+            justifyContent={'center'}
+          >
             <Navbar
               onOpen={onOpen}
               logoText={'AIGA Beta'}
@@ -98,18 +108,71 @@ export default function Index() {
           {
             isGlobalState 
             ?
-            <Box display={'flex'} alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'}>
+            <Flex 
+              mt="60px"
+              alignItems={'center'} 
+              px='basePadding' 
+              width="100%" 
+              maxWidth={`${mConstants.desktopMinWidth}px`} 
+              overflow={'hidden'}
+            >
               <SubPage />
-            </Box>
+            </Flex>
             :
-            <Box display={'flex'} alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'}>
+            <Flex alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'}>
               <GlobalDisable
                 setRetry={() => onHandleRetry() }
               />
-            </Box>
+            </Flex>
           }
-        </Box>
-      </Box>
+        </Flex>
+      </Flex>
     </PageLayout>
   )
 }
+/* 
+return (
+  <PageLayout title="AIGA Chatbot">
+    <Box display={'flex'} justifyContent={'center'}>
+      <Box
+        minHeight="100vh"
+        height="100%"
+        overflow="hidden" 
+        position="relative"
+        maxHeight="100%"
+        w={{ base: '100%', md : `${mConstants.desktopMinWidth}px`  }}
+        maxW={`${mConstants.desktopMinWidth}px` }
+      >
+        <Box width="100%" maxWidth={`${mConstants.desktopMinWidth}px`}>
+          <Navbar
+            onOpen={onOpen}
+            logoText={'AIGA Beta'}
+            brandText={getActiveRoute(routes, pathname)}
+            secondary={getActiveNavbar(routes, pathname)}
+          />
+        </Box>
+        {
+          isGlobalState 
+          ?
+          <Box 
+            display={'flex'} 
+            alignItems={'center'} 
+            px='basePadding' 
+            width="100%" 
+            maxWidth={`${mConstants.desktopMinWidth}px`} 
+            overflow={'hidden'}
+            bg='green'
+          >
+            <SubPage />
+          </Box>
+          :
+          <Box display={'flex'} alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'}>
+            <GlobalDisable
+              setRetry={() => onHandleRetry() }
+            />
+          </Box>
+        }
+      </Box>
+    </Box>
+  </PageLayout>
+) */

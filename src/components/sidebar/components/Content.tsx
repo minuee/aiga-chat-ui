@@ -200,9 +200,29 @@ function SidebarContent(props: SidebarContent) {
           };
         })
         setHistoryData(newHistoryData);
+        toast({
+          title: "정상적으로 수정되었습니다.",
+          position: 'top-right',
+          isClosable: true,
+          duration:1500,
+          status: 'success',
+          containerStyle: {
+            color: '#ffffff',
+          }
+        });
       }           
     }catch(e:any){
-      setIsReceiving(false)
+      setIsReceiving(false);
+      toast({
+        title: "수정중 오류가 발생되었습니다.",
+        position: 'top-right',
+        isClosable: true,
+        duration:1500,
+        status: 'error',
+        containerStyle: {
+          color: '#ffffff',
+        }
+      });
     }
   } 
 

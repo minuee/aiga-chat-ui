@@ -41,6 +41,46 @@ const functions = {
     return R * c; // km 단위 거리 반환
   },
 
+
+  formatAvailabilityMessage(timestampMs: number, retryLimitSec : number): string {
+    try{
+      console.log('isChatDisabled timestampMs',timestampMs,retryLimitSec)
+      const now = new Date();
+      const target = new Date(timestampMs+retryLimitSec);
+      console.log('isChatDisabled target',target)
+      // 날짜 비교용 (연/월/일만 비교)
+      const isSameDay = now.toDateString() === target.toDateString();
+    
+      const hours = target.getHours();
+      const minutes = target.getMinutes().toString().padStart(2, '0');
+    
+      const timeText = `${hours}시 ${minutes}분`;
+    
+      if (isSameDay) {
+        return `오늘 ${timeText}`;
+      }
+    
+      // 내일인지 확인
+      const tomorrow = new Date(now);
+      tomorrow.setDate(now.getDate() + 1);
+    
+      const isTomorrow = target.toDateString() === tomorrow.toDateString();
+    
+      if (isTomorrow) {
+        return `내일 ${timeText}`;
+      }
+    
+      // 그 외 날짜
+      const month = target.getMonth() + 1;
+      const date = target.getDate();
+      console.log(`isChatDisabled ${month}월 ${date}일 ${timeText}`)
+      return `${month}월 ${date}일 ${timeText}`;
+    }catch(e:any) {
+      return `잠시뒤에`;
+    }
+  },
+  
+
   parseMaybeJson(str:any) {
     try {
       const parsed = JSON.parse(str);

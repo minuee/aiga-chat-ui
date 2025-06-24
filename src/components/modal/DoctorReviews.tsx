@@ -16,11 +16,7 @@ import ProgressBar from '@/components/fields/ProgressBar';
 import NewRating from "@/components/icons/newStar"
 import functions from '@/utils/functions';
 import { IconVote1,IconVote2,IconVote3,IconVote4 } from '@/components/icons/svgIcons';
-//import IconVote1 from "@/assets/icons/vote_1.png";
-//import IconVote2 from "@/assets/icons/vote_2.png";
-//import IconVote3 from "@/assets/icons/vote_3.png";
-//import IconVote4 from "@/assets/icons/vote_4.png";
-
+import { IconNotice } from '@/components/icons/svgIcons';
 import mConstants from '@/utils/constants';
 import ReviewItem from "@/components/text/ReviewItem";
 import CustomText, { CustomTextBold700 } from "@/components/text/CustomText";
@@ -40,23 +36,36 @@ function DoctorReview( props: DoctorModalProps ) {
   const [isLoading, setIsLoading] = React.useState(true);
   const [reviewListData, setReviewListData] = React.useState<any>(null);
   const [reviewData, setReviewData] = React.useState<any>(null);
-
+  const [aigaReviewAverage, setAigaReviewAverage] = React.useState<any>({
+    kindness_avg: 0,
+    explaination_avg:  0,
+    satisfaction_avg:  0,
+    recommand_avg:  0,
+    total_avg : 0
+  });
   const setIsOpenReview = ModalDoctorReviewStore((state) => state.setModalState);
   const { isFromDoctorDepth2 } = DoctorFromListStore(state => state);
   const setFromDoctorDepth2 = DoctorFromListStore((state) => state.setFromDoctorDepth2);
   const skeletonColor = useColorModeValue('white', 'navy.700');
-
+  const textColor2 = useColorModeValue('#7F879B', 'white');
 
   React.useEffect(() => {
-    getDoctorReviewListData(doctorID);
+    console.log("ModalDoctorReviewStore",doctorID)
+    if ( !functions.isEmpty(doctorID)) {
+      getDoctorReviewListData(doctorID);
+    }
   }, [doctorID]);
  
   const getDoctorReviewListData = async(doctorID:any) => {
+    console.log("getReviewListData doctorID",doctorID)
     const res:any = await DoctorService.getReviewListData(doctorID);
     console.log("onHandleRegistReview res",res)
     if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
       const rData = res?.data?.review;
       setReviewListData(rData);
+      const resultAvg = calculateAverageScores(rData);
+      console.log('resultAvg',resultAvg);
+      setAigaReviewAverage(resultAvg)
       setIsLoading(false);
     }else{
       toast({
@@ -73,6 +82,55 @@ function DoctorReview( props: DoctorModalProps ) {
         setIsLoading(false);
       }, 1000);
     }
+  }
+
+  const calculateAverageScores = (review: any) => {
+
+    let totalKindness = 0;
+    let totalExplaination = 0;
+    let totalSatisfaction = 0;
+    let totalRecommand = 0;
+    let count = 0;
+    try{
+  
+      for (const item of review) {
+        // null인 경우는 제외하고 평균 계산
+        if (
+          item.kindness_score != null &&
+          item.explaination_score != null &&
+          item.satisfaction_score != null &&
+          item.recommand_score != null
+        ) {
+          totalKindness += item.kindness_score;
+          totalExplaination += item.explaination_score;
+          totalSatisfaction += item.satisfaction_score;
+          totalRecommand += item.recommand_score;
+          count++;
+        }
+      }
+    
+      if (count === 0) {
+        return null; // 데이터 없음
+      }
+
+      const totalAvg = (totalKindness / count + totalExplaination / count + totalSatisfaction / count + totalRecommand / count) / 4;
+      return {
+        kindness_avg: totalKindness / count,
+        explaination_avg: totalExplaination / count,
+        satisfaction_avg: totalSatisfaction / count,
+        recommand_avg: totalRecommand / count,
+        total_avg : totalAvg > 0 ? totalAvg.toFixed(1) : 0
+      };
+    }catch(e){
+      return {
+        kindness_avg: 0,
+        explaination_avg: 0,
+        satisfaction_avg: 0,
+        recommand_avg: 0,
+        total_avg : 0
+      };
+    }
+    
   }
 
   const onHandleRemoveReivew = async(data:any) => {
@@ -209,14 +267,18 @@ function DoctorReview( props: DoctorModalProps ) {
             </Box>
           </Box>
           <Divider orientation='horizontal' my={2}/>
-          <Flex flexDirection={{base : 'column', sm2 : "row"}} justifyContent={{base : 'space-evenly', sm2:'center'}} alignItems={{base : 'center', sm2:'center'}} minHeight={'100px'} width={'100%'}>
+          <Box
+          display={reviewListData?.length == 0  ? 'none' : 'flex'}
+          flexDirection={{base : 'column', sm2 : "row"}} justifyContent={{base : 'space-evenly', sm2:'center'}} alignItems={{base : 'center', sm2:'center'}} minHeight={'100px'} width={'100%'}>
             <Box flex={1} display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'space-evenly'} height={'100%'} width={{base : '100%', sm2:'auto'}} mb={{base : 4, sm2 : 0}}>
               <Flex flex={1}>
-                <CustomTextBold700 fontSize={'40px'} color={'#000000'} >4.5</CustomTextBold700>
+                <CustomTextBold700 fontSize={'40px'} color={'#000000'}>
+                  {aigaReviewAverage?.total_avg}
+                </CustomTextBold700>
               </Flex>
               <Flex flex={1} >
                 <NewRating 
-                  rating={4.5}
+                  rating= {aigaReviewAverage?.total_avg}
                 />
               </Flex>
             </Box>
@@ -226,10 +288,10 @@ function DoctorReview( props: DoctorModalProps ) {
                   <CustomText fontSize={'13px'} color={'#5C5E69'}>친절•배려</CustomText>
                 </Box>
                 <Box flex={2}>
-                  <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={80} borderRadius={'1rem'} bg={'#EFF2F7'} />
+                  <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={(aigaReviewAverage?.kindness_avg*20)} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box flex={1} padding={'0 5px'}>
-                  <CustomText fontSize={'13px'} color='#1D73DC'>4.0</CustomText>
+                  <CustomText fontSize={'13px'} color='#1D73DC'>{aigaReviewAverage?.kindness_avg?.toFixed(1)}</CustomText>
                 </Box>
               </Box>
               <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
@@ -237,10 +299,10 @@ function DoctorReview( props: DoctorModalProps ) {
                   <CustomText fontSize={'13px'} color={'#5C5E69'}>치료 만족</CustomText>
                 </Box>
                 <Box flex={2}>
-                  <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={80} borderRadius={'1rem'} bg={'#EFF2F7'} />
+                  <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={(aigaReviewAverage?.explaination_avg*20)} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box flex={1} padding={'0 5px'}>
-                  <CustomText fontSize={'13px'} color='#1D73DC'>4.0</CustomText>
+                  <CustomText fontSize={'13px'} color='#1D73DC'>{aigaReviewAverage?.explaination_avg?.toFixed(1)}</CustomText>
                 </Box>
               </Box>
               <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
@@ -248,10 +310,10 @@ function DoctorReview( props: DoctorModalProps ) {
                   <CustomText fontSize={'13px'} color={'#5C5E69'}>쉬운 설명</CustomText>
                 </Box>
                 <Box flex={2}>
-                  <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={80} borderRadius={'1rem'} bg={'#EFF2F7'} />
+                  <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={(aigaReviewAverage?.satisfaction_avg*20)} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box flex={1} padding={'0 5px'}>
-                  <CustomText fontSize={'13px'} color='#1D73DC'>4.0</CustomText>
+                  <CustomText fontSize={'13px'} color='#1D73DC'>{aigaReviewAverage?.satisfaction_avg?.toFixed(1)}</CustomText>
                 </Box>
               </Box>
               <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
@@ -259,16 +321,30 @@ function DoctorReview( props: DoctorModalProps ) {
                   <CustomText fontSize={'13px'} color={'#5C5E69'}>추천 의향</CustomText>
                 </Box>
                 <Box flex={2}>
-                  <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={20} borderRadius={'1rem'} bg={'#EFF2F7'} />
+                  <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={(aigaReviewAverage?.recommand_avg*20)} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box flex={1} padding={'0 5px'}>
-                  <CustomText fontSize={'13px'} color='#1D73DC'>1.0</CustomText>
+                  <CustomText fontSize={'13px'} color='#1D73DC'>{aigaReviewAverage?.recommand_avg?.toFixed(1)}</CustomText>
                 </Box>
               </Box>
             </Box>
-          </Flex>
+          </Box>
           <Stack spacing='2'>
-            {reviewListData.map((item:any, index:number) => (
+            {
+            reviewListData?.length == 0 
+            ?
+            <Flex flexDirection={'column'} justifyContent={'center'} height={'200px'} width={'100%'} mt={5}>
+                <Box display={'flex'} justifyContent={'center'} alignContent={'center'}> 
+                  <IconNotice boxSize={'40px'}/>
+                </Box>
+                <Box display={'flex'} justifyContent={'center'} alignContent={'center'} mt="20px"> 
+                  <CustomText fontSize={'17px'} color={textColor2}>
+                    여러분의 소중한 리뷰를 기다리고 있습니다.
+                  </CustomText>
+                </Box>
+              </Flex>
+            :
+            reviewListData.map((item:any, index:number) => (
               <ReviewItem
                 key={item?.review_id}
                 data={item}

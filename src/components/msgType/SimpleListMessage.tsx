@@ -3,8 +3,6 @@ import React, { PropsWithChildren } from 'react';
 import { Box,Flex,Text,useColorModeValue ,UnorderedList,ListItem} from '@chakra-ui/react';
 import functions from "@/utils/functions";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
-import LogoImage from "@/assets/images/logo.png";
-import Image from "next/image";
 import { IconChatAiga} from '@/components/icons/svgIcons';
 type SimpleListMessageProps = {
     msg: any;
@@ -49,8 +47,26 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false}: SimpleList
         borderBottomRightRadius="20px" 
         w="auto" 
         zIndex={2}
-        alignItems={'center'}
+        justifyContent={'center'}
+        flexDirection={'column'}
       > 
+        {
+          !functions.isEmpty(msg?.department) && (
+            <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'170%'}>{msg?.department} 진료를 잘하는 병원 {hospitalsList?.length}군데를 추천 드리겠습니다.</CustomText>
+          )
+        }
+        <Flex 
+          padding="12px 20px" 
+          border={`1px solid ${bgSystemColor}`} 
+          bgColor={bgSystemColor} 
+          borderTopLeftRadius="2px" 
+          borderTopRightRadius="20px" 
+          borderBottomLeftRadius="20px"
+          borderBottomRightRadius="20px" 
+          w="auto" 
+          zIndex={2}
+          alignItems={'center'}
+        > 
         <UnorderedList>
         { 
           hospitalsList.map((element:any,index:number) => {
@@ -62,6 +78,7 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false}: SimpleList
           })
         }
         </UnorderedList>
+        </Flex>
       </Flex>
     </Flex>
   )

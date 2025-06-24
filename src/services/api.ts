@@ -79,15 +79,17 @@ axios.interceptors.response.use(
 
       try {
         const refreshToken = localStorage.getItem('refresh_token');
-        const res = await axios.post('/auth/refresh-token', { refreshToken });
+        if ( !functions.isEmpty(refreshToken)) {
+          const res = await axios.post('/auth/refresh', { refreshToken });
 
-        const newAccessToken = res.data.accessToken;
-        mCookie.setCookie(mConstants.apiTokenName,newAccessToken)
-        onRefreshed(newAccessToken);
-        isRefreshing = false;
+          const newAccessToken = res.data.accessToken;
+          mCookie.setCookie(mConstants.apiTokenName,newAccessToken)
+          onRefreshed(newAccessToken);
+          isRefreshing = false;
 
-        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-        return axios(originalRequest);
+          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+          return axios(originalRequest);
+        }
       } catch (refreshError) {
         mCookie.removeCookie(mConstants.apiTokenName)
         return Promise.reject(refreshError);

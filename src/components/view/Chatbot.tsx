@@ -8,7 +8,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
 import { Box,Flex,Icon,Textarea,Text,useColorModeValue,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,useToast,useColorMode } from '@chakra-ui/react';
 import ResizeTextarea from "react-textarea-autosize";
-import { useEffect, useState,useRef } from 'react';
+import { useEffect, useState,useRef,useLayoutEffect } from 'react';
 import Image from "next/image";
 import { MdOutlineArrowDownward, MdFitbit, MdPerson,MdOutlineClose,MdArrowBack } from 'react-icons/md';
 import DoctorDetail  from '@/components/modal/Doctor';
@@ -39,13 +39,14 @@ import mConstants from '@/utils/constants';
 
 import { ChatSystemMessageType } from "@/types/types";
 //새창열기 전역상태
+import ConfigInfoStore,{ GlobalStateStore } from '@/store/configStore';
 import NewChatStateStore,{ ChatSesseionIdStore,CallHistoryDataStore } from '@/store/newChatStore';
 import historyStore from '@/store/historyStore';
 import { 
   ModalDoctorDetailStore,ModalDoctorReviewStore,ModalDoctorRequestStore,ModalDoctorListStore,DrawerHistoryStore,ModalMypageStore,ModalMypageNoticeStore,ModalMypageNoticeDetailStore,
   ModalMypageRequestStore,ModalMypageEntireStore,ModalMypagePolicyStore,ModalMypageYakwanStore,ModalMypageMingamStore,ModalSignupStoreStore,ModalSignupAgreeStoreStore,DoctorFromListStore
  } from '@/store/modalStore';
-
+ import UserStateStore from '@/store/userStore';
 import * as ChatService from "@/services/chat/index";
 import { SendButtonOff,SendButtonOn } from '@/components/icons/svgIcons';
 //import SendButtonOff from "@/assets/icons/send_btn_off.png";
@@ -70,7 +71,8 @@ export default function ChatBot() {
   // ChatGPT model
   const [isChatDisabled, setChatDisabled] = useState<any>({
     isState :  true,
-    isAlertMsg : false 
+    isAlertMsg : false,
+    reTryTimeStamp : 0
   });
   
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -78,9 +80,11 @@ export default function ChatBot() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
-  const navbarIcon = useColorModeValue('gray.500', 'white');
-
+  const navbarIcon = useColorModeValue('#000000', 'white');
+  const { nickName, ...userBasicInfo } = UserStateStore(state => state);
   /* chat에 관련된 상태관리 */
+  const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
+  const [in24UsedToken, setIn24UsedToken] = useState(0);
   const isNewChat = NewChatStateStore(state => state.isNew);
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
   const chatSessionId = ChatSesseionIdStore(state => state.chatSessionId);
@@ -113,13 +117,6 @@ export default function ChatBot() {
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
   const themeColor = useColorModeValue('white', 'navy.900');
   
-  const bgMeColor = useColorModeValue('#2B8FFF', 'white');
-  const textMeColor = useColorModeValue('white', 'navy.800');
-  const bgSystemColor = useColorModeValue('#F4F6FA', 'white');
-  const textSystemColor = useColorModeValue('#212127', 'navy.800');
-  const bgSystemStopColor = useColorModeValue('#FFF0F0', 'white');
-  const textSystemStopColor = useColorModeValue('#F94848', 'navy.800');
-  const textSystemStopIconColor = useColorModeValue('#5E0018', 'navy.800');
   const placeholderColor = useColorModeValue({ color: 'gray.500' },{ color: 'gray' });
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
   const isSystemText = ["system_text","system_doctors","system_list","system_select","system_image"];
@@ -167,6 +164,7 @@ export default function ChatBot() {
         const sampleMsg1 = mConstants.sample_msg_1;
         const sampleMsg2 = mConstants.sample_msg_2;
         const sampleMsg3 = mConstants.sample_msg_3;
+        const sampleMsg4 = mConstants.sample_msg_4;
         setOutputCode((prevCode: any[]) => {
           const newArray = [...prevCode];
           const lastIndex = msgLen;
@@ -194,6 +192,14 @@ export default function ChatBot() {
             chat_type: sampleMsg3?.chat_type,
             used_token : sampleMsg3?.used_token
           };
+          newArray[lastIndex+3] = {
+            ismode : 'server',
+            id: sampleMsg4?.chat_id,
+            user_question : sampleMsg4?.question,
+            answer : sampleMsg4?.answer,
+            chat_type: sampleMsg4?.chat_type,
+            used_token : sampleMsg4?.used_token
+          };
           return newArray;
         }) */
       }, 300);
@@ -203,6 +209,441 @@ export default function ChatBot() {
   useEffect(() => {
     pathnameRef.current = pathname; // 항상 최신값 유지
   }, [pathname]);
+
+  
+
+  const getNewSessionID =  async() => {
+    try{
+      const res:any = await ChatService.getChatNewSession();
+      if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
+        const newSessionId = res?.data?.session_id;
+        console.log("handleTranslate getNewSessionID",newSessionId);
+        setChatSessionId(newSessionId)
+        return newSessionId;
+      }else{
+        console.log("handleTranslate getNewSessionID is null",);
+        return null;
+      }
+    }catch(e:any){
+      console.log("error of getNewSessionID",e);
+      return null;
+      
+    }
+  }
+
+  useEffect(() => {
+    if ( isNewChat && outputCode.length > 0 ) {
+      // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
+      
+      setChatSessionId('')
+      setOutputCode([]);
+      setChatDisabled({
+        ...isChatDisabled,
+        isState : true,
+        isAlertMsg : false,
+      })
+      setCurrentPathname('')
+      mCookie.setCookie('currentPathname','')
+      firstForceStep();
+      setTimeout(() => {
+        setNewChatOpen(false);
+      }, 1000);
+    }
+  }, [isNewChat]);
+
+  useEffect(() => {
+    if ( !functions.isEmpty(oldHistoryData) ) {
+      if ( !functions.isEmpty(oldHistoryData?.session_id) ) {
+        setChatSessionId(oldHistoryData?.session_id)
+        setOutputCode(oldHistoryData?.chattings);
+        setChatDisabled({
+          ...isChatDisabled,
+          isState : true,
+          isAlertMsg : false
+        })
+        fn_close_drawer_history();
+        setOldHistoryData(null)
+      }
+    }
+  }, [oldHistoryData]);
+
+  /* 토큰 만료를 체크 */
+  useEffect(() => {
+    if ( in24UsedToken > 0 ) { 
+      if ( userBasicInfo?.isGuest  ) {//비회원
+        if ( in24UsedToken >= guestMaxToken ) {
+          setChatDisabled({
+            ...isChatDisabled,
+            isState : false,
+          })
+        }else{
+          setChatDisabled({
+            ...isChatDisabled,
+            isState : true,
+          })
+        }
+      }else{
+        if ( in24UsedToken >= userMaxToken ) {
+          setChatDisabled({
+            ...isChatDisabled,
+            isState : false,
+          })
+        }else{
+          setChatDisabled({
+            ...isChatDisabled,
+            isState : true,
+          })
+        }
+      }
+    }
+  }, [in24UsedToken,oldHistoryData,isNewChat]);
+  /* 대화 불능 상태 컨트롤 */
+ /*  useEffect(() => {
+ 
+    if ( outputCode.length == mConstants.userMaxToken && !functions.isEmpty(chatSessionId)) {
+      console.log('handleTranslate outputCode,chatSessionId chatSessionId else')
+      setChatDisabled({
+        ...isChatDisabled,
+        isState : false,
+        isAlertMsg : false
+      })
+    }else if (  outputCode.length < mConstants.userMaxToken && !functions.isEmpty(chatSessionId) ) {
+      setChatDisabled({
+        ...isChatDisabled,
+        isState : true,
+        isAlertMsg : true
+      })
+    }
+  }, [outputCode,chatSessionId]); */
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const el = scrollRef.current;
+      if (!el) return;
+  
+      const handleWheel = (e: WheelEvent) => {
+        if (e.deltaX !== 0) return;
+        setShowScroll((prev) => {
+          const goingUp = e.deltaY < 0;
+          return goingUp !== prev ? !prev : prev;
+        });
+      };
+  
+      el.addEventListener("wheel", handleWheel);
+      // 정리
+      return () => {
+        console.log("handleWheel ❌ wheel 이벤트 해제");
+        el.removeEventListener("wheel", handleWheel);
+      };
+    }, 1000); // 1초 후에 강제 시도
+  
+    return () => clearTimeout(timer);
+  }, []);
+  
+
+  // 스크롤을 맨 아래로 내리는 함수
+  const scrollToBottom = () => {
+    const el = scrollBottomRef.current;
+    if (el) {
+      scrollBottomRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      setShowScroll(false)
+    }
+  };
+
+  const onHandleStopInquiry = async() => {
+    try{
+      if ( !functions.isEmpty(chatSessionId)  ) {
+        const res:any = await ChatService.setRequestStop(chatSessionId);     
+      }
+    }catch(e:any){
+      setReceiving(false)
+    }
+  }
+  const onHandleStopRequest = async() => {
+    console.log("handleTranslate onHandleStopRequest" ,isReceiving)
+    if ( isReceiving ) {
+      await onHandleStopInquiry();
+      const forceMsg = "대답이 중지되었습니다."
+      setReceiving(false);
+      setIsLoading(false)
+      setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system_stop", msg: forceMsg }]);
+    }
+  }
+
+  const handleSendMessage = () => {
+    if (!isReceiving) {
+      handleTranslate(inputCode);
+    } else {
+      toast({
+        title: 'AIGA',
+        position: 'top-right',
+        description: '수신중입니다. 잠시만 기다려주세요',
+        status: 'info',
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  }
+
+  useEffect(() => {
+    console.log("isChatDisabled",isChatDisabled)
+  }, [isChatDisabled]);
+
+  const handleTranslate = async( isText:any = '') => {
+  
+    if ( functions.isEmpty(inputCode) ||  functions.isEmpty(isText) || isReceiving ) return;
+    let chat_sessinn_id = chatSessionId;
+    if ( functions.isEmpty(chat_sessinn_id)) {
+      chat_sessinn_id = await getNewSessionID();
+    }
+    console.log("handleTranslate chat_sessinn_id", chat_sessinn_id)
+    if ( !functions.isEmpty(chat_sessinn_id)) {
+      setReceiving(true);
+      const msgLen = parseInt(outputCode.length+1);
+      const inputCodeText = inputCode || isText;
+
+      console.log("handleTranslate 1111",isSystemText.includes(inputCodeText))
+      //고혈압 치료를 잘하는 의사를 소개해줘
+      if ( isSystemText.includes(inputCodeText) ) {
+        if( inputCodeText != outputCode[outputCode?.length -1]?.msg) { 
+          setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system", msg: inputCodeText }]);
+          setIsLoading(false);
+          setReceiving(false);
+          return;
+        }else{
+          setIsLoading(false);
+          setReceiving(false);
+          return;
+        }
+      }else{
+        setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(),ismode: "me", question: inputCodeText }]);
+      }
+      setInputCode('')
+      try{
+        const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText.trim());
+        console.log("handleTranslate questionResult",questionResult)
+        if ( mConstants.apiSuccessCode.includes(questionResult?.statusCode) ) {
+          const answerMessage = questionResult?.data;
+          setIn24UsedToken(answerMessage?.in24_used_token)
+          setIsLoading(false);
+          setReceiving(false);
+          setOutputCode((prevCode: any[]) => {
+            const newArray = [...prevCode];
+            const lastIndex = msgLen;
+            newArray[lastIndex] = {
+              ismode : 'server',
+              isHistory : false,
+              id: answerMessage?.chat_id,
+              user_question : answerMessage?.question,
+              answer : answerMessage?.answer,
+              chat_type: answerMessage?.chat_type,
+              used_token : answerMessage?.used_token
+            };
+            return newArray;
+          })
+        }else{
+          if ( questionResult?.message?.statusCode == '404') {
+            const parsedMessage = parseLooselyFormattedJsonString(questionResult?.message?.message);
+            console.log(parsedMessage);
+            if ( !functions.isEmpty(parsedMessage) && parsedMessage.message == '최대 토큰수 초과 에러') {
+              setChatDisabled({
+                reTrytimeStamp : parseInt(parsedMessage?.timestamp),
+                isState : false,
+                isAlertMsg : false
+              })
+              setIn24UsedToken(parsedMessage?.in24_used_token)
+              setIsLoading(false);
+              setReceiving(false);
+              setOutputCode((prevCode: any[]) => {
+                const newArray = [...prevCode];
+                const lastIndex = msgLen;
+                newArray[lastIndex] = {
+                  ismode : 'system',
+                  isHistory : false,
+                  id: functions.getUUID(),
+                  user_question : inputCodeText,
+                  answer : null,
+                  msg: `일일 질문이 제한되었습니다.`,
+                  chat_type : 'system',
+                  used_token : 0
+                };
+                return newArray;
+              })
+            }else{
+              call_fn_error_message();
+            }
+          }else{
+            call_fn_error_message()
+          }
+        }
+      }catch(e:any){
+        console.log("handleTranslate error",e);
+        call_fn_error_message();
+      }
+    }else{
+      call_fn_error_message();
+    }
+  }
+
+
+  const call_fn_error_message = () => {
+    setIsLoading(false);
+    setReceiving(false);
+    toast({
+      title: 'AIGA',
+      position: 'top-right',
+      description: '시스템이 불안정합니다. 잠시 뒤에 다시 시도해주십시요',
+      status: 'info',
+      duration: 2000,
+      isClosable: true,
+    });
+  }
+
+  const  parseLooselyFormattedJsonString = (input:any)  => {
+    try {
+      // 1. 줄바꿈/공백 정리
+      let jsonLike = input.trim();
+  
+      // 2. 작은 따옴표를 큰 따옴표로 변환 (단, 문자열 내부만)
+      jsonLike = jsonLike.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":'); // key에 큰따옴표
+      jsonLike = jsonLike.replace(/:(\s*)'([^']*)'/g, ': "$2"'); // value에 큰따옴표
+  
+      // 3. 파싱 시도
+      return JSON.parse(jsonLike);
+    } catch (e:any) {
+      console.error('⚠️ JSON 파싱 실패:', e);
+      return null;
+    }
+  }
+  const handleTranslate_origin = async( isText:any = '') => {
+
+    if ( functions.isEmpty(inputCode) && functions.isEmpty(isText) ) return;
+    
+    console.log("handleTranslate chatSessionId", chatSessionId)
+    let chat_sessinn_id = chatSessionId;
+    if ( functions.isEmpty(chat_sessinn_id)) {
+      chat_sessinn_id = await getNewSessionID();
+    }
+
+    
+    setReceiving(true);
+    const msgLen = parseInt(outputCode.length+1);
+    const inputCodeText = inputCode || isText;
+    
+    if ( isSystemText.includes(inputCodeText) ) {
+      if( inputCodeText != outputCode[outputCode?.length -1]?.msg) { 
+        setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system", msg: inputCodeText }]);
+        setIsLoading(false);
+        setReceiving(false);
+        return;
+      }else{
+        setIsLoading(false);
+        setReceiving(false);
+        return;
+      }
+    }else{
+      setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(),ismode: "me", msg: inputCodeText }]);
+    }
+    setInputCode('')
+
+    const BaseAPI = process.env.NEXT_PUBLIC_ADMIN_API_BASE_URL;
+    const url = `${BaseAPI}/chat`;
+ 
+    const payload = {
+      "user_id": "minuee",
+      "msg_type": isText,
+      "msg": inputCodeText
+    }
+
+    const response = await customfetch.callAPI(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      credentials: 'include',
+      body: JSON.stringify(payload)
+    }, 10000);
+
+    const reader = response?.body?.getReader();
+    const decoder = new TextDecoder();
+    let streamData:string = "";
+    while (true ) {
+      const { value, done } : any = await reader?.read();
+    
+      if (done) {
+        setTimeout(() => {
+          setIsLoading(false);
+          setReceiving(false);
+        },3000)
+        
+        console.log('🔚 스트림 종료됨');
+        break;
+      }
+    
+      const chunk = decoder.decode(value, { stream: true });
+      console.log('📥 받은 메시지:', chunk);
+     
+      if ( chunk ) {
+        streamData = streamData.concat(chunk);
+      }else{
+        console.error('data가 null입니다. getReader를 호출할 수 없습니다.');
+      }
+
+      setOutputCode((prevCode: any[]) => {
+       
+        const newArray = [...prevCode];
+        const lastIndex = msgLen;
+        if ( !newArray[lastIndex]?.msg ) {
+          newArray[lastIndex] = {
+            id: functions.getUUID(),
+            ismode : 'server',
+            msg:chunk,
+          };
+        }else{
+          const tmpMsg = prevCode[lastIndex].msg;
+          newArray[lastIndex] = {
+            ...prevCode[lastIndex],
+            msg: tmpMsg.concat(chunk)
+          };
+        }
+        return newArray;
+      });
+    }
+  }
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setShowScroll(false)
+      scrollBottomRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, outputCode?.ismode == "me" ? 0 : 300); // or 100ms 정도로 조정 가능
+    return () => clearTimeout(timeout);
+  }, [outputCode]);
+
+  const handleChange = (Event: any) => {
+    console.log("handleTranslate handleChange")
+    setInputCode(Event.target.value);
+  };
+
+  const onSendButton = async( str : string) => {
+    if ( !isReceiving) await handleTranslate(str);
+  }
+
+  const onSendWelcomeButton = async( str : string) => {
+    if ( !isReceiving ) await handleTranslate(str);
+  }
+
+  const onSendDoctorButton = async( data : any,isType : number) => {
+    setSelectedDoctor(data);
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_2}`);
+    setCurrentPathname(`${mConstants.pathname_modal_2}`)
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2}`)
+    setIsOpenDoctorModal(true);
+  }
+
+  const onSendNameButton = async( str : string) => {
+    if ( !isReceiving ) await handleTranslate(str);
+  }
+
+  const onSendTypeButton = async( typeString : string ) => {
+    if ( !isReceiving ) await handleTranslate(typeString);
+  }
 
   const fn_close_modal_doctor_detail = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
@@ -498,355 +939,6 @@ export default function ChatBot() {
 
     return () => window.removeEventListener('popstate', handlePopState);
   }, []); // ✅ 한 번만 등록
-
-  const getNewSessionID =  async() => {
-    try{
-      const res:any = await ChatService.getChatNewSession();
-      if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
-        setChatSessionId(res?.data?.session_id?.session_id)
-        return res?.data?.session_id?.session_id
-      }else{
-        return null;
-      }
-    }catch(e:any){
-      return null;
-      console.log("error of getNewSessionID",e);
-    }
-  }
-
-  useEffect(() => {
-    if ( isNewChat && outputCode.length > 0 ) {
-      // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
-      
-      setChatSessionId('')
-      setOutputCode([]);
-      setChatDisabled({
-        isState : true,
-        isAlertMsg : false
-      })
-      setCurrentPathname('')
-      mCookie.setCookie('currentPathname','')
-      firstForceStep();
-      setTimeout(() => {
-        setNewChatOpen(false);
-      }, 1000);
-    }
-  }, [isNewChat]);
-
-  useEffect(() => {
-    if ( !functions.isEmpty(oldHistoryData) ) {
-      if ( !functions.isEmpty(oldHistoryData?.session_id) ) {
-        setChatSessionId(oldHistoryData?.session_id)
-        setOutputCode(oldHistoryData?.chattings);
-        setChatDisabled({
-          isState : true,
-          isAlertMsg : false
-        })
-        fn_close_drawer_history();
-        setOldHistoryData(null)
-      }
-    }
-  }, [oldHistoryData]);
-  /* 대화 불능 상태 컨트롤 */
-  useEffect(() => {
-    console.log('handleTranslate outputCode,chatSessionId chatSessionId',chatSessionId,outputCode.length, mConstants.userMaxToken)
-    /* if ( functions.isEmpty(chatSessionId) ) {
-      console.log('outputCode,chatSessionId chatSessionId if')
-      if ( functions.isEmpty(chatSessionId) ) {
-        setChatDisabled({
-          isState : false,
-          isAlertMsg : false,
-        })
-      }
-    }else */ 
-    if ( outputCode.length == mConstants.userMaxToken && !functions.isEmpty(chatSessionId)) {
-      console.log('handleTranslate outputCode,chatSessionId chatSessionId else')
-      setChatDisabled({
-        isState : false,
-        isAlertMsg : false
-      })
-    }else if (  outputCode.length < mConstants.userMaxToken && !functions.isEmpty(chatSessionId) ) {
-      setChatDisabled({
-        isState : true,
-        isAlertMsg : true
-      })
-    }
-  }, [outputCode,chatSessionId]);
-  
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      if (e.deltaX !== 0) return;
-      setShowScroll((prev) => {
-        const goingUp = e.deltaY < 0;
-        const shouldUpdate = goingUp !== prev;
-        if (shouldUpdate) {
-          return !prev;
-        }
-        return prev;
-      });
-    };
-
-    el.addEventListener("wheel", handleWheel);
-    return () => el.removeEventListener("wheel", handleWheel);
-  }, []);
-
-  // 스크롤을 맨 아래로 내리는 함수
-  const scrollToBottom = () => {
-    const el = scrollBottomRef.current;
-    if (el) {
-      scrollBottomRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      setShowScroll(false)
-    }
-  };
-
-  const onHandleStopInquiry = async() => {
-    try{
-      if ( !functions.isEmpty(chatSessionId)  ) {
-        const res:any = await ChatService.setRequestStop(chatSessionId);     
-      }
-    }catch(e:any){
-      setReceiving(false)
-    }
-  }
-  const onHandleStopRequest = async() => {
-    console.log("handleTranslate onHandleStopRequest" ,isReceiving)
-    if ( isReceiving ) {
-      await onHandleStopInquiry();
-      const forceMsg = "대답이 중지되었습니다."
-      setReceiving(false);
-      setIsLoading(false)
-      setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system_stop", msg: forceMsg }]);
-    }
-  }
-
-  const handleSendMessage = () => {
-    if (!isReceiving) {
-      handleTranslate(inputCode);
-    } else {
-      toast({
-        title: 'AIGA',
-        position: 'top-right',
-        description: '수신중입니다. 잠시만 기다려주세요',
-        status: 'info',
-        duration: 2000,
-        isClosable: true,
-      });
-    }
-  }
-
-  const handleTranslate = async( isText:any = '') => {
-    //console.log("handleTranslate top",inputCode,isText)
-    if ( functions.isEmpty(inputCode) && functions.isEmpty(isText) ) return;
-    
-    
-    //console.log("handleTranslate chatSessionId", chatSessionId)
-    //return;
-    let chat_sessinn_id = chatSessionId;
-    if ( functions.isEmpty(chat_sessinn_id)) {
-      chat_sessinn_id = await getNewSessionID();
-    }
-
-    setReceiving(true);
-    const msgLen = parseInt(outputCode.length+1);
-    const inputCodeText = inputCode || isText;
-
-    console.log("handleTranslate 1111",isSystemText.includes(inputCodeText))
-    //고혈압 치료를 잘하는 의사를 소개해줘
-    if ( isSystemText.includes(inputCodeText) ) {
-      if( inputCodeText != outputCode[outputCode?.length -1]?.msg) { 
-        setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system", msg: inputCodeText }]);
-        setIsLoading(false);
-        setReceiving(false);
-        return;
-      }else{
-        setIsLoading(false);
-        setReceiving(false);
-        return;
-      }
-    }else{
-      console.log("handleTranslate inputCodeText",inputCodeText)
-      setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(),ismode: "me", question: inputCodeText }]);
-    }
-    setInputCode('')
-    try{
-      const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText.trim());
-      console.log("handleTranslate questionResult",questionResult)
-      if ( mConstants.apiSuccessCode.includes(questionResult?.statusCode) ) {
-        const answerMessage = questionResult?.data
-        setIsLoading(false);
-        setReceiving(false);
-        setOutputCode((prevCode: any[]) => {
-          const newArray = [...prevCode];
-          const lastIndex = msgLen;
-          newArray[lastIndex] = {
-            ismode : 'server',
-            isHistory : false,
-            id: answerMessage?.chat_id,
-            user_question : answerMessage?.question,
-            answer : answerMessage?.answer,
-            chat_type: answerMessage?.chat_type,
-            used_token : answerMessage?.used_token
-          };
-          return newArray;
-        })
-      }else{
-        setOutputCode((prevCode: any[]) => {
-          const newArray = [...prevCode];
-          const lastIndex = msgLen;
-          newArray[lastIndex] = {
-            ismode : 'system',
-            isHistory : false,
-            id: functions.getUUID(),
-            user_question : inputCodeText,
-            answer : null,
-            msg: `${inputCodeText}의 대한 답변`,
-            chat_type : 'system',
-            used_token : 0
-          };
-          return newArray;
-        })
-      }
-    }catch(e:any){
-      console.log("handleTranslate error",e);
-      setIsLoading(false);
-      setReceiving(false);
-    }
- 
-  }
-
-  const handleTranslate_origin = async( isText:any = '') => {
-
-    if ( functions.isEmpty(inputCode) && functions.isEmpty(isText) ) return;
-    
-    console.log("handleTranslate chatSessionId", chatSessionId)
-    let chat_sessinn_id = chatSessionId;
-    if ( functions.isEmpty(chat_sessinn_id)) {
-      chat_sessinn_id = await getNewSessionID();
-    }
-
-    
-    setReceiving(true);
-    const msgLen = parseInt(outputCode.length+1);
-    const inputCodeText = inputCode || isText;
-    
-    if ( isSystemText.includes(inputCodeText) ) {
-      if( inputCodeText != outputCode[outputCode?.length -1]?.msg) { 
-        setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system", msg: inputCodeText }]);
-        setIsLoading(false);
-        setReceiving(false);
-        return;
-      }else{
-        setIsLoading(false);
-        setReceiving(false);
-        return;
-      }
-    }else{
-      setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(),ismode: "me", msg: inputCodeText }]);
-    }
-    setInputCode('')
-
-    const BaseAPI = process.env.NEXT_PUBLIC_ADMIN_API_BASE_URL;
-    const url = `${BaseAPI}/chat`;
- 
-    const payload = {
-      "user_id": "minuee",
-      "msg_type": isText,
-      "msg": inputCodeText
-    }
-
-    const response = await customfetch.callAPI(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json; charset=utf-8' },
-      credentials: 'include',
-      body: JSON.stringify(payload)
-    }, 10000);
-
-    const reader = response?.body?.getReader();
-    const decoder = new TextDecoder();
-    let streamData:string = "";
-    while (true ) {
-      const { value, done } : any = await reader?.read();
-    
-      if (done) {
-        setTimeout(() => {
-          setIsLoading(false);
-          setReceiving(false);
-        },3000)
-        
-        console.log('🔚 스트림 종료됨');
-        break;
-      }
-    
-      const chunk = decoder.decode(value, { stream: true });
-      console.log('📥 받은 메시지:', chunk);
-     
-      if ( chunk ) {
-        streamData = streamData.concat(chunk);
-      }else{
-        console.error('data가 null입니다. getReader를 호출할 수 없습니다.');
-      }
-
-      setOutputCode((prevCode: any[]) => {
-       
-        const newArray = [...prevCode];
-        const lastIndex = msgLen;
-        if ( !newArray[lastIndex]?.msg ) {
-          newArray[lastIndex] = {
-            id: functions.getUUID(),
-            ismode : 'server',
-            msg:chunk,
-          };
-        }else{
-          const tmpMsg = prevCode[lastIndex].msg;
-          newArray[lastIndex] = {
-            ...prevCode[lastIndex],
-            msg: tmpMsg.concat(chunk)
-          };
-        }
-        return newArray;
-      });
-    }
-  }
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setShowScroll(false)
-      scrollBottomRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }, outputCode?.ismode == "me" ? 0 : 300); // or 100ms 정도로 조정 가능
-    return () => clearTimeout(timeout);
-  }, [outputCode]);
-
-  const handleChange = (Event: any) => {
-    console.log("handleTranslate handleChange")
-    setInputCode(Event.target.value);
-  };
-
-  const onSendButton = async( str : string) => {
-    if ( !isReceiving) await handleTranslate(str);
-  }
-
-  const onSendWelcomeButton = async( str : string) => {
-    if ( !isReceiving ) await handleTranslate(str);
-  }
-
-  const onSendDoctorButton = async( data : any,isType : number) => {
-    setSelectedDoctor(data);
-    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_2}`);
-    setCurrentPathname(`${mConstants.pathname_modal_2}`)
-    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2}`)
-    setIsOpenDoctorModal(true);
-  }
-
-  const onSendNameButton = async( str : string) => {
-    if ( !isReceiving ) await handleTranslate(str);
-  }
-
-  const onSendTypeButton = async( typeString : string ) => {
-    if ( !isReceiving ) await handleTranslate(typeString);
-  }
   
   if (isLoading) {
     return (
@@ -854,14 +946,17 @@ export default function ChatBot() {
     )
   }
   return (
-    <Flex top={"35px"} w={'100%'} maxWidth={`${mConstants.desktopMinWidth}px`} direction="column" position="relative">
-      <Flex direction="column" w={'100%'} maxWidth={`${mConstants.desktopMinWidth}px`} overflowY='scroll'>
+    <Flex w={'100%'} maxWidth={`${mConstants.desktopMinWidth}px`} direction="column" position="relative">
+      <Flex direction="column" w={'100%'} maxWidth={`${mConstants.desktopMinWidth}px`} >
         <Flex
+          as="div"
           direction="column" w="100%" maxWidth={`${mConstants.desktopMinWidth}px` }
-          maxH="calc(100vh - 100px)" /* 여기가 하단 스크롤 영역 영향 받음 */
-          minH="calc(100vh - 100px)" overflowY='auto' display={outputCode ? 'flex' : 'none'} ref={scrollRef}
+          maxH="calc(100vh - 130px)" /* 여기가 하단 스크롤 영역 영향 받음 */
+          minH="calc(100vh - 76px)" 
+          overflowY='auto'
+          ref={scrollRef}
         >
-          <Box display={outputCode?.length == 0 ? 'flex' : 'none'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}  paddingTop={{base : "70px", md : "60px"}} >
+          <Box display={outputCode?.length == 0 ? 'flex' : 'none'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} >
             <MotionWelcomeImage
               pt="20px"
             />
@@ -881,12 +976,12 @@ export default function ChatBot() {
               classNames="opening_box_gray"
             />
           </Box>
-          <Box>
+          {/* <Box>
             <SelectType 
               onSendButton={onSendTypeButton}
               isDevelope={false}
             />
-          </Box>
+          </Box> */}
           { 
             outputCode.map((element:any,index:number) => {
               if ( element.ismode == 'me') {
@@ -944,25 +1039,31 @@ export default function ChatBot() {
                   )
                 }else {
                   return (
-                    <ChatWrongMessage
-                      indexKey={index}
-                      msg={'흠..뭔가 잘못된 것 같습니다'}
-                    />
+                    <Box key={index}>
+                      <ChatWrongMessage
+                        indexKey={index}
+                        msg={'흠..뭔가 잘못된 것 같습니다'}
+                      />
+                    </Box>
                   )
                 }
               }else if ( element.ismode == 'system_stop') {
                 return (
-                  <ForceStop
-                    indexKey={index}
-                    msg={element.msg}
-                  />
+                  <Box key={index}>
+                    <ForceStop
+                      indexKey={index}
+                      msg={element.msg}
+                    />
+                  </Box>
                 )
               }else if ( element.ismode == 'system') {
                 return (
-                  <ChatWrongMessage
-                    indexKey={index}
-                    msg={'흠..뭔가 잘못된 것 같습니다'}
-                  />
+                  <Box key={index}>
+                    <ChatWrongMessage
+                      indexKey={index}
+                      msg={!functions.isEmpty(element?.msg) ? element?.msg : '흠..뭔가 잘못된 것 같습니다'}
+                    />
+                  </Box>
                 )
               }else{
                 return (
@@ -980,32 +1081,44 @@ export default function ChatBot() {
             })
           }
           { isReceiving && ( <Box><Processing  msg="증상 분석중" /></Box> ) }
-          { isShowScroll &&  
-            (
-              <Box
-                position={'absolute'} right="10px" bottom={{base : "100px", md:"50px"}} width="50px" height={"50px"}
-                zIndex={10} display={'flex'} justifyContent='center' alignItems={'center'}onClick={()=> scrollToBottom()}
-              >
-                <Icon as={MdOutlineArrowDownward} width="40px" height="40px" color={navbarIcon} />
-              </Box>
-            )
-          }
-          <Box ref={scrollBottomRef} h="1px" pb={"30px"} />
+          <Box ref={scrollBottomRef} h="1px" pb={"60px"} />
         </Flex>
         <Flex position="fixed" bottom="0" left="0" w="100%" px="20px" py="10px" bg={themeColor} zIndex="100" display={'flex'} justifyContent='center'>
           <Box 
             w={{ base: '100%', md: `${mConstants.desktopMinWidth-20}px` }} maxWidth={`${mConstants.desktopMinWidth}px` }
-            position={'relative'} display={'flex'} flexDirection={'row'}
+            position={'relative'} display={'flex'} flexDirection={'row'} zIndex="100"
           >
             {
-              ( !isChatDisabled?.isState && !isChatDisabled?.isAlertMsg && !functions.isEmpty(chatSessionId)) && (
+              ( !isChatDisabled?.isState && !isChatDisabled?.isAlertMsg ) && (
                 <ChatDisable
                   isChatDisabled={isChatDisabled}
                   setChatDisabled={setChatDisabled}
+                  userBasicInfo={userBasicInfo}
                 />
               )
             }
-            { isFocus && ( <ChatWarningInfo /> )}
+      
+            { ( isFocus  ) && ( <ChatWarningInfo /> )}
+            <Flex 
+              position={'absolute'}
+              display={isShowScroll ? 'flex' : 'none'} 
+              top={isFocus ? {base : '-70px', md : '-60px'} : {base : '-50px', md : '-40px'}}
+              left={'0'}
+              w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
+              height={'30px'}
+              justifyContent={'center'}
+              alignItems={'center'}
+              bg='transparent'
+            >
+              <Box
+                display={'flex'}  width="40px" height={"40px"} cursor={'pointer'} zIndex={10} justifyContent='center' alignItems={'center'} 
+                borderRadius={'20px'} backgroundColor={'#fff'}
+                onClick={()=> scrollToBottom()}
+                border={'1px solid #efefef'}
+              >
+                <Icon as={MdOutlineArrowDownward} width="25px" height="25px" color={navbarIcon} />
+              </Box>
+            </Flex>
             <Textarea
               minH="50px"
               //minH="unset"
@@ -1055,7 +1168,7 @@ export default function ChatBot() {
                   cursor={'pointer'}
                 >
                 {
-                  isFocus ? <SendButtonOn boxSize={'32px'} /> : <SendButtonOff boxSize={'32px'} />
+                  ( isFocus && isChatDisabled?.isState ) ? <SendButtonOn boxSize={'32px'} /> : <SendButtonOff boxSize={'32px'} />
                 }
                 </Box>
               }

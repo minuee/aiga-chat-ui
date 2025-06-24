@@ -36,6 +36,8 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.700');
   const starColor = useColorModeValue('#0000ff', '#ffffff');
   const skeletonColor = useColorModeValue('white', 'navy.700');
+  const bgSystemColor = useColorModeValue('#F4F6FA', 'white');
+  const textSystemColor = useColorModeValue('#212127', 'navy.800');
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
 
   const handleScroll = () => {
@@ -102,6 +104,23 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
       <Box mt="5px">
         <IconChatAiga width={'46px'} height={"12px"} />
       </Box>
+      <Flex 
+        padding="12px 20px" 
+        border={`1px solid ${bgSystemColor}`} 
+        bgColor={bgSystemColor} 
+        borderTopLeftRadius="2px" 
+        borderTopRightRadius="20px" 
+        borderBottomLeftRadius="20px"
+        borderBottomRightRadius="20px" 
+        w="auto" 
+        zIndex={2}
+        justifyContent={'center'}
+        flexDirection={'column'}
+      > 
+        <Box>
+          <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'170%'}>위 증상에 맞는 의사를 추천해 드립니다.</CustomText>
+        </Box>  
+      </Flex>
       <Flex  alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"50px"} maxHeight={"250px"} overflowX={'auto'} ref={flexRef} >
         {
           doctorList.map((element: any, index: number) => (
@@ -112,7 +131,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
               width={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
               maxWidth='300px' 
               px="10px"
-              borderRadius="8px"
+              borderRadius="20px"
               mr='5px'
               onClick={() => onSendButton(element,element?.doctor_id)} cursor={'pointer'}
             >
@@ -144,26 +163,6 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
             </Flex>
           ))
         }
-
-        {/* { 
-          doctorList.map((element:any,index:number) => {
-            return (
-              <Flex flexDirection={'column'} key={index}>
-                <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
-                  
-                  <NextImage 
-                      src={DoctorAvatar}
-                      alt="프로필이미지"
-                      style={{ borderRadius: '50%', objectFit: 'cover' }} 
-                      width={60} 
-                      height={60}
-                    />
-                </Box>
-              </Flex>
-            )
-          })
-        } */}
-        
       </Flex>
       <Flex pr={2} justifyContent={'flex-end'}>
         <Box 
@@ -231,7 +230,6 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
       }
     </Stack>
   )
-    
 };
   
 export default RecommandDoctor;

@@ -397,3 +397,23 @@ recommand_hospital
 }
 
 한양대병원에서 내과의중 가장 잘하는 의사 1명을 소개해줘
+
+API 체크사항
+
+1. 질의후 회신 데이터중 
+"used_token": 538,
+"in24_used_token": 538
+이렇게 왔는데 현재
+"config": {
+            "user_max_token": "3000",
+            "user_retry_limit_sec": "60",
+            "guest_max_token": "3000",
+            "guest_retry_limit_sec": "60"
+        }
+근데 다음 질의시 바로 
+{
+    "statusCode": 404,
+    "message": "{\n          message: '최대 토큰수 초과 에러',\n          maxToken: 3000,\n          in24_used_token: 4467,\n          usedToken: 3929,\n          timestamp: 1750725868832\n        }"
+}
+in24_used_token이 회신시 오는 값이 안맞는듯 , 그리고 404에러 메시지의 message가 jsonType으로 오면 좋겠습니다 (일단은 string > json 치환해서 적용중).
+그리고 1750725868832 이시간이 맞는건지? UTC기준 2025년 7월 23일 (수요일) 오후 5시 44분 28초입니다. 그런데 저 값이 1750734729740 이렇게 올때도 있습니다. 저 시간을 측정당시 현재시각이었습니다.원래 취지는 토큰이 만료된 시각정보를 보내주시면 거기에 config정보중  user_retry_limit_sec이걸 더해서 계산하라고 하신거 같은데요  일단은 그렇게 해놨습니다. 값이 정확도만 맞추면 될거 같습니다. 더불어 user_retry_limit_sec이게 현재 60초로 되어 있는데요 18시간뒤에 초기화 되는등 그시간에 맞춰 세팅해주시면 될거 같스빈다. 

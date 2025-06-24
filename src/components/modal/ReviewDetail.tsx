@@ -21,7 +21,7 @@ import ProcessingBar from "@/assets/icons/processing2x.gif";
 export interface ReviewModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
-  onHandleRegistReview : () => void;
+  onHandleRegistReview : (num:any) => void;
   reviewData : any;
   selected_doctor : any;
 }
@@ -94,7 +94,7 @@ function ReviewModal(props: ReviewModalProps) {
         isClosable: true,
       });
       setTimeout(() => {
-        onHandleRegistReview();
+        onHandleRegistReview(did);
         setIsLoading(false);
       }, 1000);
     }
@@ -130,8 +130,8 @@ function ReviewModal(props: ReviewModalProps) {
     }
   }
 
-  const onHandleAlertConfirm = () => {
-    onHandleRegistReview()
+  const onHandleAlertConfirm = (doctorId:any) => {
+    onHandleRegistReview(doctorId)
   }
 
   if ( isLoading ) {
@@ -327,12 +327,12 @@ function ReviewModal(props: ReviewModalProps) {
               }
               isOpen={isOpenAlert}
               onClose={() => setOpenAlert(false)}
-              onConfirm={() => onHandleAlertConfirm()}
+              onConfirm={() => onHandleAlertConfirm(reviewData?.doctor_i)}
               closeText='취소'
               confirmText='확인'
               footerContent={
                 <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} py="20px" width={"100%"}>
-                  <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#2B8FFF" borderRadius={'6px'} onClick={() => onHandleAlertConfirm()} cursor={'pointer'}>
+                  <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} height={"50px"} bg="#2B8FFF" borderRadius={'6px'} onClick={() => onHandleAlertConfirm(reviewData?.doctor_i)} cursor={'pointer'}>
                     <CustomTextBold700 fontSize={'16px'} color="#ffffff">확인</CustomTextBold700>
                   </Box>
                 </Flex>

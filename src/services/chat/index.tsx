@@ -95,13 +95,18 @@ export function updateChatHistoryTitle(session_id: string, title: string): any {
 
 export function getChatMessage(session_id: string, msg: string): any {
     try{
-        console.log("apidata updateChatHistoryTitle",session_id,msg)
+        console.log("apidata getChatMessage",session_id,msg)
         const res:any =  api.post(`/chat/${session_id}`,{question : msg})
             .then((response) => {
                 return response?.data;
             }).catch((error) => {
-                console.log("eeeee",error)
-                return null;
+                console.log("❌ getChatMessage error", error);
+                // 상황에 따라 에러를 더 명확하게 넘겨줄 수도 있어요
+                return {
+                  error: true,
+                  status: error?.response?.status || 500,
+                  message: error?.response?.data || 'Unknown error',
+                };
             });
             return res; 
    }catch(error){

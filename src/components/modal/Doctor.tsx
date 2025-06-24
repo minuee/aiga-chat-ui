@@ -116,12 +116,11 @@ function DoctorModal(props: DoctorModalProps) {
     }, 60);
   }, [selected_doctor]);
 
-  const onHandleRegistReview = () => {
-    console.log("onHandleRegistReview")
+  const onHandleRegistReview = (did:any) => {
     setSelectedDoctorId(null);
     setTimeout(() => {
       fn_close_modal_doctor_review();
-      setSelectedDoctorId(selected_doctor);
+      setSelectedDoctorId(props.selected_doctor?.doctor_id);
     }, 60);
    
   }
@@ -132,7 +131,6 @@ function DoctorModal(props: DoctorModalProps) {
 
   const getDoctorBasicData = async() => {
     const res:any = await DoctorService.getDoctorBasicData(1);
-    console.log("apidata getDoctorBasicData",res)
     if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
       const rData = res?.data?.doctor;
       setDoctorBasicData({...doctorBasicData,...rData});
@@ -369,7 +367,7 @@ function DoctorModal(props: DoctorModalProps) {
                   <ReviewDetail
                     isOpen={isOpenReview}
                     setClose={() => fn_close_modal_doctor_review()}
-                    onHandleRegistReview={() => onHandleRegistReview()}
+                    onHandleRegistReview={(did:any) => onHandleRegistReview(did)}
                     reviewData={reviewData}
                     selected_doctor={doctorBasicData}
                   />

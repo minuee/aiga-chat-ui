@@ -78,9 +78,6 @@ export default function BarndLayout({children, title}: Props) {
             </div>
             <div className="footer-bottom">
                 <p>&copy; 2025 AIGA Inc. All rights reserved. | 사업자등록번호: 123-45-67890 | 대표: 김의료</p>
-                <p style={{marginTop: '10px', color:' #ff6b6b', fontWeight: 'bold'}}>
-                    ⚠️ 본 서비스는 의료행위를 대체하지 않으며, 응급상황 시 즉시 119 또는 응급실로 연락하시기 바랍니다.
-                </p>
             </div>
         </div>
     </footer>

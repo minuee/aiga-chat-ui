@@ -17,8 +17,8 @@ export async function POST(req: Request) {
       messageType: 'supplement',
       title: 'Hello from PWA',
       body: 'This is a test push notification',
-      icon: '/img/push/196.png',
-      badge: '/img/push/72.png',
+      icon: '/img/fav/Icon-196.png',
+      badge: '/img/fav/Icon-72.png',
       data: {
         url: 'https://kormedi.com',
       },

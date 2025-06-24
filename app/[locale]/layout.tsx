@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   description: 'AIGA 의사 추천 서비스',
   icons: {
-    icon: '/img/push/512.png',
+    icon: '/img/fav/Icon-512.png',
   },
 }
 
