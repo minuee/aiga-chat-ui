@@ -10,12 +10,10 @@ interface MemberAuthProps {
 export function getAuthOrigin(props: MemberAuthProps): any {
     
     try{
-        console.log("getAuth",props.joinType)
         const res:any =  api.get(`/auth/${props.joinType}`,{
             withCredentials : true
         })
         .then((response) => {
-            console.log("response",response.data.url)
             return response.data.url;
         }).catch((error) => {
             console.log("eeeee",error)
@@ -30,9 +28,7 @@ export function getAuthOrigin(props: MemberAuthProps): any {
 
 export const getAuth = async (props: MemberAuthProps) => {
     try {
-        console.log("getAuth",props.joinType)
         const response = await api.get(`/auth/${props.joinType}`);
-        console.log("🔗 카카오 로그인 URL:", response.data.url);
         const kakaoAuthUrl = response.data.url;
         // 브라우저를 해당 URL로 이동시킴
         window.location.href = kakaoAuthUrl;
@@ -42,20 +38,17 @@ export const getAuth = async (props: MemberAuthProps) => {
 }
 
 export const handleKakaoLogin = async (props: MemberAuthProps) => {
-    console.log("handleKakaoLogin",props.joinType)
     const response = await axios.get('/auth/kakao', {
         withCredentials: false,
         maxRedirects: 0, // 리디렉션 따라가지 않음
         validateStatus: (status) => status >= 200 && status < 400, // 3xx 응답도 성공으로 간주
     });
-    console.log('Location: 1', response.headers);
     const locationHeader = response.headers['location'];
-    console.log('Location: 2', locationHeader);
+
 };
 
 
 export const handleKakaoLogin3 = async (props: MemberAuthProps) => {
-    console.log("handleKakaoLogin",props.joinType)
     try {
        
         // 백엔드로부터 카카오 인증 URL을 받음
@@ -65,7 +58,6 @@ export const handleKakaoLogin3 = async (props: MemberAuthProps) => {
         // Location 헤더 추출
         const locationHeader = response.headers['location'];
 
-        console.log('Location:', locationHeader);
         const kakaoAuthUrl = locationHeader;//response.data.url;
         window.location.href = kakaoAuthUrl;
         /* const popup = window.open(
@@ -84,7 +76,6 @@ interface SetNickNamerops {
 
 export function setNickname(reqData: SetNickNamerops): any {
     try{
-        console.log("accessToken setRequest",reqData)
         const res:any =  api.patch(`/users/nickname`,{nickname : reqData})
         .then((response) => {
              return response?.data;
@@ -101,7 +92,6 @@ export function setNickname(reqData: SetNickNamerops): any {
 
 export function setSignupAgree(): any {
     try{
-        console.log("apidata setSignupAgree")
         const res:any =  api.get(`/users/agreement`)
         .then((response) => {
              return response?.data;
@@ -118,7 +108,6 @@ export function setSignupAgree(): any {
 
  export function setMemberEntire(): any {
     try{
-        console.log("apidata setMemberEntire")
         const res:any =  api.get(`/users/unregist`)
         .then((response) => {
              return response?.data;
@@ -135,7 +124,6 @@ export function setSignupAgree(): any {
 
  export function setMemberLogout(): any {
     try{
-        console.log("apidata setMemberLogout")
         const res:any =  api.get(`/auth/logout`,{withCredentials:true})
         .then((response) => {
              return response?.data;

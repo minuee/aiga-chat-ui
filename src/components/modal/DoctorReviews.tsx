@@ -50,21 +50,17 @@ function DoctorReview( props: DoctorModalProps ) {
   const textColor2 = useColorModeValue('#7F879B', 'white');
 
   React.useEffect(() => {
-    console.log("ModalDoctorReviewStore",doctorID)
     if ( !functions.isEmpty(doctorID)) {
       getDoctorReviewListData(doctorID);
     }
   }, [doctorID]);
  
   const getDoctorReviewListData = async(doctorID:any) => {
-    console.log("getReviewListData doctorID",doctorID)
     const res:any = await DoctorService.getReviewListData(doctorID);
-    console.log("onHandleRegistReview res",res)
     if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
       const rData = res?.data?.review;
       setReviewListData(rData);
       const resultAvg = calculateAverageScores(rData);
-      console.log('resultAvg',resultAvg);
       setAigaReviewAverage(resultAvg)
       setIsLoading(false);
     }else{
@@ -135,7 +131,6 @@ function DoctorReview( props: DoctorModalProps ) {
 
   const onHandleRemoveReivew = async(data:any) => {
     const res:any = await DoctorService.removeReviewData(data?.review_id);
-    console.log("onHandleRegistReview res",res)
     if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
       toast({
         title: 'AIGA',

@@ -82,7 +82,6 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
 
   const onSendHistoryButton = async() => {
     setOpenHistoryDrawer(false);
-    console.log("onSendHistoryButton",isOpenHistoryDrawer)
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_20}`);
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_20}`)   
     setTimeout(() => {
@@ -104,7 +103,6 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
   const fn_close_modal_user_login = async() => {
 
     const currentPathname = await mCookie.getCookie('currentPathname');
-    console.log("setClcikClose",currentPathname,mConstants.pathname_modal_21_2,isFromDoctorDepth2)
     if ( currentPathname == mConstants.pathname_modal_21_2 ) { //의사 상세위에서 로그인화면 
       const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
       if ( isFromDoctorDepth2 ) {//true이면 list > detail

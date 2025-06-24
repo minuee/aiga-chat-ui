@@ -84,7 +84,6 @@ function DoctorListModal(props: DoctorListModalProps) {
   };
   
   React.useEffect(() => {
-    //console.log('originDoctorData',originDoctorData)
     setDoctors(originDoctorData)
     setTimeout(() => {
       setIsLoading(false);

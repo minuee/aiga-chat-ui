@@ -22,7 +22,6 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false}: SimpleList
   const [hospitalsList, setHospitalsList] = React.useState([]);
 
   React.useEffect(() => {
-    console.log('msg',msg)
     if ( functions.isEmpty(msg?.hospitals) ) {
       const reData = functions.parseMaybeJson(msg?.hospitals)
       setHospitalsList(reData);

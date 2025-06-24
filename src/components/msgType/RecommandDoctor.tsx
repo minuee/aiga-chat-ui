@@ -65,15 +65,10 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
   }, []);
 
   useEffect(() => {
-    console.log("data?.answer?.doctors",data?.answer?.doctors)
     if ( !functions.isEmpty( data?.answer?.doctors )) {
       setDoctorList(data?.answer?.doctors)
     }
   }, [data]);
-
-  useEffect(() => {
-    console.log("data?.answer?.doctors",doctorList?.length)
-  }, [doctorList]);
 
   const onSendDoctorListButton = async( ) => {
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_1}`);

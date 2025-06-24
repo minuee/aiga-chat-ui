@@ -9,7 +9,6 @@ interface SetRequestProps {
 
 export function setRequest(reqData: SetRequestProps): any {
     try{
-        console.log("accessToken setRequest",reqData)
         const res:any =  api.post(`/opinion`,reqData)
         .then((response) => {
             return response?.data;

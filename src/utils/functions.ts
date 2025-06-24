@@ -44,10 +44,8 @@ const functions = {
 
   formatAvailabilityMessage(timestampMs: number, retryLimitSec : number): string {
     try{
-      console.log('isChatDisabled timestampMs',timestampMs,retryLimitSec)
       const now = new Date();
       const target = new Date(timestampMs+retryLimitSec);
-      console.log('isChatDisabled target',target)
       // 날짜 비교용 (연/월/일만 비교)
       const isSameDay = now.toDateString() === target.toDateString();
     
@@ -73,7 +71,6 @@ const functions = {
       // 그 외 날짜
       const month = target.getMonth() + 1;
       const date = target.getDate();
-      console.log(`isChatDisabled ${month}월 ${date}일 ${timeText}`)
       return `${month}월 ${date}일 ${timeText}`;
     }catch(e:any) {
       return `잠시뒤에`;

@@ -122,7 +122,6 @@ export default function ChatBot() {
   const isSystemText = ["system_text","system_doctors","system_list","system_select","system_image"];
   
   /* useEffect(() => {
-    console.log("chatSessionId Top",chatSessionId)
     if ( functions.isEmpty(chatSessionId) ) {
       getNewSessionID();
     }
@@ -151,7 +150,6 @@ export default function ChatBot() {
   }
 
   useEffect(() => {
-    console.log("chatSessionId Top",chatSessionId)
     if (!alreadyInitialized.current) {
       console.log('🔥 최초 1회만 실행');
       firstForceStep();
@@ -210,24 +208,18 @@ export default function ChatBot() {
     pathnameRef.current = pathname; // 항상 최신값 유지
   }, [pathname]);
 
-  
-
   const getNewSessionID =  async() => {
     try{
       const res:any = await ChatService.getChatNewSession();
       if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
         const newSessionId = res?.data?.session_id;
-        console.log("handleTranslate getNewSessionID",newSessionId);
         setChatSessionId(newSessionId)
         return newSessionId;
       }else{
-        console.log("handleTranslate getNewSessionID is null",);
         return null;
       }
     }catch(e:any){
-      console.log("error of getNewSessionID",e);
       return null;
-      
     }
   }
 
@@ -359,7 +351,6 @@ export default function ChatBot() {
     }
   }
   const onHandleStopRequest = async() => {
-    console.log("handleTranslate onHandleStopRequest" ,isReceiving)
     if ( isReceiving ) {
       await onHandleStopInquiry();
       const forceMsg = "대답이 중지되었습니다."
@@ -384,10 +375,6 @@ export default function ChatBot() {
     }
   }
 
-  useEffect(() => {
-    console.log("isChatDisabled",isChatDisabled)
-  }, [isChatDisabled]);
-
   const handleTranslate = async( isText:any = '') => {
   
     if ( functions.isEmpty(inputCode) ||  functions.isEmpty(isText) || isReceiving ) return;
@@ -395,13 +382,11 @@ export default function ChatBot() {
     if ( functions.isEmpty(chat_sessinn_id)) {
       chat_sessinn_id = await getNewSessionID();
     }
-    console.log("handleTranslate chat_sessinn_id", chat_sessinn_id)
     if ( !functions.isEmpty(chat_sessinn_id)) {
       setReceiving(true);
       const msgLen = parseInt(outputCode.length+1);
       const inputCodeText = inputCode || isText;
 
-      console.log("handleTranslate 1111",isSystemText.includes(inputCodeText))
       //고혈압 치료를 잘하는 의사를 소개해줘
       if ( isSystemText.includes(inputCodeText) ) {
         if( inputCodeText != outputCode[outputCode?.length -1]?.msg) { 
@@ -420,7 +405,6 @@ export default function ChatBot() {
       setInputCode('')
       try{
         const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText.trim());
-        console.log("handleTranslate questionResult",questionResult)
         if ( mConstants.apiSuccessCode.includes(questionResult?.statusCode) ) {
           const answerMessage = questionResult?.data;
           setIn24UsedToken(answerMessage?.in24_used_token)
@@ -443,7 +427,6 @@ export default function ChatBot() {
         }else{
           if ( questionResult?.message?.statusCode == '404') {
             const parsedMessage = parseLooselyFormattedJsonString(questionResult?.message?.message);
-            console.log(parsedMessage);
             if ( !functions.isEmpty(parsedMessage) && parsedMessage.message == '최대 토큰수 초과 에러') {
               setChatDisabled({
                 reTrytimeStamp : parseInt(parsedMessage?.timestamp),

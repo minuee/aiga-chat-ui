@@ -6,7 +6,6 @@ import functions from "@/utils/functions";
 
 export function setReviewData(reqData: any, isRegist: boolean): any {
     try{
-        console.log("onHandleRegistReview registReview",isRegist,reqData)
         if ( isRegist ) { //등록
             const res:any =  api.post(`/reviews`,reqData)
             .then((response) => {
@@ -34,7 +33,6 @@ export function setReviewData(reqData: any, isRegist: boolean): any {
 
 export function getDoctorBasicData(did: any): any {
     try{
-        console.log("apidata getReviewListData",did)
         const res:any =  api.get(`/doctors/${did}`)
         .then((response) => {
             return response?.data;
@@ -51,7 +49,6 @@ export function getDoctorBasicData(did: any): any {
 
 export function getReviewListData(did: any): any {
     try{
-        console.log("apidata getReviewListData",did)
         const res:any =  api.get(`/reviews?doctor_id=${did}`)
         .then((response) => {
             return response?.data;
@@ -73,7 +70,6 @@ interface GetReviewDataProps {
 
 export function getReviewData(rid: GetReviewDataProps): any {
     try{
-        console.log("apidata getReviewData",rid)
         const res:any =  api.get(`/reviews/${rid}`)
         .then((response) => {
             return response?.data;
@@ -90,7 +86,6 @@ export function getReviewData(rid: GetReviewDataProps): any {
 
 export function removeReviewData(review_id: string): any {
     try{
-        console.log("apidata removeReviewData",review_id)
         const res:any =  api.delete(`/reviews/${review_id}`)
         .then((response) => {
             return response?.data;
@@ -107,7 +102,6 @@ export function removeReviewData(review_id: string): any {
 
 export function registModifyDoctorInfo(doctor_id: string, title: string,content : any): any {
     try{
-        console.log("apidata registModifyDoctorInfo",doctor_id,title)
         const res:any =  api.post(`/opinion/doctor/${doctor_id}`,{title,content})
         .then((response) => {
             return response?.data;

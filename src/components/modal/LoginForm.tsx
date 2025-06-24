@@ -81,7 +81,6 @@ function LoginModal(props: LoginModalProps) {
     onSendSignupAgreeButton();
     return;
     const accessToken = mCookie.getCookie('refresh_token');
-    console.log("refresh_token",accessToken)
     setLoginForm({
       socialType : str
     });
@@ -109,14 +108,14 @@ function LoginModal(props: LoginModalProps) {
       }
 
       const { target } = event.data;
-      console.log('카카오 로그인 완료, code:', target);
+      //console.log('카카오 로그인 완료, code:', target);
 
       if (event.data.type === 'kakao-login-success') {
-        console.log('✅ 카카오 로그인 if 성공:', event.data.payload);
+        //console.log('✅ 카카오 로그인 if 성공:', event.data.payload);
         popup?.close();
         window.removeEventListener('message', receiveMessage);
       }else{
-        console.log(`✅ 카카오 로그인 else 성공:`, event);
+        //console.log(`✅ 카카오 로그인 else 성공:`, event);
         //popup?.close();
         window.removeEventListener('message', receiveMessage);
       }

@@ -92,7 +92,6 @@ function DoctorModal(props: DoctorModalProps) {
 
   
   React.useEffect(() => {
-    //console.log("selected_doctor",selected_doctor)
     setDoctorBasicData({
       ...doctorBasicData,
       ...selected_doctor

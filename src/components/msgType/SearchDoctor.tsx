@@ -53,15 +53,11 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
   }, []);
 
   useEffect(() => {
-    console.log("data?.answer?.doctors",data?.answer?.doctors)
     if ( !functions.isEmpty( data?.answer?.doctors )) {
       setDoctorList(data?.answer?.doctors)
     }
   }, [data]);
 
-  useEffect(() => {
-    console.log("data?.answer?.doctors",doctorList?.length)
-  }, [doctorList]);
 
   return (
     <Flex w="100%" flexDirection={'column'} mt="10px" px="5px">

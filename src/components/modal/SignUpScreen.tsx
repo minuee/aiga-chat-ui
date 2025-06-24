@@ -87,8 +87,6 @@ function LoginModal(props: LoginModalProps) {
   }
 
   const onClickJoin = (str:string) => {
-
-    console.log("apidata str",str)
     setLoginForm({
       socialType : str
     });
@@ -123,9 +121,9 @@ function LoginModal(props: LoginModalProps) {
         const expireDate = new Date();  
         expireDate.setDate(expireDate.getDate() + 7); // 7일 후 만료
 
-        console.log('apidata event.data.type',event?.data?.type);
+       // console.log('apidata event.data.type',event?.data?.type);
         if (event?.data?.type === 'kakao-auth') {
-          console.log('apidata ✅ 카카오 로그인 성공:', event.data.code?.data?.user);
+          //console.log('apidata ✅ 카카오 로그인 성공:', event.data.code?.data?.user);
           const loginUserInfo = event?.data?.code?.data?.user;
           const accessToken = event?.data?.code?.data?.access_token;
           if ( loginUserInfo?.agreement ) { // 회원인상태
@@ -174,7 +172,7 @@ function LoginModal(props: LoginModalProps) {
           popup?.close();
           window.removeEventListener('message', receiveMessage);
         }else if (event?.data?.type === 'naver-auth') {
-          console.log('apidata ✅ 네이버 로그인 성공:', event.data.code?.data?.user);
+          //console.log('apidata ✅ 네이버 로그인 성공:', event.data.code?.data?.user);
           const loginUserInfo = event?.data?.code?.data?.user;
           const accessToken = event?.data?.code?.data?.access_token;
           if ( loginUserInfo?.agreement ) { // 회원인상태
@@ -226,7 +224,7 @@ function LoginModal(props: LoginModalProps) {
       };
       window.addEventListener('message', receiveMessage);
       }catch(e:any){
-        console.log(`apidata ✅ 회원가입 실패 errrrr :`, e);
+        //console.log(`apidata ✅ 회원가입 실패 errrrr :`, e);
         toast({
           title: 'AIGA',
           position: 'top-right',
@@ -244,7 +242,6 @@ function LoginModal(props: LoginModalProps) {
 
   const setClcikClose = async(str:string) => {
     const currentPathname = await mCookie.getCookie('currentPathname');
-    console.log("setClcikClose",currentPathname,mConstants.pathname_modal_21_2)
     if ( currentPathname == mConstants.pathname_modal_21_2 ) { //의사 상세위에서 로그인화면 
       const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
       if ( isFromDoctorDepth2 ) {//true이면 list > detail

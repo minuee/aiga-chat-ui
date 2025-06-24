@@ -17,7 +17,6 @@ export const ChatDisable = ({ isChatDisabled,userBasicInfo,setChatDisabled }: Ch
   const textColor = useColorModeValue('navy.700', 'white')
   const oopsColor = useColorModeValue('#1D73DC', 'white');
   const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
-  console.log('isChatDisabled',isChatDisabled)
 
   if ( userBasicInfo?.isGuest ) {
     return (

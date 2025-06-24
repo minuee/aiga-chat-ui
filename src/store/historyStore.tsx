@@ -11,7 +11,6 @@ const HistoryStore = create<State>()(
             (set) => ({
                 currentPathname: '',
                 setCurrentPathname: (currentPathname:string) => {
-                    console.log("pathname zustland", currentPathname)
                     set({currentPathname});
                 },
                 hasHydrated: false,

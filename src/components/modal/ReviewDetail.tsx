@@ -70,7 +70,6 @@ function ReviewModal(props: ReviewModalProps) {
 
   const getReviewData = async(did:any) => {
     const res:any = await DoctorService.getReviewData(did);
-    console.log("onHandleRegistReview res",res)
     if ( !functions.isEmpty(res.data?.review?.review_id)) {
       const rData = res?.data?.review;
       setInputs({
@@ -103,11 +102,9 @@ function ReviewModal(props: ReviewModalProps) {
   /* isRegist if true 등록 else 수정 */
   const onHandleReviewRegist = async(data:any, isRegist:boolean = true) => {
     try{
-      console.log("onHandleRegistReview",data)
       if ( !functions.isEmpty(data?.doctor_id) ) {
         setReceiving(true)
         const res:any = await DoctorService.setReviewData(data,isRegist);
-        console.log("onHandleRegistReview res",res)
         if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
           setOpenAlert(true)
           setReceiving(false);

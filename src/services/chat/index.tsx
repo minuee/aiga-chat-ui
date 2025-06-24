@@ -21,7 +21,6 @@ export function getChatNewSession(): any {
 
 export function setRequestStop(session_id: string): any {
     try{
-        console.log("apidata setRequestStop",session_id)
         const res:any =  api.delete(`/chat/${session_id}`)
         .then((response) => {
             return response?.data;
@@ -60,7 +59,6 @@ interface RemoveHistoryProps {
 
 export function removeChatHistory(session_id: RemoveHistoryProps): any {
     try{
-        console.log("apidata removeChatHistory",session_id)
         const res:any =  api.delete(`/history/${session_id}`)
         .then((response) => {
             return response?.data;
@@ -78,7 +76,6 @@ export function removeChatHistory(session_id: RemoveHistoryProps): any {
 
 export function updateChatHistoryTitle(session_id: string, title: string): any {
     try{
-        console.log("apidata updateChatHistoryTitle",session_id,title)
         const res:any =  api.patch(`/history/${session_id}`,{title})
             .then((response) => {
                 return response?.data;
@@ -95,7 +92,6 @@ export function updateChatHistoryTitle(session_id: string, title: string): any {
 
 export function getChatMessage(session_id: string, msg: string): any {
     try{
-        console.log("apidata getChatMessage",session_id,msg)
         const res:any =  api.post(`/chat/${session_id}`,{question : msg})
             .then((response) => {
                 return response?.data;
