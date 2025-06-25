@@ -88,8 +88,8 @@ export default function Index() {
           w={{ base: '100%', md : `${mConstants.desktopMinWidth}px`  }}
           maxW={`${mConstants.desktopMinWidth}px` }
           
-          borderBottomLeftRadius={ isDesktop ? '15px' : 0}
-          borderBottomRightRadius={ isDesktop ? '15px' : 0} 
+          //borderBottomLeftRadius={ isDesktop ? '15px' : 0}
+          //borderBottomRightRadius={ isDesktop ? '15px' : 0} 
           
           //bg='green'뒤에 쉐도우 주는거 
           borderRadius="sm"

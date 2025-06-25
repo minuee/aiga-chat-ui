@@ -1025,9 +1025,10 @@ export default function ChatBot() {
           { isReceiving && ( <Box><Processing  msg="증상 분석중" /></Box> ) }
           <Box ref={scrollBottomRef} h="1px" pb={"60px"} />
         </Flex>
-        <Flex position="fixed" bottom="0" left="0" w="100%" px="20px" py="10px" bg={themeColor} zIndex="100" display={'flex'} justifyContent='center'
-         borderBottomLeftRadius={ isDesktop ? '15px' : 0}
-         borderBottomRightRadius={ isDesktop ? '15px' : 0} 
+        <Flex 
+          position="fixed" bottom="0" left="0" w="100%" px="20px" py="10px" bg={themeColor} zIndex="100" display={'flex'} justifyContent='center'
+          borderBottomLeftRadius={ isDesktop ? '15px' : 0}
+          borderBottomRightRadius={ isDesktop ? '15px' : 0} 
         >
           <Box 
             w={{ base: '100%', md: `${mConstants.desktopMinWidth-20}px` }} maxWidth={`${mConstants.desktopMinWidth}px` }

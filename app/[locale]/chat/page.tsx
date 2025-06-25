@@ -1,7 +1,6 @@
 'use client';
 
 import React, { Children } from 'react';
-import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
 import PageLayout from '@/components/layout/PageLayout';
 import SubPage from '@/components/view/Chatbot';
 import { Flex,Box, SkeletonCircle, useDisclosure,useColorModeValue,useColorMode } from '@chakra-ui/react';
