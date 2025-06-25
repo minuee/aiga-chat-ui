@@ -30,6 +30,7 @@ import Image from 'next/image';
 import { MdOutlineClose,MdArrowBack,MdLogout } from 'react-icons/md';
 import { BiDetail,BiInfoCircle,BiGroup,BiEdit,BiChevronRight } from "react-icons/bi";
 import { iconAlertEntire } from "@/components/icons/IconImage"
+import { text } from 'stream/consumers';
 
 export interface ProfileSettingModalProps extends PropsWithChildren {
   isOpen : boolean;
@@ -71,12 +72,14 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   const yakwanBtnRef = React.useRef<any>();
 
   const toast = useToast();
-  const sidebarBackgroundColor = useColorModeValue('white', 'gray.700');
-  const skeletonColor = useColorModeValue('white', 'gray.700');
-  const buttonBgColor = useColorModeValue('#2b8fff', 'white');
-  const buttonTextColor = useColorModeValue('white', '#2b8fff');
+  const sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
+  const bgColor = useColorModeValue('white', 'navy.800');
+  const buttonBgColor = useColorModeValue('#2b8fff', 'navy.500');
+  const buttonTextColor = useColorModeValue('white', 'white');
   const textColor = useColorModeValue('navy.700', 'white');
-  let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
+  const navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
+  const profileBgColor = useColorModeValue('fafbfd', 'navy.900');
+  const iconColor = useColorModeValue('#AFB5C3','white')
   const [inputs, setInputs] = React.useState<any>({
     nickName: ''
   });
@@ -378,10 +381,10 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
             </Box>
           </Flex>
           
-          <Flex display={'flex'} flexDirection={'column'} minHeight={'50px'}  my={5} bg='#fafbfd' borderRadius={'10px'}>
+          <Flex display={'flex'} flexDirection={'column'} minHeight={'50px'}  my={5} bg={profileBgColor} borderRadius={'10px'}>
             <Box padding="20px">
               <FormControl variant="floatingLabel">
-                <FormLabel>닉네임<span style={{color: 'red'}}>(필수)</span></FormLabel>
+                <FormLabel color={textColor}>닉네임<span style={{color: 'red'}}>(필수)</span></FormLabel>
                 <Input 
                   type="text" 
                   isRequired
@@ -389,8 +392,9 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                   value={inputs.nickName}
                   placeholder='닉네임을 입력해주세요' 
                   onChange={(e) => onHandleNickname(e.target.value)}
+                  color={textColor}
                   id="input_nickName"
-                  bgColor='#ffffff'
+                  bgColor='inherit'
                 />
                 <FormLabel fontSize={'13px'} color="#7f879b" mt={2}>
                 최소 2자, 최대 10자(한글,영문,숫자,밑줄(_)만 가능
@@ -413,7 +417,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               </Button>
             </Box>
           </Flex>
-          <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} bg='#fafbfd' borderRadius={'10px'}>
+          <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} bg={profileBgColor} borderRadius={'10px'}>
             <Box padding="20px">
               <FormControl variant="floatingLabel">
                 <FormLabel>고객지원</FormLabel>
@@ -422,38 +426,38 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
             <Flex justifyContent={'center'} flexDirection={'column'} pb="20px">
               <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px">
                 <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => onSendNoticeListButton()} cursor={'pointer'}>
-                  <Icon as={BiDetail} width="20px" height="20px" color="#AFB5C3" />
+                  <Icon as={BiDetail} width="20px" height="20px" color={iconColor} />
                   <CustomText fontSize={'15px'} ml={2}>공지사항</CustomText>
                 </Box>
                 <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => onSendNoticeListButton()} cursor={'pointer'}>
-                  <Icon as={BiChevronRight} width="20px" height="20px" color="#AFB5C3" />
+                  <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
                 </Box>
               </Box>
               <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
                 <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => onSendMypageYakwanButton()} cursor={'pointer'}>
-                  <Icon as={BiInfoCircle} width="20px" height="20px" color="#AFB5C3" />
+                  <Icon as={BiInfoCircle} width="20px" height="20px" color={iconColor} />
                   <CustomText fontSize={'15px'} ml={2}>이용약관</CustomText>
                 </Box>
                 <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => onSendMypageYakwanButton()} cursor={'pointer'}>
-                  <Icon as={BiChevronRight} width="20px" height="20px" color="#AFB5C3" />
+                  <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor}/>
                 </Box>
               </Box>
               <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
                 <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => onSendMypagePolicyButton()} cursor={'pointer'}>
-                  <Icon as={BiGroup} width="20px" height="20px" color="#AFB5C3" />
+                  <Icon as={BiGroup} width="20px" height="20px" color={iconColor} />
                   <CustomText fontSize={'15px'} ml={2}>개인정보 처리방침</CustomText>
                 </Box>
                 <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => onSendMypagePolicyButton()} cursor={'pointer'}>
-                  <Icon as={BiChevronRight} width="20px" height="20px" color="#AFB5C3" />
+                  <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
                 </Box>
               </Box>
               <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
                 <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => onSendMyPageRequestButton()} cursor={'pointer'}>
-                  <Icon as={BiEdit} width="20px" height="20px" color="#AFB5C3" />
+                  <Icon as={BiEdit} width="20px" height="20px" color={iconColor} />
                   <CustomText fontSize={'15px'} ml={2}>의견 보내기</CustomText>
                 </Box>
                 <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => onSendMyPageRequestButton()} cursor={'pointer'}>
-                  <Icon as={BiChevronRight} width="20px" height="20px" color="#AFB5C3" />
+                  <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
                 </Box>
               </Box>
             </Flex>
@@ -462,7 +466,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
             display={'flex'} height={'50px'} width="100%" position={'absolute'} right={0} bottom={0} justifyContent={'flex-end'}
             onClick={() => onSendMyPageEntireButton()} cursor={'pointer'} pr="20px"
           >
-            <CustomText fontSize={'17px'} textDecoration={'underline'} color='#5c5e69'>탈퇴하기</CustomText>
+            <CustomText fontSize={'17px'} textDecoration={'underline'} color={iconColor}>탈퇴하기</CustomText>
           </Flex>
         </Flex>
         <Box height={'100px'} />
@@ -601,7 +605,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                     </Box>
                   </Flex>
                 </ModalHeader>
-                <ModalBody overflowY="auto" maxH="100vh" padding="basePadding" margin="0">
+                <ModalBody overflowY="auto" maxH="100vh" padding="basePadding" margin="0" bg={bgColor}>
                   <NoticerModal
                     isOpen={isOpenNoticeListModal}
                     setClose={() => fn_close_modal_mypage_notice()}

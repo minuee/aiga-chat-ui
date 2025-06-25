@@ -1,6 +1,6 @@
 'use client';
 /*eslint-disable*/
-import customfetch from '@/utils/customfetch';
+import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
 import functions from '@/utils/functions';
 import MessageBoxChat from '@/components/MessageBox';
 import * as history from '@/utils/history';
@@ -80,7 +80,7 @@ export default function ChatBot() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
-  const navbarIcon = useColorModeValue('#000000', 'white');
+  const navbarIcon = useColorModeValue('#000000', 'navy.800');
   const { nickName, ...userBasicInfo } = UserStateStore(state => state);
   /* chat에 관련된 상태관리 */
   const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
@@ -115,7 +115,7 @@ export default function ChatBot() {
   const borderColor = useColorModeValue('gray.200', 'gray');
   const inputColor = useColorModeValue('navy.700', 'white');
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
-  const themeColor = useColorModeValue('white', 'navy.900');
+  const themeColor = useColorModeValue('transparent', 'navy.800');
   
   const placeholderColor = useColorModeValue({ color: 'gray.500' },{ color: 'gray' });
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
@@ -882,13 +882,19 @@ export default function ChatBot() {
     )
   }
   return (
-    <Flex w={'100%'} maxWidth={`${mConstants.desktopMinWidth}px`} direction="column" position="relative">
+    <Flex 
+      w={'100%'} 
+      maxWidth={`${mConstants.desktopMinWidth}px`} 
+      direction="column" 
+      position="relative"
+     
+    >
       <Flex direction="column" w={'100%'} maxWidth={`${mConstants.desktopMinWidth}px`} >
         <Flex
           as="div"
           direction="column" w="100%" maxWidth={`${mConstants.desktopMinWidth}px` }
           maxH="calc(100vh - 130px)" /* 여기가 하단 스크롤 영역 영향 받음 */
-          minH="calc(100vh - 76px)" 
+          minH="calc(100vh - 106px)" 
           overflowY='auto'
           ref={scrollRef}
         >
@@ -1019,7 +1025,10 @@ export default function ChatBot() {
           { isReceiving && ( <Box><Processing  msg="증상 분석중" /></Box> ) }
           <Box ref={scrollBottomRef} h="1px" pb={"60px"} />
         </Flex>
-        <Flex position="fixed" bottom="0" left="0" w="100%" px="20px" py="10px" bg={themeColor} zIndex="100" display={'flex'} justifyContent='center'>
+        <Flex position="fixed" bottom="0" left="0" w="100%" px="20px" py="10px" bg={themeColor} zIndex="100" display={'flex'} justifyContent='center'
+         borderBottomLeftRadius={ isDesktop ? '15px' : 0}
+         borderBottomRightRadius={ isDesktop ? '15px' : 0} 
+        >
           <Box 
             w={{ base: '100%', md: `${mConstants.desktopMinWidth-20}px` }} maxWidth={`${mConstants.desktopMinWidth}px` }
             position={'relative'} display={'flex'} flexDirection={'row'} zIndex="100"
@@ -1067,7 +1076,7 @@ export default function ChatBot() {
               bg={isFocus ? 'transparent' :'#f4f6fa'}
               readOnly={isReceiving}
               maxLength={mConstants.inputMaxMessage}
-              borderRadius="20px"
+              borderRadius="25px"
               lineHeight={"140%"}
               //me="10px"
               fontSize="md"

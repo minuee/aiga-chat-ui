@@ -50,15 +50,14 @@ function SidebarContent(props: SidebarContent) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const textColor = useColorModeValue('navy.700', 'white');
   const borderColor = useColorModeValue('gray.200', 'whiteAlpha.300');
-  const bgColor = useColorModeValue('white', 'navy.700');
-  const shadow = useColorModeValue( '14px 17px 40px 4px rgba(112, 144, 176, 0.18)','14px 17px 40px 4px rgba(12, 44, 55, 0.18)' );
+  const iconSubColor = useColorModeValue('gray.500', 'white');
   const iconColor = useColorModeValue('navy.700', 'white');
-  const shadowPillBar = useColorModeValue( '4px 17px 40px 4px rgba(112, 144, 176, 0.08)','none' );
+  const setupBgColor = useColorModeValue( '#e9edf3','navy.900' );
   const skeletonColor = useColorModeValue('white', 'navy.700');
   const textColor2 = useColorModeValue('gray.500', 'white');
-  const sidebarBackgroundColor = useColorModeValue('white', 'gray.700');
-  const buttonBgColor = useColorModeValue('#2b8fff', 'white');
-  const buttonTextColor = useColorModeValue('white', '#2b8fff');
+  const sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
+  const buttonBgColor = useColorModeValue('#2b8fff', 'rgb(0, 133, 250)');
+  const buttonTextColor = useColorModeValue('white', '#ffffff');
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
   const reviewBtnRef = React.useRef<HTMLButtonElement>(null);
   const confirmRef = useRef();
@@ -330,7 +329,7 @@ function SidebarContent(props: SidebarContent) {
         </Stack>
       }
 
-      <Flex position={'fixed'} left={0} bottom={0} width='100%' maxWidth={`${mConstants.modalMaxWidth}px`} height={'80px'} alignItems="center"  justifyContent={'space-between'} bg='#e9edf3'  px="20px" zIndex={10}>
+      <Flex position={'fixed'} left={0} bottom={0} width='100%' maxWidth={`${mConstants.modalMaxWidth}px`} height={'80px'} alignItems="center"  justifyContent={'space-between'} bg={setupBgColor}  px="20px" zIndex={10}>
         <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
           {
             functions.isEmpty(userBaseInfo?.profileImage) 
@@ -340,7 +339,7 @@ function SidebarContent(props: SidebarContent) {
             <NextImage  src={userBaseInfo?.profileImage} alt="프로필이미지" style={{ borderRadius: '50%', objectFit: 'cover' }}  width={34} height={34}/>
           }
           <Box pl="10px">
-            <CustomTextBold700 color={textColor} fontSize="xs" me="10px">
+            <CustomTextBold700 color={iconSubColor} fontSize="xs" me="10px">
               {userBaseInfo?.nickName}
             </CustomTextBold700>
           </Box>
@@ -366,7 +365,7 @@ function SidebarContent(props: SidebarContent) {
               onClick={()=> onSendProfileButton()}
             >
               <Box display={'flex'} justifyContent={'center'} >
-                <Icon as={MdOutlineSettings} width="20px" height="20px" color="inherit" />
+                <Icon as={MdOutlineSettings} width="20px" height="20px" color={iconSubColor} />
               </Box>
             </MenuButton>
           </Menu>

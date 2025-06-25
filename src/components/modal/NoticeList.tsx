@@ -45,6 +45,7 @@ function NoticeListModal(props: NoticeListModalProps) {
   const textColor2 = useColorModeValue('#7F879B', 'white');
   const titleColor = useColorModeValue('#212127', 'white');
   const dateColor = useColorModeValue('#7F879B', 'white');
+  const bgColor = useColorModeValue('white', 'navy.800');
   
   React.useEffect(() => {
     getNoticeListData();
@@ -91,7 +92,7 @@ function NoticeListModal(props: NoticeListModalProps) {
             noticeID={selectNoticeId}
           />
         </Flex>
-        <Flex display={isOpenNoticeDetailModal ? 'none' : 'block'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} width={'100%'}>
+        <Flex display={isOpenNoticeDetailModal ? 'none' : 'block'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} width={'100%'} >
           <Box sx={{width:'100%',heigh:"100%"}}>
             {
               noticeList?.length == 0 

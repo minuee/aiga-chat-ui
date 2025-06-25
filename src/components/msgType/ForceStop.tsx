@@ -13,8 +13,8 @@ const ForceStop = ({  msg = "대답이 중지되었습니다.", indexKey}: Force
 
   const bgMeColor = useColorModeValue('#2B8FFF', 'white');
   const textMeColor = useColorModeValue('white', 'navy.800');
-  const bgSystemColor = useColorModeValue('#F4F6FA', 'white');
-  const textSystemColor = useColorModeValue('#212127', 'navy.800');
+  const bgSystemColor = useColorModeValue('#F4F6FA', 'navy.600');
+  const textSystemColor = useColorModeValue('#212127', 'white');
   const bgSystemStopColor = useColorModeValue('#FFF0F0', 'white');
   const textSystemStopColor = useColorModeValue('#F94848', 'navy.800');
   const textSystemStopIconColor = useColorModeValue('#5E0018', 'navy.800');

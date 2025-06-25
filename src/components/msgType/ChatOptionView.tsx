@@ -125,7 +125,9 @@ export const ChatDisable = ({ isChatDisabled,userBasicInfo,setChatDisabled }: Ch
 
 export const ChatWarningInfo = () => {
 
-  const infoIcon = useColorModeValue('#f94848', 'white');
+  const bgColor = useColorModeValue('#ffffff', 'tranparent');
+  const infoIcon = useColorModeValue('#f94848', '#ffffff');
+  const textColor = useColorModeValue('gray.500', '#ffffff');
   return (
     <Flex 
       position={'absolute'}
@@ -135,12 +137,12 @@ export const ChatWarningInfo = () => {
       height={'30px'}
       justifyContent={'center'}
       alignItems={'center'}
-      bg='#ffffff'
+      bg={bgColor}
       zIndex={9}
     >
       <Box display='flex' alignItems='center' gap='5px' width={"90%"}>
         <Icon as={MdInfoOutline} width="20px" height="20px" color={infoIcon} />
-        <CustomText fontSize='0.8rem' color='gray.500' lineHeight={'0.8rem'}>
+        <CustomText fontSize='0.8rem' color={textColor} lineHeight={'0.8rem'}>
           AIGA는 실수를 할 수 있습니다. 본 AI서비스는 의료행위가 아니며 답변에 어떠한 책임도 지지 않습니다.
         </CustomText>
       </Box>

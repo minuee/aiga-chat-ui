@@ -60,11 +60,11 @@ function DoctorListModal(props: DoctorListModalProps) {
   const isDark = useColorModeValue(false, true);
   const { location, error } = useGeoLocation(geolocationOptions)
   const skeletonColor = useColorModeValue('white', 'gray.700');
-  const textColor = useColorModeValue('white', 'navy.700')
+  const textColor = useColorModeValue('white', 'white')
   const tabSelectedBgColor = useColorModeValue('blue.100', 'green')
   const tabDefaultBgColor = useColorModeValue('gray.300', 'white');
   const tabSelectedTextColor = useColorModeValue('white', 'white')
-  const tabDefaultTextColor = useColorModeValue('gray.500', 'white');
+  const tabDefaultTextColor = useColorModeValue('gray.500', 'navy.800');
   const haederBgColor = useColorModeValue('white', 'navy.700');
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
   const textColor2 = useColorModeValue('black', 'gray.700');

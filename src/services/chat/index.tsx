@@ -91,6 +91,7 @@ export function updateChatHistoryTitle(session_id: string, title: string): any {
 }
 
 export function getChatMessage(session_id: string, msg: string): any {
+    console.log("getChatMessage",session_id)
     try{
         const res:any =  api.post(`/chat/${session_id}`,{question : msg})
             .then((response) => {

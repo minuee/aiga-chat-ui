@@ -1,5 +1,6 @@
 'use client';
 /* eslint-disable */
+import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
 // Chakra Imports
 import { Box,Flex,useColorMode,useColorModeValue,Icon,Text,Button } from '@chakra-ui/react';
 import { useState, useEffect,useRef } from 'react';
@@ -66,6 +67,9 @@ export default function AdminNavbar(props: {
       top={0}
       width={{base:'100%',md: `${mConstants.desktopMinWidth}px`}}
       maxW={`${mConstants.desktopMinWidth}px` }
+      borderTopLeftRadius={ isDesktop ? '15px' : 0}
+      borderTopRightRadius={ isDesktop ? '15px' : 0}
+
     >
       <Flex
         w={{base:'100%',md:`${mConstants.desktopMinWidth}px`}}
@@ -74,11 +78,11 @@ export default function AdminNavbar(props: {
         alignItems={{ xl: 'center' }}
       >
         <Box display={'flex'} flex={1} pl={"20px"} alignItems={'center'}>
-          <Image 
+          {/* <Image 
             src={LogoImage}
             alt="Aiga Logo"
             style={{width:'70px',objectFit: 'contain'}}
-          />
+          /> */}
           {/* <Icon as={MdOutlineArrowBack} width="25px" height="25px" color={basicColor} />
           <Icons.AigaWelcomeIcon h="40px" w="60px" color={basicColor} /> */}
         </Box>

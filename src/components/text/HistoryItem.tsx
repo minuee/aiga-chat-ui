@@ -27,9 +27,16 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
     });
     const chatSessionId = ChatSesseionIdStore(state => state.chatSessionId);
     const textColor = useColorModeValue('navy.700', 'white');
-    const borderColor = useColorModeValue('gray.200', 'whiteAlpha.300');
-    const bgColor = useColorModeValue('white', 'navy.700');
-    const moreColor = useColorModeValue('gray.500', 'whiteAlpha.300');
+    const historyColor = useColorModeValue('#212127', 'white');
+    const bgColor = useColorModeValue('#EAF4FF', 'navy.700');
+    const moreColor = useColorModeValue('gray.500', 'white');
+
+    const bgDefaultColor = useColorModeValue('#ffffff', 'navy.800');
+    const bgCurrentColor = useColorModeValue('#EAF4FF', 'navy.800');
+
+    const bgCurrentBorderColor = useColorModeValue('#EAF4FF', 'navy.300');
+    const bgDefaultBorderColor = useColorModeValue('#EAF4FF', 'navy.300');
+
     const onHandleDeleteHistory = () => {
         onDeleteHistory(data.session_id);
     }
@@ -59,10 +66,10 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
             minHeight={'42px'}
             px="10px"
             maxWidth={`${mConstants.modalMaxWidth}px`}
-            bg={( editMode || chatSessionId == data?.session_id ) ?'#EAF4FF' : '#ffffff'}
+            bg={( editMode || chatSessionId == data?.session_id ) ? bgCurrentColor : bgDefaultColor}
             borderRadius={editMode ? '8px' : 0}
             _hover={{
-                bg: editMode ?'#EAF4FF' : '#EFF2F7',
+                bg: editMode ? bgCurrentBorderColor: bgDefaultBorderColor,
                 borderRadius:'8px',
                 cursor: 'pointer'
             }}
@@ -89,7 +96,7 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
             </FormControl>
             :
             <Box onClick={() => onHandCallHistory(data)} bg='transparent' minWidth={"90%"} zIndex={2} cursor={'pointer'}>
-                <CustomText fontSize='17px' noOfLines={1} pr='20px' color='#212127'>
+                <CustomText fontSize='17px' noOfLines={1} pr='20px' color={historyColor}>
                     {functions.isEmpty(title) ? "무제" :title }
                 </CustomText>
             </Box>
@@ -106,13 +113,13 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
                             <PopoverArrow />
                             <PopoverBody>
                                 <Flex flexDirection={'column'} alignItems={'flex-start'} gap={2}>
-                                    <Button leftIcon={<Icon as={MdOutlineEdit} />} size='sm' onClick={() => setEditMode(true)} id="button_change_name">
+                                    <Button leftIcon={<Icon as={MdOutlineEdit} />} size='sm' onClick={() => setEditMode(true)} id="button_change_name"  bg="transparent">
                                         이름변경
                                     </Button>
                                     {/* <Button leftIcon={<Icon as={MdOutlineShare} />} size='sm' onClick={() => setIsOpenShare(true)} id="button_share">
                                         공유하기
                                     </Button> */}
-                                    <Button leftIcon={<Icon as={MdOutlineDelete} />} size='sm' onClick={onOpen} color={'red'} id="button_remove">  
+                                    <Button leftIcon={<Icon as={MdOutlineDelete} />} size='sm' onClick={onOpen} color={'red'} id="button_remove"  bg="transparent">  
                                         삭제하기
                                     </Button>
                                 </Flex>

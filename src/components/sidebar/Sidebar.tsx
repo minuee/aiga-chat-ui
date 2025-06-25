@@ -1,6 +1,5 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
-import axios from 'axios';
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 // chakra imports
 import { Box,Flex,Text,Drawer,DrawerBody,Icon,useColorModeValue,DrawerOverlay,DrawerContent,DrawerCloseButton } from '@chakra-ui/react';
@@ -75,7 +74,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
   const oopsColor = useColorModeValue('#111111', 'white');
   const basicColor = useColorModeValue('white', 'white');
   const navbarIcon = useColorModeValue('#2b8fff', 'navy.800');
-  
+  const iconColor = useColorModeValue('white', 'navy.800');
 
   const setLoginUserInfo = UserStateStore((state) => state.setUserState);
   const { ...userBasicInfo } = UserStateStore(state => state);
@@ -141,7 +140,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
           ( userBasicInfo?.isState && !functions.isEmpty(userBasicInfo?.userId) ) 
           ?
           <Box onClick={() => onSendHistoryButton()} alignItems={'center'} display={'flex'} cursor={'pointer'}>
-            <Icon as={MdOutlineMenu} width="24px" height="24px" color={basicColor} />
+            <Icon as={MdOutlineMenu} width="24px" height="24px" color={iconColor} />
           </Box>
           :
           <Box 

@@ -1,12 +1,9 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { 
-  Box,Flex,Button,useColorModeValue,Text,SkeletonCircle,SkeletonText,Divider,Icon,Popover,PopoverTrigger,PopoverContent,useToast,PopoverArrow,
-  PopoverBody,SimpleGrid,Stack
- } from '@chakra-ui/react';
+import { Box,Flex,Button,useColorModeValue,Text,SkeletonCircle,SkeletonText,Divider,Icon,Popover,PopoverTrigger,PopoverContent,useToast,PopoverArrow,PopoverBody,SimpleGrid,Stack } from '@chakra-ui/react';
 
- import * as DoctorService from "@/services/doctor/index";
+import * as DoctorService from "@/services/doctor/index";
 import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
@@ -55,6 +52,13 @@ function DoctorReview( props: DoctorModalProps ) {
   const setFromDoctorDepth2 = DoctorFromListStore((state) => state.setFromDoctorDepth2);
   const skeletonColor = useColorModeValue('white', 'navy.700');
   const textColor2 = useColorModeValue('#7F879B', 'white');
+  const bgColor = useColorModeValue("#FAFBFD",'navy.700');
+  const iconColor = useColorModeValue('#7F879B','white');
+  const tooltipColor = useColorModeValue('#212127','white');
+  const tooltipCTextolor = useColorModeValue('#0AA464','navy.800');
+  const voteTextColor = useColorModeValue('#5C5E69','white');
+  const voteTextColor2 = useColorModeValue('#1D73DC','white');
+  const votePointColor = useColorModeValue('#212127','white')
 
   React.useEffect(() => {
     if ( !functions.isEmpty(doctorID)) {
@@ -102,7 +106,6 @@ function DoctorReview( props: DoctorModalProps ) {
         recommand_avg: 0
       })
     }
-
   }
  
   const getDoctorReviewListData = async(doctorID:any) => {
@@ -239,18 +242,18 @@ function DoctorReview( props: DoctorModalProps ) {
 
     return (
       <>
-        <Flex display={'flex'} flexDirection={'column'} bg="#FAFBFD" minHeight={'100px'} padding={'0 10px'} mt={5}>
+        <Flex display={'flex'} flexDirection={'column'} bg={bgColor} minHeight={'100px'} padding={'0 10px'} mt={5}>
           <Box display={'flex'} flexDirection={'row'} alignItems={'center'} pt="10px">
             <CustomTextBold700 fontSize={"17px"} color={'#0AA464'}>AI 소셜리뷰</CustomTextBold700>
             <Box display={'flex'} alignItems={'center'} ml={2} cursor={'pointer'}>
               <Popover placement='top-start'>
                 <PopoverTrigger>
-                  <Icon as={MdInfoOutline} color={'#7F879B'} size={"20px"} />
+                  <Icon as={MdInfoOutline} color={iconColor} size={"20px"} />
                 </PopoverTrigger>
-                <PopoverContent color='white' bg='#212127' borderColor='#212127'>
-                  <PopoverArrow bg='#212127' />
+                <PopoverContent color='white' bg={tooltipColor} borderColor={tooltipColor}>
+                  <PopoverArrow bg={tooltipColor} />
                   <PopoverBody>
-                  소셜 리뷰와 진료 리뷰를 AI감성 분석한 종합점수
+                  <CustomText fontSize={"15px"} color={tooltipCTextolor}>소셜 리뷰와 진료 리뷰를 AI감성 분석한 종합점수</CustomText>
                   </PopoverBody>
                 </PopoverContent>
               </Popover>
@@ -263,8 +266,8 @@ function DoctorReview( props: DoctorModalProps ) {
                 <IconVote1 boxSize={'32px'} />
               </Box>
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} pb="10px">
-                <CustomText fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>친절 • 배려</CustomText>
-                <CustomTextBold700 fontSize={'15px'} color='#212127' lineHeight={"150%"} >{totalAigaReviewAverage?.kindness_avg}</CustomTextBold700>
+                <CustomText fontSize={'13px'} color={voteTextColor} lineHeight={"150%"}>친절 • 배려</CustomText>
+                <CustomTextBold700 fontSize={'15px'} color={votePointColor} lineHeight={"150%"} >{totalAigaReviewAverage?.kindness_avg?.toFixed(1)}</CustomTextBold700>
               </Box>
             </Box>
             <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
@@ -272,8 +275,8 @@ function DoctorReview( props: DoctorModalProps ) {
                 <IconVote2 boxSize={'32px'} />
               </Box>
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} pb="10px">
-                <CustomText fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>치료 만족</CustomText>
-                <CustomTextBold700 fontSize={'15px'} color='#212127' lineHeight={"150%"}>{totalAigaReviewAverage?.explaination_avg?.toFixed(1)}</CustomTextBold700>
+                <CustomText fontSize={'13px'} color={voteTextColor} lineHeight={"150%"}>치료 만족</CustomText>
+                <CustomTextBold700 fontSize={'15px'} color={votePointColor} lineHeight={"150%"}>{totalAigaReviewAverage?.explaination_avg?.toFixed(1)}</CustomTextBold700>
               </Box>
             </Box>
             <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
@@ -281,8 +284,8 @@ function DoctorReview( props: DoctorModalProps ) {
                 <IconVote3 boxSize={'32px'} />
               </Box>
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} pb="10px">
-                <CustomText fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>쉬운 설명</CustomText>
-                <CustomTextBold700 fontSize={'15px'} color='#212127' lineHeight={"150%"}>{totalAigaReviewAverage?.satisfaction_avg?.toFixed(1)}</CustomTextBold700>
+                <CustomText fontSize={'13px'} color={voteTextColor} lineHeight={"150%"}>쉬운 설명</CustomText>
+                <CustomTextBold700 fontSize={'15px'} color={votePointColor} lineHeight={"150%"}>{totalAigaReviewAverage?.satisfaction_avg?.toFixed(1)}</CustomTextBold700>
               </Box>
             </Box>
             <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
@@ -290,24 +293,24 @@ function DoctorReview( props: DoctorModalProps ) {
                 <IconVote4 boxSize={'32px'} />
               </Box>
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} pb="10px">
-                <CustomText fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>추천 의향</CustomText>
-                <CustomTextBold700 fontSize={'15px'} color='#212127' lineHeight={"150%"}>{totalAigaReviewAverage?.recommand_avg?.toFixed(1)}</CustomTextBold700>
+                <CustomText fontSize={'13px'} color={voteTextColor} lineHeight={"150%"}>추천 의향</CustomText>
+                <CustomTextBold700 fontSize={'15px'} color={votePointColor} lineHeight={"150%"}>{totalAigaReviewAverage?.recommand_avg?.toFixed(1)}</CustomTextBold700>
               </Box>
             </Box>
           </SimpleGrid>
         </Flex>
-        <Flex display={'flex'} flexDirection={'column'} bg={{base : "#FAFBFD", sm:'#FAFBFD'}}  minHeight={'100px'} padding={'0 10px'} mt={5}>
+        <Flex display={'flex'} flexDirection={'column'}  bg={bgColor}  minHeight={'100px'} padding={'0 10px'} mt={5}>
           <Box display={'flex'} flexDirection={'row'} alignItems={'center'} pt="10px">
             <CustomText fontWeight={'bold'} color={'green.600'}>AIGA 리뷰</CustomText>
             <Box display={'flex'} alignItems={'center'} ml={2} cursor={'pointer'}>
               <Popover placement='top-start'>
                 <PopoverTrigger>
-                  <Icon as={MdInfoOutline} color={'#7F879B'} size={"20px"} />
+                  <Icon as={MdInfoOutline} color={iconColor} size={"20px"} />
                 </PopoverTrigger>
-                <PopoverContent color='white' bg='#212127' borderColor='#212127'>
-                  <PopoverArrow bg='#212127' />
+                <PopoverContent color='white' bg={tooltipColor} borderColor={tooltipColor}>
+                  <PopoverArrow bg={tooltipColor} />
                   <PopoverBody>
-                   유저가 직접 작성한 리뷰로 AI 종합평점에 반영됨
+                  <CustomText fontSize={"15px"} color={tooltipCTextolor}>유저가 직접 작성한 리뷰로 AI 종합평점에 반영됨</CustomText>
                   </PopoverBody>
                 </PopoverContent>
               </Popover>
@@ -319,7 +322,7 @@ function DoctorReview( props: DoctorModalProps ) {
           flexDirection={{base : 'column', sm2 : "row"}} justifyContent={{base : 'space-evenly', sm2:'center'}} alignItems={{base : 'center', sm2:'center'}} minHeight={'100px'} width={'100%'}>
             <Box flex={1} display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'space-evenly'} height={'100%'} width={{base : '100%', sm2:'auto'}} mb={{base : 4, sm2 : 0}}>
               <Flex flex={1}>
-                <CustomTextBold700 fontSize={'40px'} color={'#000000'}>
+                <CustomTextBold700 fontSize={'40px'} color={votePointColor}>
                   {aigaReviewAverage?.total_avg}
                 </CustomTextBold700>
               </Flex>
@@ -332,46 +335,46 @@ function DoctorReview( props: DoctorModalProps ) {
             <Box flex={2} display={'flex'} flexDirection={'column'}  alignItems={'center'} justifyContent={'flex-end'} width={{base : '100%', sm2:'auto'}}>
               <Box display={'flex'} flexDirection={'row'}  alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
                 <Box flex={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} pr={'15px'}>
-                  <CustomText fontSize={'13px'} color={'#5C5E69'}>친절•배려</CustomText>
+                  <CustomText fontSize={'13px'} color={voteTextColor}>친절•배려</CustomText>
                 </Box>
                 <Box flex={2}>
                   <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={(aigaReviewAverage?.kindness_avg*20)} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box flex={1} padding={'0 5px'}>
-                  <CustomText fontSize={'13px'} color='#1D73DC'>{aigaReviewAverage?.kindness_avg?.toFixed(1)}</CustomText>
+                  <CustomText fontSize={'13px'} color={voteTextColor2}>{aigaReviewAverage?.kindness_avg?.toFixed(1)}</CustomText>
                 </Box>
               </Box>
               <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
                 <Box flex={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} pr={'15px'}>
-                  <CustomText fontSize={'13px'} color={'#5C5E69'}>치료 만족</CustomText>
+                  <CustomText fontSize={'13px'} color={voteTextColor}>치료 만족</CustomText>
                 </Box>
                 <Box flex={2}>
                   <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={(aigaReviewAverage?.explaination_avg*20)} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box flex={1} padding={'0 5px'}>
-                  <CustomText fontSize={'13px'} color='#1D73DC'>{aigaReviewAverage?.explaination_avg?.toFixed(1)}</CustomText>
+                  <CustomText fontSize={'13px'} color={voteTextColor2}>{aigaReviewAverage?.explaination_avg?.toFixed(1)}</CustomText>
                 </Box>
               </Box>
               <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
                 <Box flex={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} pr={'15px'}>
-                  <CustomText fontSize={'13px'} color={'#5C5E69'}>쉬운 설명</CustomText>
+                  <CustomText fontSize={'13px'} color={voteTextColor}>쉬운 설명</CustomText>
                 </Box>
                 <Box flex={2}>
                   <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={(aigaReviewAverage?.satisfaction_avg*20)} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box flex={1} padding={'0 5px'}>
-                  <CustomText fontSize={'13px'} color='#1D73DC'>{aigaReviewAverage?.satisfaction_avg?.toFixed(1)}</CustomText>
+                  <CustomText fontSize={'13px'} color={voteTextColor2}>{aigaReviewAverage?.satisfaction_avg?.toFixed(1)}</CustomText>
                 </Box>
               </Box>
               <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
                 <Box flex={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} pr={'15px'}>
-                  <CustomText fontSize={'13px'} color={'#5C5E69'}>추천 의향</CustomText>
+                  <CustomText fontSize={'13px'} color={voteTextColor}>추천 의향</CustomText>
                 </Box>
                 <Box flex={2}>
                   <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={(aigaReviewAverage?.recommand_avg*20)} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box flex={1} padding={'0 5px'}>
-                  <CustomText fontSize={'13px'} color='#1D73DC'>{aigaReviewAverage?.recommand_avg?.toFixed(1)}</CustomText>
+                  <CustomText fontSize={'13px'} color={voteTextColor2}>{aigaReviewAverage?.recommand_avg?.toFixed(1)}</CustomText>
                 </Box>
               </Box>
             </Box>

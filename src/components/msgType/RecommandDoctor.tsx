@@ -36,8 +36,13 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.700');
   const starColor = useColorModeValue('#0000ff', '#ffffff');
   const skeletonColor = useColorModeValue('white', 'navy.700');
-  const bgSystemColor = useColorModeValue('#F4F6FA', 'white');
-  const textSystemColor = useColorModeValue('#212127', 'navy.800');
+  const bgSystemColor = useColorModeValue('#F4F6FA', 'navy.600');
+  const textSystemColor = useColorModeValue('#212127', 'white');
+  const profileBgColor = useColorModeValue("#F4F6FA",'navy.600');
+  const nameTextColor = useColorModeValue('#17191D','white')
+  const partTextColor = useColorModeValue('#7F879B','white')
+  
+
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
 
   const handleScroll = () => {
@@ -122,7 +127,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
             <Flex 
               key={index} 
               flexDirection="column" 
-              bg="#F4F6FA" 
+              bg={profileBgColor} 
               width={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
               maxWidth='300px' 
               px="10px"
@@ -140,7 +145,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
                 />
               </Box>
               <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'26px'} pb="16px">
-                <CustomTextBold700 fontSize={'17px'} color='#17191D' lineHeight={"150%"} noOfLines={1}>
+                <CustomTextBold700 fontSize={'17px'} color={nameTextColor} lineHeight={"150%"} noOfLines={1}>
                   {element?.name}
                 </CustomTextBold700>
               </Box>
@@ -150,7 +155,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
                 </CustomTextBold700>
               </Box>
               <Box display={'flex'} justifyContent={'center'} alignItems={'center'} pb="32px" height={'26px'}>
-                <CustomTextBold700 fontSize={'12px'} color='#7F879B' lineHeight={"150%"} letterSpacing={'-5%'} noOfLines={1}>
+                <CustomTextBold700 fontSize={'12px'} color={partTextColor} lineHeight={"150%"} letterSpacing={'-5%'} noOfLines={1}>
                   {element?.deptname}
                 </CustomTextBold700>
               </Box>

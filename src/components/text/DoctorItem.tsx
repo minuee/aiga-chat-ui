@@ -13,7 +13,7 @@ type DoctorListProps = {
   
 const DoctorList = ({ data, onSendDoctorButton }:DoctorListProps) => {
    
-    const textColor = useColorModeValue('gray.500','white')
+    const nameText = useColorModeValue('#000000','white')
     const borderColor = useColorModeValue('gray.200', 'whiteAlpha.100');
 
     return (
@@ -21,7 +21,7 @@ const DoctorList = ({ data, onSendDoctorButton }:DoctorListProps) => {
             <Flex display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'100px'} py="15px">
                 <Box flex={3} flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} pr='15px' onClick={() => onSendDoctorButton(data,1)} cursor={'pointer'}>
                     <CustomTextBold700 fontSize={'15px'} color="#0AA464">{data?.hospital || ""}</CustomTextBold700>
-                    <CustomTextBold700 fontSize={'24px'} color="#000000"  lineHeight={"200%"}>
+                    <CustomTextBold700 fontSize={'19px'} color={nameText}  lineHeight={"200%"}>
                         {!functions.isEmpty(data?.name) ? data?.name : ""} 교수
                     </CustomTextBold700>
                     <Flex mt="2" flexShrink={1} flexWrap={'wrap'}>

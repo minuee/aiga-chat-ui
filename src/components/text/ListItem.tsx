@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex,Text,Divider,Box,List,ListItem,Icon,Button } from '@chakra-ui/react';
+import { Flex,Text,Divider,Box,List,ListItem,Icon,Button,useColorModeValue } from '@chakra-ui/react';
 import { MdKeyboardDoubleArrowDown,MdKeyboardDoubleArrowUp } from 'react-icons/md';
 import functions from '@/utils/functions';
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
@@ -16,10 +16,12 @@ const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 ,is
     const [expandedCount, setExpandedCount] = React.useState<any>(content.length > limintView ? limintView : undefined);
     const handleToggle = () =>
     setExpandedCount(expandedCount ? undefined : limintView);
-  
+    const nameText = useColorModeValue('#000000','white');
+    const textColor = useColorModeValue('#5C5E69','white');
+    const iconBgColor = useColorModeValue('#E9EDF3','navy.900')
     return (
         <Flex  flexDirection={'column'} justifyContent={'center'} mt={marginTop}>
-            <CustomTextBold700 fontSize={'15px'} color="#000000">{title}</CustomTextBold700>
+            <CustomTextBold700 fontSize={'15px'} color={nameText}>{title}</CustomTextBold700>
             {/* <Divider orientation='horizontal' my={2}/> */}
             <Box 
                 noOfLines={expandedCount}
@@ -28,7 +30,7 @@ const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 ,is
                 <List spacing={2}>
                     {content.map((item:any, index:number) => (
                         <ListItem key={index}>
-                            <CustomText fontSize={'15px'}  color="#5C5E69" letterSpacing={"-5%"}>
+                            <CustomText fontSize={'15px'}  color={textColor} letterSpacing={"-5%"}>
                                 {
                                     isType == 'education' 
                                     ?
@@ -51,7 +53,7 @@ const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 ,is
                     <Box display={'flex'} width="100%" alignItems={'center'} my="10px">
                         <Button
                             size="sm"
-                            backgroundColor={'#E9EDF3'}
+                            backgroundColor={iconBgColor}
                             borderRadius={0}
                             py={"3px"}
                             variant="link"

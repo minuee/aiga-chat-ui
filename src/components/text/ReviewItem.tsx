@@ -31,8 +31,11 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
     const { ...userBaseInfo } = UserStateStore(state => state);
 
     const bgColor = useColorModeValue('white', 'navy.700');
-    const moreColor = useColorModeValue('gray.500', 'whiteAlpha.300');
-
+    const nameTextColor = useColorModeValue("#000000", 'white');
+    const iconColor = useColorModeValue('gray.500','white');
+    const dateColor = useColorModeValue('#7F879B','white')
+    const voteTextColor = useColorModeValue('#5C5E69','white');
+    const iconBgColor = useColorModeValue('#E9EDF3','navy.900')
     const onHandleAlertConfirm = () => {
         onHandleDoctorRequestRegist(data)
     }
@@ -59,20 +62,20 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                     <Popover>
                         <PopoverTrigger>
                             <Flex justifyContent={'flex-end'}width={'100%'}>
-                                <Icon as={MdMoreHoriz} width="18px" height="25px" color={moreColor} />
+                                <Icon as={MdMoreHoriz} width="18px" height="25px" color={iconColor} />
                             </Flex>
                         </PopoverTrigger>
                         <PopoverContent width={'150px'} bg={bgColor}>
                         <PopoverArrow />
                         <PopoverBody>
                             <Flex flexDirection={'column'} alignItems={'flex-start'} gap={2}>
-                                <Button leftIcon={<Icon as={MdOutlineEdit} />} size='sm' onClick={() => onHandleDetail(1)} id="button_change_name">
+                                <Button leftIcon={<Icon as={MdOutlineEdit} />} size='sm' onClick={() => onHandleDetail(1)} id="button_change_name" bg="transparent">
                                     수정하기
                                 </Button>
                                 {/* <Button leftIcon={<Icon as={MdOutlineShare} />} size='sm' onClick={() => setIsOpenShare(true)} id="button_share">
                                     공유하기
                                 </Button> */}
-                                <Button leftIcon={<Icon as={MdOutlineDelete} />} size='sm'  onClick={() => setOpenAlert(true)} color={'red'} id="button_remove">  
+                                <Button leftIcon={<Icon as={MdOutlineDelete} />} size='sm'  onClick={() => setOpenAlert(true)} color={'red'} id="button_remove" bg="transparent">  
                                     삭제하기
                                 </Button>
                             </Flex>
@@ -81,13 +84,13 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                     </Popover>
                     
                 </Box>
-                <CustomTextBold700 fontSize={'16px'} color={"#000000"}>{data?.nickname}</CustomTextBold700>
-                <CustomText fontSize={'13px'} color={'#7F879B'}>{format(data?.createAt, 'yyyy-MM-dd')}</CustomText>
+                <CustomTextBold700 fontSize={'16px'} color={nameTextColor}>{data?.nickname}</CustomTextBold700>
+                <CustomText fontSize={'13px'} color={dateColor}>{format(data?.createAt, 'yyyy-MM-dd')}</CustomText>
                 <SimpleGrid spacing={3} templateColumns={{base : 'repeat(1, 1fr)' , sm : 'repeat(2, 1fr)'}} mt={3}>
                 <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
                     <Flex flexDirection={'row'} justifyContent={'space-around'} alignItems={'center'} width={'100%'}>
                     <Box flex={1} display={'flex'}>
-                        <CustomText fontSize={'12px'} color='#5C5E69' lineHeight={"150%"}>친절 • 배려</CustomText>
+                        <CustomText fontSize={'12px'} color={voteTextColor} lineHeight={"150%"}>친절 • 배려</CustomText>
                     </Box>
                     <Box flex={1} display={'flex'} justifyContent={'flex-end'} alignItems={'center'}>
                         <Icon color='gold' as={MdOutlineStarPurple500}  />
@@ -99,7 +102,7 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                 <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
                     <Flex flexDirection={'row'} justifyContent={'space-around'} alignItems={'center'} width={'100%'}>
                     <Box flex={1} display={'flex'}>
-                        <CustomText fontSize={'12px'} color='#5C5E69' lineHeight={"150%"}>치료 만족</CustomText>
+                        <CustomText fontSize={'12px'} color={voteTextColor} lineHeight={"150%"}>치료 만족</CustomText>
                     </Box>
                     <Box flex={1} display={'flex'} justifyContent={'flex-end'} alignItems={'center'}>
                         <Icon color='gold' as={MdOutlineStarPurple500}  />
@@ -111,7 +114,7 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                 <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
                     <Flex flexDirection={'row'} justifyContent={'space-around'} alignItems={'center'} width={'100%'}>
                     <Box flex={1} display={'flex'}>
-                        <CustomText fontSize={'12px'} color='#5C5E69' lineHeight={"150%"}>쉬운 설명</CustomText>
+                        <CustomText fontSize={'12px'} color={voteTextColor} lineHeight={"150%"}>쉬운 설명</CustomText>
                     </Box>
                     <Box flex={1} display={'flex'} justifyContent={'flex-end'} alignItems={'center'}>
                         <Icon color='gold' as={MdOutlineStarPurple500}  />
@@ -123,7 +126,7 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                 <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
                     <Flex flexDirection={'row'} justifyContent={'space-around'} alignItems={'center'} width={'100%'}>
                     <Box flex={1} display={'flex'}>
-                        <CustomText fontSize={'12px'} color='#5C5E69' lineHeight={"150%"}>추천 의향</CustomText>
+                        <CustomText fontSize={'12px'} color={voteTextColor} lineHeight={"150%"}>추천 의향</CustomText>
                     </Box>
                     <Box flex={1} display={'flex'} justifyContent={'flex-end'} alignItems={'center'}>
                         <Icon color='gold' as={MdOutlineStarPurple500}  />
@@ -145,7 +148,7 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                         size={'md'} 
                         border={"0px solid #ffffff"}
                         id={"textarea_content"}
-                        color={'#5C5E69'}
+                        color={{voteTextColor}}
                         as={ResizeTextarea}
                         minRows={1}
                         maxRows={isExpanded ? undefined : 5}
@@ -155,7 +158,7 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                         <Box display={'flex'} width="100%" alignItems={'center'} my="10px">
                             <Button
                                 size="sm"
-                                backgroundColor={'#E9EDF3'}
+                                backgroundColor={iconBgColor}
                                 borderRadius={0}
                                 py={"3px"}
                                 variant="link"

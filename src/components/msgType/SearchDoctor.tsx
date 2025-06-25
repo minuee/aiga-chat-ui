@@ -26,8 +26,13 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
   const [showGradient, setShowGradient] = useState(true);
   const [doctorList, setDoctorList] = useState([]);
   const isDark = useColorModeValue(false, true);
-  const textSystemColor = useColorModeValue('#212127', 'navy.800');
-  const bgSystemColor = useColorModeValue('#F4F6FA', 'white');
+  const bgSystemColor = useColorModeValue('#F4F6FA', 'navy.600');
+  const textSystemColor = useColorModeValue('#212127', 'white');
+  const profileBgColor = useColorModeValue("#F4F6FA",'navy.600');
+  const nameTextColor = useColorModeValue('#17191D','white');
+  const partTextColor = useColorModeValue('#7F879B','white');
+  const arrowColor = useColorModeValue("#000000",'white')
+
   const handleScroll = () => {
     if (flexRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = flexRef.current;
@@ -95,7 +100,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
           doctorList.map((element: any, index: number) => (
             <Flex 
               key={index} 
-              bg="#F4F6FA" 
+              bg={profileBgColor} 
               width={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
               padding="20px"
               borderRadius="20px"
@@ -112,7 +117,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
               </Box>
               <Flex flex={4} flexDirection={'column'} justifyContent={'center'} px="20px">
                 <Box display={'flex'} alignItems={'center'} height={'26px'}>
-                  <CustomTextBold700 fontSize={'17px'} color='#17191D' lineHeight={"150%"} noOfLines={1}>
+                  <CustomTextBold700 fontSize={'17px'} color={nameTextColor} lineHeight={"150%"} noOfLines={1}>
                     {element?.name}
                   </CustomTextBold700>
                 </Box>
@@ -122,7 +127,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
                   </CustomTextBold700>
                 </Box>
                 <Box display={'flex'} alignItems={'center'} height={'26px'}>
-                  <CustomTextBold700 fontSize={'12px'} color='#7F879B' lineHeight={"150%"} letterSpacing={'-5%'} noOfLines={1}>
+                  <CustomTextBold700 fontSize={'12px'} color={partTextColor} lineHeight={"150%"} letterSpacing={'-5%'} noOfLines={1}>
                     {element?.deptname}
                   </CustomTextBold700>
                 </Box>
@@ -131,7 +136,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
                 flex={1} display={'flex'} alignItems={'center'} justifyContent={'flex-end'}
                 onClick={() => onSendButton(element,element?.doctor_id)} cursor={'pointer'}
               >
-                <Icon as={BiChevronRight} width="20px" height="20px" color="#000000" />
+                <Icon as={BiChevronRight} width="20px" height="20px" color={arrowColor} />
               </Box>
             </Flex>
           ))

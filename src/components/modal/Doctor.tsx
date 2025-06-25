@@ -86,11 +86,13 @@ function DoctorModal(props: DoctorModalProps) {
   const setIsOpenSignupModal = ModalSignupStoreStore((state) => state.setIsOpenSignupModal);
   const reviewBtnRef = React.useRef<HTMLButtonElement>(null);
   const sidebarBackgroundColor = useColorModeValue('white', 'gray.700');
-  const starColor = useColorModeValue('gold', '#ffffff');
+  const contentBgColor = useColorModeValue('#FAFBFD', 'navy.700');
   const skeletonColor = useColorModeValue('white', 'navy.700');
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
+  const nameText = useColorModeValue('#000000','white');
+  const btnColor = useColorModeValue('#E9EDF3','rgba(0,59,149,1)');
+  const btnTextColor = useColorModeValue('#7F879B','white')
 
-  
   React.useEffect(() => {
     setDoctorBasicData({
       ...doctorBasicData,
@@ -201,7 +203,7 @@ function DoctorModal(props: DoctorModalProps) {
         <Flex display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'100px'}>
           <Box flex={3} flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} fontSize={'15px'} pr='15px'>
             <CustomTextBold700 fontSize={'15px'} color="#0AA464" >{doctorBasicData?.hospital}</CustomTextBold700>
-            <CustomTextBold700 fontSize={'24px'} color="#000000" lineHeight={"200%"}>
+            <CustomTextBold700 fontSize={'24px'} color={nameText} lineHeight={"200%"}>
               {!functions.isEmpty(doctorBasicData?.name) ? doctorBasicData?.name : ""} 교수
             </CustomTextBold700>
             <Flex mt="2" flexShrink={1} flexWrap={'wrap'}>
@@ -247,7 +249,7 @@ function DoctorModal(props: DoctorModalProps) {
           </Box>
           )}
         </Flex>
-        <Flex display={'flex'} flexDirection={'column'}  mt={4} bg="#FAFBFD" alignContent={'center'} padding="20px">
+        <Flex display={'flex'} flexDirection={'column'}  mt={4} bg={contentBgColor} alignContent={'center'} padding="20px">
           <Box display={'flex'} flex={1}  alignItems={'center'}>
             <Image 
               src={IconInfo}
@@ -283,10 +285,10 @@ function DoctorModal(props: DoctorModalProps) {
           <Divider orientation='horizontal' my={4} width="100%" />
           <Flex display={'flex'} justifyContent={'flex-end'}  width="100%">
             <Box 
-              display={'flex'} alignItems={'center'} justifyContent={'center'}  bg="#E9EDF3" width='150px' height={'30px'} borderRadius={"4px"}
+              display={'flex'} alignItems={'center'} justifyContent={'center'}  bg={btnColor} width='150px' height={'30px'} borderRadius={"4px"}
               onClick={() => onSendDoctorRequestButton()} cursor={'pointer'} 
             >
-              <CustomText color={'#7F879B'} fontSize={"13px"}>의사 정보 수정 요청</CustomText> 
+              <CustomText color={btnTextColor} fontSize={"13px"}>의사 정보 수정 요청</CustomText> 
             </Box>
           </Flex>
         </Flex>

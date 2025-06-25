@@ -104,7 +104,7 @@ function RequestModal(props: RequestModalProps) {
             • 산업안전보건법에 따라 고객 응대 근로자 보호조치를 하고 있으며, 모든 문의는 기록으로 남습니다.
             </CustomText>
           </Box>
-          <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'100%'} mt={5}>
+          {/* <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'100%'} mt={5}>
             <CustomTextBold700 fontSize={'14px'}>개인정보 수집•이용에 대한 안내</CustomTextBold700>
             <Box display={'flex'} flexDirection={'row'} alignContent={'center'} minHeight={'50px'} width={'100%'}>
               <Checkbox
@@ -152,10 +152,10 @@ function RequestModal(props: RequestModalProps) {
                 위 동의를 거부할 권리가 있으며, 동의를 거부하실 경우 문의처리 및 결과 회신이 제한됩니다. 요구하지 않은 개인정보는 입력하지 않도록 주의해 주세요
               </CustomText>
               <CustomText fontSize={'12px'} color={textColor2} >
-                더 자세한 내용에 대해서는 <Link fontWeight="500" fontSize={'12px'} color={textColor} href="https://kormedi.com/%ea%b0%9c%ec%9d%b8%ec%a0%95%eb%b3%b4%ec%b2%98%eb%a6%ac%eb%b0%a9%ec%b9%a8-%ec%bd%94%eb%a9%94%eb%94%94%eb%8b%b7%ec%bb%b4/" target='_blank' ><CustomText as={'span'} color={textColor}>AIGA 개인정보처리방침</CustomText></Link>을 참고하시기 바랍니다.
+                더 자세한 내용에 대해서는 <Link fontWeight="500" fontSize={'12px'} color={textColor} href="/ko/policy" target='_blank' ><CustomText as={'span'} color={textColor} fontSize={'12px'}>AIGA 개인정보처리방침</CustomText></Link>을 참고하시기 바랍니다.
               </CustomText>
             </Box>
-          </Box>
+          </Box> */}
           
         </Flex>
         <Box height={'50px'} />
