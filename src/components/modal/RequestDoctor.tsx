@@ -39,7 +39,7 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
   React.useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
-    }, 1000);
+    }, 60);
 
     if( !functions.isEmpty(selected_doctor?.doctor_id) ){
       setInputs({
@@ -63,7 +63,7 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
         setTimeout(() => {
           setOpenAlert(true)
           setReceiving(false);
-        }, 500);
+        }, 60);
       }else{
         toast({
           title: 'AIGA',

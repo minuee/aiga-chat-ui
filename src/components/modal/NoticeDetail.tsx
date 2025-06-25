@@ -22,7 +22,7 @@ function NoticerDetailModal(props: NoticerDetailModalProps) {
   React.useEffect(() => {
     setTimeout(() => {
       setLoading(false)
-    }, 2000);
+    }, 60);
   }, [noticeID]);
 
   if ( isLoading ) {

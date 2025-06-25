@@ -140,7 +140,7 @@ function SidebarContent(props: SidebarContent) {
     setNewChatOpen(false);
     setTimeout(() => {
       setNewChatOpen(true);
-    }, 300);
+    }, 60);
   }
 
   const onHandReplaceHistory = async( data:any ) => {

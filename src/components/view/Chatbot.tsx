@@ -200,7 +200,7 @@ export default function ChatBot() {
           };
           return newArray;
         }) */
-      }, 300);
+      }, 60);
     }
   }, []);
 
@@ -239,7 +239,7 @@ export default function ChatBot() {
       firstForceStep();
       setTimeout(() => {
         setNewChatOpen(false);
-      }, 1000);
+      }, 60);
     }
   }, [isNewChat]);
 
@@ -326,7 +326,7 @@ export default function ChatBot() {
         console.log("handleWheel ❌ wheel 이벤트 해제");
         el.removeEventListener("wheel", handleWheel);
       };
-    }, 1000); // 1초 후에 강제 시도
+    }, 500); // 0.5초 후에 강제 시도
   
     return () => clearTimeout(timer);
   }, []);
@@ -497,100 +497,6 @@ export default function ChatBot() {
       return null;
     }
   }
-  const handleTranslate_origin = async( isText:any = '') => {
-
-    if ( functions.isEmpty(inputCode) && functions.isEmpty(isText) ) return;
-    
-    console.log("handleTranslate chatSessionId", chatSessionId)
-    let chat_sessinn_id = chatSessionId;
-    if ( functions.isEmpty(chat_sessinn_id)) {
-      chat_sessinn_id = await getNewSessionID();
-    }
-
-    
-    setReceiving(true);
-    const msgLen = parseInt(outputCode.length+1);
-    const inputCodeText = inputCode || isText;
-    
-    if ( isSystemText.includes(inputCodeText) ) {
-      if( inputCodeText != outputCode[outputCode?.length -1]?.msg) { 
-        setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system", msg: inputCodeText }]);
-        setIsLoading(false);
-        setReceiving(false);
-        return;
-      }else{
-        setIsLoading(false);
-        setReceiving(false);
-        return;
-      }
-    }else{
-      setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(),ismode: "me", msg: inputCodeText }]);
-    }
-    setInputCode('')
-
-    const BaseAPI = process.env.NEXT_PUBLIC_ADMIN_API_BASE_URL;
-    const url = `${BaseAPI}/chat`;
- 
-    const payload = {
-      "user_id": "minuee",
-      "msg_type": isText,
-      "msg": inputCodeText
-    }
-
-    const response = await customfetch.callAPI(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json; charset=utf-8' },
-      credentials: 'include',
-      body: JSON.stringify(payload)
-    }, 10000);
-
-    const reader = response?.body?.getReader();
-    const decoder = new TextDecoder();
-    let streamData:string = "";
-    while (true ) {
-      const { value, done } : any = await reader?.read();
-    
-      if (done) {
-        setTimeout(() => {
-          setIsLoading(false);
-          setReceiving(false);
-        },3000)
-        
-        console.log('🔚 스트림 종료됨');
-        break;
-      }
-    
-      const chunk = decoder.decode(value, { stream: true });
-      console.log('📥 받은 메시지:', chunk);
-     
-      if ( chunk ) {
-        streamData = streamData.concat(chunk);
-      }else{
-        console.error('data가 null입니다. getReader를 호출할 수 없습니다.');
-      }
-
-      setOutputCode((prevCode: any[]) => {
-       
-        const newArray = [...prevCode];
-        const lastIndex = msgLen;
-        if ( !newArray[lastIndex]?.msg ) {
-          newArray[lastIndex] = {
-            id: functions.getUUID(),
-            ismode : 'server',
-            msg:chunk,
-          };
-        }else{
-          const tmpMsg = prevCode[lastIndex].msg;
-          newArray[lastIndex] = {
-            ...prevCode[lastIndex],
-            msg: tmpMsg.concat(chunk)
-          };
-        }
-        return newArray;
-      });
-    }
-  }
-
   useEffect(() => {
     const timeout = setTimeout(() => {
       setShowScroll(false)
@@ -600,8 +506,55 @@ export default function ChatBot() {
   }, [outputCode]);
 
   const handleChange = (Event: any) => {
-    console.log("handleTranslate handleChange")
-    setInputCode(Event.target.value);
+    
+    const nowTokens = calculateTokenCount(Event.target.value);
+    const nowTimeStamp = functions.getKSTUnixTimestamp();
+    console.log('nowTokens',in24UsedToken,nowTokens,nowTimeStamp)
+    if ( in24UsedToken > 0 ) { 
+      const realTimeIn24UsedToken = in24UsedToken+nowTokens;
+      if ( userBasicInfo?.isGuest  ) {//비회원
+        if ( realTimeIn24UsedToken >= guestMaxToken ) {
+          setChatDisabled({
+            ...isChatDisabled,
+            reTryTimeStamp : nowTimeStamp,
+            isState : false,
+          })
+        }else{
+          setInputCode(Event.target.value);
+        }
+      }else{
+        if ( realTimeIn24UsedToken >= userMaxToken ) {
+          setChatDisabled({
+            ...isChatDisabled,
+            reTryTimeStamp : nowTimeStamp,
+            isState : false,
+          })
+        }else{
+          setInputCode(Event.target.value);
+        }
+      }
+    }else{
+      setInputCode(Event.target.value);
+    }
+  }
+
+  // 토큰 계산 함수
+  const calculateTokenCount = (text: string): number => {
+    let count = 0;
+    for (let char of text) {
+      // 유니코드 블록을 이용한 판별
+      const code = char.charCodeAt(0);
+      if (
+        (code >= 0xAC00 && code <= 0xD7A3) || // 한글
+        (code >= 0x3040 && code <= 0x30FF) || // 일본어 (히라가나/가타카나)
+        (code >= 0x4E00 && code <= 0x9FFF)    // 한자 (일본어 포함)
+      ) {
+        count += 1.2;
+      } else {
+        count += 0.6;
+      }
+    }
+    return count;
   };
 
   const onSendButton = async( str : string) => {
@@ -1081,7 +1034,7 @@ export default function ChatBot() {
               )
             }
       
-            { ( isFocus  ) && ( <ChatWarningInfo /> )}
+            { ( isFocus && isChatDisabled.isState ) && ( <ChatWarningInfo /> )}
             <Flex 
               position={'absolute'}
               display={isShowScroll ? 'flex' : 'none'} 

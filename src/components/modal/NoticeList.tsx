@@ -51,7 +51,7 @@ function NoticeListModal(props: NoticeListModalProps) {
     setIsOpenNoticeDetailModal(false)
     setTimeout(() => {
       setIsLoading(false);
-    }, 1000);
+    }, 60);
   }, [isOpen]);
 
 

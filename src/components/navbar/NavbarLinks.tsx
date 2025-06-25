@@ -153,7 +153,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
     setNewChatOpen(false);
     setTimeout(() => {
       setNewChatOpen(true);
-    }, 100);
+    }, 60);
     setIsOpenLogoutModal(false)
   }
 

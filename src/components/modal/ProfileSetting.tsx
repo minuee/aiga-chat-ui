@@ -88,7 +88,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         nickName : userBaseInfo?.nickName
       })
       setIsLoading(false);
-    }, 1000);
+    }, 60);
   }, [isOpen]);
 
   const onHandleSave = async() => {
@@ -250,7 +250,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     setNewChatOpen(false);
     setTimeout(() => {
       setNewChatOpen(true);
-    }, 100);
+    }, 60);
   }
 
   const onHandleNickname = ( str: string ) => {

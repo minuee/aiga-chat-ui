@@ -24,11 +24,12 @@ import { ModalDoctorReviewStore,ModalDoctorRequestStore,DoctorFromListStore } fr
 
 export interface DoctorModalProps extends PropsWithChildren {
   doctorID : any;
+  doctorBasicData : any;
 }
 
 function DoctorReview( props: DoctorModalProps ) {
 
-  const { doctorID } = props;
+  const { doctorID,doctorBasicData } = props;
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
@@ -43,6 +44,12 @@ function DoctorReview( props: DoctorModalProps ) {
     recommand_avg:  0,
     total_avg : 0
   });
+  const [totalAigaReviewAverage, setTotalAigaReviewAverage] = React.useState<any>({
+    kindness_avg: 0,
+    explaination_avg:  0,
+    satisfaction_avg:  0,
+    recommand_avg:  0,
+  });
   const setIsOpenReview = ModalDoctorReviewStore((state) => state.setModalState);
   const { isFromDoctorDepth2 } = DoctorFromListStore(state => state);
   const setFromDoctorDepth2 = DoctorFromListStore((state) => state.setFromDoctorDepth2);
@@ -54,6 +61,49 @@ function DoctorReview( props: DoctorModalProps ) {
       getDoctorReviewListData(doctorID);
     }
   }, [doctorID]);
+
+  const calSNSAverage = ( reviewAvg:any) => {
+
+    if ( !functions.isEmpty(reviewAvg) && !functions.isEmpty(doctorBasicData?.ai_score)) {
+      const kindness_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.kindness) ?  (reviewAvg?.kindness_avg + doctorBasicData?.ai_score?.kindness)/2 :  reviewAvg?.kindness_avg;
+      const explaination_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.explaination) ?  (reviewAvg?.explaination_avg + doctorBasicData?.ai_score?.kindness)/2 :  reviewAvg?.explaination_avg;
+      const satisfaction_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.satisfaction) ?  (reviewAvg?.satisfaction_avg + doctorBasicData?.ai_score?.satisfaction)/2 :  reviewAvg?.satisfaction_avg;
+      const recommand_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.recommand) ?  (reviewAvg?.recommand_avg + doctorBasicData?.ai_score?.recommand)/2 :  reviewAvg?.recommand_avg;
+      setTotalAigaReviewAverage({
+        kindness_avg: kindness_avg_tmp,
+        explaination_avg:  explaination_avg_tmp,
+        satisfaction_avg:  satisfaction_avg_tmp,
+        recommand_avg: recommand_avg_tmp
+      })
+    }else if ( !functions.isEmpty(reviewAvg) && functions.isEmpty(doctorBasicData?.ai_score)) {
+      setTotalAigaReviewAverage({
+        kindness_avg: reviewAvg?.kindness_avg,
+        explaination_avg:  reviewAvg?.explaination_avg,
+        satisfaction_avg:  reviewAvg?.satisfaction_avg,
+        recommand_avg: reviewAvg?.recommand_avg
+      })
+    }else if ( functions.isEmpty(reviewAvg) && !functions.isEmpty(doctorBasicData?.ai_score)) {
+      const kindness_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.kindness) ?  doctorBasicData?.ai_score?.kindness : 0;
+      const explaination_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.explaination) ?  doctorBasicData?.ai_score?.kindness :  0;
+      const satisfaction_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.satisfaction) ?  doctorBasicData?.ai_score?.satisfaction : 0;
+      const recommand_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.recommand) ? doctorBasicData?.ai_score?.recommand : 0;
+      
+      setTotalAigaReviewAverage({
+        kindness_avg: kindness_avg_tmp,
+        explaination_avg:  explaination_avg_tmp,
+        satisfaction_avg:  satisfaction_avg_tmp,
+        recommand_avg: recommand_avg_tmp
+      })
+    }else{
+      setTotalAigaReviewAverage({
+        kindness_avg: 0,
+        explaination_avg:  0,
+        satisfaction_avg:  0,
+        recommand_avg: 0
+      })
+    }
+
+  }
  
   const getDoctorReviewListData = async(doctorID:any) => {
     const res:any = await DoctorService.getReviewListData(doctorID);
@@ -61,9 +111,11 @@ function DoctorReview( props: DoctorModalProps ) {
       const rData = res?.data?.review;
       setReviewListData(rData);
       const resultAvg = calculateAverageScores(rData);
-      setAigaReviewAverage(resultAvg)
+      setAigaReviewAverage(resultAvg);
+      calSNSAverage(resultAvg)
       setIsLoading(false);
     }else{
+      setAigaReviewAverage(null);
       toast({
         title: "조회중 오류가 발생하였습니다.",
         position: 'top-right',
@@ -76,7 +128,7 @@ function DoctorReview( props: DoctorModalProps ) {
       setTimeout(() => {
         setReviewListData([]);
         setIsLoading(false);
-      }, 1000);
+      }, 60);
     }
   }
 
@@ -145,7 +197,7 @@ function DoctorReview( props: DoctorModalProps ) {
       });
       setTimeout(() => {
         getDoctorReviewListData(doctorID)
-      }, 500);
+      }, 60);
     }else{
       toast({
         title: 'AIGA',
@@ -212,7 +264,7 @@ function DoctorReview( props: DoctorModalProps ) {
               </Box>
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} pb="10px">
                 <CustomText fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>친절 • 배려</CustomText>
-                <CustomTextBold700 fontSize={'15px'} color='#212127' lineHeight={"150%"} >4.5</CustomTextBold700>
+                <CustomTextBold700 fontSize={'15px'} color='#212127' lineHeight={"150%"} >{totalAigaReviewAverage?.kindness_avg}</CustomTextBold700>
               </Box>
             </Box>
             <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
@@ -221,7 +273,7 @@ function DoctorReview( props: DoctorModalProps ) {
               </Box>
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} pb="10px">
                 <CustomText fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>치료 만족</CustomText>
-                <CustomTextBold700 fontSize={'15px'} color='#212127' lineHeight={"150%"}>4.5</CustomTextBold700>
+                <CustomTextBold700 fontSize={'15px'} color='#212127' lineHeight={"150%"}>{totalAigaReviewAverage?.explaination_avg?.toFixed(1)}</CustomTextBold700>
               </Box>
             </Box>
             <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
@@ -230,7 +282,7 @@ function DoctorReview( props: DoctorModalProps ) {
               </Box>
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} pb="10px">
                 <CustomText fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>쉬운 설명</CustomText>
-                <CustomTextBold700 fontSize={'15px'} color='#212127' lineHeight={"150%"}>4.5</CustomTextBold700>
+                <CustomTextBold700 fontSize={'15px'} color='#212127' lineHeight={"150%"}>{totalAigaReviewAverage?.satisfaction_avg?.toFixed(1)}</CustomTextBold700>
               </Box>
             </Box>
             <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
@@ -239,7 +291,7 @@ function DoctorReview( props: DoctorModalProps ) {
               </Box>
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} pb="10px">
                 <CustomText fontSize={'13px'} color='#5C5E69' lineHeight={"150%"}>추천 의향</CustomText>
-                <CustomTextBold700 fontSize={'15px'} color='#212127' lineHeight={"150%"}>4.5</CustomTextBold700>
+                <CustomTextBold700 fontSize={'15px'} color='#212127' lineHeight={"150%"}>{totalAigaReviewAverage?.recommand_avg?.toFixed(1)}</CustomTextBold700>
               </Box>
             </Box>
           </SimpleGrid>

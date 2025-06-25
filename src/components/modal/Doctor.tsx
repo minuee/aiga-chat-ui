@@ -128,30 +128,6 @@ function DoctorModal(props: DoctorModalProps) {
     fn_close_modal_doctor_request();
   }
 
-  const getDoctorBasicData = async() => {
-    const res:any = await DoctorService.getDoctorBasicData(1);
-    if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
-      const rData = res?.data?.doctor;
-      setDoctorBasicData({...doctorBasicData,...rData});
-      setIsLoading(false);
-    }else{
-      toast({
-        title: "조회중 오류가 발생하였습니다.",
-        position: 'top-right',
-        isClosable: true,
-        status: 'error',
-        containerStyle: {
-          color: '#ffffff',
-        }
-      });
-      setTimeout(() => {
-        setDoctorBasicData(null);
-        setIsLoading(false);
-      }, 1000);
-    }
-  }
-
-
   const fn_close_modal_doctor_review = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenReview(false);
@@ -316,6 +292,7 @@ function DoctorModal(props: DoctorModalProps) {
         </Flex>
         
         <DoctorReviews 
+          doctorBasicData={doctorBasicData}
           doctorID={selectedDoctorId}
         />
         <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}  width={'100%'} mt={5}>

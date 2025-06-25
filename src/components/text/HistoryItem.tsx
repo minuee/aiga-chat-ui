@@ -47,7 +47,7 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
                 status: 'info',
                 isClosable: true,
             })
-        }, 1000);
+        }, 60);
     }
 
     return (

@@ -74,7 +74,7 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
   React.useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
-    }, 1000)
+    }, 60)
   }, [isOpen]);
 
 
@@ -112,7 +112,7 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
     setNewChatOpen(false);
     setTimeout(() => {
       setNewChatOpen(true);
-    }, 100);
+    }, 60);
   }
 
   const onSendMypagePolicyButton = async(  ) => {

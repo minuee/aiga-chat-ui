@@ -25,6 +25,19 @@ const functions = {
     return outputArray;
   },
 
+  getKSTUnixTimestamp() {
+    // 현재 UTC 시간
+    const now = new Date();
+  
+    // KST는 UTC보다 9시간 빠르므로 9시간을 더해줌 (9 * 60 * 60 * 1000 ms)
+    const kstTime = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+  
+    // Unix timestamp (초 단위로 변환)
+    const unixTimestamp = Math.floor(kstTime.getTime() / 1000);
+  
+    return unixTimestamp;
+  },
+
   getDistance(lat1:any, lon1:any, lat2:any, lon2:any) {
     if ([lat1, lon1, lat2, lon2].some(coord => typeof coord !== 'number' || isNaN(coord))) {
       return Infinity; // 거리 비교에서 항상 뒤로 밀리게

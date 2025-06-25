@@ -33,6 +33,7 @@ export const ChatDisable = ({ isChatDisabled,userBasicInfo,setChatDisabled }: Ch
         bg='#D5E9FF'
         borderTopLeftRadius={"20px"}
         borderTopRightRadius={"20px"}
+        zIndex={10}
       >
         <Flex  padding='20px' width={"100%"}  height={'100%'} flexDirection={'column'} alignItems={'space-evenly'}>
           <Box display={'flex'} alignItems={'center'} flex={1}>
@@ -87,6 +88,7 @@ export const ChatDisable = ({ isChatDisabled,userBasicInfo,setChatDisabled }: Ch
       bg='#D5E9FF'
       borderTopLeftRadius={"20px"}
       borderTopRightRadius={"20px"}
+      zIndex={10}
     >
       <Flex  padding='20px' width={"100%"}  height={'100%'} flexDirection={'column'} alignItems={'space-evenly'}>
         <Box display={'flex'} alignItems={'center'} flex={1}>
@@ -134,6 +136,7 @@ export const ChatWarningInfo = () => {
       justifyContent={'center'}
       alignItems={'center'}
       bg='#ffffff'
+      zIndex={9}
     >
       <Box display='flex' alignItems='center' gap='5px' width={"90%"}>
         <Icon as={MdInfoOutline} width="20px" height="20px" color={infoIcon} />

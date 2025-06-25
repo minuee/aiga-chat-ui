@@ -49,7 +49,7 @@ function LoginModal(props: LoginModalProps) {
   React.useEffect(() => {
     setTimeout(() => {
       setLoading(false)
-    }, 2000);
+    }, 60);
   }, [isOpen]);
 
   const fn_close_modal_signup_agree = async() => {

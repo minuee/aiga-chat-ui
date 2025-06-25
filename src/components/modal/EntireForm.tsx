@@ -29,7 +29,7 @@ function EntireModal(props: EntireModalProps) {
   React.useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
-    }, 1000)
+    }, 60)
   }, [isOpen]);
 
   if ( isLoading ) {

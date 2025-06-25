@@ -87,7 +87,7 @@ function DoctorListModal(props: DoctorListModalProps) {
     setDoctors(originDoctorData)
     setTimeout(() => {
       setIsLoading(false);
-    }, 500);
+    }, 60);
   }, [isOpen]);
 
   React.useEffect(() => {
@@ -212,7 +212,7 @@ function DoctorListModal(props: DoctorListModalProps) {
 
     setTimeout(() => {
       setIsReLoading(false);
-    },500)
+    },60)
   }
 
 

@@ -33,7 +33,7 @@ function RequestModal(props: RequestModalProps) {
   React.useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
-    }, 1000)
+    }, 60)
   }, [isOpen]);
 
   if ( isLoading ) {

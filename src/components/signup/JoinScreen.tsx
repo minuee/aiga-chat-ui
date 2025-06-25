@@ -98,7 +98,7 @@ function JoinScreen(props: JoinScreenProps) {
         nick_name : ''
       })
       onClickJoin('');
-    }, 1000);
+    }, 60);
   }
 
   // SIDEBAR

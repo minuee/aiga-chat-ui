@@ -64,7 +64,7 @@ function ReviewModal(props: ReviewModalProps) {
       })
       setTimeout(() => {
         setIsLoading(false);
-      }, 500);
+      }, 60);
     }
   }, [isOpen]);
 
@@ -95,7 +95,7 @@ function ReviewModal(props: ReviewModalProps) {
       setTimeout(() => {
         onHandleRegistReview(did);
         setIsLoading(false);
-      }, 1000);
+      }, 60);
     }
   }
 

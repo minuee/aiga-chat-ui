@@ -113,7 +113,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
         flexDirection={'column'}
       > 
         <Box>
-          <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'170%'}>위 증상에 맞는 의사를 추천해 드립니다.</CustomText>
+          <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'170%'}>{`위 증상에 맞는 ${data?.answer?.disease} 의사를 추천해 드립니다.`}</CustomText>
         </Box>  
       </Flex>
       <Flex  alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"50px"} maxHeight={"250px"} overflowX={'auto'} ref={flexRef} >
