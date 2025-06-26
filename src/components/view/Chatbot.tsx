@@ -12,11 +12,9 @@ import { useEffect, useState,useRef,useLayoutEffect } from 'react';
 import Image from "next/image";
 import { MdOutlineArrowDownward, MdFitbit, MdPerson,MdOutlineClose,MdArrowBack } from 'react-icons/md';
 import DoctorDetail  from '@/components/modal/Doctor';
-import SelectBody  from '@/components/msgType/SelectBody';
-import SelectDoctor  from '@/components/msgType/SelectDoctor';
+import LoadingDots  from '@/components/icons/ProgressDot';
 import RecommandDoctor  from '@/components/msgType/RecommandDoctor';
 import SearchDoctor  from '@/components/msgType/SearchDoctor';
-import SelectName  from '@/components/msgType/SelectName';
 import ForceStop  from '@/components/msgType/ForceStop';
 import ChatMeMessage from '@/components/msgType/ChatMeMessage';
 import ChatWrongMessage from '@/components/msgType/ChatWrongMessage';
@@ -27,17 +25,12 @@ import { ChatDisable,ChatWarningInfo }  from '@/components/msgType/ChatOptionVie
 import MotionWelcome,{MotionWelcomeImage}  from '@/components/msgType/MotionWelcome';
 import Processing  from '@/components/msgType/Processing';
 import SkeletonDefaultText from "@/components/fields/LoadingBar";
-
-
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
-import SelectType  from '@/components/msgType/SelectType';
 import { useTranslations } from 'next-intl';
 import LoadingBar from "@/assets/icons/loading.gif";
-
 import mConstants from '@/utils/constants';
 
-import { ChatSystemMessageType } from "@/types/types";
 //새창열기 전역상태
 import ConfigInfoStore,{ GlobalStateStore } from '@/store/configStore';
 import NewChatStateStore,{ ChatSesseionIdStore,CallHistoryDataStore } from '@/store/newChatStore';
@@ -49,9 +42,7 @@ import {
  import UserStateStore from '@/store/userStore';
 import * as ChatService from "@/services/chat/index";
 import { SendButtonOff,SendButtonOn } from '@/components/icons/svgIcons';
-//import SendButtonOff from "@/assets/icons/send_btn_off.png";
-//import SendButtonOn from "@/assets/icons/send_btn_on.png";
-import LogoImage from "@/assets/images/logo.png";
+
 
 export default function ChatBot() {
   const t = useTranslations('Messages');

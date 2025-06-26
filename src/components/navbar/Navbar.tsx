@@ -67,8 +67,8 @@ export default function AdminNavbar(props: {
       top={0}
       width={{base:'100%',md: `${mConstants.desktopMinWidth}px`}}
       maxW={`${mConstants.desktopMinWidth}px` }
-      borderTopLeftRadius={ isDesktop ? '15px' : 0}
-      borderTopRightRadius={ isDesktop ? '15px' : 0}
+      //borderTopLeftRadius={ isDesktop ? '15px' : 0}
+      //borderTopRightRadius={ isDesktop ? '15px' : 0}
 
     >
       <Flex

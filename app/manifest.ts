@@ -1,12 +1,13 @@
 import type { MetadataRoute } from 'next'
  
 export default function manifest(): MetadataRoute.Manifest {
+  
   return {
     name: 'AIGA Chatbot',
-    short_name: 'AIGAPWA',
-    description: 'A Progressive Web App built with Next.js',
-    id:"/chat",
-    start_url: '/chat',
+    short_name: 'AIGA',
+    description: 'AIGA 의사 추천 ',
+    id:"/ko",
+    start_url: '/ko',
     display: 'standalone',
     background_color: '#ffffff',
     theme_color: '#000000',

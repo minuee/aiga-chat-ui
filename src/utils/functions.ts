@@ -58,7 +58,9 @@ const functions = {
   formatAvailabilityMessage(timestampMs: number, retryLimitSec : number): string {
     try{
       const now = new Date();
-      const target = new Date(timestampMs+retryLimitSec);
+      const baseTime = isNaN(timestampMs) || timestampMs <= 0 ? now.getTime() : timestampMs;
+
+      const target = new Date(baseTime + retryLimitSec * 1000);
       // 날짜 비교용 (연/월/일만 비교)
       const isSameDay = now.toDateString() === target.toDateString();
     

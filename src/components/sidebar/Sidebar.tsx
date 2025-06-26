@@ -202,15 +202,13 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
           <DrawerContent
             w="100%"
             height={{base:"60vh", md:"60vh"}}
-            maxW={`${mConstants.modalMaxWidth}px`}
-            //bg={sidebarBackgroundColor}
             borderTopLeftRadius={"10px"}
             borderTopRightRadius={"10px"}
             alignItems={'center'}
           > 
             <DrawerBody 
               w="100%" 
-              maxW={`${mConstants.modalMaxWidth-20}px`} 
+              maxW={`${mConstants.modalMaxWidth}px`} 
               height="100%" 
               backgroundColor={sidebarBackgroundColor}
               borderTopLeftRadius={"10px"}

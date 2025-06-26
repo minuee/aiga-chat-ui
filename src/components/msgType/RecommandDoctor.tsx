@@ -164,7 +164,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
           ))
         }
       </Flex>
-      <Flex pr={2} justifyContent={'flex-end'}>
+      <Box pr={2} justifyContent={'flex-end'} display={doctorList?.length == 0 ? 'none' : 'flex'}>
         <Box 
           display="flex" justifyContent={'center'} alignItems={'center'} bg={"#DFF5ED"} borderRadius={"4px"} gap={"4px"} height={"32px"} px="20px" cursor={'pointer'}
           onClick={() => onSendDoctorListButton()} 
@@ -173,7 +173,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
           {data?.answer?.disease} 전체보기 {">"}
           </Text>
         </Box>
-      </Flex>
+      </Box>
       {
         isOpenDocListModal && (
           <Modal
@@ -200,7 +200,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
                     <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                   </Box>
                   <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                    <Text color={'white'} noOfLines={1}>{data?.answer?.disease}</Text>
+                    <Text color={'white'} noOfLines={1}>{data?.answer?.disease ?? "의사소개"}</Text>
                   </Box>
                   <Box 
                     position={'absolute'}

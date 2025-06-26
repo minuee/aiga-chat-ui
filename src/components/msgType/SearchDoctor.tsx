@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import NextImage from 'next/legacy/image';
 import Image from 'next/image';
-import { Box,Flex,Stack,useColorModeValue,Text,Icon } from '@chakra-ui/react';
+import { Box,Flex,Stack,useColorModeValue,Text,Icon,Modal,ModalOverlay,ModalContent,ModalHeader,SimpleGrid,ModalBody } from '@chakra-ui/react';
 import mConstants from "@/utils/constants";
 import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
@@ -11,6 +11,10 @@ import { BiChevronRight } from "react-icons/bi";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import DoctorAvatar from "@/assets/images/doctor_default_white.png";
 import { IconChatAiga} from '@/components/icons/svgIcons';
+import { ModalDoctorListStore } from '@/store/modalStore';
+import { MdArrowBack,MdOutlineClose } from 'react-icons/md';
+import DoctorList from "@/components/modal/DoctorList";
+
 type SearchDoctorProps = {
     data : any;
     isHistory : boolean;
@@ -24,7 +28,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
   const textColor = useColorModeValue('navy.700', 'white')
   const flexRef = useRef<HTMLDivElement>(null);
   const [showGradient, setShowGradient] = useState(true);
-  const [doctorList, setDoctorList] = useState([]);
+  const [doctorList, setDoctorList] = useState<any>([]);
   const isDark = useColorModeValue(false, true);
   const bgSystemColor = useColorModeValue('#F4F6FA', 'navy.600');
   const textSystemColor = useColorModeValue('#212127', 'white');
@@ -32,6 +36,11 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
   const nameTextColor = useColorModeValue('#17191D','white');
   const partTextColor = useColorModeValue('#7F879B','white');
   const arrowColor = useColorModeValue("#000000",'white')
+  const sidebarBackgroundColor = useColorModeValue('white', 'navy.700');
+  const navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
+  const modalBtnRef = useRef<HTMLButtonElement>(null);
+  const { isOpenDocListModal } = ModalDoctorListStore(state => state);
+  const setOpenDoctorListModal = ModalDoctorListStore((state) => state.setOpenDoctorListModal);
 
   const handleScroll = () => {
     if (flexRef.current) {
@@ -63,13 +72,28 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
     }
   }, [data]);
 
+  const onSendDoctorListButton = async( ) => {
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_1}`);
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_1}`)   
+    setOpenDoctorListModal(true);
+  }
+
+  const fn_close_modal_doctor_list = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
+    setOpenDoctorListModal(false);
+    router.replace(`/${locale}/chat`);
+    setTimeout(() => {
+      mCookie.setCookie('currentPathname','') 
+    }, 200);
+  }
+
 
   return (
     <Flex w="100%" flexDirection={'column'} mt="10px" px="5px">
       <Box my="5px">
         <IconChatAiga width={'46px'} height={"12px"} />
       </Box>
-      <Flex 
+      {/* <Flex 
         padding="12px 20px" 
         border={`1px solid ${bgSystemColor}`} 
         bgColor={bgSystemColor} 
@@ -85,7 +109,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
         <Box>
           <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'170%'}>증상에 맞는 의사를 추천해 드립니다.</CustomText>
         </Box>  
-      </Flex>
+      </Flex> */}
       <Flex  
         alignItems={"center"} 
         justifyContent={'flex-start'} 
@@ -142,6 +166,71 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
           ))
         }
       </Flex>
+      <Box justifyContent={'flex-end'} display={doctorList?.length == 0 ? 'none' : 'flex'} mt="10px">
+        <Box 
+          display="flex" justifyContent={'center'} alignItems={'center'} bg={"#DFF5ED"} borderRadius={"4px"} gap={"4px"} height={"32px"} px="20px" cursor={'pointer'}
+          onClick={() => onSendDoctorListButton()} 
+        >
+          <Text fontSize={'15px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"}>
+          {doctorList[0]?.deptname} 전체보기 {">"}
+          </Text>
+        </Box>
+      </Box>
+
+      {
+        isOpenDocListModal && (
+          <Modal
+            onClose={() => fn_close_modal_doctor_list()}
+            finalFocusRef={modalBtnRef}
+            isOpen={isOpenDocListModal}
+            scrollBehavior={'inside'}
+            size={'full'}
+          >
+            <ModalOverlay />
+            <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
+              <ModalHeader bg={navbarBg} padding="basePadding">
+                <Flex flexDirection={'row'} position={'relative'}>
+                  <Box 
+                    position={'absolute'}
+                    left={0}
+                    top={0}
+                    width="50px"
+                    height={'100%'}
+                    display={{base :'flex', md:'none'}} 
+                    alignItems={'center'}  
+                    onClick={() => fn_close_modal_doctor_list()} cursor={'pointer'}
+                  >
+                    <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
+                  </Box>
+                  <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
+                    <Text color={'white'} noOfLines={1}>{doctorList[0]?.deptname ?? "의사 소개"}</Text>
+                  </Box>
+                  <Box 
+                    position={'absolute'}
+                    right={0}
+                    top={0}
+                    width="50px"
+                    height={'100%'}
+                    display={{base :'none', md:'flex'}} 
+                    justifyContent={'flex-end'} 
+                    alignItems={'center'}  
+                    onClick={() => fn_close_modal_doctor_list()}  cursor={'pointer'}
+                    >
+                    <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
+                  </Box>
+                </Flex>
+              </ModalHeader>
+              <ModalBody overflowY="auto" maxH="100vh" padding="basePadding" margin="0" >
+                <DoctorList
+                  isOpen={isOpenDocListModal}
+                  setClose={() => fn_close_modal_doctor_list()}
+                  originDoctorData={doctorList}
+                />
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        )
+      }
     </Flex>
   )
 };
