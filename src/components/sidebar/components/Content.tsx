@@ -333,7 +333,7 @@ function SidebarContent(props: SidebarContent) {
       <Flex position={'fixed'} left={0} bottom={0} width='100%' maxWidth={`${mConstants.modalMaxWidth}px`} height={'80px'} alignItems="center"  justifyContent={'space-between'} bg={setupBgColor}  px="20px" zIndex={10}>
         <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
           {
-            !functions.isEmpty(userBaseInfo?.profileImage) 
+            functions.isEmpty(userBaseInfo?.profileImage) 
             ?
             <DefaultProfile boxSize={'34px'} />
             :
