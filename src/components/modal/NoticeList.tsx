@@ -14,14 +14,6 @@ import { IconNotice } from '@/components/icons/svgIcons';
 import NoticeDetail from "@/components/modal/NoticeDetail";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
-const items = [
-  { idx: 1, title: "First Item", content: "Some value 1..." , date:'2023-01-01'},
-  { idx: 2, title: "Second Item", content: "Some value 2..." , date:'2023-01-01'},
-  { idx: 3, title: "Third Item", content: "Some value 3..." , date:'2023-01-01'},
-  { idx: 4, title: "Third Item", content: "Some value 3..." , date:'2023-01-01'},
-  { idx: 5, title: "Third Item", content: "Some value 3..." , date:'2023-01-01'},
-]
-
 export interface NoticeListModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
@@ -60,8 +52,7 @@ function NoticeListModal(props: NoticeListModalProps) {
     try{
       const res:any = await CommonService.getNoticeList();
       if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
-        //setNoticeList(res?.data?.notice)
-        setNoticeList(items)
+        setNoticeList(res?.data?.notice)
         setIsLoading(false)
       }      
       setIsLoading(false)
@@ -110,7 +101,7 @@ function NoticeListModal(props: NoticeListModalProps) {
               :
               <Flex flexDirection={'column'}  minHeight={'calc( 100vh - 300px )'} width={'100%'} mt={5}>
               {
-                items.map((element, index) => {
+                noticeList.map((element:any, index:number) => {
                   return (
                     <Flex 
                       key={index} 
