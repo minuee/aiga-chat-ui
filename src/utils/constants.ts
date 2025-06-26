@@ -224,6 +224,20 @@ const sample_msg_4 = {
   "in24_used_token": 1080
 }
 
+const sample_msg_5 = {
+    "chat_id": 35,
+    "user_id": "uid_a6868590-16a4-48c7-970b-04a862f94238",
+    "session_id": "sid_4107c664-3117-45c6-8cd5-8c273dc5d3cb",
+    "chat_type": "general",
+    "question": "추가 추천",
+    "question_time": "2025-06-25T23:32:23.131Z",
+    "answer": "\"유방암 치료에 대한 명의를 추가로 추천해드리겠습니다. 다음은 유방암 분야에서 뛰어난 의사들입니다:\\n\\n1. **정일용** - 서울아산병원 유방외과\\n   - 전문 분야: 유방질환, 유방암, 유방암수술\\n   - 주소: 서울특별시 송파구 올림픽로43길 88, 서울아산병원 (풍납동)\\n   - 전화번호: 1688-7575\\n   - [프로필 보기](https://www.amc.seoul.kr/asan/staff/base/staffBaseInfoDetail.do?drEmpId=eEh4bDd3dlZ1ZWNwVGowdC9rc2RTUT09&searchHpCd=D342&pageIndex=1&tabIndex1=3&tabIndex2=)\\n\\n2. **임석아** - 서울대병원 혈액종양내과\\n   - 전문 분야: 유방암, 위장관기질종양(GIST), 임상시험, 맞춤치료\\n   - 주소: 서울특별시 종로구 대학로 101 (연건동)\\n   - 전화번호: 1588-5700\\n   - [프로필 보기](https://www.snuh.org//blog/00867/career.do)\\n\\n3. **한원식** - 서울대병원 유방내분비외과\\n   - 전문 분야: 암성형술, 유방암\\n   - 주소: 서울특별시 종로구 대학로 101 (연건동)\\n   - 전화번호: 1588-5700\\n   - [프로필 보기](https://www.snuh.org//blog/00941/career.do)\\n\\n이 외에도 추가적인 추천이 필요하시면 말씀해 주세요.\"",
+    "answer_time": "2025-06-25T23:32:23.131Z",
+    "used_token": 3704,
+    "createAt": "2025-06-25T23:32:23.131Z",
+    "updateAt": null
+}
+
 const contrants  = {
   defaultColor : '#6c62d1',
   projectTitle : 'AIGA WEB',
@@ -269,7 +283,8 @@ const contrants  = {
   sample_msg_1,
   sample_msg_2,
   sample_msg_3,
-  sample_msg_4
+  sample_msg_4,
+  sample_msg_5
 }
 
 export default contrants;

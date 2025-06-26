@@ -106,7 +106,7 @@ export default function ChatBot() {
   const borderColor = useColorModeValue('gray.200', 'gray');
   const inputColor = useColorModeValue('navy.700', 'white');
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
-  const themeColor = useColorModeValue('transparent', 'navy.800');
+  const themeColor = useColorModeValue('#ffffff', 'navy.800');
   
   const placeholderColor = useColorModeValue({ color: 'gray.500' },{ color: 'gray' });
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
@@ -154,6 +154,7 @@ export default function ChatBot() {
         const sampleMsg2 = mConstants.sample_msg_2;
         const sampleMsg3 = mConstants.sample_msg_3;
         const sampleMsg4 = mConstants.sample_msg_4;
+        const sampleMsg5 = mConstants.sample_msg_5;
         setOutputCode((prevCode: any[]) => {
           const newArray = [...prevCode];
           const lastIndex = msgLen;
@@ -188,6 +189,14 @@ export default function ChatBot() {
             answer : sampleMsg4?.answer,
             chat_type: sampleMsg4?.chat_type,
             used_token : sampleMsg4?.used_token
+          };
+          newArray[lastIndex+4] = {
+            ismode : 'server',
+            id: sampleMsg5?.chat_id,
+            user_question : sampleMsg5?.question,
+            answer : sampleMsg5?.answer,
+            chat_type: sampleMsg5?.chat_type,
+            used_token : sampleMsg5?.used_token
           };
           return newArray;
         }) */
@@ -320,6 +329,33 @@ export default function ChatBot() {
     }, 500); // 0.5초 후에 강제 시도
   
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const check = setInterval(() => {
+      const el = scrollRef.current;
+      const target = scrollBottomRef.current;
+      
+      if (el && target) {
+        console.log('✅ 초기화 성공:', el, target);
+  
+        const observer = new IntersectionObserver(
+          ([entry]) => {
+            console.log('📍 감지됨:', entry.isIntersecting);
+            setShowScroll(!entry.isIntersecting);
+          },
+          {
+            root: el,
+            threshold: 0.1,
+          }
+        );
+  
+        observer.observe(target);
+        clearInterval(check);
+      }
+    }, 100);
+  
+    return () => clearInterval(check);
   }, []);
   
 
@@ -888,6 +924,7 @@ export default function ChatBot() {
           minH="calc(100vh - 106px)" 
           overflowY='auto'
           ref={scrollRef}
+          position="relative"
         >
           <Box display={outputCode?.length == 0 ? 'flex' : 'none'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} >
             <MotionWelcomeImage
@@ -1013,18 +1050,15 @@ export default function ChatBot() {
               }
             })
           }
-          { isReceiving && ( <Box><Processing  msg="증상 분석중" /></Box> ) }
-          <Box ref={scrollBottomRef} h="1px" pb={"60px"} />
+          { isReceiving && ( <Box><Processing  msg="분석중" /></Box> ) }
+          <Box ref={scrollBottomRef} h="1px" pb={"60px"} visibility="hidden" />
         </Flex>
         <Flex 
-          position="fixed" bottom="0" left="0" w="100%" px="20px" py="10px" bg={themeColor} zIndex="100" display={'flex'} justifyContent='center'
+          position="fixed" bottom="0" left="0" w="100%"  bg={themeColor} zIndex="100" display={'flex'} justifyContent='center'
           borderBottomLeftRadius={ isDesktop ? '15px' : 0}
           borderBottomRightRadius={ isDesktop ? '15px' : 0} 
         >
-          <Box 
-            w={{ base: '100%', md: `${mConstants.desktopMinWidth-20}px` }} maxWidth={`${mConstants.desktopMinWidth}px` }
-            position={'relative'} display={'flex'} flexDirection={'row'} zIndex="100"
-          >
+          <Box w={'100%'} position={'relative'} display={'flex'} flexDirection={'row'} zIndex="100" px="10px" py="10px">
             {
               ( !isChatDisabled?.isState && !isChatDisabled?.isAlertMsg ) && (
                 <ChatDisable
@@ -1034,12 +1068,11 @@ export default function ChatBot() {
                 />
               )
             }
-      
             { ( isFocus && isChatDisabled.isState ) && ( <ChatWarningInfo /> )}
             <Flex 
               position={'absolute'}
               display={isShowScroll ? 'flex' : 'none'} 
-              top={isFocus ? {base : '-70px', md : '-60px'} : {base : '-50px', md : '-40px'}}
+              top={isFocus ? {base : '-80px', md : '-70px'} : {base : '-55px', md : '-45px'}}
               left={'0'}
               w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
               height={'30px'}
@@ -1057,7 +1090,7 @@ export default function ChatBot() {
               </Box>
             </Flex>
             <Textarea
-              minH="50px"
+              minH="48px"
               //minH="unset"
               resize="none"
               as={ResizeTextarea}
@@ -1065,15 +1098,15 @@ export default function ChatBot() {
               maxH="120px"
               border="1px solid"
               borderColor={borderColor}
-              bg={isFocus ? 'transparent' :'#f4f6fa'}
+              bg={isFocus ? '#ffffff' :'#f4f6fa'}
               readOnly={isReceiving}
               maxLength={mConstants.inputMaxMessage}
               borderRadius="25px"
-              lineHeight={"140%"}
+              lineHeight={inputCode?.length > 10 ? "150%" : "180%"}
               //me="10px"
               fontSize="md"
               fontWeight="500"
-              _focus={{ borderColor: 'none' }}
+              _focus={{ borderColor: '#2B8FFF' }}
               color={inputColor}
               _placeholder={placeholderColor}
               value={inputCode}
@@ -1084,7 +1117,7 @@ export default function ChatBot() {
               id={"textarea_content"}
               disabled={!isChatDisabled?.isState}
             />
-            <Box display={'flex'} position={'absolute'} bottom={'-2px'} right={'10px'} w={'55px'} height={'55px'} justifyContent={'flex-end'} alignItems={'center'}>
+            <Box display={'flex'} position={'absolute'} bottom={'6px'} right={'20px'} w={'55px'} height={'55px'} justifyContent={'flex-end'} alignItems={'center'}>
               {
                 isReceiving
                 ?
@@ -1111,6 +1144,7 @@ export default function ChatBot() {
               }
             </Box>
           </Box>
+          
         </Flex>
         {
           isOpenDoctorModal && (

@@ -85,7 +85,7 @@ function DoctorModal(props: DoctorModalProps) {
   const { isOpenLoginModal } = ModalSignupStoreStore(state => state);
   const setIsOpenSignupModal = ModalSignupStoreStore((state) => state.setIsOpenSignupModal);
   const reviewBtnRef = React.useRef<HTMLButtonElement>(null);
-  const sidebarBackgroundColor = useColorModeValue('white', 'gray.700');
+  const sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
   const contentBgColor = useColorModeValue('#FAFBFD', 'navy.700');
   const skeletonColor = useColorModeValue('white', 'navy.700');
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
@@ -137,6 +137,21 @@ function DoctorModal(props: DoctorModalProps) {
     setTimeout(() => {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2}`)  
     }, 200);
+  }
+
+  const openModifyReview = async(data:any) => {
+    setReviewData(data) 
+    if ( !functions.isEmpty(data)) {
+      if ( isFromDoctorDepth2 ) {//true이면 list > detail
+        history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_3_2}`);
+        mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_3_2}`)   
+        setIsOpenReview(true);
+      }else{ //fasle detail
+        history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_3}`);
+        mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_3}`)   
+        setIsOpenReview(true);
+      }
+    }
   }
 
   const onSendDoctorReviewButton = async( gubun = "") => {
@@ -258,7 +273,7 @@ function DoctorModal(props: DoctorModalProps) {
             />
              <CustomTextBold700 fontSize={'15px'} color="#0AA464" ml="2">info</CustomTextBold700>
           </Box>
-          <Divider orientation='horizontal' my={5} width="100%" />
+          <Divider orientation='horizontal' my={5} width="100%" color={"#E9EDF3"} />
           <ListItem
             title={`경력(${careerList?.length})`}
             content={careerList}
@@ -266,7 +281,7 @@ function DoctorModal(props: DoctorModalProps) {
             marginTop={0}
             isType="career"
           />
-          <Divider orientation='horizontal' my={2} width="100%" />
+          <Divider orientation='horizontal' my={5} width="100%" color={"#E9EDF3"} />
           <ListItem
             title={`학력(${educationList?.length})`}
             content={educationList}
@@ -274,7 +289,7 @@ function DoctorModal(props: DoctorModalProps) {
             marginTop={2}
             isType="education"
           />
-          <Divider orientation='horizontal' my={2} width="100%" />
+          <Divider orientation='horizontal' my={5} width="100%" color={"#E9EDF3"} />
           <ListItem
             title={`논문(${paperList?.length})`}
             content={paperList}
@@ -282,7 +297,7 @@ function DoctorModal(props: DoctorModalProps) {
             marginTop={2}
             isType="paper"
           />
-          <Divider orientation='horizontal' my={4} width="100%" />
+          <Divider orientation='horizontal' my={5} width="100%" color={"#E9EDF3"} />
           <Flex display={'flex'} justifyContent={'flex-end'}  width="100%">
             <Box 
               display={'flex'} alignItems={'center'} justifyContent={'center'}  bg={btnColor} width='150px' height={'30px'} borderRadius={"4px"}
@@ -296,6 +311,7 @@ function DoctorModal(props: DoctorModalProps) {
         <DoctorReviews 
           doctorBasicData={doctorBasicData}
           doctorID={selectedDoctorId}
+          openParentReviewData={(data:any) => openModifyReview(data)}
         />
         <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}  width={'100%'} mt={5}>
           <Button 
@@ -331,7 +347,9 @@ function DoctorModal(props: DoctorModalProps) {
                       <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                     </Box>
                     <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                      <CustomText color={'white'} noOfLines={1}>리뷰 작성</CustomText>
+                      <CustomText color={'white'} noOfLines={1}>
+                        {!functions.isEmpty(reviewData?.review_id) ? '리뷰 수정' : '리뷰 작성'}
+                      </CustomText>
                     </Box>
                     <Box 
                       position={'absolute'} right={0} top={0} width="50px" height={'100%'} display={{base :'none', md:'flex'}} justifyContent={'flex-end'} alignItems={'center'}  

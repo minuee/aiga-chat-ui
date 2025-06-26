@@ -97,6 +97,8 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
     }, 200);
   }
 
+  
+
   const fn_close_modal_user_login = async() => {
 
     const currentPathname = await mCookie.getCookie('currentPathname');
@@ -145,7 +147,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
             display={'flex'} minW={'52px'} height={'28px'} justifyContent={'center'} alignItems={'center'} bg={navbarIcon} borderRadius={'5px'}
             cursor='pointer' onClick={()=> onSendsignupButton()}
           >  
-          <CustomText fontSize={'13px'} color={basicColor}>로그인</CustomText>
+          <CustomText fontSize={'17px'} color={basicColor}>로그인</CustomText>
         </Box>
         }
       </Flex>
@@ -202,13 +204,15 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
           <DrawerContent
             w="100%"
             height={{base:"60vh", md:"60vh"}}
+            maxW={`${mConstants.modalMaxWidth}px`}
+            //bg={sidebarBackgroundColor}
             borderTopLeftRadius={"10px"}
             borderTopRightRadius={"10px"}
             alignItems={'center'}
           > 
             <DrawerBody 
               w="100%" 
-              maxW={`${mConstants.modalMaxWidth}px`} 
+              maxW={`${mConstants.modalMaxWidth-20}px`} 
               height="100%" 
               backgroundColor={sidebarBackgroundColor}
               borderTopLeftRadius={"10px"}

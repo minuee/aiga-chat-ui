@@ -13,7 +13,7 @@ import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/te
 import { MdKeyboardDoubleArrowDown,MdKeyboardDoubleArrowUp } from 'react-icons/md';
 import { iconAlertWarning } from "@/components/icons/IconImage"
 import functions from '@/utils/functions';
-
+import { BiTrash,BiEdit,BiDotsHorizontalRounded } from "react-icons/bi";
 import UserStateStore from '@/store/userStore';
 
 type ReivewItemProps = {
@@ -31,11 +31,15 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
     const { ...userBaseInfo } = UserStateStore(state => state);
 
     const bgColor = useColorModeValue('white', 'navy.700');
+    const borderColor = useColorModeValue('#7F879B', 'navy.900');
     const nameTextColor = useColorModeValue("#000000", 'white');
-    const iconColor = useColorModeValue('gray.500','white');
+    const iconColor = useColorModeValue('#AFB5C3','white')
+    const iconRedColor = useColorModeValue('#FA6464','white');
     const dateColor = useColorModeValue('#7F879B','white')
     const voteTextColor = useColorModeValue('#5C5E69','white');
-    const iconBgColor = useColorModeValue('#E9EDF3','navy.900')
+    const iconBgColor = useColorModeValue('#E9EDF3','navy.900');
+    const moreColor = useColorModeValue('#AFB5C3', 'white');
+
     const onHandleAlertConfirm = () => {
         onHandleDoctorRequestRegist(data)
     }
@@ -62,20 +66,16 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                     <Popover>
                         <PopoverTrigger>
                             <Flex justifyContent={'flex-end'}width={'100%'}>
-                                <Icon as={MdMoreHoriz} width="18px" height="25px" color={iconColor} />
+                            <Icon as={BiDotsHorizontalRounded} width="24px" height="24px" color={moreColor} />
                             </Flex>
                         </PopoverTrigger>
-                        <PopoverContent width={'150px'} bg={bgColor}>
-                        <PopoverArrow />
-                        <PopoverBody>
-                            <Flex flexDirection={'column'} alignItems={'flex-start'} gap={2}>
-                                <Button leftIcon={<Icon as={MdOutlineEdit} />} size='sm' onClick={() => onHandleDetail(1)} id="button_change_name" bg="transparent">
+                        <PopoverContent width={'150px'} bg={bgColor} borderColor={borderColor}>
+                        <PopoverBody borderRadius={'8px'} width={"150px"}>
+                            <Flex flexDirection={'column'} alignItems={'flex-start'}>
+                                <Button leftIcon={<Icon as={BiEdit} width="16px" height="16px" color={iconColor} />} size='sm' onClick={() => onHandleDetail(data)} id="button_change_name"  bg="transparent">
                                     수정하기
                                 </Button>
-                                {/* <Button leftIcon={<Icon as={MdOutlineShare} />} size='sm' onClick={() => setIsOpenShare(true)} id="button_share">
-                                    공유하기
-                                </Button> */}
-                                <Button leftIcon={<Icon as={MdOutlineDelete} />} size='sm'  onClick={() => setOpenAlert(true)} color={'red'} id="button_remove" bg="transparent">  
+                                <Button leftIcon={<Icon as={BiTrash} width="16px" height="16px" color={iconRedColor}  />} size='sm' onClick={() => setOpenAlert(true)} color={iconRedColor} id="button_remove"  bg="transparent">  
                                     삭제하기
                                 </Button>
                             </Flex>
@@ -88,55 +88,72 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                 <CustomText fontSize={'13px'} color={dateColor}>{format(data?.createAt, 'yyyy-MM-dd')}</CustomText>
                 <SimpleGrid spacing={3} templateColumns={{base : 'repeat(1, 1fr)' , sm : 'repeat(2, 1fr)'}} mt={3}>
                 <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
-                    <Flex flexDirection={'row'} justifyContent={'space-around'} alignItems={'center'} width={'100%'}>
-                    <Box flex={1} display={'flex'}>
-                        <CustomText fontSize={'12px'} color={voteTextColor} lineHeight={"150%"}>친절 • 배려</CustomText>
-                    </Box>
-                    <Box flex={1} display={'flex'} justifyContent={'flex-end'} alignItems={'center'}>
-                        <Icon color='gold' as={MdOutlineStarPurple500}  />
-                        <CustomText fontSize={'12px'} color='#55A5FF' lineHeight={"150%"}>{functions.floatFormat(parseFloat(data?.kindness_score))}</CustomText>
-                    </Box>
+                    <Flex flexDirection={'row'} justifyContent={'space-around'} alignItems={'center'} width={'100%'}  mb={'5px'}>
+                        <Box flex={2} display={'flex'} >
+                            <CustomText fontSize={'12px'} color={voteTextColor} lineHeight={"150%"}>친절 • 배려</CustomText>
+                        </Box>
+                        <Box flex={1} display={'flex'} justifyContent={'flex-end'} alignItems={'center'}>
+                            <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'17px'}>
+                                <Icon color='#FFCE05' as={MdOutlineStarPurple500}  />
+                            </Box>
+                            <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'17px'} pt={0.5}>
+                                <CustomText fontSize={'12px'} color='#55A5FF' lineHeight={"150%"} pl="5px">{functions.floatFormat(parseFloat(data?.kindness_score))}</CustomText>
+                            </Box>
+                        </Box>
                     </Flex>
                     <ProgressBar colorScheme='green' height='8px' width={'100%'} value={parseFloat(data?.kindness_score)*20} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
-                    <Flex flexDirection={'row'} justifyContent={'space-around'} alignItems={'center'} width={'100%'}>
-                    <Box flex={1} display={'flex'}>
-                        <CustomText fontSize={'12px'} color={voteTextColor} lineHeight={"150%"}>치료 만족</CustomText>
-                    </Box>
-                    <Box flex={1} display={'flex'} justifyContent={'flex-end'} alignItems={'center'}>
-                        <Icon color='gold' as={MdOutlineStarPurple500}  />
-                        <CustomText fontSize={'12px'} color='#55A5FF' lineHeight={"150%"}>{functions.floatFormat(parseFloat(data?.satisfaction_score))}</CustomText>
-                    </Box>
+                    <Flex flexDirection={'row'} justifyContent={'space-around'} alignItems={'center'} width={'100%'}  mb={'5px'}>
+                        <Box flex={2} display={'flex'}>
+                            <CustomText fontSize={'12px'} color={voteTextColor} lineHeight={"150%"}>치료 만족</CustomText>
+                        </Box>
+                        
+                        <Box flex={1} display={'flex'} justifyContent={'flex-end'} alignItems={'center'}>
+                            <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'17px'}>
+                                <Icon color='#FFCE05' as={MdOutlineStarPurple500}  />
+                            </Box>
+                            <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'17px'} pt={0.5}>
+                                <CustomText fontSize={'12px'} color='#55A5FF' lineHeight={"150%"} pl="5px">{functions.floatFormat(parseFloat(data?.satisfaction_score))}</CustomText>
+                            </Box>
+                        </Box>
                     </Flex>
                     <ProgressBar colorScheme='green' height='8px' width={'100%'} value={parseFloat(data?.satisfaction_score)*20} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
-                    <Flex flexDirection={'row'} justifyContent={'space-around'} alignItems={'center'} width={'100%'}>
-                    <Box flex={1} display={'flex'}>
-                        <CustomText fontSize={'12px'} color={voteTextColor} lineHeight={"150%"}>쉬운 설명</CustomText>
-                    </Box>
-                    <Box flex={1} display={'flex'} justifyContent={'flex-end'} alignItems={'center'}>
-                        <Icon color='gold' as={MdOutlineStarPurple500}  />
-                        <CustomText fontSize={'12px'} color='#55A5FF' lineHeight={"150%"}>{functions.floatFormat(parseFloat(data?.explaination_score))}</CustomText>
-                    </Box>
+                    <Flex flexDirection={'row'} justifyContent={'space-around'} alignItems={'center'} width={'100%'} mb={'5px'}>
+                        <Box flex={21} display={'flex'}>
+                            <CustomText fontSize={'12px'} color={voteTextColor} lineHeight={"150%"}>쉬운 설명</CustomText>
+                        </Box>
+                        <Box flex={1} display={'flex'} justifyContent={'flex-end'} alignItems={'center'}>
+                            <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'17px'}>
+                                <Icon color='#FFCE05' as={MdOutlineStarPurple500}  />
+                            </Box>
+                            <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'17px'} pt={0.5}>
+                                <CustomText fontSize={'12px'} color='#55A5FF' lineHeight={"150%"} pl="5px">{functions.floatFormat(parseFloat(data?.explaination_score))}</CustomText>
+                            </Box>
+                        </Box>
                     </Flex>
                     <ProgressBar colorScheme='green' height='8px' width={'100%'} value={parseFloat(data?.explaination_score)*20} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
-                <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
-                    <Flex flexDirection={'row'} justifyContent={'space-around'} alignItems={'center'} width={'100%'}>
-                    <Box flex={1} display={'flex'}>
-                        <CustomText fontSize={'12px'} color={voteTextColor} lineHeight={"150%"}>추천 의향</CustomText>
-                    </Box>
-                    <Box flex={1} display={'flex'} justifyContent={'flex-end'} alignItems={'center'}>
-                        <Icon color='gold' as={MdOutlineStarPurple500}  />
-                        <CustomText fontSize={'12px'} color='#55A5FF' lineHeight={"150%"}>{functions.floatFormat(parseFloat(data?.recommand_score))}</CustomText>
-                    </Box>
+                <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'} >
+                    <Flex flexDirection={'row'} justifyContent={'space-around'} alignItems={'center'} width={'100%'} mb={'5px'}>
+                        <Box flex={1} display={'flex'}>
+                            <CustomText fontSize={'12px'} color={voteTextColor} lineHeight={"150%"}>추천 의향</CustomText>
+                        </Box>
+                        <Box flex={1} display={'flex'} justifyContent={'flex-end'} alignItems={'center'}>
+                            <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'17px'}>
+                                <Icon color='#FFCE05' as={MdOutlineStarPurple500}  />
+                            </Box>
+                            <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'17px'} pt={0.5}>
+                                <CustomText fontSize={'12px'} color='#55A5FF' lineHeight={"150%"} pl="5px">{functions.floatFormat(parseFloat(data?.recommand_score))}</CustomText>
+                            </Box>
+                        </Box>
                     </Flex>
                     <ProgressBar colorScheme='green' height='8px' width={'100%'} value={parseFloat(data?.recommand_score)*20} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 </SimpleGrid>
-                <Box display={'flex'} flexDirection={'column'} py="15px">
+                <Box display={'flex'} flexDirection={'column'} pt="30px">
                     <Textarea 
                         ref={textareaRef}
                         readOnly 

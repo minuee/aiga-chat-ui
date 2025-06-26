@@ -66,9 +66,10 @@ const SliderScreen = ({ data, setInputs }:SliderProps) => {
             textAlign='center'
             bg='blue.500'
             color='white'
-            mt='3'
-            ml='-2'
-            w='6'
+            mt='5'
+            ml='-1'
+            w='20px'
+            borderRadius={'50%'}
             fontSize={'13px'}
             display={showTooltip ? 'block' : 'none'}
           >

@@ -22,6 +22,7 @@ import { ModalDoctorReviewStore,ModalDoctorRequestStore,DoctorFromListStore } fr
 export interface DoctorModalProps extends PropsWithChildren {
   doctorID : any;
   doctorBasicData : any;
+  openParentReviewData : (data:any) => void;
 }
 
 function DoctorReview( props: DoctorModalProps ) {
@@ -55,7 +56,7 @@ function DoctorReview( props: DoctorModalProps ) {
   const bgColor = useColorModeValue("#FAFBFD",'navy.700');
   const iconColor = useColorModeValue('#7F879B','white');
   const tooltipColor = useColorModeValue('#212127','white');
-  const tooltipCTextolor = useColorModeValue('#0AA464','navy.800');
+  const tooltipCTextolor = useColorModeValue('#FFFFFF','navy.800');
   const voteTextColor = useColorModeValue('#5C5E69','white');
   const voteTextColor2 = useColorModeValue('#1D73DC','white');
   const votePointColor = useColorModeValue('#212127','white')
@@ -217,18 +218,24 @@ function DoctorReview( props: DoctorModalProps ) {
   }
 
 
-  const onSendDoctorReviewButton = async( gubun = "") => {
-    if ( !functions.isEmpty(gubun)) setReviewData({doctor_id : gubun})
-    if ( isFromDoctorDepth2 ) {//true이면 list > detail
-      history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_3_2}`);
-      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_3_2}`)   
-      setIsOpenReview(true);
-    }else{ //fasle detail
-      history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_3}`);
-      mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_3}`)   
-      setIsOpenReview(true);
-    }
-    
+  const onSendDoctorReviewButton = async( data:any) => {
+    console.log("gubun",data);
+    props.openParentReviewData(data)
+    /* try{
+      props.openParentReviewData(data)
+    }catch{
+      if ( !functions.isEmpty(data)) setReviewData(data)
+      if ( isFromDoctorDepth2 ) {//true이면 list > detail
+        history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_3_2}`);
+        mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_3_2}`)   
+        setIsOpenReview(true);
+      }else{ //fasle detail
+        history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_3}`);
+        mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_3}`)   
+        setIsOpenReview(true);
+      }
+    } */
+   
   }
 
   if ( isLoading ) {

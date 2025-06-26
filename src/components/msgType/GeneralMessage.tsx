@@ -19,7 +19,7 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory }: 
   const isOutputSame = previousOutputRef.current === output && previousOutputRef.current !== null;
   
   return (
-   <Flex w="100%" flexDirection={'column'} mt="10px">
+   <Flex w="100%" flexDirection={'column'} mt="10px" overflow={'hidden'}>
       <Box my="5px">
         <IconChatAiga width={'46px'} height={"12px"} />
       </Box>
@@ -38,11 +38,11 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory }: 
         {
           isOutputSame
           ?
-          <CustomText fontSize={'17px'} style={{ whiteSpace: 'pre-line' }} >{output.replaceAll(/<br\s*\/?>/gi, '\n')}</CustomText>
+          <CustomText fontSize={'17px'} style={{ whiteSpace: 'pre-line' }} >{output.replaceAll(/<br\s*\/?>/gi, '\n').replaceAll(/\\n/g, '\n')}</CustomText>
           :
           isHistory
           ?
-          <CustomText fontSize={'17px'} style={{ whiteSpace: 'pre-line' }} >{output.replaceAll(/<br\s*\/?>/gi, '\n')}</CustomText>
+          <CustomText fontSize={'17px'} style={{ whiteSpace: 'pre-line' }} >{output.replaceAll(/<br\s*\/?>/gi, '\n').replaceAll(/\\n/g, '\n')}</CustomText>
           :
           <ReactMarkdown
             components={{
@@ -54,7 +54,7 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory }: 
               )
             }}
           >
-            {output || ''}
+            {output.replaceAll(/\\n/g, '\n') || ''}
           </ReactMarkdown>
         }
       </Flex>

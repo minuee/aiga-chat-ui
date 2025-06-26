@@ -4,7 +4,8 @@ import { Box,Button,Flex,Icon,Menu,MenuButton,Stack,Text,useColorModeValue,useDi
 import Image from "next/image";
 import { HSeparator } from '@/components/separator/Separator';
 //   Custom components
-import defaultProfile from '@/assets/images/avatar0.png';
+//import defaultProfile from '@/assets/images/avatar0.png';
+import { DefaultProfile } from '@/components/icons/svgIcons';
 import { NextAvatar } from '@/components/image/Avatar';
 import NextImage from 'next/legacy/image';
 import Alert from '@/components/alert/Alert';
@@ -332,9 +333,9 @@ function SidebarContent(props: SidebarContent) {
       <Flex position={'fixed'} left={0} bottom={0} width='100%' maxWidth={`${mConstants.modalMaxWidth}px`} height={'80px'} alignItems="center"  justifyContent={'space-between'} bg={setupBgColor}  px="20px" zIndex={10}>
         <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
           {
-            functions.isEmpty(userBaseInfo?.profileImage) 
+            !functions.isEmpty(userBaseInfo?.profileImage) 
             ?
-            <NextAvatar h="34px" w="34px" src={defaultProfile} me="10px" />
+            <DefaultProfile boxSize={'34px'} />
             :
             <NextImage  src={userBaseInfo?.profileImage} alt="프로필이미지" style={{ borderRadius: '50%', objectFit: 'cover' }}  width={34} height={34}/>
           }

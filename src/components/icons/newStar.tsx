@@ -12,11 +12,11 @@ const FloatStarRating = ({ rating }: FloatStarRatingProps) => {
 
   for (let i = 0; i < 5; i++) {
     if (i < fullStars) {
-      stars.push(<FaStar key={i} color="gold" />);
+      stars.push(<FaStar key={i} color="#FFCE05" />);
     } else if (i === fullStars && hasHalfStar) {
-      stars.push(<FaStarHalfAlt key={i} color="gold" />);
+      stars.push(<FaStarHalfAlt key={i} color="#FFCE05" />);
     } else {
-      stars.push(<FaRegStar key={i} color="gold" />);
+      stars.push(<FaStar key={i} color={"#DFE3EA"} />);
     }
   }
 

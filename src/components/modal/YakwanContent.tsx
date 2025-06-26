@@ -1,13 +1,13 @@
 'use client';
 import React from 'react';
 import { Box,Text,Flex} from '@chakra-ui/react';
-
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 function YakwanModal() {
 
   // SIDEBAR
   return (
     <Flex flexDirection={'column'}  width="100%" height='100%' overflowY={'auto'}>
-      <Box  as="pre" wordBreak="break-all" whiteSpace="pre-wrap">
+      <Box  as="pre" wordBreak="break-all" whiteSpace="pre-wrap"><CustomTextBold400 fontSize={"17px"}>
       {`      
 “AIGA”서비스 이용약관
 제1조 (목적)
@@ -190,7 +190,7 @@ function YakwanModal() {
 시행일자: OOOO년 O월 O일
 
 
-`}
+`}</CustomTextBold400>
       </Box>
     </Flex>
   );

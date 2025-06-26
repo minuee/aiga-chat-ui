@@ -1,7 +1,7 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,useToast,Textarea, useColorModeValue } from '@chakra-ui/react';
+import { Box,Flex,Button,Icon,SkeletonCircle,SkeletonText,useToast,Textarea, useColorModeValue } from '@chakra-ui/react';
 import NextImage from 'next/legacy/image';
 import Slider from '@/components/text/Slider';
 import functions from '@/utils/functions';
@@ -11,10 +11,7 @@ import * as DoctorService from "@/services/doctor/index";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import { IconVote1,IconVote2,IconVote3,IconVote4 } from '@/components/icons/svgIcons';
 import ImageEntire from "@/assets/images/img-entire.png";
-//import IconVote1 from "@/assets/icons/vote_1.png";
-//import IconVote2 from "@/assets/icons/vote_2.png";
-//import IconVote3 from "@/assets/icons/vote_3.png";
-//import IconVote4 from "@/assets/icons/vote_4.png";
+import { BiDetail,BiInfoCircle,BiGroup,BiEdit,BiChevronRight } from "react-icons/bi";
 import Alert from '@/components/alert/CustomAlert';
 import { iconAlertModify,iconAlertReview } from "@/components/icons/IconImage"
 import ProcessingBar from "@/assets/icons/processing2x.gif";
@@ -35,6 +32,12 @@ function ReviewModal(props: ReviewModalProps) {
   const skeletonColor = useColorModeValue('white', 'gray.700');
   const textColor2 = useColorModeValue('black', 'white');
   const buttonBgColor = useColorModeValue('#2b8fff', 'white');
+  const contentBgColor = useColorModeValue('#fafbfd','navy.800')
+  const contentBgColor2 = useColorModeValue('white','navy.800');
+  const titleColor = useColorModeValue('#17191D','white');
+  const subTitleColor = useColorModeValue('#7F879B','white')
+  const iconColor = useColorModeValue('#AFB5C3','white');
+
   const [inputs, setInputs] = React.useState<any>({
     doctor_id: null,
     content: null,
@@ -46,17 +49,22 @@ function ReviewModal(props: ReviewModalProps) {
 
   React.useEffect(() => {
    
+    console.log("reviewData",reviewData,selected_doctor)
 
     if( !functions.isEmpty(reviewData?.doctor_id) ){
-      getReviewData(reviewData?.doctor_id)
-      /* setInputs({
+      //getReviewData(reviewData?.doctor_id)
+      setInputs({
+        ...reviewData,
         doctor_id: reviewData?.doctor_id,
         content: reviewData?.content,
         kindness_score: reviewData?.kindness_score,
         satisfaction_score: reviewData?.satisfaction_score,
         explaination_score: reviewData?.explaination_score,
         recommand_score: reviewData?.recommand_score,
-      }); */
+      });
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 60);
     }else{
       setInputs({
         ...inputs,
@@ -66,7 +74,7 @@ function ReviewModal(props: ReviewModalProps) {
         setIsLoading(false);
       }, 60);
     }
-  }, [isOpen]);
+  }, [isOpen,reviewData]);
 
   const getReviewData = async(did:any) => {
     const res:any = await DoctorService.getReviewData(did);
@@ -168,7 +176,7 @@ function ReviewModal(props: ReviewModalProps) {
           </Flex>
         </Flex>
         
-        <Flex flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'100%'} mt={5} padding="20px" bg='#fafbfd' borderRadius={'10px'}>
+        <Flex flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'100%'} mt={5} padding="20px" bg={contentBgColor} borderRadius={'10px'}>
           <Box display={'flex'} flexDirection={'column'} alignItems={'center'}  width={'100%'} minHeight={'80px'} mb={5}>
             <Flex width={'100%'}>
               <Box display='flex' width={'48px'} height={'48px'} borderRadius={'8px'} bg='#e9edf3' justifyContent={'center'} alignItems={'center'}>
@@ -238,33 +246,35 @@ function ReviewModal(props: ReviewModalProps) {
             </Box>
           </Box>
         </Flex>
-        <Flex flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'100%'} mt={5} padding="20px" bg='#fafbfd' borderRadius={'10px'}>
+        <Flex flexDirection={'column'} justifyContent={'center'} minHeight={'50px'} width={'100%'} mt={5} padding="20px" bg={contentBgColor} borderRadius={'10px'}>
           <Box>
-            <CustomTextBold700 fontSize={'17px'}>진료 후기를 작성해 주세요</CustomTextBold700>
+            <CustomTextBold700 fontSize={'17px'} color={titleColor}>진료 후기를 작성해 주세요</CustomTextBold700>
           </Box>
-          <Box my={3}>
-            <CustomText fontSize={'13px'} color={'gray.500'}>
+          <Box display={'flex'} flexDirection={'row'} my={3}>
+            <Box mr={2} display={'flex'} justifyContent={'center'} alignItems={'center'}>
+            <Icon as={BiInfoCircle} width="20px" height="20px" color={iconColor} />
+            </Box>
+            
+            <CustomTextBold400 fontSize={'13px'} color={subTitleColor}>
                 허위 또는 과장된 내용은 법적으로 문제가 될 수 있습니다. 정확하고 사실에 근거한 리뷰를 작성해 주시기 바랍니다.
-            </CustomText>
+            </CustomTextBold400>
           </Box>
-          <Box mt={2}>
+          <Box>
             <Textarea 
               variant={'outline'} 
               value={inputs.content ?? ''} 
               onChange={(e) => setInputs({...inputs, content: e.target.value})} 
               resize={'none'}  
-              isRequired
               minH={'150px'}
               size={'sm'} 
-              bg='white'
+              bg={contentBgColor2}
               borderRadius={"10px"}
-              isInvalid={!functions.isEmpty(inputs.content)}
+              //isInvalid={!functions.isEmpty(inputs.content)}
               placeholder='리뷰는 최소 50자 이상이어야 합니다. 욕설, 비방, 무의미한 반복적인 글귀는 삭제될 수 있습니다.'
               id={"textarea_content"}
             />
           </Box>
-        </Flex>
-        <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}  width={'100%'} mt={5}>
+          <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}  width={'100%'} mt={5}>
           {
             functions.isEmpty(inputs.review_id) ?
             <Button 
@@ -294,6 +304,8 @@ function ReviewModal(props: ReviewModalProps) {
             </Button>
           }
         </Box>
+        </Flex>
+        
 
         <Box height={'50px'} />
         {

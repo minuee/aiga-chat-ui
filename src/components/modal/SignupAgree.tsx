@@ -66,6 +66,7 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
   const sidebarBackgroundColor = useColorModeValue('white', 'gray.700');
   const titleColor = useColorModeValue('#212127', 'white');
+  const linkColor = useColorModeValue('#7F879B', 'white');
   const skeletonColor = useColorModeValue('white', 'gray.700');
   const textColor = useColorModeValue('#0AA464', '#0AA464');
   const textColor2 = useColorModeValue('black', 'white');
@@ -226,44 +227,56 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
     }else{
       return (
         <>
-          <Flex display={'flex'} flexDirection={'column'} minHeight={'calc( 100vh - 120px )'} padding={'0 10px'} mt={5} justifyContent={'space-between'}> 
-            <Box flex={1} display={'flex'} flexDirection={'column'} justifyContent={'flex-start'} width={'98%'}>
-              <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} width={'100%'} mt={5}>
-                <Box display={'flex'} flexDirection={'row'} alignContent={'center'}  width={'100%'}>
+          <Flex display={'flex'} flexDirection={'column'} minHeight={'calc( 100vh - 120px )'} mt={5} justifyContent={'space-between'}> 
+            <Box flex={1} display={'flex'} flexDirection={'column'} justifyContent={'flex-start'} width={'100%'}>
+              <Box display={'flex'} justifyContent={'center'} width={'100%'} mt={5}>
+                <Box display={'flex'}  flex={5} alignItems={'center'} >
                   <Checkbox
                     colorScheme='blue'
                     isChecked={inputs.isAgree}
                     onChange={(e) => setInputs({...inputs, isAgree: e.target.checked})}
                   />
-                  <Box onClick={() => onSendMypageYakwanButton()} cursor={'pointer'} pl="10px">
+                  <Box pl="10px">
                     <CustomTextBold400 fontSize={'17px'} color={titleColor}>서비스 이용약관</CustomTextBold400>
                   </Box>
                 </Box>
+                <Box display='flex' flex={1} justifyContent={'flex-end'} alignItems='center' onClick={() => onSendMypageYakwanButton()} cursor={'pointer'} >
+                  <CustomTextBold400 fontSize={'13px'} color={linkColor} textDecoration="underline">보기</CustomTextBold400>
+                </Box>
               </Box>
-              <Box display={'flex'} flexDirection={'column'} justifyContent={'center'}  width={'100%'} mt={5}>
-                <Box display={'flex'} flexDirection={'row'} alignContent={'center'} width={'100%'}>
+              <Box display={'flex'} justifyContent={'center'} width={'100%'} mt={5}>
+                <Box display={'flex'}  flex={5} alignItems={'center'} >
                   <Checkbox
                     colorScheme='blue'
                     isChecked={inputs.isAgree2}
                     onChange={(e) => setInputs({...inputs, isAgree2: e.target.checked})}
                   />
-                  <Box onClick={() => onSendMypagePolicyButton()} cursor={'pointer'} pl="10px">
+                  <Box pl="10px">
                     <CustomTextBold400 fontSize={'17px'} color={titleColor}>개인정보 수집 및 이용 동의</CustomTextBold400>
                   </Box>
                 </Box>
+                <Box display='flex' flex={1} justifyContent={'flex-end'} alignItems='center' onClick={() => onSendMypagePolicyButton()} cursor={'pointer'} >
+                  <CustomTextBold400 fontSize={'13px'} color={linkColor} textDecoration="underline">보기</CustomTextBold400>
+                </Box>
               </Box>
-              <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} width={'100%'} mt={5}>
-                <Box display={'flex'} flexDirection={'row'} alignContent={'center'} width={'100%'}>
+
+              <Box display={'flex'} justifyContent={'center'} width={'100%'} mt={5}>
+                <Box display={'flex'}  flex={5} alignItems={'center'} >
                   <Checkbox
                     colorScheme='blue'
                     isChecked={inputs.isAgree3}
                     onChange={(e) => setInputs({...inputs, isAgree3: e.target.checked})}
                   />
-                  <Box onClick={() => onSendMypageMingamButton()} cursor={'pointer'} pl="10px">
+                  <Box pl="10px">
                     <CustomTextBold400 fontSize={'17px'} color={titleColor}>민감 정보 수집 및 이용 동의</CustomTextBold400>
                   </Box>
                 </Box>
+                <Box display='flex' flex={1} justifyContent={'flex-end'} alignItems='center' onClick={() => onSendMypageMingamButton()} cursor={'pointer'} >
+                  <CustomTextBold400 fontSize={'13px'} color={linkColor} textDecoration="underline">보기</CustomTextBold400>
+                </Box>
               </Box>
+              
+  
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} width={'100%'} mt={5}>
                 <Box display={'flex'} flexDirection={'row'} alignContent={'center'} width={'100%'}>
                   <Checkbox

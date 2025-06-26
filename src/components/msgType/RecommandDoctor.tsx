@@ -119,7 +119,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
 
   return (
     <Stack
-      minWidth={'100%'} width={'auto'} minHeight={"50px"} maxHeight={"300px"} position={'relative'}
+      minWidth={'100%'} width={'auto'} minHeight={"60px"} position={'relative'}
       sx={{
         '&::after': {
           content: ( showGradient && doctorList?.length > 4 ) ? '""' : 'none', position: 'absolute', top: 0,right: 0,width: '200px',height: '100%',maxHeight : "250px",
@@ -148,7 +148,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
           <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'170%'}>{`위 증상에 맞는 ${data?.answer?.disease} 의사를 추천해 드립니다.`}</CustomText>
         </Box>  
       </Flex>
-      <Flex  alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"50px"} maxHeight={"250px"} overflowX={'auto'} ref={flexRef} >
+      <Flex  alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"60px"} maxHeight={"250px"} ref={flexRef} overflowX={'auto'}>
         {
           doctorList.map((element: any, index: number) => (
             <Flex 

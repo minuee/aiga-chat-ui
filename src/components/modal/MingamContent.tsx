@@ -3,13 +3,13 @@ import React from 'react';
 
 // chakra imports
 import { Box,Flex} from '@chakra-ui/react';
-
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 function MingamContentModal() {
 
   // SIDEBAR
   return (
     <Flex flexDirection={'column'}  width="100%" height='100%' overflowY={'auto'}>
-      <Box  as="pre" wordBreak="break-all" whiteSpace="pre-wrap">
+      <Box  as="pre" wordBreak="break-all" whiteSpace="pre-wrap"><CustomTextBold400 fontSize={"17px"}>
       {`      
 제1조 (수집하는 민감정보의 항목, 수집방법)
 회사는 서비스의 품질 향상과 사용자 맞춤 서비스 제공을 위해 아래와 같은 민감정보를 수집하고 있습니다. 이 정보들은 사용자의 동의를 통해 수집되며, 수집된 정보는 이 동의 서에 명시된 범위와 목적에 한하여 이용됩니다.
@@ -41,7 +41,7 @@ function MingamContentModal() {
 『전자상거래 등에서 소비자 보호에 관한 법률』에 의해 계약 또는 청약철회 등에 관한
 기록은 5년간 보관
 회원의 불만 또는 분쟁처리에 관한 기록은 3년간 보관예외로 민사, 형사, 행정상의 절차가 진행 중인 경우에는 그 절차가 종료될 때까지 보관표시, 광고에 관한 기록은 6개월간 보관 『통신비밀보호법』에 의해 서비스 방문 기록은 3개월간 보관
-`}
+`}</CustomTextBold400>
       </Box>
     </Flex>
   );

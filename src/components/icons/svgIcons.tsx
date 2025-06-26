@@ -1,6 +1,19 @@
 // components/LogoIcon.tsx
 import { createIcon } from '@chakra-ui/icons';
 
+export const DefaultProfile = createIcon({
+    displayName: 'IconAiga',
+    viewBox: '0 0 34 34',
+    path: (
+        <>
+            <circle cx="17" cy="17" r="17" fill="#E0E0E0"/>
+            <circle cx="17" cy="12" r="6" fill="#BDBDBD"/>
+            <path d="M6 28C6 22.48 11.48 20 17 20C22.52 20 28 22.48 28 28V30H6V28Z" fill="#BDBDBD"/>
+        </>
+    ),
+});
+
+
 export const IconAiga = createIcon({
     displayName: 'IconAiga',
     viewBox: '0 0 70 60',

@@ -86,7 +86,30 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
       mCookie.setCookie('currentPathname','') 
     }, 200);
   }
-
+  if ( doctorList?.length == 0 ) {
+    return (
+      <Flex w="100%" flexDirection={'column'} mt="10px" px="5px">
+        <Box my="5px">
+          <IconChatAiga width={'46px'} height={"12px"} />
+        </Box>
+        <Flex 
+          padding="12px 20px" 
+          border={`1px solid ${bgSystemColor}`} 
+          bgColor={bgSystemColor} 
+          borderTopLeftRadius="2px" 
+          borderTopRightRadius="20px" 
+          borderBottomLeftRadius="20px"
+          borderBottomRightRadius="20px" 
+          w="auto" 
+          zIndex={2}
+          justifyContent={'center'}
+          flexDirection={'column'}
+        > 
+          <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'170%'}>추천할 의사를 찾을 수 없습니다.</CustomText> 
+        </Flex>
+      </Flex>
+    )
+  }
 
   return (
     <Flex w="100%" flexDirection={'column'} mt="10px" px="5px">

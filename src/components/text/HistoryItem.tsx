@@ -6,6 +6,7 @@ import mConstants from '@/utils/constants';
 import functions from '@/utils/functions';
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import { ChatSesseionIdStore } from '@/store/newChatStore';
+import { BiTrash,BiEdit,BiDotsHorizontalRounded } from "react-icons/bi";
 
 type HistoryItemProps = {
     data: any;
@@ -28,9 +29,11 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
     const chatSessionId = ChatSesseionIdStore(state => state.chatSessionId);
     const textColor = useColorModeValue('navy.700', 'white');
     const historyColor = useColorModeValue('#212127', 'white');
-    const bgColor = useColorModeValue('#EAF4FF', 'navy.700');
-    const moreColor = useColorModeValue('gray.500', 'white');
-
+    const bgColor = useColorModeValue('#FAFBFD', 'navy.700');
+    const borderColor = useColorModeValue('#7F879B', 'navy.900');
+    const moreColor = useColorModeValue('#AFB5C3', 'white');
+    const iconColor = useColorModeValue('#AFB5C3','white');
+    const iconRedColor = useColorModeValue('#FA6464','white');
     const bgDefaultColor = useColorModeValue('#ffffff', 'navy.800');
     const bgCurrentColor = useColorModeValue('#EAF4FF', 'navy.800');
 
@@ -107,19 +110,19 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
                     <Flex justifyContent={'flex-end'}>
                         <Popover>
                             <PopoverTrigger>
-                                <Icon as={MdMoreHoriz} width="18px" height="25px" color={moreColor} />
+                                <Icon as={BiDotsHorizontalRounded} width="24px" height="24px" color={moreColor} />
                             </PopoverTrigger>
-                            <PopoverContent width={'150px'} bg={bgColor}>
-                            <PopoverArrow />
-                            <PopoverBody>
-                                <Flex flexDirection={'column'} alignItems={'flex-start'} gap={2}>
-                                    <Button leftIcon={<Icon as={MdOutlineEdit} />} size='sm' onClick={() => setEditMode(true)} id="button_change_name"  bg="transparent">
+                            <PopoverContent width={'150px'} bg={bgColor} borderColor={borderColor}>
+                            {/* <PopoverArrow color={borderColor} /> */}
+                            <PopoverBody borderRadius={'8px'} width={"150px"}>
+                                <Flex flexDirection={'column'} alignItems={'flex-start'}>
+                                    <Button leftIcon={<Icon as={BiEdit} width="16px" height="16px" color={iconColor} />} size='sm' onClick={() => setEditMode(true)} id="button_change_name"  bg="transparent">
                                         이름변경
                                     </Button>
                                     {/* <Button leftIcon={<Icon as={MdOutlineShare} />} size='sm' onClick={() => setIsOpenShare(true)} id="button_share">
                                         공유하기
                                     </Button> */}
-                                    <Button leftIcon={<Icon as={MdOutlineDelete} />} size='sm' onClick={onOpen} color={'red'} id="button_remove"  bg="transparent">  
+                                    <Button leftIcon={<Icon as={BiTrash} width="16px" height="16px" color={iconRedColor}  />} size='sm' onClick={onOpen} color={iconRedColor} id="button_remove"  bg="transparent">  
                                         삭제하기
                                     </Button>
                                 </Flex>

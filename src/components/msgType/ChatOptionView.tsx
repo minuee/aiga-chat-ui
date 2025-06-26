@@ -127,22 +127,22 @@ export const ChatWarningInfo = () => {
 
   const bgColor = useColorModeValue('#ffffff', 'tranparent');
   const infoIcon = useColorModeValue('#f94848', '#ffffff');
-  const textColor = useColorModeValue('gray.500', '#ffffff');
+  const textColor = useColorModeValue('#7F879B', '#ffffff');
   return (
     <Flex 
       position={'absolute'}
-      top={{base : '-40px', md : '-30px'}}
+      top={{base : '-10px', md : '-30px'}}
       left={'0'}
       w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
-      height={'30px'}
+      height={'10px'}
       justifyContent={'center'}
       alignItems={'center'}
       bg={bgColor}
       zIndex={9}
     >
-      <Box display='flex' alignItems='center' gap='5px' width={"90%"}>
-        <Icon as={MdInfoOutline} width="20px" height="20px" color={infoIcon} />
-        <CustomText fontSize='0.8rem' color={textColor} lineHeight={'0.8rem'}>
+      <Box display='flex' alignItems='center' width={"100%"} px="16px">
+        <Icon as={MdInfoOutline} width="14px" height="14px" color={infoIcon}  />
+        <CustomText fontSize='12px' color={textColor} lineHeight={'130%'} letterSpacing={'-5%'} pl="5px">
           AIGA는 실수를 할 수 있습니다. 본 AI서비스는 의료행위가 아니며 답변에 어떠한 책임도 지지 않습니다.
         </CustomText>
       </Box>

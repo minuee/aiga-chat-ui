@@ -2,14 +2,14 @@
 import React from 'react';
 // chakra imports
 import { Box,Text,Flex,Textarea,useColorModeValue,} from '@chakra-ui/react';
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
 function PolicyModal() {
-
 
   // SIDEBAR
   return (
     <Flex flexDirection={'column'}  width="100%" height='100%' overflowY={'auto'}>
-      <Box  as="pre" wordBreak="break-all" whiteSpace="pre-wrap">
+      <Box  as="pre" wordBreak="break-all" whiteSpace="pre-wrap"><CustomTextBold400 fontSize={"17px"}>
       {`      
 (주) AIGA(이하 “회사”라 함)은 이용자(이하 “회원”이라 함)의 개인정보보호를 매우 중요시하며, 『정보통신망이용촉진 및 정보보호에 관한 법률』, 『개인정보보호법』 상의 개인정보보호규정 및 정보통신부가 제정한 『개인정보보호지침』을 준수하고 있습니다. 개인정보처리방침은 정부의 법령 또한 지침의 변경, 또는 보다 더 나은 웹서비스의 제공을 위하여 그 내용의 전부 혹은 일부가 변경될 수 있습니다. 이 경우 웹사이트 혹은 회원의 이메일을 통해 이용자에게 공지하고 있습니다. 회사는 개인정보처리방침의 지속적인 개선 및 기본 법규 준수를 위하여 개인정보처리방침을 개정하는데 필요한 절차를 정하고 있습니다. 개인정보처리방침을 통하여 이용자의 개인정보가 무엇을 위해 어떠한 방식으로 이용되고 있으며, 이러한 개인정보에 대한 보호를 위하여 회사가 어떠한 조치를 취하고 있는지 다음과 같이 안내드립니다.
 본 방침은 0000년 0월 00일부터 시행되며, 이를 개정하는 경우 웹사이트 또는 공지사항(또는 회원 이메일)등을 통하여 공지할 예정입니다.
@@ -189,7 +189,7 @@ function PolicyModal() {
 2. 공지일자: 0000년 0월 00일
 3. 시행일자: 0000년 0월 00일
 
-`}
+`}</CustomTextBold400>
       </Box>
     </Flex>
   );

@@ -24,7 +24,7 @@ import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
 import { SkeletonDefaultMixed } from "@/components/fields/LoadingBar";
-import defaultProfile from '@/assets/images/avatar0.png';
+import { DefaultProfile } from '@/components/icons/svgIcons';
 import { NextAvatar } from '@/components/image/Avatar';
 import Image from 'next/image';
 import { MdOutlineClose,MdArrowBack,MdLogout } from 'react-icons/md';
@@ -78,8 +78,15 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   const buttonTextColor = useColorModeValue('white', 'white');
   const textColor = useColorModeValue('navy.700', 'white');
   const navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
-  const profileBgColor = useColorModeValue('fafbfd', 'navy.900');
-  const iconColor = useColorModeValue('#AFB5C3','white')
+  const profileBgColor = useColorModeValue('#FAFBFD', 'navy.900');
+  const iconColor = useColorModeValue('#7F879B','white');
+  const iconExitColor = useColorModeValue('#000000','white');
+  const textRedcolor = useColorModeValue('#F94848','#F94848');
+  const inputBgcolor = useColorModeValue('#ffffff','navy.700');
+  const textColor2 = useColorModeValue('#7F879B','white');
+  const textColor3 = useColorModeValue('#212127','white');
+  const entireTextColor = useColorModeValue('#5C5E69','white')
+
   const [inputs, setInputs] = React.useState<any>({
     nickName: ''
   });
@@ -358,9 +365,9 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
           <Flex flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'} minHeight={'50px'} width={'100%'}>
             <Box flex={5} display={'flex'} flexDirection={'row'} alignItems={'center'}>
             {
-              functions.isEmpty(userBaseInfo?.profileImage) 
+              !functions.isEmpty(userBaseInfo?.profileImage) 
               ?
-              <NextAvatar h="48px" w="48px" src={defaultProfile} me="10px" />
+              <DefaultProfile boxSize={'48px'} />
               :
               <NextImage 
                 src={userBaseInfo?.profileImage}
@@ -371,20 +378,22 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               />
             }
               <Box pl="10px">
-                <CustomTextBold700 color={textColor} fontSize="xs" me="10px">
+                <CustomTextBold700 color={textColor} fontSize="17px" me="10px">
                   {userBaseInfo?.email}
                 </CustomTextBold700>
               </Box>
             </Box>
             <Box flex={1} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} onClick={() => setIsOpenLogoutModal(true)} cursor={'pointer'}>
-              <Icon as={MdLogout} width="20px" height="20px" color="inherit" />
+              <Icon as={MdLogout} width="20px" height="20px" color={iconExitColor} />
             </Box>
           </Flex>
           
           <Flex display={'flex'} flexDirection={'column'} minHeight={'50px'}  my={5} bg={profileBgColor} borderRadius={'10px'}>
             <Box padding="20px">
               <FormControl variant="floatingLabel">
-                <FormLabel color={textColor}>닉네임<span style={{color: 'red'}}>(필수)</span></FormLabel>
+                <FormLabel color={textColor} flexDirection={'row'}>
+                <CustomTextBold700 color={textColor} fontSize="17px">닉네임<span style={{ color: textRedcolor, fontSize: '13px',paddingLeft:"10px" }}>(필수)</span></CustomTextBold700>
+                </FormLabel>
                 <Input 
                   type="text" 
                   isRequired
@@ -394,10 +403,10 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                   onChange={(e) => onHandleNickname(e.target.value)}
                   color={textColor}
                   id="input_nickName"
-                  bgColor='inherit'
+                  bgColor={inputBgcolor}
                 />
                 <FormLabel fontSize={'13px'} color="#7f879b" mt={2}>
-                최소 2자, 최대 10자(한글,영문,숫자,밑줄(_)만 가능
+                <CustomTextBold400 color={textColor2} fontSize="13px">최소 2자, 최대 10자(한글,영문,숫자,밑줄(_)만 가능</CustomTextBold400>
                 </FormLabel>
               </FormControl>
             </Box>              
@@ -420,14 +429,14 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
           <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'} bg={profileBgColor} borderRadius={'10px'}>
             <Box padding="20px">
               <FormControl variant="floatingLabel">
-                <FormLabel>고객지원</FormLabel>
+                <FormLabel><CustomTextBold700 color={textColor} fontSize="17px">고객지원</CustomTextBold700></FormLabel>
               </FormControl>
             </Box>              
             <Flex justifyContent={'center'} flexDirection={'column'} pb="20px">
               <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px">
                 <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => onSendNoticeListButton()} cursor={'pointer'}>
                   <Icon as={BiDetail} width="20px" height="20px" color={iconColor} />
-                  <CustomText fontSize={'15px'} ml={2}>공지사항</CustomText>
+                  <CustomTextBold400 fontSize={'17px'} ml={2} color={textColor3}>공지사항</CustomTextBold400>
                 </Box>
                 <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => onSendNoticeListButton()} cursor={'pointer'}>
                   <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
@@ -436,7 +445,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
                 <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => onSendMypageYakwanButton()} cursor={'pointer'}>
                   <Icon as={BiInfoCircle} width="20px" height="20px" color={iconColor} />
-                  <CustomText fontSize={'15px'} ml={2}>이용약관</CustomText>
+                  <CustomTextBold400 fontSize={'17px'} ml={2} color={textColor3}>이용약관</CustomTextBold400>
                 </Box>
                 <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => onSendMypageYakwanButton()} cursor={'pointer'}>
                   <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor}/>
@@ -445,7 +454,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
                 <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => onSendMypagePolicyButton()} cursor={'pointer'}>
                   <Icon as={BiGroup} width="20px" height="20px" color={iconColor} />
-                  <CustomText fontSize={'15px'} ml={2}>개인정보 처리방침</CustomText>
+                  <CustomTextBold400 fontSize={'17px'} ml={2} color={textColor3}>개인정보 처리방침</CustomTextBold400>
                 </Box>
                 <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => onSendMypagePolicyButton()} cursor={'pointer'}>
                   <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
@@ -454,7 +463,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
                 <Box display={'flex'} alignItems={'center'} flex={5} onClick={() => onSendMyPageRequestButton()} cursor={'pointer'}>
                   <Icon as={BiEdit} width="20px" height="20px" color={iconColor} />
-                  <CustomText fontSize={'15px'} ml={2}>의견 보내기</CustomText>
+                  <CustomTextBold400 fontSize={'17px'} ml={2} color={textColor3}>의견 보내기</CustomTextBold400>
                 </Box>
                 <Box display={'flex'} alignItems={'center'} justifyContent={'flex-end'} flex={1} onClick={() => onSendMyPageRequestButton()} cursor={'pointer'}>
                   <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
@@ -466,7 +475,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
             display={'flex'} height={'50px'} width="100%" position={'absolute'} right={0} bottom={0} justifyContent={'flex-end'}
             onClick={() => onSendMyPageEntireButton()} cursor={'pointer'} pr="20px"
           >
-            <CustomText fontSize={'17px'} textDecoration={'underline'} color={iconColor}>탈퇴하기</CustomText>
+            <CustomTextBold400 fontSize={'17px'} textDecoration={'underline'} color={entireTextColor}>탈퇴하기</CustomTextBold400>
           </Flex>
         </Flex>
         <Box height={'100px'} />
