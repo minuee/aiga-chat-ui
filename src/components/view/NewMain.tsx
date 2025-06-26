@@ -3,11 +3,13 @@ import React, { Children } from 'react';
 import {Link} from '@/i18n/routing';
 import '@/styles/Main.css';
 
+import NewMainNav from './NewMainNav';
 export default function MainPage() {
   
   return (
     <>
-    <div className='fix_nav'>
+
+   {/*  <div className='fix_nav'>
         <div className="root_container">
             <div className="nav-container">
                 <div className="main_logo">AIGA</div>
@@ -19,8 +21,8 @@ export default function MainPage() {
                 </ul>
             </div>
         </div>
-    </div>
-
+    </div> */}
+    <NewMainNav />
 
     <section className="hero" id="home">
         <div className="root_container">

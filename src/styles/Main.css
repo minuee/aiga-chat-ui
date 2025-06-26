@@ -78,34 +78,43 @@
 
 /* Hero Section */
 .hero {
+    position: relative;
     min-height: 100vh;
     display: flex;
     align-items: center;
+    justify-content: center;
     text-align: center;
     color: white;
-    position: relative;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     overflow: hidden;
-}
-
-.hero::before {
+    z-index: 0; /* 명시적으로 지정 */
+  }
+  
+  .hero::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: navy;
-    background-size: cover;
+    z-index: 0; /* hero와 같은 레벨 또는 더 높게 */
     opacity: 0.6;
-}
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E%3Cdefs%3E%3CradialGradient id='grad1'%3E%3Cstop offset='0%25' stop-color='rgba(255,255,255,0.08)'/%3E%3Cstop offset='100%25' stop-color='transparent'/%3E%3C/radialGradient%3E%3CradialGradient id='grad2'%3E%3Cstop offset='0%25' stop-color='rgba(255,255,255,0.05)'/%3E%3Cstop offset='100%25' stop-color='transparent'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='150' cy='200' r='4' fill='white' opacity='0.6'/%3E%3Ccircle cx='850' cy='150' r='3' fill='white' opacity='0.4'/%3E%3Ccircle cx='300' cy='100' r='2' fill='white' opacity='0.5'/%3E%3Ccircle cx='700' cy='250' r='3' fill='white' opacity='0.3'/%3E%3Ccircle cx='200' cy='350' r='80' fill='url(%23grad1)'/%3E%3Ccircle cx='800' cy='400' r='60' fill='url(%23grad2)'/%3E%3Ccircle cx='500' cy='150' r='100' fill='url(%23grad1)'/%3E%3Cpath d='M120 180 L140 180 M130 170 L130 190 M820 120 L840 120 M830 110 L830 130 M680 220 L700 220 M690 210 L690 230' stroke='white' stroke-width='2' opacity='0.4'/%3E%3Crect x='180' y='320' width='8' height='20' rx='4' fill='white' opacity='0.3'/%3E%3Crect x='190' y='325' width='8' height='10' rx='4' fill='white' opacity='0.3'/%3E%3Crect x='770' y='380' width='6' height='15' rx='3' fill='white' opacity='0.25'/%3E%3Crect x='778' y='385' width='6' height='8' rx='3' fill='white' opacity='0.25'/%3E%3Ccircle cx='250' cy='450' r='2' fill='white' opacity='0.4'/%3E%3Ccircle cx='750' cy='500' r='2' fill='white' opacity='0.3'/%3E%3Ccircle cx='450' cy='80' r='1.5' fill='white' opacity='0.5'/%3E%3Cpath d='M480 200 C485 195, 495 195, 500 200 C505 205, 495 205, 480 200 Z' fill='white' opacity='0.2'/%3E%3Cpath d='M220 280 C225 275, 235 275, 240 280 C245 285, 235 285, 220 280 Z' fill='white' opacity='0.15'/%3E%3C/svg%3E") no-repeat center center;
+    background-size: cover;
+  }
+  
 
 .hero-content {
     position: relative;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     z-index: 2;
+    line-height: 1.6;
+    color: #333;
+    font-weight: bold;
 }
 
 .hero h1 {
-    font-size: 3.5rem;
+    font-size: 4.5rem;
     margin-bottom: 1rem;
     background: linear-gradient(45deg, #fff, #e0e7ff);
     -webkit-background-clip: text;
@@ -114,12 +123,13 @@
 }
 
 .hero p {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     margin-bottom: 2rem;
     opacity: 0.9;
-    max-width: 600px;
+    max-width: 900px;
     margin-left: auto;
     margin-right: auto;
+    color : #ffffff;
 }
 
 .disclaimer {

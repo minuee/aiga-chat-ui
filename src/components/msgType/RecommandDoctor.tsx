@@ -90,6 +90,33 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
     }, 200);
   }
 
+  if ( doctorList?.length == 0 ) {
+    return (
+      <Stack minWidth={'100%'} width={'auto'} minHeight={"50px"} maxHeight={"300px"} position={'relative'}>
+        <Box mt="5px">
+          <IconChatAiga width={'46px'} height={"12px"} />
+        </Box>
+        <Flex 
+          padding="12px 20px" 
+          border={`1px solid ${bgSystemColor}`} 
+          bgColor={bgSystemColor} 
+          borderTopLeftRadius="2px" 
+          borderTopRightRadius="20px" 
+          borderBottomLeftRadius="20px"
+          borderBottomRightRadius="20px" 
+          w="auto" 
+          zIndex={2}
+          justifyContent={'center'}
+          flexDirection={'column'}
+        > 
+          <Box>
+            <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'170%'}>추천할 의사를 찾을 수 없습니다.</CustomText>
+          </Box>  
+        </Flex>
+      </Stack>
+    )
+  }
+
   return (
     <Stack
       minWidth={'100%'} width={'auto'} minHeight={"50px"} maxHeight={"300px"} position={'relative'}
