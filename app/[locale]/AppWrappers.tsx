@@ -19,7 +19,7 @@ const _NoSSR = ({ children }: any) => (
 
 export default function AppWrappers({ children }: { children: ReactNode }) {
   useReportWebVitals((metric) => {
-    console.log(metric)
+    //console.log(metric)
   })
   return (
     // <NoSSR>

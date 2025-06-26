@@ -12,7 +12,7 @@ import DoctorList from "@/components/modal/DoctorList";
 import { sampleDoctor1, sampleDoctor2,sampleDoctor3 } from "@/components/icons/IconImage";
 import { MdArrowBack,MdOutlineClose } from 'react-icons/md';
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
-import LogoImage from "@/assets/images/logo.png";
+import { BiChevronRight } from "react-icons/bi";
 import { IconChatAiga} from '@/components/icons/svgIcons';
 import DoctorAvatar from "@/assets/images/doctor_default_white.png";
 type RecommandDoctorProps = {
@@ -41,7 +41,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
   const profileBgColor = useColorModeValue("#F4F6FA",'navy.600');
   const nameTextColor = useColorModeValue('#17191D','white')
   const partTextColor = useColorModeValue('#7F879B','white')
-  
+  const iconColor = useColorModeValue('#0AA464','#0AA464');
 
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
 
@@ -191,14 +191,15 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
           ))
         }
       </Flex>
-      <Box pr={2} justifyContent={'flex-end'} display={doctorList?.length == 0 ? 'none' : 'flex'}>
+      <Box pr={1} justifyContent={'flex-end'} display={doctorList?.length == 0 ? 'none' : 'flex'}>
         <Box 
-          display="flex" justifyContent={'center'} alignItems={'center'} bg={"#DFF5ED"} borderRadius={"4px"} gap={"4px"} height={"32px"} px="20px" cursor={'pointer'}
+          display="flex" justifyContent={'center'} alignItems={'center'} bg={"#DFF5ED"} borderRadius={"4px"} height={"32px"} px="20px" cursor={'pointer'}
           onClick={() => onSendDoctorListButton()} 
         >
-          <Text fontSize={'15px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"}>
-          {data?.answer?.disease} 전체보기 {">"}
-          </Text>
+          <CustomTextBold700 fontSize={'15px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"}>
+          {data?.answer?.disease} 전체보기
+          </CustomTextBold700>
+          <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
         </Box>
       </Box>
       {

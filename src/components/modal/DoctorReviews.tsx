@@ -219,7 +219,6 @@ function DoctorReview( props: DoctorModalProps ) {
 
 
   const onSendDoctorReviewButton = async( data:any) => {
-    console.log("gubun",data);
     props.openParentReviewData(data)
     /* try{
       props.openParentReviewData(data)

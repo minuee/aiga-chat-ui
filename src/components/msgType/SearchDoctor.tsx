@@ -38,6 +38,8 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
   const arrowColor = useColorModeValue("#000000",'white')
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.700');
   const navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
+  const iconColor = useColorModeValue('#0AA464','#0AA464');
+  
   const modalBtnRef = useRef<HTMLButtonElement>(null);
   const { isOpenDocListModal } = ModalDoctorListStore(state => state);
   const setOpenDoctorListModal = ModalDoctorListStore((state) => state.setOpenDoctorListModal);
@@ -194,9 +196,10 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
           display="flex" justifyContent={'center'} alignItems={'center'} bg={"#DFF5ED"} borderRadius={"4px"} gap={"4px"} height={"32px"} px="20px" cursor={'pointer'}
           onClick={() => onSendDoctorListButton()} 
         >
-          <Text fontSize={'15px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"}>
-          {doctorList[0]?.deptname} 전체보기 {">"}
-          </Text>
+          <CustomTextBold700 fontSize={'15px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"}>
+          {doctorList[0]?.deptname} 전체보기
+          </CustomTextBold700>
+          <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
         </Box>
       </Box>
 

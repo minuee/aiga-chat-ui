@@ -10,6 +10,9 @@ import { ModalDoctorListStore } from '@/store/modalStore';
 import DoctorList from "@/components/modal/DoctorList";
 import { sampleDoctor1, sampleDoctor2,sampleDoctor3 } from "@/components/icons/IconImage";
 import { MdArrowBack,MdOutlineClose } from 'react-icons/md';
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import { BiChevronRight } from "react-icons/bi";
+
 type SelectDoctorProps = {
     onSendButton: (data: any,id:number) => void; 
 };
@@ -27,8 +30,7 @@ const SelectDoctor = ({  onSendButton  }: SelectDoctorProps) => {
   const setOpenDoctorListModal = ModalDoctorListStore((state) => state.setOpenDoctorListModal);
   const modalBtnRef = useRef<HTMLButtonElement>(null);
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.700');
-  const starColor = useColorModeValue('#0000ff', '#ffffff');
-  const skeletonColor = useColorModeValue('white', 'navy.700');
+  const iconColor = useColorModeValue('#0AA464','#0AA464');
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
 
   const handleScroll = () => {
@@ -135,9 +137,10 @@ const SelectDoctor = ({  onSendButton  }: SelectDoctorProps) => {
           px="20px"
           cursor={'pointer'}
         >
-          <Text fontSize={'15px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"}>
-          {"{과목명}"} 전체보기 {">"}
-          </Text>
+          <CustomTextBold700 fontSize={'15px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"}>
+          {"{과목명}"} 전체보기
+          </CustomTextBold700>
+          <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
         </Box>
       </Flex>
       {
