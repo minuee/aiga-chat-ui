@@ -147,7 +147,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
             display={'flex'} minW={'52px'} height={'28px'} justifyContent={'center'} alignItems={'center'} bg={navbarIcon} borderRadius={'5px'}
             cursor='pointer' onClick={()=> onSendsignupButton()}
           >  
-          <CustomText fontSize={'17px'} color={basicColor}>로그인</CustomText>
+          <CustomText fontSize={'13px'} color={basicColor}>로그인</CustomText>
         </Box>
         }
       </Flex>

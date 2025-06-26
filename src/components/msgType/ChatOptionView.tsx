@@ -131,7 +131,7 @@ export const ChatWarningInfo = () => {
   return (
     <Flex 
       position={'absolute'}
-      top={{base : '-10px', md : '-30px'}}
+      top={{base : '-10px', md : '-10px'}}
       left={'0'}
       w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
       height={'10px'}
