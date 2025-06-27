@@ -16,7 +16,10 @@ import { encryptToken } from "@/utils/secureToken";
 import UserStateStore from '@/store/userStore';
 import NewChatStateStore from '@/store/newChatStore';
 import ConfigInfoStore from '@/store/configStore';
-import { ModalSignupAgreeStoreStore,ModalSignupFinishStoreStore,DoctorFromListStore } from '@/store/modalStore';
+import { 
+  ModalDoctorDetailStore,ModalDoctorReviewStore,ModalDoctorRequestStore,ModalDoctorListStore,DrawerHistoryStore,ModalMypageStore,ModalMypageNoticeStore,ModalMypageNoticeDetailStore,
+  ModalMypageRequestStore,ModalMypageEntireStore,ModalMypagePolicyStore,ModalMypageYakwanStore,ModalMypageMingamStore,ModalSignupStoreStore,ModalSignupAgreeStoreStore,DoctorFromListStore,ReviewAlertStore
+ } from '@/store/modalStore';
 import { MdOutlineSettings,MdArrowBack,MdOutlineClose } from 'react-icons/md';
 export interface LoginModalProps extends PropsWithChildren {
   isOpen : boolean;
@@ -41,16 +44,39 @@ function LoginModal(props: LoginModalProps) {
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
   const signupAgreeBtnRef = React.useRef<HTMLButtonElement>(null);
-  const { isFromDoctorDepth2 } = DoctorFromListStore(state => state);
   const setLoginUserInfo = UserStateStore((state) => state.setUserState);
   const { nickName, ...userInfo } = UserStateStore(state => state);
-  const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
 
   const { isOpenSignupAgreeModal } = ModalSignupAgreeStoreStore(state => state);
   const setIsOpenSignupAgreeModal = ModalSignupAgreeStoreStore((state) => state.setIsOpenSignupAgreeModal);
   const { isOpenSignupFinishModal } = ModalSignupFinishStoreStore(state => state);
   const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
+  const isNewChat = NewChatStateStore(state => state.isNew);
+  const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
+  const chatSessionId = ChatSesseionIdStore(state => state.chatSessionId);
+  const setChatSessionId = ChatSesseionIdStore((state) => state.setChatSessionId);
+  const oldHistoryData = CallHistoryDataStore(state => state.historyData);
+  const setOldHistoryData = CallHistoryDataStore((state) => state.setOldHistoryData);
 
+  const { isFromDoctorDepth2 } = DoctorFromListStore(state => state);
+  const setFromDoctorDepth2 = DoctorFromListStore((state) => state.setFromDoctorDepth2);
+  const setCurrentPathname = historyStore((state) => state.setCurrentPathname);
+  const setIsOpenReview = ModalDoctorReviewStore((state) => state.setModalState);
+  const setIsOpenRequestModal = ModalDoctorRequestStore((state) => state.setModalState);
+  const setOpenDoctorListModal = ModalDoctorListStore((state) => state.setOpenDoctorListModal);
+  const setIsOpenDoctorDetailModal = ModalDoctorDetailStore((state) => state.setOpenDoctorDetailModal);
+  const setOpenHistoryDrawer = DrawerHistoryStore((state) => state.setOpenHistoryDrawer);
+  const setIsOpenSetupModal = ModalMypageStore((state) => state.setIsOpenSetupModal);
+  const setIsOpenNoticeListModal = ModalMypageNoticeStore((state) => state.setIsOpenNoticeListModal);
+  const setIsOpenNoticeDetailModal = ModalMypageNoticeDetailStore((state) => state.setIsOpenNoticeDetailModal);
+  const setIsOpenMypageRequestModal = ModalMypageRequestStore((state) => state.setIsOpenMypageRequestModal);
+  const setIsOpenEntireModal = ModalMypageEntireStore((state) => state.setIsOpenEntireModal);
+  const setIsOpenPolicyModal = ModalMypagePolicyStore((state) => state.setIsOpenPolicyModal);
+  const setIsOpenYakwanModal = ModalMypageYakwanStore((state) => state.setIsOpenYakwanModal);
+  const setIsOpenMingamModal = ModalMypageMingamStore((state) => state.setIsOpenMingamModal);
+  const setIsOpenSignupModal = ModalSignupStoreStore((state) => state.setIsOpenSignupModal)
+  const { isOpenAlert } = ReviewAlertStore(state => state);
+  const setOpenAlert = ReviewAlertStore((state) => state.setIsOpenReviewLoginAlert);
 
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
   let sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
@@ -84,6 +110,28 @@ function LoginModal(props: LoginModalProps) {
     setTimeout(() => {
       mCookie.setCookie('currentPathname',``)
     }, 200);
+  }
+
+  const firstForceStep = () => {
+    setChatSessionId('')
+    setIsOpenReview(false)
+    setIsOpenDoctorDetailModal(false);
+    setOpenHistoryDrawer(false);
+    setIsOpenRequestModal(false);
+    setOpenDoctorListModal(false);
+    setIsOpenSetupModal(false);
+    setIsOpenNoticeListModal(false);
+    setIsOpenDoctorDetailModal(false);
+    setIsOpenMypageRequestModal(false);
+    setIsOpenEntireModal(false);
+    setIsOpenPolicyModal(false);
+    setIsOpenYakwanModal(false);
+    setIsOpenMingamModal(false);
+    setIsOpenSignupModal(false);
+    setIsOpenSignupAgreeModal(false);
+    setOldHistoryData(null)
+    setFromDoctorDepth2(false)
+    setOpenAlert(false)
   }
 
   const onClickJoin = (str:string) => {

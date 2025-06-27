@@ -449,3 +449,30 @@ export const ModalSignupFinishStoreStore = create<ModalSignupFinishStoreState>()
         )
     )
 );
+
+
+interface ReviewAlertStoreState {
+    isOpenAlert : boolean;
+    setIsOpenReviewLoginAlert: (isOpenAlert: boolean) => void;
+}
+
+export const ReviewAlertStore = create<ReviewAlertStoreState>()(
+    devtools(
+        persist(
+            (set) => ({
+                isOpenAlert: false,
+                setIsOpenReviewLoginAlert: (isOpenAlert:boolean) => {
+                    set({isOpenAlert});
+                },
+                hasHydrated: false,
+            }),
+            { 
+                name: 'ReviewAlertStore',
+                storage: createJSONStorage(() => localStorage),
+                onRehydrateStorage: () => (state:any) => {
+                    state?.set({ hasHydrated: true });
+                }
+            }
+        )
+    )
+);

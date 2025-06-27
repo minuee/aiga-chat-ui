@@ -28,7 +28,7 @@ import ReviewDetail from '@/components/modal/ReviewDetail';
 import RequestDoctor from '@/components/modal/RequestDoctor';
 
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
-import { ModalDoctorReviewStore,ModalDoctorRequestStore,DoctorFromListStore,ModalSignupStoreStore } from '@/store/modalStore';
+import { ModalDoctorReviewStore,ModalDoctorRequestStore,DoctorFromListStore,ModalSignupStoreStore,ReviewAlertStore } from '@/store/modalStore';
 
 export interface DoctorModalProps extends PropsWithChildren {
   selected_doctor : any;
@@ -71,8 +71,10 @@ function DoctorModal(props: DoctorModalProps) {
   const [educationList, setEducationList] = React.useState([]);
   const [careerList, setCareerList] = React.useState([]);
   const [paperList, setPaperList] = React.useState([]);
-  const [isOpenAlert, setOpenAlert] = React.useState(false);  
-  
+
+  const { isOpenAlert } = ReviewAlertStore(state => state);
+  const setOpenAlert = ReviewAlertStore((state) => state.setIsOpenReviewLoginAlert);
+
   const [reviewData, setReviewData] = React.useState<any>(null);
   const formBtnRef = React.useRef<HTMLButtonElement>(null);
   const { ...userBaseInfo } = UserStateStore(state => state);
@@ -194,11 +196,11 @@ function DoctorModal(props: DoctorModalProps) {
   }
 
   const onHandleAlertConfirm = async( isBool : boolean) => {
-    if ( userBaseInfo.isGuest &&  functions.isEmpty(userBaseInfo?.userId) ) {
+  /*   if ( userBaseInfo.isGuest &&  functions.isEmpty(userBaseInfo?.userId) ) {
       setOpenAlert(false)
       onSendDoctorReviewButton()
       return;
-    }
+    } */
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     history.push(`${locale}#${mConstants.pathname_modal_21_2}`);
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_21_2}`)

@@ -33,12 +33,12 @@ import mConstants from '@/utils/constants';
 
 //새창열기 전역상태
 import ConfigInfoStore,{ GlobalStateStore } from '@/store/configStore';
-import NewChatStateStore,{ ChatSesseionIdStore,CallHistoryDataStore } from '@/store/newChatStore';
+import NewChatStateStore,{ ChatSesseionIdStore,CallHistoryDataStore,CurrentDialogStore } from '@/store/newChatStore';
 import historyStore from '@/store/historyStore';
 import { 
   ModalDoctorDetailStore,ModalDoctorReviewStore,ModalDoctorRequestStore,ModalDoctorListStore,DrawerHistoryStore,ModalMypageStore,ModalMypageNoticeStore,ModalMypageNoticeDetailStore,
-  ModalMypageRequestStore,ModalMypageEntireStore,ModalMypagePolicyStore,ModalMypageYakwanStore,ModalMypageMingamStore,ModalSignupStoreStore,ModalSignupAgreeStoreStore,DoctorFromListStore
- } from '@/store/modalStore';
+  ModalMypageRequestStore,ModalMypageEntireStore,ModalMypagePolicyStore,ModalMypageYakwanStore,ModalMypageMingamStore,ModalSignupStoreStore,ModalSignupAgreeStoreStore,DoctorFromListStore,ReviewAlertStore
+} from '@/store/modalStore';
  import UserStateStore from '@/store/userStore';
 import * as ChatService from "@/services/chat/index";
 import { SendButtonOff,SendButtonOn } from '@/components/icons/svgIcons';
@@ -58,7 +58,10 @@ export default function ChatBot() {
   const [isReceiving, setReceiving] = useState(false);
   const toast = useToast();
   // Response message
-  const [outputCode, setOutputCode] = useState<any>([]);
+  //const [outputCode, setOutputCode] = useState<any>([]);
+  const outputCode = CurrentDialogStore(state => state.messageData);
+  const setOutputCode = CurrentDialogStore((state) => state.setCurrentMessageData);
+  
   // ChatGPT model
   const [isChatDisabled, setChatDisabled] = useState<any>({
     isState :  true,
@@ -101,6 +104,8 @@ export default function ChatBot() {
   const setIsOpenMingamModal = ModalMypageMingamStore((state) => state.setIsOpenMingamModal);
   const setIsOpenSignupModal = ModalSignupStoreStore((state) => state.setIsOpenSignupModal)
   const setIsOpenSignupAgreeModal = ModalSignupAgreeStoreStore((state) => state.setIsOpenSignupAgreeModal)
+  const { isOpenAlert } = ReviewAlertStore(state => state);
+  const setOpenAlert = ReviewAlertStore((state) => state.setIsOpenReviewLoginAlert);
   
   const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
   const borderColor = useColorModeValue('gray.200', 'gray');
@@ -138,12 +143,13 @@ export default function ChatBot() {
     setIsOpenSignupAgreeModal(false);
     setOldHistoryData(null)
     setFromDoctorDepth2(false)
+    setOpenAlert(false)
   }
 
   useEffect(() => {
     if (!alreadyInitialized.current) {
       console.log('🔥 최초 1회만 실행');
-      firstForceStep();
+      //firstForceStep();
       //getNewSessionID(); // ✅ 여기서만 실행됨
       alreadyInitialized.current = true;
       
@@ -384,7 +390,17 @@ export default function ChatBot() {
       const forceMsg = "대답이 중지되었습니다."
       setReceiving(false);
       setIsLoading(false)
-      setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system_stop", msg: forceMsg }]);
+      //setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system_stop", msg: forceMsg }]);
+      if (Array.isArray(outputCode)) {
+        setOutputCode([
+          ...outputCode,
+          { chat_id: functions.getUUID(), ismode: "system_stop", msg: forceMsg }
+        ]);
+      }else{
+        setOutputCode([
+          { chat_id: functions.getUUID(), ismode: "system_stop", msg: forceMsg }
+        ]);
+      }
     }
   }
 
@@ -449,7 +465,15 @@ export default function ChatBot() {
 
       if ( isSystemText.includes(inputCodeText) ) {
         if( inputCodeText != outputCode[outputCode?.length -1]?.msg) { 
-          setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system", msg: inputCodeText }]);
+          if (Array.isArray(outputCode)) {
+            setOutputCode([
+              ...outputCode,
+              { chat_id: functions.getUUID(), ismode: "system", msg: inputCodeText }
+            ])
+          }else{
+            setOutputCode([{ chat_id: functions.getUUID(), ismode: "system", msg: inputCodeText }])
+          }
+          //setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system", msg: inputCodeText }]);
           setIsLoading(false);
           setReceiving(false);
           setIsFocus(false)
@@ -461,7 +485,15 @@ export default function ChatBot() {
           return;
         }
       }else{
-        setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(),ismode: "me", question: inputCodeText }]);
+        //setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(),ismode: "me", question: inputCodeText }]);
+        if (Array.isArray(outputCode)) {
+          setOutputCode([
+            ...outputCode,
+            { chat_id: functions.getUUID(),ismode: "me", question: inputCodeText }
+          ])
+        }else{
+          setOutputCode([{ chat_id: functions.getUUID(),ismode: "me", question: inputCodeText }])
+        }
       }
       setInputCode('')
       try{
@@ -474,8 +506,33 @@ export default function ChatBot() {
             setReceiving(false);
             setIsFocus(false)
           }
-         
-          setOutputCode((prevCode: any[]) => {
+          if (Array.isArray(outputCode)) {
+            setOutputCode([
+              ...outputCode,
+              {
+                ismode : 'server',
+                isHistory : false,
+                id: answerMessage?.chat_id,
+                user_question : answerMessage?.question,
+                answer : answerMessage?.answer,
+                chat_type: answerMessage?.chat_type,
+                used_token : answerMessage?.used_token
+              }
+            ])
+          }else{
+            setOutputCode([
+              {
+                ismode : 'server',
+                isHistory : false,
+                id: answerMessage?.chat_id,
+                user_question : answerMessage?.question,
+                answer : answerMessage?.answer,
+                chat_type: answerMessage?.chat_type,
+                used_token : answerMessage?.used_token
+              }
+            ])
+          }
+         /*  setOutputCode((prevCode: any[]) => {
             const newArray = [...prevCode];
             const lastIndex = msgLen;
             newArray[lastIndex] = {
@@ -488,7 +545,7 @@ export default function ChatBot() {
               used_token : answerMessage?.used_token
             };
             return newArray;
-          })
+          }) */
         }else{
           if ( questionResult?.message?.statusCode == '404') {
             const parsedMessage = parseLooselyFormattedJsonString(questionResult?.message?.message);
@@ -502,7 +559,7 @@ export default function ChatBot() {
               setIsLoading(false);
               setReceiving(false);
               setIsFocus(false)
-              setOutputCode((prevCode: any[]) => {
+              /* setOutputCode((prevCode: any[]) => {
                 const newArray = [...prevCode];
                 const lastIndex = msgLen;
                 newArray[lastIndex] = {
@@ -516,7 +573,35 @@ export default function ChatBot() {
                   used_token : 0
                 };
                 return newArray;
-              })
+              }) */
+              if (Array.isArray(outputCode)) {
+                setOutputCode([
+                  ...outputCode,
+                  {
+                    ismode : 'system',
+                    isHistory : false,
+                    id: functions.getUUID(),
+                    user_question : inputCodeText,
+                    answer : null,
+                    msg: `일일 질문이 제한되었습니다.`,
+                    chat_type : 'system',
+                    used_token : 0
+                  }
+                ])
+              }else{
+                setOutputCode([
+                  {
+                    ismode : 'system',
+                    isHistory : false,
+                    id: functions.getUUID(),
+                    user_question : inputCodeText,
+                    answer : null,
+                    msg: `일일 질문이 제한되었습니다.`,
+                    chat_type : 'system',
+                    used_token : 0
+                  }
+                ])
+              }
             }else{
               call_fn_error_message();
             }
@@ -1110,7 +1195,7 @@ export default function ChatBot() {
             }
             { ( isFocus && isChatDisabled.isState ) && ( <ChatWarningInfo /> )}
             <Flex 
-              position={'absolute'}
+              position={'fixed'}
               display={isShowScroll ? 'flex' : 'none'} 
               top={isFocus ? {base : '-80px', md : '-70px'} : {base : '-55px', md : '-45px'}}
               left={'0'}

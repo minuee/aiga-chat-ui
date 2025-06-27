@@ -73,3 +73,26 @@ export const ChatSesseionIdStore = create<ChatSesseionIdStoreState>()(
         )
     )
 );
+
+
+interface CurrentDialogStoreState {
+    messageData : any;
+    setCurrentMessageData: (messageData: any) => void;
+}
+
+export const CurrentDialogStore = create<CurrentDialogStoreState>()(
+    devtools(
+        persist(
+            (set) => ({
+                messageData: [],
+                setCurrentMessageData: (messageData:any) => {
+                    set({messageData});
+                },
+            }),
+            { 
+                name: 'CurrentDialogStore',
+                storage: createJSONStorage(() => localStorage),
+            }
+        )
+    )
+);

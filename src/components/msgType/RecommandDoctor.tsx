@@ -49,7 +49,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
     if (flexRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = flexRef.current;
       // 스크롤이 끝에 도달했는지 확인
-      if ( ( scrollLeft + clientWidth +100 ) >= scrollWidth ) {
+      if ( ( scrollLeft + clientWidth + 200 ) >= scrollWidth ) {
         setShowGradient(false);
       } else {
         setShowGradient(true);
@@ -58,16 +58,21 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
   };
 
   useEffect(() => {
-    const flexElement = flexRef.current;
-    if (flexElement) {
-      flexElement.addEventListener('scroll', handleScroll);
-    }
-    return () => {
+    const timer = setTimeout(() => {
+      const flexElement = flexRef.current;
       if (flexElement) {
-        flexElement.removeEventListener('scroll', handleScroll);
+        flexElement.addEventListener('scroll', handleScroll);
       }
-    };
+      return () => {
+        if (flexElement) {
+          flexElement.removeEventListener('scroll', handleScroll);
+        }
+      };
+    }, 500); // 0.5초 후에 강제 시도
+  
+    return () => clearTimeout(timer);
   }, []);
+
 
   useEffect(() => {
     if ( !functions.isEmpty( data?.answer?.doctors )) {
@@ -122,7 +127,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
       minWidth={'100%'} width={'auto'} minHeight={"60px"} position={'relative'}
       sx={{
         '&::after': {
-          content: ( showGradient && doctorList?.length > 4 ) ? '""' : 'none', position: 'absolute', top: 0,right: 0,width: '200px',height: '100%',maxHeight : "250px",
+          content: ( showGradient && doctorList?.length > 4 ) ? '""' : 'none', position: 'absolute', top: 0,right: 0,width: '200px',height: '100%',maxHeight : "280px",
           background:  isDark ? 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0  , 1) 100%)' : 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)',
           pointerEvents: 'none', // 클릭 이벤트 방지
         },
@@ -155,6 +160,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
               key={index} 
               flexDirection="column" 
               bg={profileBgColor} 
+              minWidth={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
               width={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
               maxWidth='300px' 
               px="10px"
