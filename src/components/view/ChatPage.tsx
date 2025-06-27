@@ -80,7 +80,7 @@ export default function Index() {
   return (
       <Flex  justifyContent={'center'} >
         <Flex
-          //minHeight="100vh"
+          minHeight={isMobileOnly ? "100%" : "100vh"}
           height="100%"
           overflow="hidden" /* 여기가 중요 */
           position="relative"
@@ -116,7 +116,7 @@ export default function Index() {
             />
           </Box>
           {
-            isGlobalState 
+            !isGlobalState 
             ?
             <Flex 
               mt="60px"

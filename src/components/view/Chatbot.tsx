@@ -1047,8 +1047,8 @@ export default function ChatBot() {
         <Flex
           as="div"
           direction="column" w="100%" maxWidth={`${mConstants.desktopMinWidth}px` }
-          maxH={isKeyboardOpen ? "50% ":  "calc(100vh - 130px)"} /* 여기가 하단 스크롤 영역 영향 받음 */
-          minH={isKeyboardOpen ? "50%" : "calc(100vh - 106px)" }
+          maxH={"calc(100vh - 130px)"} /* 여기가 하단 스크롤 영역 영향 받음 */
+          minH={"calc(100vh - 106px)" }
           overflowY='auto'
           ref={scrollRef}
           position="relative"
