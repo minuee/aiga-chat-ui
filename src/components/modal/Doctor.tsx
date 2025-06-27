@@ -155,7 +155,7 @@ function DoctorModal(props: DoctorModalProps) {
   }
 
   const onSendDoctorReviewButton = async( gubun = "") => {
-    if ( userBaseInfo.isGuest &&  functions.isEmpty(userBaseInfo?.userId) ) {
+    if ( functions.isEmpty(userBaseInfo?.userId) ) {
       setOpenAlert(true)
     }
     if ( !functions.isEmpty(gubun)) setReviewData({doctor_id : gubun})
