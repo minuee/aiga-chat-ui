@@ -22,7 +22,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
 
   const { secondary } = props;
   const { colorMode, toggleColorMode } = useColorMode();
-  const { userId, ...userInfo } = UserStateStore(state => state);
+  const { userId, ...userBasicInfo } = UserStateStore(state => state);
   const setLoginUserInfo = UserStateStore((state) => state.setUserState);
   const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
@@ -160,7 +160,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
   return (
     <Flex zIndex="100" w={'auto'} alignItems="center" justifyContent={'flex-end'} flexDirection="row" flexWrap={secondary ? { base: 'wrap', md: 'nowrap' } : 'unset'} p="10px">
       {
-        process.env.NODE_ENV == 'development' && (
+        ( process.env.NODE_ENV == 'development' || userBasicInfo?.email == 'minuee47@gmail.com' ) && (
           <Button
             value={"dark-mode"} aria-label='' aria-labelledby='nonexistent' variant="no-hover" bg="transparent" p="0px"
             minW="unset" minH="unset" h="18px" w="max-content" onClick={toggleColorMode} id="button_toggle_mode" name="button_toggle_mode"

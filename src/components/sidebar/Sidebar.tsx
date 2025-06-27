@@ -63,7 +63,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
   const pathnameRef = React.useRef(pathname);
   //const [isOpenLoginModal, setIsOpenLoginModal] = React.useState<boolean>(false);
   let sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
-  let menuColor = useColorModeValue('gray.400', 'white');
+  let drawerBackgroundColor = useColorModeValue('white', 'transparent');
   // // SIDEBAR
   //const { isOpen, onOpen, onClose } = useDisclosure();
   const { isFromDoctorDepth2 } = DoctorFromListStore(state => state);
@@ -205,7 +205,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
             w="100%"
             height={{base:"60vh", md:"60vh"}}
             maxW={`${mConstants.modalMaxWidth}px`}
-            //bg={sidebarBackgroundColor}
+            bg={drawerBackgroundColor}
             borderTopLeftRadius={"10px"}
             borderTopRightRadius={"10px"}
             alignItems={'center'}

@@ -238,6 +238,20 @@ const sample_msg_5 = {
     "updateAt": null
 }
 
+const sample_msg_6 = {
+    "chat_id": 73,
+    "user_id": "uid_a6868590-16a4-48c7-970b-04a862f94238",
+    "session_id": "sid_05538f94-c4e1-4b60-b34a-c2e7c6220d2f",
+    "chat_type": "general",
+    "question": "그럼, 어떻게 해야 해",
+    "question_time": "2025-06-27T00:17:28.169Z",
+    "answer": "\"족저근막염은 발바닥의 근막에 염증이 생기는 질환으로, 주로 발뒤꿈치에 통증을 유발합니다. 다음은 족저근막염 관리에 도움이 될 수 있는 몇 가지 방법입니다:\\n\\n1. **휴식**: 발에 무리가 가지 않도록 충분한 휴식을 취하세요.\\n2. **냉찜질**: 통증이 있을 때는 얼음찜질을 통해 염증을 줄일 수 있습니다.\\n3. **스트레칭**: 발바닥과 종아리 근육을 스트레칭하여 유연성을 높이는 것이 중요합니다.\\n4. **적절한 신발**: 충격을 흡수할 수 있는 신발을 착용하세요. 필요하다면 족저근막염용 깔창을 사용할 수 있습니다.\\n5. **약물 치료**: 통증이 심할 경우, 비스테로이드성 소염제(NSAIDs)를 복용할 수 있습니다.\\n\\n만약 증상이 지속되거나 악화된다면, 정형외과 전문의를 방문하여 정확한 진단과 치료를 받는 것이 좋습니다.\"",
+    "answer_time": "2025-06-27T00:17:28.169Z",
+    "used_token": 1209,
+    "createAt": "2025-06-27T00:17:28.169Z",
+    "updateAt": null
+}
+
 const contrants  = {
   defaultColor : '#6c62d1',
   projectTitle : 'AIGA WEB',
@@ -284,7 +298,8 @@ const contrants  = {
   sample_msg_2,
   sample_msg_3,
   sample_msg_4,
-  sample_msg_5
+  sample_msg_5,
+  sample_msg_6
 }
 
 export default contrants;

@@ -149,24 +149,25 @@ export default function ChatBot() {
       
       setTimeout(() => {
         setIsLoading(false);
-        /* const msgLen = outputCode?.length;
+        const msgLen = outputCode?.length;
         const sampleMsg1 = mConstants.sample_msg_1;
         const sampleMsg2 = mConstants.sample_msg_2;
         const sampleMsg3 = mConstants.sample_msg_3;
         const sampleMsg4 = mConstants.sample_msg_4;
         const sampleMsg5 = mConstants.sample_msg_5;
+        const sampleMsg6 = mConstants.sample_msg_6;
         setOutputCode((prevCode: any[]) => {
           const newArray = [...prevCode];
           const lastIndex = msgLen;
           newArray[lastIndex] = {
             ismode : 'server',
-            id: sampleMsg1?.chat_id,
-            user_question : sampleMsg1?.question,
-            answer : sampleMsg1?.answer,
-            chat_type: sampleMsg1?.chat_type,
-            used_token : sampleMsg1?.used_token
+            id: sampleMsg6?.chat_id,
+            user_question : sampleMsg6?.question,
+            answer : sampleMsg6?.answer,
+            chat_type: sampleMsg6?.chat_type,
+            used_token : sampleMsg6?.used_token
           };
-          newArray[lastIndex+1] = {
+          /* newArray[lastIndex+1] = {
             ismode : 'server',
             id: sampleMsg2?.chat_id,
             user_question : sampleMsg2?.question,
@@ -197,9 +198,9 @@ export default function ChatBot() {
             answer : sampleMsg5?.answer,
             chat_type: sampleMsg5?.chat_type,
             used_token : sampleMsg5?.used_token
-          };
+          }; */
           return newArray;
-        }) */
+        })
       }, 60);
     }
   }, []);

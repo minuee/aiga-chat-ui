@@ -116,14 +116,11 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
                             {/* <PopoverArrow color={borderColor} /> */}
                             <PopoverBody borderRadius={'8px'} width={"150px"}>
                                 <Flex flexDirection={'column'} alignItems={'flex-start'}>
-                                    <Button leftIcon={<Icon as={BiEdit} width="16px" height="16px" color={iconColor} />} size='sm' onClick={() => setEditMode(true)} id="button_change_name"  bg="transparent">
-                                        이름변경
+                                    <Button leftIcon={<Icon as={BiEdit} width="16px" height="16px" color={iconColor} />} size='sm' onClick={() => setEditMode(true)} id="button_change_name"  bg="transparent" alignItems="center">
+                                        <CustomText fontSize='15px' color={iconColor}>이름변경</CustomText> 
                                     </Button>
-                                    {/* <Button leftIcon={<Icon as={MdOutlineShare} />} size='sm' onClick={() => setIsOpenShare(true)} id="button_share">
-                                        공유하기
-                                    </Button> */}
-                                    <Button leftIcon={<Icon as={BiTrash} width="16px" height="16px" color={iconRedColor}  />} size='sm' onClick={onOpen} color={iconRedColor} id="button_remove"  bg="transparent">  
-                                        삭제하기
+                                    <Button leftIcon={<Icon as={BiTrash} width="16px" height="16px" color={iconRedColor}  />} size='sm' onClick={onOpen} color={iconRedColor} id="button_remove"  bg="transparent" alignItems="center">  
+                                     <CustomText fontSize='15px' color={iconColor}>삭제하기</CustomText> 
                                     </Button>
                                 </Flex>
                             </PopoverBody>

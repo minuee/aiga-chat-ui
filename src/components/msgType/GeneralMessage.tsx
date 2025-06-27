@@ -15,9 +15,8 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory }: 
     previousOutputRef.current = output; // output이 변경될 때마다 이전 값을 업데이트
   }, [output]);
 
-  //const isOutputSame = previousOutputRef.current === output; // 이전 output과 현재 output 비교
   const isOutputSame = previousOutputRef.current === output && previousOutputRef.current !== null;
-  
+  const cleanedOutput = (JSON.parse(output) || '').replace(/\\n/g, '\n')
   return (
    <Flex w="100%" flexDirection={'column'} mt="10px" overflow={'hidden'}>
       <Box my="5px">
@@ -44,18 +43,11 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory }: 
           ?
           <CustomText fontSize={'17px'} style={{ whiteSpace: 'pre-line' }} >{output.replaceAll(/<br\s*\/?>/gi, '\n').replaceAll(/\\n/g, '\n')}</CustomText>
           :
-          <ReactMarkdown
-            components={{
-              p: ({ children }) => (
-                <TypeAnimation
-                  msg={Array.isArray(children) ? children.join('') : String(children)}
-                  speed={30}
-                />
-              )
-            }}
-          >
-            {output.replaceAll(/\\n/g, '\n') || ''}
-          </ReactMarkdown>
+          <TypeAnimation
+            msg={cleanedOutput}
+            speed={30}
+          />
+          
         }
       </Flex>
     </Flex>
