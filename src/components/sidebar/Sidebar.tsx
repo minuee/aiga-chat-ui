@@ -63,7 +63,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
   const pathnameRef = React.useRef(pathname);
   //const [isOpenLoginModal, setIsOpenLoginModal] = React.useState<boolean>(false);
   let sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
-  let drawerBackgroundColor = useColorModeValue('white', 'transparent');
+  let drawerBackgroundColor = useColorModeValue('transparent', 'transparent');
   // // SIDEBAR
   //const { isOpen, onOpen, onClose } = useDisclosure();
   const { isFromDoctorDepth2 } = DoctorFromListStore(state => state);
