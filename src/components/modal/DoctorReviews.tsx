@@ -339,44 +339,44 @@ function DoctorReview( props: DoctorModalProps ) {
               </Flex>
             </Box>
             <Box flex={2} display={'flex'} flexDirection={'column'}  alignItems={'center'} justifyContent={'flex-end'} width={{base : '100%', sm2:'auto'}}>
-              <Box display={'flex'} flexDirection={'row'}  alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
+              <Box display={'flex'} flexDirection={'row'}  alignItems={'center'} justifyContent={'flex-end'} width={'100%'} height={'25px'}>
                 <Box flex={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} pr={'15px'}>
                   <CustomText fontSize={'13px'} color={voteTextColor}>친절•배려</CustomText>
                 </Box>
-                <Box flex={2}>
+                <Box flex={2} mr={2}>
                   <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={(aigaReviewAverage?.kindness_avg*20)} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box flex={1} padding={'0 5px'}>
                   <CustomText fontSize={'13px'} color={voteTextColor2}>{aigaReviewAverage?.kindness_avg?.toFixed(1)}</CustomText>
                 </Box>
               </Box>
-              <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
+              <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'} height={'25px'}>
                 <Box flex={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} pr={'15px'}>
                   <CustomText fontSize={'13px'} color={voteTextColor}>치료 만족</CustomText>
                 </Box>
-                <Box flex={2}>
+                <Box flex={2} mr={2}>
                   <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={(aigaReviewAverage?.explaination_avg*20)} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box flex={1} padding={'0 5px'}>
                   <CustomText fontSize={'13px'} color={voteTextColor2}>{aigaReviewAverage?.explaination_avg?.toFixed(1)}</CustomText>
                 </Box>
               </Box>
-              <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
+              <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'} height={'25px'}>
                 <Box flex={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} pr={'15px'}>
                   <CustomText fontSize={'13px'} color={voteTextColor}>쉬운 설명</CustomText>
                 </Box>
-                <Box flex={2}>
+                <Box flex={2} mr={2}>
                   <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={(aigaReviewAverage?.satisfaction_avg*20)} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box flex={1} padding={'0 5px'}>
                   <CustomText fontSize={'13px'} color={voteTextColor2}>{aigaReviewAverage?.satisfaction_avg?.toFixed(1)}</CustomText>
                 </Box>
               </Box>
-              <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'}>
+              <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'} height={'25px'}>
                 <Box flex={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} pr={'15px'}>
                   <CustomText fontSize={'13px'} color={voteTextColor}>추천 의향</CustomText>
                 </Box>
-                <Box flex={2}>
+                <Box flex={2} mr={2}>
                   <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={(aigaReviewAverage?.recommand_avg*20)} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box flex={1} padding={'0 5px'}>

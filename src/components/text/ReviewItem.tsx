@@ -166,6 +166,7 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                         border={"0px solid #ffffff"}
                         id={"textarea_content"}
                         color={{voteTextColor}}
+                        fontFamily={'body_notosans'}
                         as={ResizeTextarea}
                         minRows={1}
                         maxRows={isExpanded ? undefined : 5}
