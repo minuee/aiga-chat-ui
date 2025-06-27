@@ -116,7 +116,7 @@ export default function Index() {
             />
           </Box>
           {
-            !isGlobalState 
+            isGlobalState 
             ?
             <Flex 
               mt="60px"
