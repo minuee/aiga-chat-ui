@@ -47,7 +47,7 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
                 .replace(/\\n/g, '\n')              // \\n → 줄바꿈
                 .replace(/^"(.*)"$/, '$1')          // 양끝 큰따옴표 제거
             }}
-          />
+          >{''}</CustomText>
           :
           isHistory
           ?
@@ -60,7 +60,7 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
                 .replace(/\\n/g, '\n')              // \\n → 줄바꿈
                 .replace(/^"(.*)"$/, '$1')          // 양끝 큰따옴표 제거
             }}
-          />
+          >{''}</CustomText>
           :
           <TypeAnimation
             msg={ output.replace(/^"(.*)"$/, '$1')}
