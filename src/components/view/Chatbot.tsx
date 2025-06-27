@@ -1198,15 +1198,16 @@ export default function ChatBot() {
             }
             { ( isFocus && isChatDisabled.isState ) && ( <ChatWarningInfo /> )}
             <Flex 
-              position={'fixed'}
+              position={'absolute'}
               display={isShowScroll ? 'flex' : 'none'} 
-              top={isFocus ? {base : '-80px', md : '-70px'} : {base : '-55px', md : '-45px'}}
+              top={isFocus ? {base : '-80px', md : '-70px'} : {base : '55px', md : '-45px'}}
               left={'0'}
               w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
               height={'30px'}
               justifyContent={'center'}
               alignItems={'center'}
               bg='transparent'
+              zIndex={1000}
             >
               <Box
                 display={'flex'}  width="40px" height={"40px"} cursor={'pointer'} zIndex={10} justifyContent='center' alignItems={'center'} 

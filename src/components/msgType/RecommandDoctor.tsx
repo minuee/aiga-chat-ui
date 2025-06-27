@@ -15,6 +15,9 @@ import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/te
 import { BiChevronRight } from "react-icons/bi";
 import { IconChatAiga} from '@/components/icons/svgIcons';
 import DoctorAvatar from "@/assets/images/doctor_default_white.png";
+import { MdOutlineArrowForward } from 'react-icons/md';
+
+
 type RecommandDoctorProps = {
     data : any;
     isHistory : boolean;
@@ -42,7 +45,8 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
   const nameTextColor = useColorModeValue('#17191D','white')
   const partTextColor = useColorModeValue('#7F879B','white')
   const iconColor = useColorModeValue('#0AA464','#0AA464');
-
+  const navbarIcon = useColorModeValue('#7F879B', 'white');
+  const navbarBgColor = useColorModeValue('white', 'navy.800');
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
 
   const handleScroll = () => {
@@ -194,6 +198,30 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
               </Box>
             </Flex>
           ))
+        }
+        {
+          doctorList?.length > 4 && (
+            <Flex 
+              flexDirection="column" 
+              bg={navbarBgColor} 
+              minWidth="80px" 
+              height={"100%"}
+              justifyContent={'center'}
+              alignItems={'center'}
+            >
+              <Box
+                display={'flex'}  width="40px" height={"40px"} cursor={'pointer'} justifyContent='center' alignItems={'center'} 
+                borderRadius={'20px'} 
+                flexDirection={'column'}
+                backgroundColor={navbarBgColor}
+                onClick={()=> onSendDoctorListButton()}
+                border={'1px solid #efefef'}
+              >
+              <Icon as={MdOutlineArrowForward} width="25px" height="25px" color={navbarIcon} />
+            </Box>
+            <CustomTextBold700 fontSize={'15px'} fontWeight={'bold'} color={navbarIcon} lineHeight={"150%"}>전체보기</CustomTextBold700>
+          </Flex>
+          )
         }
       </Flex>
       <Box pr={1} justifyContent={'flex-end'} display={doctorList?.length == 0 ? 'none' : 'flex'}>

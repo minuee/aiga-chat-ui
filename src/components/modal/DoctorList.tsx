@@ -267,7 +267,7 @@ function DoctorListModal(props: DoctorListModalProps) {
             )
           }
           <Stack
-            position='absolute' left={"0"} top={"65px"} width="100%"
+            position='absolute' left={"0"} top={"60px"} width="100%"
             sx={{
               '&::after': {
                 content: showGradient ? '""' : 'none', 
