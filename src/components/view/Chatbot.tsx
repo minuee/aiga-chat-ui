@@ -27,6 +27,7 @@ import Processing  from '@/components/msgType/Processing';
 import SkeletonDefaultText from "@/components/fields/LoadingBar";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
+import useKeyboardStatus from "@/hooks/useKeyboardStatus";
 import { useTranslations } from 'next-intl';
 import LoadingBar from "@/assets/icons/loading.gif";
 import mConstants from '@/utils/constants';
@@ -48,6 +49,8 @@ export default function ChatBot() {
   const t = useTranslations('Messages');
   const { colorMode, toggleColorMode } = useColorMode();
   const alreadyInitialized = useRef(false);
+
+  const isKeyboardOpen = useKeyboardStatus();
   // Input States
   const pathname = usePathname();
   const router = useRouter();
@@ -1044,8 +1047,8 @@ export default function ChatBot() {
         <Flex
           as="div"
           direction="column" w="100%" maxWidth={`${mConstants.desktopMinWidth}px` }
-          maxH="calc(100vh - 130px)" /* 여기가 하단 스크롤 영역 영향 받음 */
-          minH="calc(100vh - 106px)" 
+          maxH={isKeyboardOpen ? "50% ":  "calc(100vh - 130px)"} /* 여기가 하단 스크롤 영역 영향 받음 */
+          minH={isKeyboardOpen ? "50%" : "calc(100vh - 106px)" }
           overflowY='auto'
           ref={scrollRef}
           position="relative"

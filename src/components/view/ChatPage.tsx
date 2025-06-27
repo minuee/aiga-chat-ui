@@ -71,16 +71,16 @@ export default function Index() {
 
   if (isLoading) {
    return (
-    <Box bg={'white'}>
+    <Flex  bg={themeColor} height={"100%"} width="100%" justifyContent={'center'} alignItems={'center'}>
       <SkeletonCircle size='10' />
-    </Box>
+    </Flex>
    )
   }
 
   return (
       <Flex  justifyContent={'center'} >
         <Flex
-          minHeight="100vh"
+          //minHeight="100vh"
           height="100%"
           overflow="hidden" /* 여기가 중요 */
           position="relative"
@@ -98,7 +98,7 @@ export default function Index() {
           //border="1px solid rgba(255, 255, 255, 0.3)"
         >
           <Box 
-            position={'absolute'}
+            position={'fixed'}
             top={0}
             left={0}
             right={0}
@@ -116,7 +116,7 @@ export default function Index() {
             />
           </Box>
           {
-            isGlobalState 
+            !isGlobalState 
             ?
             <Flex 
               mt="60px"
@@ -126,8 +126,6 @@ export default function Index() {
               maxWidth={`${mConstants.desktopMinWidth}px`} 
               overflow={'hidden'}
               bg={themeColor}
-              borderBottomLeftRadius={ isDesktop ? '15px' : 0}
-              borderBottomRightRadius={ isDesktop ? '15px' : 0} 
             >
               <SubPage />
             </Flex>
