@@ -318,7 +318,6 @@ function ReviewModal(props: ReviewModalProps) {
             <Alert 
               isShowAppname={false}
               AppName='AIGA'
-              size="sm"
               bodyContent={
                 <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} py="20px" width="100%"           // 여기 조절 가능
                 maxW="480px"           // 예시로 최대 너비 제한
