@@ -131,18 +131,19 @@ export const ChatWarningInfo = () => {
   return (
     <Flex 
       position={'absolute'}
-      top={{base : '-10px', md : '-10px'}}
+      top={'-27px'}
       left={'0'}
       w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
-      height={'10px'}
+      minHeight={'30px'}
+      height={'auto'}
       justifyContent={'center'}
-      alignItems={'center'}
+      alignItems={'flex-end'}
       bg={bgColor}
       zIndex={9}
     >
       <Box display='flex' alignItems='center' width={"100%"} px="16px">
         <Icon as={MdInfoOutline} width="14px" height="14px" color={infoIcon}  />
-        <CustomText fontSize='12px' color={textColor} lineHeight={'130%'} letterSpacing={'-5%'} pl="5px">
+        <CustomText fontSize='12px' color={textColor} lineHeight={'130%'} letterSpacing={'-5%'} pl="5px" noOfLines={2}>
           AIGA는 실수를 할 수 있습니다. 본 AI서비스는 의료행위가 아니며 답변에 어떠한 책임도 지지 않습니다.
         </CustomText>
       </Box>

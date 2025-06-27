@@ -155,6 +155,9 @@ function DoctorModal(props: DoctorModalProps) {
   }
 
   const onSendDoctorReviewButton = async( gubun = "") => {
+    if ( functions.isEmpty(userBaseInfo?.isGuest)) {
+      setOpenAlert(true)
+    }
     if ( !functions.isEmpty(gubun)) setReviewData({doctor_id : gubun})
     if ( isFromDoctorDepth2 ) {//true이면 list > detail
       history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_3_2}`);

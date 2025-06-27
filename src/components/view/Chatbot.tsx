@@ -410,7 +410,33 @@ export default function ChatBot() {
   }
 
   const handleTranslate = async( isText:any = '') => {
-  
+    const nowTokens = calculateTokenCount(inputCode);
+    const nowTimeStamp = functions.getKSTUnixTimestamp();
+
+    if ( in24UsedToken > 0 ) { 
+      const realTimeIn24UsedToken = in24UsedToken+nowTokens;
+      if ( userBasicInfo?.isGuest  ) {//비회원
+        if ( realTimeIn24UsedToken >= guestMaxToken ) {
+          setChatDisabled({
+            ...isChatDisabled,
+            reTryTimeStamp : nowTimeStamp,
+            isAlertMsg : false,
+            isState : false,
+          })
+          return;
+        }
+      }else{
+        if ( realTimeIn24UsedToken >= userMaxToken ) {
+          setChatDisabled({
+            ...isChatDisabled,
+            reTryTimeStamp : nowTimeStamp,
+            isAlertMsg : false,
+            isState : false,
+          })
+          return;
+        }
+      }
+    }
     if ( functions.isEmpty(inputCode) ||  functions.isEmpty(isText) || isReceiving ) return;
     let chat_sessinn_id = chatSessionId;
     if ( functions.isEmpty(chat_sessinn_id)) {
@@ -546,8 +572,8 @@ export default function ChatBot() {
   }, [outputCode]);
 
   const handleChange = (Event: any) => {
-    
-    const nowTokens = calculateTokenCount(Event.target.value);
+    setInputCode(Event.target.value);
+    /* const nowTokens = calculateTokenCount(Event.target.value);
     const nowTimeStamp = functions.getKSTUnixTimestamp();
     console.log('nowTokens',in24UsedToken,nowTokens,nowTimeStamp)
     if ( in24UsedToken > 0 ) { 
@@ -575,7 +601,7 @@ export default function ChatBot() {
       }
     }else{
       setInputCode(Event.target.value);
-    }
+    } */
   }
 
   // 토큰 계산 함수
@@ -1129,7 +1155,7 @@ export default function ChatBot() {
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
               id={"textarea_content"}
-              disabled={!isChatDisabled?.isState}
+              disabled={(!isChatDisabled?.isState || isReceiving)}
             />
             <Box display={'flex'} position={'absolute'} bottom={'6px'} right={'20px'} w={'55px'} height={'55px'} justifyContent={'flex-end'} alignItems={'center'}>
               {

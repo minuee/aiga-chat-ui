@@ -106,24 +106,24 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
         }
         { 
             !editMode && (
-                <Box position={"absolute"} left={'-5px'} top={"6px"} width={'100%'}  height={'42px'} zIndex={1}>
+                <Box position={"absolute"} left={'-5px'} top={"6px"} width={'100%'}  height={'42px'} >
                     <Flex justifyContent={'flex-end'}>
                         <Popover>
                             <PopoverTrigger>
-                                <Icon as={BiDotsHorizontalRounded} width="24px" height="24px" color={moreColor} />
+                                <Icon as={BiDotsHorizontalRounded} width="24px" height="24px" color={moreColor} zIndex={1}/>
                             </PopoverTrigger>
-                            <PopoverContent width={'150px'} bg={bgColor} borderColor={borderColor}>
-                            {/* <PopoverArrow color={borderColor} /> */}
-                            <PopoverBody borderRadius={'8px'} width={"150px"}>
-                                <Flex flexDirection={'column'} alignItems={'flex-start'}>
-                                    <Button leftIcon={<Icon as={BiEdit} width="16px" height="16px" color={iconColor} />} size='sm' onClick={() => setEditMode(true)} id="button_change_name"  bg="transparent" alignItems="center">
-                                        <CustomText fontSize='15px' color={iconColor}>이름변경</CustomText> 
-                                    </Button>
-                                    <Button leftIcon={<Icon as={BiTrash} width="16px" height="16px" color={iconRedColor}  />} size='sm' onClick={onOpen} color={iconRedColor} id="button_remove"  bg="transparent" alignItems="center">  
-                                     <CustomText fontSize='15px' color={iconColor}>삭제하기</CustomText> 
-                                    </Button>
-                                </Flex>
-                            </PopoverBody>
+                            <PopoverContent width={'150px'} bg={bgColor} borderColor={borderColor} zIndex={9999} mr="5px">
+                                {/* <PopoverArrow color={borderColor} /> */}
+                                <PopoverBody borderRadius={'8px'} width={"140px"} bg={bgColor} mr="10px">
+                                    <Flex flexDirection={'column'} alignItems={'flex-start'} bg={bgColor}>
+                                        <Button leftIcon={<Icon as={BiEdit} width="16px" height="16px" color={iconColor} />} size='sm' onClick={() => setEditMode(true)} id="button_change_name"  bg="transparent" alignItems="center">
+                                            <CustomText fontSize='15px' color={iconColor}>이름변경</CustomText> 
+                                        </Button>
+                                        <Button leftIcon={<Icon as={BiTrash} width="16px" height="16px" color={iconRedColor}  />} size='sm' onClick={onOpen} color={iconRedColor} id="button_remove"  bg="transparent" alignItems="center">  
+                                        <CustomText fontSize='15px' color={iconColor}>삭제하기</CustomText> 
+                                        </Button>
+                                    </Flex>
+                                </PopoverBody>
                             </PopoverContent>
                         </Popover>
                     </Flex>
