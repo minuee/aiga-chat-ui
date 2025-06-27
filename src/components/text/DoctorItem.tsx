@@ -39,8 +39,8 @@ const DoctorList = ({ data, onSendDoctorButton }:DoctorListProps) => {
                         }
                     </Flex>
                 </Box>
-                <Box display={'flex'} flex={1} justifyContent={'center'} alignItems={'center'} pl='15px' minWidth={'90px'} onClick={() => onSendDoctorButton(data,1)} cursor={'pointer'}>
-                    <Image src={DoctorAvatar} alt="doctor" width={90} height={90} />
+                <Box  display={'flex'}  justifyContent={'center'} alignItems={'center'} width={'60px'} onClick={() => onSendDoctorButton(data,1)} cursor={'pointer'}>
+                    <Image src={DoctorAvatar} alt="doctor" width={60} height={60} />
                 </Box>
             </Flex>
             <Divider  my={2} />

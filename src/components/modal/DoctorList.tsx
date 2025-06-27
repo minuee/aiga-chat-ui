@@ -62,9 +62,9 @@ function DoctorListModal(props: DoctorListModalProps) {
   const skeletonColor = useColorModeValue('white', 'gray.700');
   const textColor = useColorModeValue('white', 'white')
   const tabSelectedBgColor = useColorModeValue('blue.100', 'green')
-  const tabDefaultBgColor = useColorModeValue('gray.300', 'white');
+  const tabDefaultBgColor = useColorModeValue('#DFE3EA', 'white');
   const tabSelectedTextColor = useColorModeValue('white', 'white')
-  const tabDefaultTextColor = useColorModeValue('gray.500', 'navy.800');
+  const tabDefaultTextColor = useColorModeValue('#5C5E69', 'navy.800');
   const haederBgColor = useColorModeValue('white', 'navy.700');
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
   const textColor2 = useColorModeValue('black', 'gray.700');
@@ -282,7 +282,7 @@ function DoctorListModal(props: DoctorListModalProps) {
             }}
           >
             <Flex 
-              width={"100%"} px="15px" py="15px" flexDirection={'row'} alignItems={'center'} fontSize={'14px'} minHeight={"40px"} borderBottom={"1px solid #ccc"} zIndex={1000} 
+              width={"100%"} px="5px" flexDirection={'row'} alignItems={'center'} fontSize={'14px'} height={"64px"} borderBottom={"1px solid #ccc"} zIndex={1000} 
               bg={isReLoading ? "transparent" : haederBgColor} opacity={ isReLoading ? 0.7 : 1} overflowX={'auto'} whiteSpace="nowrap" ref={flexRef} 
             >
              {/*  <Tag size={'lg'} borderRadius='full' px={5} variant='solid' bg={makeBgColor('all')} flexShrink="0" onClick={() => onHandleSortChange('all')} cursor={'pointer'}>
@@ -292,18 +292,24 @@ function DoctorListModal(props: DoctorListModalProps) {
               </Tag> */}
               <Tag size={'lg'} borderRadius='full' px={5} ml={2} variant='solid' bg={makeBgColor('experience')} onClick={() => onHandleSortChange('experience')} cursor={'pointer'} flexShrink="0">
                 <TagLeftIcon boxSize='17px' as={MdInsertEmoticon} color={makeTextColor('experience')} />
-                <TagLabel color={makeTextColor('experience')}>환자 경험</TagLabel>
+                <TagLabel color={makeTextColor('experience')}>
+                  <CustomTextBold400 fontSize='15px' color={makeTextColor('experience')} letterSpacing={'-5%'}>환자 경험</CustomTextBold400>
+                </TagLabel>
               </Tag>
               <Tag size={'lg'} borderRadius='full' px={5} ml={2} variant='solid' bg={makeBgColor('score')} onClick={() => onHandleSortChange('score')} cursor={'pointer'} flexShrink="0">
                 <TagLeftIcon boxSize='17px' as={TbBook2} color={makeTextColor('score')} />
-                <TagLabel color={makeTextColor('score')}>논문 스코어</TagLabel>
+                <TagLabel color={makeTextColor('score')}>
+                  <CustomTextBold400 fontSize='15px' color={makeTextColor('distance')} letterSpacing={'-5%'}>논문 스코어</CustomTextBold400>
+                </TagLabel>
               </Tag>
               {
                 ( !functions.isEmpty(inputs.latitude) && !functions.isEmpty(inputs.longitude) ) ? 
                 (
                   <Tag size={'lg'} borderRadius='full' px={5} ml={2} variant='solid' bg={makeBgColor('distance')} onClick={() => onHandleSortChange('distance')} cursor={'pointer'} flexShrink="0">
-                    <TagLeftIcon boxSize='17px' as={BsGeoAlt} color={makeTextColor('distance')} />
-                    <TagLabel color={makeTextColor('distance')}>거리순</TagLabel>
+                    <TagLeftIcon boxSize='16px' as={BsGeoAlt} color={makeTextColor('distance')} />
+                    <TagLabel color={makeTextColor('distance')}>
+                      <CustomTextBold400 fontSize='15px' color={makeTextColor('distance')} letterSpacing={'-5%'}>거리순</CustomTextBold400>
+                    </TagLabel>
                   </Tag>
                 )
                 :
