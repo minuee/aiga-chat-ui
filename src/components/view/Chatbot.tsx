@@ -1135,7 +1135,6 @@ export default function ChatBot() {
               }
             })
           }
-          <Box><Processing  msg="분석중" /></Box>
           { isReceiving && ( <Box><Processing  msg="분석중" /></Box> ) }
           <Box ref={scrollBottomRef} h="1px" pb={"60px"} visibility="hidden" />
         </Flex>
