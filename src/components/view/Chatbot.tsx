@@ -149,7 +149,7 @@ export default function ChatBot() {
       
       setTimeout(() => {
         setIsLoading(false);
-        const msgLen = outputCode?.length;
+        /* const msgLen = outputCode?.length;
         const sampleMsg1 = mConstants.sample_msg_1;
         const sampleMsg2 = mConstants.sample_msg_2;
         const sampleMsg3 = mConstants.sample_msg_3;
@@ -167,7 +167,7 @@ export default function ChatBot() {
             chat_type: sampleMsg6?.chat_type,
             used_token : sampleMsg6?.used_token
           };
-          /* newArray[lastIndex+1] = {
+          newArray[lastIndex+1] = {
             ismode : 'server',
             id: sampleMsg2?.chat_id,
             user_question : sampleMsg2?.question,
@@ -198,9 +198,9 @@ export default function ChatBot() {
             answer : sampleMsg5?.answer,
             chat_type: sampleMsg5?.chat_type,
             used_token : sampleMsg5?.used_token
-          }; */
+          };
           return newArray;
-        })
+        }) */
       }, 60);
     }
   }, []);
