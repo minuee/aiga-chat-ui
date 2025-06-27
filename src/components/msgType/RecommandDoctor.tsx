@@ -204,7 +204,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
             <Flex 
               flexDirection="column" 
               bg={navbarBgColor} 
-              minWidth="80px" 
+              minWidth="100px" 
               height={"100%"}
               justifyContent={'center'}
               alignItems={'center'}
@@ -216,10 +216,11 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
                 backgroundColor={navbarBgColor}
                 onClick={()=> onSendDoctorListButton()}
                 border={'1px solid #efefef'}
+                mb="5px"
               >
               <Icon as={MdOutlineArrowForward} width="25px" height="25px" color={navbarIcon} />
             </Box>
-            <CustomTextBold700 fontSize={'15px'} fontWeight={'bold'} color={navbarIcon} lineHeight={"150%"}>전체보기</CustomTextBold700>
+            <CustomTextBold400 fontSize={'15px'} fontWeight={'bold'} color={navbarIcon} lineHeight={"150%"}>전체 보기</CustomTextBold400>
           </Flex>
           )
         }
@@ -229,9 +230,9 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
           display="flex" justifyContent={'center'} alignItems={'center'} bg={"#DFF5ED"} borderRadius={"4px"} height={"32px"} px="20px" cursor={'pointer'}
           onClick={() => onSendDoctorListButton()} 
         >
-          <CustomTextBold700 fontSize={'15px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"}>
+          <CustomTextBold400 fontSize={'15px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"} >
           {data?.answer?.disease} 전체보기
-          </CustomTextBold700>
+          </CustomTextBold400>
           <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
         </Box>
       </Box>

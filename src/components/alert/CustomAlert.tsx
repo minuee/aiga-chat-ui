@@ -27,7 +27,7 @@ const CustomAlert = ({ AppName, isShowAppname = false , bodyContent, isOpen, onC
             isCentered={isCentered}
         >
             <AlertDialogOverlay>
-                <AlertDialogContent backgroundColor={bgColor}>
+                <AlertDialogContent backgroundColor={bgColor}  maxW={{base : "90%", md:"400px"}}>
                     {/* <AlertDialogCloseButton onClick={() => onClose()}/> */}
                     {
                         isShowAppname && (

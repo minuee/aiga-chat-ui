@@ -38,7 +38,16 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
         {
           isOutputSame
           ?
-          <CustomText
+          <div
+            style={{ fontSize: '17px', whiteSpace: 'pre-line' }}
+            dangerouslySetInnerHTML={{
+              __html: output
+                .replace(/<br\s*\/?>/gi, '\n')
+                .replace(/\\n/g, '\n')
+                .replace(/^"(.*)"$/, '$1'),
+            }}
+          />
+         /*  <CustomText
             fontSize="17px"
             style={{ whiteSpace: 'pre-line' }}
             dangerouslySetInnerHTML={{
@@ -47,20 +56,20 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
                 .replace(/\\n/g, '\n')              // \\n → 줄바꿈
                 .replace(/^"(.*)"$/, '$1')          // 양끝 큰따옴표 제거
             }}
-          >{''}</CustomText>
+          >''</CustomText> */
           :
           isHistory
           ?
-          <CustomText
-            fontSize="17px"
-            style={{ whiteSpace: 'pre-line' }}
+          <div
+            style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
             dangerouslySetInnerHTML={{
               __html: output
-                .replace(/<br\s*\/?>/gi, '\n')      // <br> → 줄바꿈
-                .replace(/\\n/g, '\n')              // \\n → 줄바꿈
-                .replace(/^"(.*)"$/, '$1')          // 양끝 큰따옴표 제거
+                .replace(/<br\s*\/?>/gi, '\n')
+                .replace(/\\n/g, '\n')
+                .replace(/^"(.*)"$/, '$1'),
             }}
-          >{''}</CustomText>
+          />
+          
           :
           <TypeAnimation
             msg={ output.replace(/^"(.*)"$/, '$1')}
@@ -75,3 +84,13 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
 }, (prevProps, nextProps) => prevProps.output === nextProps.output);
 
 export default GeneralMessage;
+{/* <CustomText
+            fontSize="17px"
+            style={{ whiteSpace: 'pre-line' }}
+            dangerouslySetInnerHTML={{
+              __html: output
+                .replace(/<br\s*\/?>/gi, '\n')      // <br> → 줄바꿈
+                .replace(/\\n/g, '\n')              // \\n → 줄바꿈
+                .replace(/^"(.*)"$/, '$1')          // 양끝 큰따옴표 제거
+            }}
+          >{''}</CustomText> */}

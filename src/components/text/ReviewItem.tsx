@@ -15,7 +15,7 @@ import { iconAlertWarning } from "@/components/icons/IconImage"
 import functions from '@/utils/functions';
 import { BiTrash,BiEdit,BiDotsHorizontalRounded } from "react-icons/bi";
 import UserStateStore from '@/store/userStore';
-
+import { FiChevronDown,FiChevronUp } from "react-icons/fi";
 type ReivewItemProps = {
     data: any;
     onHandleDetail: (data: any) => void;
@@ -184,7 +184,7 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                                 onClick={() => setIsExpanded(!isExpanded)}
                                 id="button_toggle"
                             >
-                                {isExpanded ? <Icon as={MdKeyboardDoubleArrowUp} color={'#555'} /> : <Icon as={MdKeyboardDoubleArrowDown} color={'#555'} />}
+                                {isExpanded ? <Icon as={FiChevronUp} color={'#555'} /> : <Icon as={FiChevronDown} color={'#555'} />}
                             </Button>
                         </Box>
                     )}
@@ -199,7 +199,7 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                             onClick={() => setIsExpanded(!isExpanded)}
                             id="button_toggle"
                         >
-                            {isExpanded ? <Icon as={MdKeyboardDoubleArrowUp} color={'#555'} /> : <Icon as={MdKeyboardDoubleArrowDown} color={'#555'} />}
+                            {isExpanded ? <Icon as={FiChevronUp} color={'#555'} /> : <Icon as={FiChevronDown} color={'#555'} />}
                         </Button>
                     </Box> */}
                 </Box>
@@ -210,7 +210,7 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                         isShowAppname={false}
                         AppName='AIGA'
                         bodyContent={
-                            <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} py="20px">
+                            <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
                                 <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"120px"}>
                                     <NextImage
                                     width="106"
@@ -219,8 +219,9 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                                     alt={'doctor1'}
                                     />
                                 </Box>
-                                <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"50px"}>
-                                    <CustomTextBold700 fontSize={'18px'} color="#212127">이 리뷰를 삭제하시겠습니까? 삭제된 리뷰는 복구할 수 없습니다.</CustomTextBold700>
+                                <Box width={"100%"} flexDirection={'column'} display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"50px"}>
+                                    <CustomTextBold700 fontSize={'18px'} color="#212127">이 리뷰를 삭제하시겠습니까?</CustomTextBold700>
+                                    <CustomTextBold700 fontSize={'18px'} color="#212127">삭제된 리뷰는 복구할 수 없습니다.</CustomTextBold700>
                                 </Box>
                             </Flex>
                         }

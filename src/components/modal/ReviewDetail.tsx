@@ -163,7 +163,10 @@ function ReviewModal(props: ReviewModalProps) {
           <Flex  justifyContent={'center'} minHeight={'50px'} width={'100%'} mt={5}>
             <Box flex={3} pr={'20px'}> 
               <CustomTextBold700 fontSize={'24px'} color={textColor2}>
-                솔직한 리뷰를 남겨주세요
+                솔직한 리뷰를
+              </CustomTextBold700>
+              <CustomTextBold700 fontSize={'24px'} color={textColor2}>
+                남겨주세요
               </CustomTextBold700>
             </Box>
             <Box flex={1} minWidth={"104px"}> 
@@ -251,13 +254,15 @@ function ReviewModal(props: ReviewModalProps) {
             <CustomTextBold700 fontSize={'17px'} color={titleColor}>진료 후기를 작성해 주세요</CustomTextBold700>
           </Box>
           <Box display={'flex'} flexDirection={'row'} my={3}>
-            <Box mr={2} display={'flex'} justifyContent={'center'} alignItems={'center'}>
-            <Icon as={BiInfoCircle} width="20px" height="20px" color={iconColor} />
+            <Box mr={1} display={'flex'} justifyContent={'center'} pt={'2px'}>
+              <Icon as={BiInfoCircle} width="16px" height="16px" color={iconColor} />
             </Box>
-            
+            <Box mr={2} display={'flex'} justifyContent={'center'} alignItems={'center'}>
             <CustomTextBold400 fontSize={'13px'} color={subTitleColor}>
                 허위 또는 과장된 내용은 법적으로 문제가 될 수 있습니다. 정확하고 사실에 근거한 리뷰를 작성해 주시기 바랍니다.
             </CustomTextBold400>
+            </Box>
+           
           </Box>
           <Box>
             <Textarea 
@@ -313,8 +318,11 @@ function ReviewModal(props: ReviewModalProps) {
             <Alert 
               isShowAppname={false}
               AppName='AIGA'
+              size="sm"
               bodyContent={
-                <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} py="20px">
+                <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} py="20px" width="100%"           // 여기 조절 가능
+                maxW="480px"           // 예시로 최대 너비 제한
+                mx="auto" >
                   <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"120px"}>
                     <NextImage
                       width="106"

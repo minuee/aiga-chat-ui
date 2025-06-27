@@ -55,7 +55,7 @@ function DoctorReview( props: DoctorModalProps ) {
   const textColor2 = useColorModeValue('#7F879B', 'white');
   const bgColor = useColorModeValue("#FAFBFD",'navy.700');
   const iconColor = useColorModeValue('#7F879B','white');
-  const tooltipColor = useColorModeValue('#212127','white');
+  const tooltipColor = useColorModeValue('rgba(33, 33, 39, 0.8)','white');
   const tooltipCTextolor = useColorModeValue('#FFFFFF','navy.800');
   const voteTextColor = useColorModeValue('#5C5E69','white');
   const voteTextColor2 = useColorModeValue('#1D73DC','white');

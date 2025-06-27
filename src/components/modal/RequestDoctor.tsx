@@ -28,6 +28,7 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
   const toast = useToast();
 
   const skeletonColor = useColorModeValue('white', 'gray.700');
+  const textColor = useColorModeValue("#7F879B",'white')
   const [inputs, setInputs] = React.useState<any>({
     doctor_id: '',
     relation: null,
@@ -158,10 +159,11 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
                 onChange={(e) => setInputs({...inputs, content: e.target.value})} 
                 resize={'none'}  
                 minH={'200px'}
-                size={'sm'} 
+                size={'17px'} 
                 isInvalid={!functions.isEmpty(inputs.content)}
                 placeholder='수정요청 및 기타 문의사항을 입력해주세요 (필수, 최소 10자이상)'
                 id={"textarea_content"}
+                borderRadius={"8px"}
               />
             </Box>
           </Box>
@@ -180,13 +182,13 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
           </Box>
           <Flex display={'flex'} flexDirection={'column'} justifyContent={'center'}  minHeight={'20px'} mt={10}>
             <Box flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} padding={'0 10px'}>
-              <CustomTextBold700 fontSize={'15px'} color="#7F879B" >안내 사항</CustomTextBold700>
+              <CustomTextBold700 fontSize={'13px'} color={textColor} >안내 사항</CustomTextBold700>
             </Box>
             <Box flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} padding={'0 10px'}>
-              <CustomText fontSize={'15px'} color="#7F879B" >• 산업안전보건법에 따라 고객 응대 근로자 보호조치를 시행하고 있으며 모든 문의는 기록으로 남습니다.</CustomText>
+              <CustomTextBold400 fontSize={'13px'} color="#7F879B" >• 산업안전보건법에 따라 고객 응대 근로자 보호조치를 시행하고 있으며 모든 문의는 기록으로 남습니다.</CustomTextBold400>
             </Box>
             <Box flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} padding={'0 10px'}>
-              <CustomText fontSize={'15px'} color="#7F879B" >• 본 요청은 비회원도 개인정보 제공 없이 제출하실 수 있으므로 이름, 연락처, 주민등록 번호 등 개인을 식별 할 수 있는 정보는 입력하지 마십시오.</CustomText>
+              <CustomTextBold400 fontSize={'13px'} color="#7F879B" >• 본 요청은 비회원도 개인정보 제공 없이 제출하실 수 있으므로 이름, 연락처, 주민등록 번호 등 개인을 식별 할 수 있는 정보는 입력하지 마십시오.</CustomTextBold400>
             </Box>
           </Flex>
         </Flex>

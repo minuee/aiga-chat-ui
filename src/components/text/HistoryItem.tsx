@@ -134,7 +134,7 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
             isOpen &&  (
             <Alert 
                 AppName='AIGA'
-                bodyContent='정말로 삭제하시겠습니까? 삭제하면 복구할 수 없습니다.'
+                bodyContent={`정말로 삭제하시겠습니까?\n 삭제하면 복구할 수 없습니다.`}
                 isOpen={isOpen}
                 onClose={onClose}
                 onConfirm={() => {onHandleDeleteHistory();onClose()}}

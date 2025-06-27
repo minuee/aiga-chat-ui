@@ -3,6 +3,7 @@ import { Flex,Text,Divider,Box,List,ListItem,Icon,Button,useColorModeValue } fro
 import { MdKeyboardDoubleArrowDown,MdKeyboardDoubleArrowUp } from 'react-icons/md';
 import functions from '@/utils/functions';
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import { FiChevronDown,FiChevronUp } from "react-icons/fi";
 
 type ListItemScreenProps = {
     title: string;
@@ -61,7 +62,7 @@ const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 ,is
                             onClick={handleToggle}
                             id="button_toggle"
                         >
-                            {!expandedCount ? <Icon as={MdKeyboardDoubleArrowUp} color={'#555'} /> : <Icon as={MdKeyboardDoubleArrowDown} color={'#555'} />}
+                            {!expandedCount ? <Icon as={FiChevronUp} color={'#555'} /> : <Icon as={FiChevronDown} color={'#555'} />}
                         </Button>
                     </Box>
                 )

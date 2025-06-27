@@ -80,7 +80,10 @@ function EntireModal(props: EntireModalProps) {
                   onChange={(e) => setInputs({...inputs, isAgree2: e.target.checked})}
                 >
                   <CustomText color='#7F879B' fontSize={'13px'} lineHeight={'150%'}>
-                    삭제된 정보는 다시 되살릴 수 없습니다. 또한 탈퇴 후 24시간 동안 재가입이 어렵습니다.
+                    삭제된 정보는 다시 되살릴 수 없습니다.
+                  </CustomText>
+                  <CustomText color='#7F879B' fontSize={'13px'} lineHeight={'150%'}>
+                    또한 탈퇴 후 24시간 동안 재가입이 어렵습니다.
                   </CustomText>
                 </Checkbox>
               </Box>
