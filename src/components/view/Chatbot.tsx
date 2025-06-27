@@ -191,7 +191,7 @@ export default function ChatBot() {
             chat_type: sampleMsg4?.chat_type,
             used_token : sampleMsg4?.used_token
           };
-          newArray[lastIndex+4] = {
+          newArray[lastIndex] = {
             ismode : 'server',
             id: sampleMsg5?.chat_id,
             user_question : sampleMsg5?.question,
@@ -403,6 +403,12 @@ export default function ChatBot() {
     }
   }
 
+  const onHandleTypeDone = () => {
+    setIsLoading(false);
+    setReceiving(false);
+    setIsFocus(false)
+  }
+
   const handleTranslate = async( isText:any = '') => {
   
     if ( functions.isEmpty(inputCode) ||  functions.isEmpty(isText) || isReceiving ) return;
@@ -415,16 +421,17 @@ export default function ChatBot() {
       const msgLen = parseInt(outputCode.length+1);
       const inputCodeText = inputCode || isText;
 
-      //고혈압 치료를 잘하는 의사를 소개해줘
       if ( isSystemText.includes(inputCodeText) ) {
         if( inputCodeText != outputCode[outputCode?.length -1]?.msg) { 
           setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system", msg: inputCodeText }]);
           setIsLoading(false);
           setReceiving(false);
+          setIsFocus(false)
           return;
         }else{
           setIsLoading(false);
           setReceiving(false);
+          setIsFocus(false)
           return;
         }
       }else{
@@ -435,9 +442,13 @@ export default function ChatBot() {
         const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText.trim());
         if ( mConstants.apiSuccessCode.includes(questionResult?.statusCode) ) {
           const answerMessage = questionResult?.data;
-          setIn24UsedToken(answerMessage?.in24_used_token)
-          setIsLoading(false);
-          setReceiving(false);
+          setIn24UsedToken(answerMessage?.in24_used_token);
+          if ( answerMessage?.chat_type !== 'general' ) {
+            setIsLoading(false);
+            setReceiving(false);
+            setIsFocus(false)
+          }
+         
           setOutputCode((prevCode: any[]) => {
             const newArray = [...prevCode];
             const lastIndex = msgLen;
@@ -464,6 +475,7 @@ export default function ChatBot() {
               setIn24UsedToken(parsedMessage?.in24_used_token)
               setIsLoading(false);
               setReceiving(false);
+              setIsFocus(false)
               setOutputCode((prevCode: any[]) => {
                 const newArray = [...prevCode];
                 const lastIndex = msgLen;
@@ -1002,8 +1014,9 @@ export default function ChatBot() {
                     <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
                       <Flex w="100%" key={index}>
                         <GeneralMessage 
-                          output={element.answer.replaceAll('\n','<br />')} 
+                          output={functions.makeLinkify(functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
                           isHistory={element?.isHistory}
+                          setIsTypingDone={() => onHandleTypeDone()}
                         />
                       </Flex>
                     </Box>

@@ -3,7 +3,7 @@ import React, { PropsWithChildren } from 'react';
 import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
 // chakra imports
 import { 
-  Box,Flex,Button,useColorModeValue,Text,SkeletonCircle,SkeletonText,Divider,Icon,useToast,
+  Box,Flex,Button,useColorModeValue,Text,SkeletonCircle,SkeletonText,Divider,Icon,
   Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,Portal
 } from '@chakra-ui/react';
 import * as DoctorService from "@/services/doctor/index";
@@ -41,7 +41,7 @@ function DoctorModal(props: DoctorModalProps) {
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
-  const toast = useToast();
+
   const [isLoading, setIsLoading] = React.useState(true);
   
   const [doctorBasicData, setDoctorBasicData] = React.useState<any>({

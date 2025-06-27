@@ -38,6 +38,24 @@ const functions = {
     return unixTimestamp;
   },
 
+  makeLinkify(text: string): string {
+    const urlRegex = /(https?:\/\/[^\s\\)]+)/g;
+
+    return text.replace(urlRegex, (url) => {
+      const safeUrl = url.replace(/([^:]\/)\/+/g, '$1'); // 중복 슬래시 정리
+      console.log("safeUrl",url)
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:blue">링크</a>`;
+    });
+  },
+
+  cleanEscapedCharacters(text: string): string {
+    return text
+      .replaceAll(/\\"/g, '')   // \" → "
+      .replaceAll(/\\'/g, "")   // \' → '
+      .replaceAll(/\\\\/g, '\\') // \\ → \
+      .replaceAll(/\\n/g, '\n'); // \n → 실제 줄바꿈 (optional)
+  },
+
   getDistance(lat1:any, lon1:any, lat2:any, lon2:any) {
     if ([lat1, lon1, lat2, lon2].some(coord => typeof coord !== 'number' || isNaN(coord))) {
       return Infinity; // 거리 비교에서 항상 뒤로 밀리게

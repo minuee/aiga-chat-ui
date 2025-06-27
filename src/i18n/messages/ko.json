@@ -6,5 +6,11 @@
     "Messages": {
         "welcome": "안녕하세요",
         "welcome_msg": "안녕하세요. {app_name}에요.누가 아프신가요?"
+    },
+    "BrandPage" : {
+        "nav_home" : "홈",
+        "nav_company" : "회사소개",
+        "nav_servide" : "서비스",
+        "nav_contact" : "Contact" 
     }
 }

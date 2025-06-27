@@ -5,6 +5,12 @@
     },
     "Messages": {
         "welcome": "안녕하세요",
-         "welcome_msg": "ようこそ. {app_name}でございます.どなたがお悩みですか?"
+        "welcome_msg": "ようこそ. {app_name}でございます.どなたがお悩みですか?"
+    },
+    "BrandPage" : {
+        "nav_home" : "ホーム",
+        "nav_company" : "会社紹介",
+        "nav_servide" : "サービス",
+        "nav_contact" : "Contact" 
     }
 }

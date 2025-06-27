@@ -14,7 +14,7 @@ const TypeAnimationScreen = ({ msg, onComplete , speed = 50}: TypeAnimationProps
     let i = 0;
     const interval = setInterval(() => {
       i++;
-      const partial = msg.slice(0, i).replaceAll(/\n/g, '<br />').replaceAll(/\\n/g, '\n\n'); // 줄바꿈을 HTML 줄바꿈으로
+      const partial = msg.slice(0, i);//.replaceAll(/\n/g, '<br />').replaceAll(/\\n/g, '\n\n').replace(/^"(.*)"$/, '$1'); // 줄바꿈을 HTML 줄바꿈으로
       //const plainText = partial?.replace(/\\n/g, '\n\n')?? '';
       setDisplayHtml(partial);
 
@@ -28,6 +28,7 @@ const TypeAnimationScreen = ({ msg, onComplete , speed = 50}: TypeAnimationProps
 
   return (
     <Text
+      style={{ whiteSpace: 'pre-line' }}
       whiteSpace="normal" // <br />가 HTML에서 줄바꿈 역할을 하도록
       dangerouslySetInnerHTML={{ __html: displayHtml }}
     />
