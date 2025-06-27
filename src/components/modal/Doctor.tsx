@@ -236,7 +236,7 @@ function DoctorModal(props: DoctorModalProps) {
               }
             </Flex>
           </Box>
-          <Box display={'flex'} flex={1} justifyContent={'center'} alignItems={'center'} pl='15px' minWidth={'90px'}>
+          <Box display={'flex'} justifyContent={'center'} alignItems={'center'}  width={'90px'}>
             <Image src={DoctorAvatar} alt="doctor" width={90} height={90} />
           </Box>
         </Flex>
