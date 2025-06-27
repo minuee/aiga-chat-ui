@@ -85,9 +85,14 @@ export const CurrentDialogStore = create<CurrentDialogStoreState>()(
         persist(
             (set) => ({
                 messageData: [],
-                setCurrentMessageData: (messageData:any) => {
-                    set({messageData});
-                },
+                setCurrentMessageData: (messageData: any) => {
+                set((state) => ({
+                    messageData:
+                    typeof messageData === 'function'
+                        ? messageData(state.messageData)
+                        : messageData,
+                }));
+                }
             }),
             { 
                 name: 'CurrentDialogStore',

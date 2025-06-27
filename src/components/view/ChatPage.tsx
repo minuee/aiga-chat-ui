@@ -71,7 +71,7 @@ export default function Index() {
 
   if (isLoading) {
    return (
-    <Flex  bg={themeColor} height={"100%"} width="100%" justifyContent={'center'} alignItems={'center'}>
+    <Flex bg={themeColor} height={"100%"} minHeight={"100vh"} width="100%" justifyContent={'center'} alignItems={'center'}>
       <SkeletonCircle size='10' />
     </Flex>
    )

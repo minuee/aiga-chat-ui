@@ -8,7 +8,7 @@ type ProcessingProps = {
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 const Processing = ({ msg = "분석 중"}: ProcessingProps) => {
 
-  const textColor = useColorModeValue('navy.700', 'white')
+  const textColor = useColorModeValue('#7F879B', 'white')
   
   return (
     <Flex w="100%" mt="10px" alignItems={'center'}>

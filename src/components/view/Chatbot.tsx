@@ -425,7 +425,11 @@ export default function ChatBot() {
   const onHandleTypeDone = () => {
     setIsLoading(false);
     setReceiving(false);
-    setIsFocus(false)
+    setIsFocus(false);
+  }
+
+  const addMessage = (newItem: any) => {
+    CurrentDialogStore.getState().setCurrentMessageData((prev: any) => [...prev, newItem]);
   }
 
   const handleTranslate = async( isText:any = '') => {
@@ -464,7 +468,7 @@ export default function ChatBot() {
     if ( !functions.isEmpty(chat_sessinn_id)) {
       setReceiving(true);
       const msgLen = parseInt(outputCode.length+1);
-      const inputCodeText = inputCode || isText;
+      const inputCodeText = isText;
 
       if ( isSystemText.includes(inputCodeText) ) {
         if( inputCodeText != outputCode[outputCode?.length -1]?.msg) { 
@@ -489,17 +493,22 @@ export default function ChatBot() {
         }
       }else{
         //setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(),ismode: "me", question: inputCodeText }]);
-        if (Array.isArray(outputCode)) {
-          setOutputCode([
-            ...outputCode,
-            { chat_id: functions.getUUID(),ismode: "me", question: inputCodeText }
-          ])
-        }else{
-          setOutputCode([{ chat_id: functions.getUUID(),ismode: "me", question: inputCodeText }])
-        }
+        const newItem = {
+          chat_id: functions.getUUID(),
+          ismode: "me",
+          question: inputCodeText,
+        };
+       /*  setOutputCode([
+          ...(Array.isArray(outputCode) ? outputCode : []),
+          newItem,
+        ]); */
+        console.log('setOutputCode 1',outputCode)
+     
+        addMessage(newItem)
       }
-      setInputCode('')
+     
       try{
+        setInputCode('')
         const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText.trim());
         if ( mConstants.apiSuccessCode.includes(questionResult?.statusCode) ) {
           const answerMessage = questionResult?.data;
@@ -507,11 +516,11 @@ export default function ChatBot() {
           if ( answerMessage?.chat_type !== 'general' ) {
             setIsLoading(false);
             setReceiving(false);
-            setIsFocus(false)
+            setIsFocus(false);
           }
-          if (Array.isArray(outputCode)) {
-            setOutputCode([
-              ...outputCode,
+
+          setTimeout(() => {
+            addMessage(
               {
                 ismode : 'server',
                 isHistory : false,
@@ -521,34 +530,9 @@ export default function ChatBot() {
                 chat_type: answerMessage?.chat_type,
                 used_token : answerMessage?.used_token
               }
-            ])
-          }else{
-            setOutputCode([
-              {
-                ismode : 'server',
-                isHistory : false,
-                id: answerMessage?.chat_id,
-                user_question : answerMessage?.question,
-                answer : answerMessage?.answer,
-                chat_type: answerMessage?.chat_type,
-                used_token : answerMessage?.used_token
-              }
-            ])
-          }
-         /*  setOutputCode((prevCode: any[]) => {
-            const newArray = [...prevCode];
-            const lastIndex = msgLen;
-            newArray[lastIndex] = {
-              ismode : 'server',
-              isHistory : false,
-              id: answerMessage?.chat_id,
-              user_question : answerMessage?.question,
-              answer : answerMessage?.answer,
-              chat_type: answerMessage?.chat_type,
-              used_token : answerMessage?.used_token
-            };
-            return newArray;
-          }) */
+            )
+          }, 60); 
+         
         }else{
           if ( questionResult?.message?.statusCode == '404') {
             const parsedMessage = parseLooselyFormattedJsonString(questionResult?.message?.message);
@@ -562,24 +546,9 @@ export default function ChatBot() {
               setIsLoading(false);
               setReceiving(false);
               setIsFocus(false)
-              /* setOutputCode((prevCode: any[]) => {
-                const newArray = [...prevCode];
-                const lastIndex = msgLen;
-                newArray[lastIndex] = {
-                  ismode : 'system',
-                  isHistory : false,
-                  id: functions.getUUID(),
-                  user_question : inputCodeText,
-                  answer : null,
-                  msg: `일일 질문이 제한되었습니다.`,
-                  chat_type : 'system',
-                  used_token : 0
-                };
-                return newArray;
-              }) */
-              if (Array.isArray(outputCode)) {
-                setOutputCode([
-                  ...outputCode,
+              
+              setTimeout(() => {
+                addMessage(
                   {
                     ismode : 'system',
                     isHistory : false,
@@ -590,21 +559,9 @@ export default function ChatBot() {
                     chat_type : 'system',
                     used_token : 0
                   }
-                ])
-              }else{
-                setOutputCode([
-                  {
-                    ismode : 'system',
-                    isHistory : false,
-                    id: functions.getUUID(),
-                    user_question : inputCodeText,
-                    answer : null,
-                    msg: `일일 질문이 제한되었습니다.`,
-                    chat_type : 'system',
-                    used_token : 0
-                  }
-                ])
-              }
+                )
+              }, 60); 
+              
             }else{
               call_fn_error_message();
             }
@@ -1178,6 +1135,7 @@ export default function ChatBot() {
               }
             })
           }
+          <Box><Processing  msg="분석중" /></Box>
           { isReceiving && ( <Box><Processing  msg="분석중" /></Box> ) }
           <Box ref={scrollBottomRef} h="1px" pb={"60px"} visibility="hidden" />
         </Flex>

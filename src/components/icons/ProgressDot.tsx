@@ -3,16 +3,16 @@ import { keyframes } from '@emotion/react';
 
 const colorChange = keyframes`
   0% {
-    background-color: #38A169; /* green.500 */
+    background-color: rgba(10, 164, 100, 0); /* green.500 */
   }
   33% {
-    background-color: #68D391; /* green.300 */
+    background-color:rgba(10, 164, 100, 0.3); /* green.300 */
   }
   66% {
-    background-color: #9AE6B4; /* green.200 */
+    background-color: rgba(10, 164, 100, 0.6); /* green.200 */
   }
   100% {
-    background-color: #38A169; /* green.500 */
+    background-color:rgba(10, 164, 100, 1); /* green.500 */
   }
 `;
 
