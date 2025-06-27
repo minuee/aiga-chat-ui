@@ -192,7 +192,6 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
                   {element?.deptname}
                 </CustomTextBold700>
               </Box>
-              
             </Flex>
           ))
         }

@@ -14,8 +14,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import { encryptToken } from "@/utils/secureToken";
 import UserStateStore from '@/store/userStore';
-import NewChatStateStore from '@/store/newChatStore';
 import ConfigInfoStore from '@/store/configStore';
+import NewChatStateStore,{ ChatSesseionIdStore,CallHistoryDataStore,CurrentDialogStore } from '@/store/newChatStore';
+import historyStore from '@/store/historyStore';
 import { 
   ModalDoctorDetailStore,ModalDoctorReviewStore,ModalDoctorRequestStore,ModalDoctorListStore,DrawerHistoryStore,ModalMypageStore,ModalMypageNoticeStore,ModalMypageNoticeDetailStore,
   ModalMypageRequestStore,ModalMypageEntireStore,ModalMypagePolicyStore,ModalMypageYakwanStore,ModalMypageMingamStore,ModalSignupStoreStore,ModalSignupAgreeStoreStore,DoctorFromListStore,ReviewAlertStore
@@ -49,7 +50,6 @@ function LoginModal(props: LoginModalProps) {
 
   const { isOpenSignupAgreeModal } = ModalSignupAgreeStoreStore(state => state);
   const setIsOpenSignupAgreeModal = ModalSignupAgreeStoreStore((state) => state.setIsOpenSignupAgreeModal);
-  const { isOpenSignupFinishModal } = ModalSignupFinishStoreStore(state => state);
   const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
   const isNewChat = NewChatStateStore(state => state.isNew);
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
