@@ -52,7 +52,7 @@ const functions = {
     return text
       .replaceAll(/\\"/g, '')   // \" → "
       .replaceAll(/\\'/g, "")   // \' → '
-      .replaceAll(/\\\"/g, '"') // \\ → \
+      .replaceAll(/\\\\"/g, '"') // \\\" → ""
       .replaceAll(/\\\\/g, '\\') // \\ → \
       .replaceAll(/\\n/g, '\n'); // \n → 실제 줄바꿈 (optional)
   },
