@@ -60,12 +60,17 @@ export default function ChatBot() {
   const [inputCode, setInputCode] = useState<string>('');
   const [isShowScroll, setShowScroll] = useState(false);
   const [isReceiving, setReceiving] = useState(false);
+  const [hasSent, setHasSent] = useState(false); // 메시지 중복 방지용
   const toast = useToast();
   // Response message
   //const [outputCode, setOutputCode] = useState<any>([]);
   const outputCode = CurrentDialogStore(state => state.messageData);
   const setOutputCode = CurrentDialogStore((state) => state.setCurrentMessageData);
-  
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleForceBlur = () => {
+    textareaRef.current?.blur(); // 👈 강제로 blur 발생시킴
+  }
   // ChatGPT model
   const [isChatDisabled, setChatDisabled] = useState<any>({
     isState :  true,
@@ -531,6 +536,7 @@ export default function ChatBot() {
                 user_question : answerMessage?.question,
                 answer : answerMessage?.answer,
                 chat_type: answerMessage?.chat_type,
+                summary : answerMessage?.summary,
                 used_token : answerMessage?.used_token
               }
             )
@@ -990,6 +996,7 @@ export default function ChatBot() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []); // ✅ 한 번만 등록
   
+  
   if (isLoading) {
     return (
       <SkeletonDefaultText isOpen={isLoading} lineNum={10} />
@@ -1057,6 +1064,7 @@ export default function ChatBot() {
                     <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
                       <RecommandDoctor 
                         data={element}
+                        summary={functions.makeLinkify(functions.cleanEscapedCharacters(element.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
                         isHistory={element?.isHistory}
                         onSendButton={onSendDoctorButton}
                       />
@@ -1067,6 +1075,7 @@ export default function ChatBot() {
                     <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
                       <SearchDoctor 
                         data={element}
+                        summary={functions.makeLinkify(functions.cleanEscapedCharacters(element.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
                         isHistory={element?.isHistory}
                         onSendButton={onSendDoctorButton}
                       />
@@ -1080,6 +1089,7 @@ export default function ChatBot() {
                           indexKey={index}
                           isHistory={element?.isHistory}
                           msg={element.answer} 
+                          summary={functions.makeLinkify(functions.cleanEscapedCharacters(element.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
                         />
                       </Flex>
                     </Box>
@@ -1193,7 +1203,7 @@ export default function ChatBot() {
               maxLength={mConstants.inputMaxMessage}
               borderRadius="25px"
               lineHeight={inputCode?.length > 10 ? "150%" : "180%"}
-              //me="10px"
+              ref={textareaRef}
               fontSize="md"
               fontWeight="500"
               _focus={{ borderColor: '#2B8FFF' }}
@@ -1205,10 +1215,15 @@ export default function ChatBot() {
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
               onKeyDown={(e:any) => {
-                if (e.key === 'Enter' && !e.shiftKey && !isMobileOnly) {
+                if (e.key === 'Enter' && !e.shiftKey && !isMobileOnly && !isReceiving)  {
                   e.preventDefault(); // 줄바꿈 방지
-                  if (isChatDisabled?.isState && inputCode.trim() !== '') {
+                  if (isChatDisabled?.isState && inputCode.trim() !== '' && !isReceiving) {
                     handleSendMessage();
+                    setIsFocus(false);
+                    handleForceBlur();
+                    setHasSent(true); // 일단 막고
+
+                    setTimeout(() => setHasSent(false), 1500);
                   }
                 }
               }}

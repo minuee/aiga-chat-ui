@@ -385,7 +385,7 @@ function SidebarContent(props: SidebarContent) {
             trapFocus={false}
             size={'full'} 
           >
-            <ModalOverlay />
+            <ModalOverlay bg="rgba(0,0,0,0.6)" />
             <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000} margin={0} padding={0}>
               <ModalHeader bg={navbarBg} padding="basePadding">
                 <Flex flexDirection={'row'} position={'relative'}>

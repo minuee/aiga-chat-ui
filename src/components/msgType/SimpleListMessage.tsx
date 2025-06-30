@@ -3,14 +3,16 @@ import React, { PropsWithChildren } from 'react';
 import { Box,Flex,Text,useColorModeValue ,UnorderedList,ListItem} from '@chakra-ui/react';
 import functions from "@/utils/functions";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import TypeAnimation  from'@/components/text/TypeAnimation2';
 import { IconChatAiga} from '@/components/icons/svgIcons';
 type SimpleListMessageProps = {
     msg: any;
+    summary : any;
     isHistory : boolean;
     indexKey : any
 };
 
-const SimpleListMessage = ({  msg = [], indexKey, isHistory = false}: SimpleListMessageProps) => {
+const SimpleListMessage = ({  msg = [], indexKey, isHistory = false, summary}: SimpleListMessageProps) => {
 
   const bgMeColor = useColorModeValue('#2B8FFF', 'white');
   const textMeColor = useColorModeValue('white', 'navy.800');
@@ -20,15 +22,53 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false}: SimpleList
   const textSystemStopColor = useColorModeValue('#F94848', 'navy.800');
   const textSystemStopIconColor = useColorModeValue('#5E0018', 'navy.800');
   const [hospitalsList, setHospitalsList] = React.useState([]);
+  const [isLocalTypeDone, setLocalTypeDone] = React.useState(true)
+
+
+  const previousOutputRef = React.useRef<string | null>(null);
 
   React.useEffect(() => {
+    if ( !functions.isEmpty(summary)) previousOutputRef.current =  summary; 
+    else previousOutputRef.current = null
+  }, [summary]);
+
+  const isOutputSame = previousOutputRef.current === summary && previousOutputRef.current !== null;
+  
+
+  React.useEffect(() => {
+
     if ( functions.isEmpty(msg?.hospitals) ) {
       const reData = functions.parseMaybeJson(msg?.hospitals)
       setHospitalsList(reData);
     }else{
       setHospitalsList(msg?.hospitals);
     }
+
   }, [indexKey]);
+
+  React.useEffect(() => {
+
+    console.log("SimpleListMessage",!functions.isEmpty(summary),isHistory,isOutputSame)
+
+    if ( isOutputSame || isHistory ) {
+      console.log("SimpleListMessage else ")
+      setLocalTypeDone(true)
+    }else if (  !functions.isEmpty(summary)  ) {
+      console.log("SimpleListMessage else if ")
+      //setLocalTypeDone(false)
+    }else{
+      console.log("SimpleListMessage else ")
+      setLocalTypeDone(true)
+    }
+  }, [summary]);
+
+  const setIsTypingDone = () => {
+    console.log("SimpleListMessage setIsTypingDone",)
+    
+    setTimeout(() => {
+      setLocalTypeDone(true)
+    }, 60);
+  }
 
   if ( hospitalsList?.length == 0 ) {
     return (
@@ -72,12 +112,32 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false}: SimpleList
         justifyContent={'center'}
         flexDirection={'column'}
       > 
+        <Box>
         {
-          !functions.isEmpty(msg?.department) && (
+          ( isHistory || isOutputSame )
+          ?
+          <div
+            style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
+            dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
+          />
+          :
+          ( !functions.isEmpty(summary) && !isOutputSame )
+          ?
+          <TypeAnimation
+            msg={ summary.replace(/^"(.*)"$/, '$1')}
+            speed={30}
+            onComplete={() => setIsTypingDone()}
+          />
+          :
+          !functions.isEmpty(msg?.department) ? (
             <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'170%'}>{msg?.department} 진료를 잘하는 병원 {hospitalsList?.length}군데를 추천 드리겠습니다.</CustomText>
           )
+          :
+          null
         }
-        <Flex 
+        </Box>
+        <Box 
+          display={isLocalTypeDone ? 'flex' : 'none'}
           padding="12px 20px" 
           border={`1px solid ${bgSystemColor}`} 
           bgColor={bgSystemColor} 
@@ -89,18 +149,18 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false}: SimpleList
           zIndex={2}
           alignItems={'center'}
         > 
-        <UnorderedList>
-        { 
-          hospitalsList.map((element:any,index:number) => {
-            return (
-              <Box key={index}>
-                <ListItem><CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'170%'}>{element?.name}</CustomText></ListItem>
-              </Box>
-            )
-          })
-        }
-        </UnorderedList>
-        </Flex>
+          <UnorderedList>
+          { 
+            hospitalsList.map((element:any,index:number) => {
+              return (
+                <Box key={index}>
+                  <ListItem><CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'170%'}>{element?.name}</CustomText></ListItem>
+                </Box>
+              )
+            })
+          }
+          </UnorderedList>
+        </Box>
       </Flex>
     </Flex>
   )

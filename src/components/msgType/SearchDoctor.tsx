@@ -15,14 +15,15 @@ import { ModalDoctorListStore } from '@/store/modalStore';
 import { MdArrowBack,MdOutlineClose } from 'react-icons/md';
 import DoctorList from "@/components/modal/DoctorList";
 import { MdOutlineArrowForward } from 'react-icons/md';
-
+import TypeAnimation  from'@/components/text/TypeAnimation2';
 type SearchDoctorProps = {
     data : any;
+    summary : any;
     isHistory : boolean;
     onSendButton: (data: any,id:number) => void; 
 };
 
-const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => {
+const SearchDoctor = ({  onSendButton , data,isHistory,summary }: SearchDoctorProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = useRef(pathname);
@@ -31,6 +32,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
   const [showGradient, setShowGradient] = useState(true);
   const [doctorList, setDoctorList] = useState<any>([]);
   const isDark = useColorModeValue(false, true);
+  const [isLocalTypeDone, setLocalTypeDone] = useState(true)
   const bgSystemColor = useColorModeValue('#F4F6FA', 'navy.600');
   const textSystemColor = useColorModeValue('#212127', 'white');
   const profileBgColor = useColorModeValue("#F4F6FA",'navy.600');
@@ -46,6 +48,16 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
   const modalBtnRef = useRef<HTMLButtonElement>(null);
   const { isOpenDocListModal } = ModalDoctorListStore(state => state);
   const setOpenDoctorListModal = ModalDoctorListStore((state) => state.setOpenDoctorListModal);
+
+
+  const previousOutputRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if ( !functions.isEmpty(summary)) previousOutputRef.current =  summary; 
+    else previousOutputRef.current = null
+  }, [summary]);
+
+  const isOutputSame = previousOutputRef.current === summary && previousOutputRef.current !== null;
 
   const handleScroll = () => {
     if (flexRef.current) {
@@ -82,6 +94,30 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
       setDoctorList(data?.answer?.doctors)
     }
   }, [data]);
+
+  useEffect(() => {
+
+    console.log("SimpleListMessage",!functions.isEmpty(summary),isHistory,isOutputSame)
+
+    if ( isOutputSame || isHistory ) {
+      console.log("SimpleListMessage else ")
+      setLocalTypeDone(true)
+    }else if (  !functions.isEmpty(summary)  ) {
+      console.log("SimpleListMessage else if ")
+      //setLocalTypeDone(false)
+    }else{
+      console.log("SimpleListMessage else ")
+      setLocalTypeDone(true)
+    }
+  }, [summary]);
+
+  const setIsTypingDone = () => {
+    console.log("SimpleListMessage setIsTypingDone",)
+    
+    setTimeout(() => {
+      setLocalTypeDone(true)
+    }, 60);
+  }
 
   const onSendDoctorListButton = async( ) => {
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_1}`);
@@ -128,6 +164,41 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
         <Box my="5px">
           <IconChatAiga width={'46px'} height={"12px"} />
         </Box>
+        <Flex 
+          padding="12px 20px" 
+          border={`1px solid ${bgSystemColor}`} 
+          bgColor={bgSystemColor} 
+          borderTopLeftRadius="2px" 
+          borderTopRightRadius="20px" 
+          borderBottomLeftRadius="20px"
+          borderBottomRightRadius="20px" 
+          w="auto" 
+          zIndex={2}
+          justifyContent={'center'}
+          flexDirection={'column'}
+          mb="5px"
+        > 
+          <Box>
+          {
+            ( isHistory || isOutputSame )
+            ?
+            <div
+              style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
+              dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
+            />
+            :
+            ( !functions.isEmpty(summary) && !isOutputSame )
+            ?
+            <TypeAnimation
+              msg={ summary.replace(/^"(.*)"$/, '$1')}
+              speed={30}
+              onComplete={() => setIsTypingDone()}
+            />
+            :
+            null
+          }
+          </Box>
+        </Flex>
         <Flex  
           alignItems={"center"} 
           justifyContent={'flex-start'} 
@@ -266,10 +337,32 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
           zIndex={2}
           justifyContent={'center'}
           flexDirection={'column'}
+          mb="5px"
         > 
-          <Box>
+        <Box>
+          {
+            ( isHistory || isOutputSame )
+            ?
+            <div
+              style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
+              dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
+            />
+            :
+            ( !functions.isEmpty(summary) && !isOutputSame )
+            ?
+            <TypeAnimation
+              msg={ summary.replace(/^"(.*)"$/, '$1')}
+              speed={30}
+              onComplete={() => setIsTypingDone()}
+            />
+            :
+            !functions.isEmpty(doctorList[0]?.deptname)
+            ?
             <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'170%'}>{`위 증상에 맞는  ${doctorList[0]?.deptname} 의사를 추천해 드립니다.`}</CustomText>
-          </Box>  
+            :
+            null
+          }
+          </Box>
         </Flex>
         <Flex  alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"60px"} maxHeight={"250px"} ref={flexRef} overflowX={'auto'}>
           {

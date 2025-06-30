@@ -16,21 +16,23 @@ import { BiChevronRight } from "react-icons/bi";
 import { IconChatAiga} from '@/components/icons/svgIcons';
 import DoctorAvatar from "@/assets/images/doctor_default_white.png";
 import { MdOutlineArrowForward } from 'react-icons/md';
-
+import TypeAnimation  from'@/components/text/TypeAnimation2';
 
 type RecommandDoctorProps = {
     data : any;
     isHistory : boolean;
+    summary : any;
     onSendButton: (data: any,id:number) => void; 
 };
 
-const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorProps) => {
+const RecommandDoctor = ({  onSendButton , data, isHistory ,summary}: RecommandDoctorProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = useRef(pathname);
   const textColor = useColorModeValue('navy.700', 'white')
   const flexRef = useRef<HTMLDivElement>(null);
   const [showGradient, setShowGradient] = useState(true);
+  const [isLocalTypeDone, setLocalTypeDone] = useState(true)
   const [doctorList, setDoctorList] = useState([]);
   const isDark = useColorModeValue(false, true);
   const { isOpenDocListModal } = ModalDoctorListStore(state => state);
@@ -48,6 +50,16 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
   const navbarIcon = useColorModeValue('#7F879B', 'white');
   const navbarBgColor = useColorModeValue('white', 'navy.800');
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
+
+  const previousOutputRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if ( !functions.isEmpty(summary)) previousOutputRef.current =  summary; 
+    else previousOutputRef.current = null
+  }, [summary]);
+
+  const isOutputSame = previousOutputRef.current === summary && previousOutputRef.current !== null;
+  
 
   const handleScroll = () => {
     if (flexRef.current) {
@@ -82,6 +94,30 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
       setDoctorList(data?.answer?.doctors)
     }
   }, [data]);
+
+  useEffect(() => {
+
+    console.log("SimpleListMessage",!functions.isEmpty(summary),isHistory,isOutputSame)
+
+    if ( isOutputSame || isHistory ) {
+      console.log("SimpleListMessage else ")
+      setLocalTypeDone(true)
+    }else if (  !functions.isEmpty(summary)  ) {
+      console.log("SimpleListMessage else if ")
+      //setLocalTypeDone(false)
+    }else{
+      console.log("SimpleListMessage else ")
+      setLocalTypeDone(true)
+    }
+  }, [summary]);
+
+  const setIsTypingDone = () => {
+    console.log("SimpleListMessage setIsTypingDone",)
+    
+    setTimeout(() => {
+      setLocalTypeDone(true)
+    }, 60);
+  }
 
   const onSendDoctorListButton = async( ) => {
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_1}`);
@@ -154,8 +190,29 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
         flexDirection={'column'}
       > 
         <Box>
-          <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'150%'}>{`위 증상에 맞는 ${data?.answer?.disease} 의사를 추천해 드립니다.`}</CustomText>
-        </Box>  
+        {
+          ( isHistory || isOutputSame )
+          ?
+          <div
+            style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
+            dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
+          />
+          :
+          ( !functions.isEmpty(summary) && !isOutputSame )
+          ?
+          <TypeAnimation
+            msg={ summary.replace(/^"(.*)"$/, '$1')}
+            speed={30}
+            onComplete={() => setIsTypingDone()}
+          />
+          :
+          !functions.isEmpty(msg?.department) ? (
+            <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'150%'}>{`위 증상에 맞는 ${data?.answer?.disease} 의사를 추천해 드립니다.`}</CustomText>
+          )
+          :
+          null
+        }
+        </Box>
       </Flex>
       <Flex  alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"60px"} maxHeight={"250px"} ref={flexRef} overflowX={'auto'}>
         {

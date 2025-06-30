@@ -14,7 +14,7 @@ import functions from "@/utils/functions";
 import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
-import { DrawerHistoryStore,ModalSignupStoreStore,DoctorFromListStore } from '@/store/modalStore';
+import { DrawerHistoryStore,ModalSignupStoreStore,DoctorFromListStore,ModalMypageStore } from '@/store/modalStore';
 import LoginModal  from '@/components/modal/SignUpScreen';
 import UserStateStore from '@/store/userStore';
 
@@ -61,6 +61,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
+  const [currentPathnameCheck, setCurrentPathnameCheck] = React.useState('');
   //const [isOpenLoginModal, setIsOpenLoginModal] = React.useState<boolean>(false);
   let sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
   let drawerBackgroundColor = useColorModeValue('transparent', 'transparent');
@@ -71,6 +72,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
   const setOpenHistoryDrawer = DrawerHistoryStore((state) => state.setOpenHistoryDrawer);
   const { isOpenLoginModal } = ModalSignupStoreStore(state => state);
   const setIsOpenSignupModal = ModalSignupStoreStore((state) => state.setIsOpenSignupModal);
+  const { isOpenSetupModal } = ModalMypageStore(state => state);
   const oopsColor = useColorModeValue('#111111', 'white');
   const basicColor = useColorModeValue('white', 'white');
   const navbarIcon = useColorModeValue('#2b8fff', 'navy.800');
@@ -78,6 +80,9 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
 
   const setLoginUserInfo = UserStateStore((state) => state.setUserState);
   const { ...userBasicInfo } = UserStateStore(state => state);
+
+
+
 
   const onSendHistoryButton = async() => {
     setOpenHistoryDrawer(false);
@@ -160,7 +165,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
             : 'left'
         }
       >
-        <DrawerOverlay />
+        <DrawerOverlay bg={ isOpenSetupModal ?  "transparent" :  "rgba(0,0,0,0.6)"   }/>
         <DrawerContent
           w="100%"
           maxW={`${mConstants.modalMaxWidth}px`} 
