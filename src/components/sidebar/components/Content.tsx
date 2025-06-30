@@ -118,7 +118,7 @@ function SidebarContent(props: SidebarContent) {
         setHistoryData(newHistoryData);
         toast({
           title: "정상적으로 삭제되었습니다.",
-          position: 'top-right',
+          position: 'top-left',
           isClosable: true,
           duration:1500,
           status: 'success',

@@ -416,7 +416,7 @@ export default function ChatBot() {
   }
 
   const handleSendMessage = () => {
-    if (!isReceiving) {
+    if (!isReceiving && !hasSent) {
       handleTranslate(inputCode);
     } else {
       toast({
@@ -491,12 +491,14 @@ export default function ChatBot() {
           //setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system", msg: inputCodeText }]);
           setIsLoading(false);
           setReceiving(false);
-          setIsFocus(false)
+          setIsFocus(false);
+          setTimeout(() => setHasSent(false), 500);
           return;
         }else{
           setIsLoading(false);
           setReceiving(false);
           setIsFocus(false)
+          setTimeout(() => setHasSent(false), 500);
           return;
         }
       }else{
@@ -525,6 +527,7 @@ export default function ChatBot() {
             setIsLoading(false);
             setReceiving(false);
             setIsFocus(false);
+            setTimeout(() => setHasSent(false), 500);
           }
 
           setTimeout(() => {
@@ -591,6 +594,7 @@ export default function ChatBot() {
   const call_fn_error_message = () => {
     setIsLoading(false);
     setReceiving(false);
+    setTimeout(() => setHasSent(false), 500);
     toast({
       title: 'AIGA',
       position: 'top-right',
@@ -1218,12 +1222,13 @@ export default function ChatBot() {
                 if (e.key === 'Enter' && !e.shiftKey && !isMobileOnly && !isReceiving)  {
                   e.preventDefault(); // 줄바꿈 방지
                   if (isChatDisabled?.isState && inputCode.trim() !== '' && !isReceiving) {
+                    setHasSent(true); // 일단 막고
                     handleSendMessage();
                     setIsFocus(false);
                     handleForceBlur();
-                    setHasSent(true); // 일단 막고
+                   
 
-                    setTimeout(() => setHasSent(false), 1500);
+                    
                   }
                 }
               }}
