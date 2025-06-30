@@ -1008,7 +1008,8 @@ export default function ChatBot() {
           as="div"
           direction="column" w="100%" maxWidth={`${mConstants.desktopMinWidth}px` }
           maxH={"calc(100vh - 130px)"} /* 여기가 하단 스크롤 영역 영향 받음 */
-          minH={"calc(100vh - 106px)" }
+          height={'100%'}
+          minH={isMobileOnly ? "100%" : "calc(100vh - 106px)" }
           overflowY='auto'
           ref={scrollRef}
           position="relative"

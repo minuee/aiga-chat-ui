@@ -5,30 +5,24 @@ export default function useKeyboardStatus() {
   const [initialHeight, setInitialHeight] = useState<number | null>(null);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (initialHeight === null) {
-        setInitialHeight(window.innerHeight);
-        return;
-      }
+    let initial = window.innerHeight;
+    setInitialHeight(initial);
 
-      const heightDiff = initialHeight - window.innerHeight;
+    const checkInterval = setInterval(() => {
+      const currentHeight = window.innerHeight;
+      const heightDiff = initial - currentHeight;
 
-      // 모바일 키보드가 올라오면 150~300px 정도 줄어듦
       if (heightDiff > 150) {
         setIsKeyboardOpen(true);
       } else {
         setIsKeyboardOpen(false);
       }
-    };
-
-    window.addEventListener('resize', handleResize);
-    // 초기 체크
-    setInitialHeight(window.innerHeight);
+    }, 250); // 너무 짧게 두면 성능 문제 있으니 250~300ms 추천
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      clearInterval(checkInterval);
     };
-  }, [initialHeight]);
+  }, []);
 
-  return isKeyboardOpen;
+return isKeyboardOpen;
 }

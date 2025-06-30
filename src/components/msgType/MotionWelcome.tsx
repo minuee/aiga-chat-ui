@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import WelcomeLogoImage from "@/assets/images/welcom-logo.png";
 import LogoImage from "@/assets/images/logo.png";
 import Image from "next/image";
-import {IconAigaVer2} from '@/components/icons/svgIcons';
+import {IconAiga} from '@/components/icons/svgIcons';
 
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 type MotionWelcomeProps = {
@@ -58,7 +58,7 @@ return (
           alt="Aiga Logo"
           style={{width:'70px',objectFit: 'contain'}}
         /> */}
-        <IconAigaVer2 boxSize={'100px'} />
+        <IconAiga boxSize={'70px'} />
       </motion.div>
     </div>
   </Flex>

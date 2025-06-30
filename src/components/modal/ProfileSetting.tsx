@@ -365,7 +365,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
           <Flex flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'} minHeight={'50px'} width={'100%'}>
             <Box flex={5} display={'flex'} flexDirection={'row'} alignItems={'center'}>
             {
-              functions.isEmpty(userBaseInfo?.profileImage) 
+              !functions.isEmpty(userBaseInfo?.profileImage) 
               ?
               <DefaultProfile boxSize={'48px'} />
               :

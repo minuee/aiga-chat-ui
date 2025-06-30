@@ -139,6 +139,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
       <Box>
         <IconChatAiga width={'46px'} height={"12px"} />
       </Box>
+      
       <Flex 
         padding="12px 20px" 
         border={`1px solid ${bgSystemColor}`} 

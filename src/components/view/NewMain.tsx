@@ -2,7 +2,7 @@
 import React, { Children } from 'react';
 import {Link} from '@/i18n/routing';
 import '@/styles/Main.css';
-
+import {IconAigaVer2} from '@/components/icons/svgIcons';
 import NewMainNav from './NewMainNav';
 export default function MainPage() {
   
@@ -395,7 +395,10 @@ export default function MainPage() {
             target='_blank'
             className="bubble-link"
         >
-        <div className="chat-btn-icon">🩺</div>
+        <div className="chat-btn-icon">
+            <IconAigaVer2 boxSize={'100px'} />
+        </div>
+        
         </Link>
     </button>
 
