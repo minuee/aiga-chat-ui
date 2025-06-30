@@ -1203,6 +1203,14 @@ export default function ChatBot() {
               onChange={handleChange}
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
+              onKeyDown={(e:any) => {
+                if (e.key === 'Enter' && !e.shiftKey && !isMobileOnly) {
+                  e.preventDefault(); // 줄바꿈 방지
+                  if (isChatDisabled?.isState && inputCode.trim() !== '') {
+                    handleSendMessage();
+                  }
+                }
+              }}
               id={"textarea_content"}
               disabled={(!isChatDisabled?.isState || isReceiving)}
             />

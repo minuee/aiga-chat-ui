@@ -158,7 +158,8 @@ function DoctorModal(props: DoctorModalProps) {
 
   const onSendDoctorReviewButton = async( gubun = "") => {
     if ( functions.isEmpty(userBaseInfo?.email) ) {
-      setOpenAlert(true)
+      setOpenAlert(true);
+      return;
     }
     if ( !functions.isEmpty(gubun)) setReviewData({doctor_id : gubun})
     if ( isFromDoctorDepth2 ) {//true이면 list > detail

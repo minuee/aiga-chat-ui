@@ -69,7 +69,7 @@ const SvgComponent = (props: React.SVGProps<SVGSVGElement>) => (
         </linearGradient>
       </defs>
     </svg>
-  );
+);
   
 export const IconAigaVer2 = chakra(SvgComponent);
 export const IconAigaVer2_2 = createIcon({
