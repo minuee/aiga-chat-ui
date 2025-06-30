@@ -80,25 +80,6 @@ export default function Index() {
   if ( isMobileOnly ) {
     return (
       <Flex  justifyContent={'center'} >
-        <Box 
-          position={'fixed'}
-          top={0}
-          left={0}
-          right={0}
-          height={'60px'}
-          width="100%" 
-          maxWidth={`${mConstants.desktopMinWidth}px`}
-          display={'flex'}
-          justifyContent={'center'}
-          zIndex={9999}
-        >
-          <Navbar
-            onOpen={onOpen}
-            logoText={'AIGA Beta'}
-            brandText={getActiveRoute(routes, pathname)}
-            secondary={getActiveNavbar(routes, pathname)}
-          />
-        </Box>
         <Flex
           minHeight={"100%" }
           height="100%"
@@ -108,6 +89,24 @@ export default function Index() {
           w={{ base: '100%', md : `${mConstants.desktopMinWidth}px`  }}
           maxW={`${mConstants.desktopMinWidth}px` }
         >
+          <Box 
+            position={'fixed'}
+            top={0}
+            left={0}
+            right={0}
+            height={'60px'}
+            width="100%" 
+            maxWidth={`${mConstants.desktopMinWidth}px`}
+            display={'flex'}
+            justifyContent={'center'}
+          >
+            <Navbar
+              onOpen={onOpen}
+              logoText={'AIGA Beta'}
+              brandText={getActiveRoute(routes, pathname)}
+              secondary={getActiveNavbar(routes, pathname)}
+            />
+          </Box>
           {
             ( process.env.NODE_ENV == 'development' || isGlobalState )
             ?

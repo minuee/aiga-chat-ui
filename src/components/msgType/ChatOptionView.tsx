@@ -125,9 +125,10 @@ export const ChatDisable = ({ isChatDisabled,userBasicInfo,setChatDisabled }: Ch
 
 export const ChatWarningInfo = () => {
 
-  const bgColor = useColorModeValue('#ffffff', 'tranparent');
+  const bgColor = useColorModeValue('#ffffff', 'navy.800');
   const infoIcon = useColorModeValue('#f94848', '#ffffff');
   const textColor = useColorModeValue('#7F879B', '#ffffff');
+  const borderTopColor = useColorModeValue('#E9EDF3', 'navy.800');
   return (
     <Flex 
       position={'absolute'}
@@ -140,7 +141,7 @@ export const ChatWarningInfo = () => {
       alignItems={'flex-end'}
       bg={bgColor}
       zIndex={9}
-      borderTop="1px solid #E9EDF3"
+      borderTop={`1px solid  ${borderTopColor}`}
     >
       <Box display='flex' alignItems='center' width={"100%"} px="16px">
         <Icon as={MdInfoOutline} width="14px" height="14px" color={infoIcon}  />

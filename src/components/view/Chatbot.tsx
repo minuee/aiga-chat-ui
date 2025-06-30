@@ -27,6 +27,7 @@ import Processing  from '@/components/msgType/Processing';
 import SkeletonDefaultText from "@/components/fields/LoadingBar";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
+import { useKeyboardHeight } from "@/hooks/useKeyboardHeight";
 import useKeyboardStatus from "@/hooks/useKeyboardStatus";
 import { useTranslations } from 'next-intl';
 import LoadingBar from "@/assets/icons/loading.gif";
@@ -49,7 +50,7 @@ export default function ChatBot() {
   const t = useTranslations('Messages');
   const { colorMode, toggleColorMode } = useColorMode();
   const alreadyInitialized = useRef(false);
-
+  const keyboardHeight = useKeyboardHeight();
   const isKeyboardOpen = useKeyboardStatus();
   // Input States
   const pathname = usePathname();
@@ -115,7 +116,9 @@ export default function ChatBot() {
   const inputColor = useColorModeValue('navy.700', 'white');
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
   const themeColor = useColorModeValue('#ffffff', 'navy.800');
-  
+  const borderTopColor = useColorModeValue('#E9EDF3', 'navy.800');
+  const textareaBgcolor1 =  useColorModeValue('#ffffff','navy.800');
+  const textareaBgcolor2 =  useColorModeValue('#f4f6fa','navy.800');
   const placeholderColor = useColorModeValue({ color: 'gray.500' },{ color: 'gray' });
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
   const isSystemText = ["system_text","system_doctors","system_list","system_select","system_image"];
@@ -1138,8 +1141,12 @@ export default function ChatBot() {
           { isReceiving && ( <Box><Processing  msg="분석중" /></Box> ) }
           <Box ref={scrollBottomRef} h="1px" pb={"60px"} visibility="hidden" />
         </Flex>
-        <Flex position="fixed" bottom="0" left="0" w="100%"  bg={themeColor} zIndex="100" display={'flex'} justifyContent='center'>
-          <Box w={'100%'} position={'relative'} display={'flex'} flexDirection={'row'} zIndex="100" px="10px" py="10px" borderTop="1px solid #E9EDF3">
+        <Flex 
+          position="fixed" bottom={isMobileOnly ? `${keyboardHeight}px` : 0} left="0" w="100%"  bg={themeColor} zIndex="100" display={'flex'} justifyContent='center'
+          transition="transform 0.2s ease"
+          transform={`translateY(-${keyboardHeight}px)`}
+        >
+          <Box w={'100%'} position={'relative'} display={'flex'} flexDirection={'row'} zIndex="100" px="10px" py="10px"  borderTop={`1px solid  ${borderTopColor}`}>
             {
               ( !isChatDisabled?.isState && !isChatDisabled?.isAlertMsg ) && (
                 <ChatDisable
@@ -1177,10 +1184,10 @@ export default function ChatBot() {
               resize="none"
               as={ResizeTextarea}
               h="100%"
-              maxH="120px"
+              maxH="150px"
               border="1px solid"
               borderColor={borderColor}
-              bg={isFocus ? '#ffffff' :'#f4f6fa'}
+              bg={isFocus ? textareaBgcolor1 :textareaBgcolor2}
               readOnly={isReceiving}
               maxLength={mConstants.inputMaxMessage}
               borderRadius="25px"
@@ -1253,7 +1260,7 @@ export default function ChatBot() {
                       <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                     </Box>
                     <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                      <CustomTextBold700 color={'white'} noOfLines={1}>{selectedDoctor?.name} 의사</CustomTextBold700>
+                      <CustomTextBold700 color={'white'} noOfLines={1}>{selectedDoctor?.name?.replace("교수","")} 교수</CustomTextBold700>
                     </Box>
                     <Box 
                       position={'absolute'}

@@ -12,7 +12,7 @@ import mConstants from '@/utils/constants';
 import CustomText, { CustomTextBold700 } from "@/components/text/CustomText";
 //새창열기 전역상태
 import NewChatStateStore from '@/store/newChatStore';
-
+import { DefaultHeaderLogo } from '@/components/icons/svgIcons';
 export default function AdminNavbar(props: {
   secondary: boolean;
   brandText: string;
@@ -86,8 +86,9 @@ export default function AdminNavbar(props: {
           {/* <Icon as={MdOutlineArrowBack} width="25px" height="25px" color={basicColor} />
           <Icons.AigaWelcomeIcon h="40px" w="60px" color={basicColor} /> */}
         </Box>
-        <Box display={'flex'} flex={1} pl={"10px"} alignItems={'center'} justifyContent={'center'}>
-          <CustomTextBold700 fontSize={'17px'} color={basicColor}>AIGA</CustomTextBold700>
+        <Box display={'flex'} flex={1} alignItems={'center'} justifyContent={'center'}>
+         {/*  <CustomTextBold700 fontSize={'17px'} color={basicColor}>AIGA</CustomTextBold700> */}
+          <DefaultHeaderLogo width={'61px'} height={'17px'} />
         </Box>
         <Box display={'flex'} flex={1} alignItems={'center'} justifyContent={'flex-end'} pr="10px">
           <NavbarLinks secondary={props.secondary} />

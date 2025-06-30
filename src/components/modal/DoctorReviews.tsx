@@ -325,8 +325,8 @@ function DoctorReview( props: DoctorModalProps ) {
           <Divider orientation='horizontal' my={2}/>
           <Box
           display={reviewListData?.length == 0  ? 'none' : 'flex'}
-          flexDirection={{base : 'column', sm2 : "row"}} justifyContent={{base : 'space-evenly', sm2:'center'}} alignItems={{base : 'center', sm2:'center'}} minHeight={'100px'} width={'100%'}>
-            <Box flex={1} display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'space-evenly'} height={'100%'} width={{base : '100%', sm2:'auto'}} mb={{base : 4, sm2 : 0}}>
+          flexDirection={{base : 'column', sm : "row"}} justifyContent={{base : 'space-evenly', sm:'center'}} alignItems={{base : 'center', sm:'center'}} minHeight={'100px'} width={'100%'}>
+            <Box flex={1} display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'space-evenly'} height={'100%'} width={{base : '100%', sm:'auto'}} mb={{base : 4, sm : 0}}>
               <Flex flex={1}>
                 <CustomTextBold700 fontSize={'40px'} color={votePointColor}>
                   {aigaReviewAverage?.total_avg}
@@ -338,7 +338,7 @@ function DoctorReview( props: DoctorModalProps ) {
                 />
               </Flex>
             </Box>
-            <Box flex={2} display={'flex'} flexDirection={'column'}  alignItems={'center'} justifyContent={'flex-end'} width={{base : '100%', sm2:'auto'}}>
+            <Box flex={2} display={'flex'} flexDirection={'column'}  alignItems={'center'} justifyContent={'flex-end'} width={{base : '100%', sm:'auto'}}>
               <Box display={'flex'} flexDirection={'row'}  alignItems={'center'} justifyContent={'flex-end'} width={'100%'} height={'25px'}>
                 <Box flex={2} display={'flex'} alignItems={'center'} justifyContent={'flex-end'} pr={'15px'}>
                   <CustomText fontSize={'13px'} color={voteTextColor}>친절•배려</CustomText>
