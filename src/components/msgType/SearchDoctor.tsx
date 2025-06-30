@@ -51,7 +51,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
     if (flexRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = flexRef.current;
       // 스크롤이 끝에 도달했는지 확인
-      if ( ( scrollLeft + clientWidth + 0 ) >= scrollWidth ) {
+      if ( ( scrollLeft + clientWidth + 100 ) >= scrollWidth ) {
         setShowGradient(false);
       } else {
         setShowGradient(true);
