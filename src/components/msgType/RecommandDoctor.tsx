@@ -206,7 +206,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary}: RecommandD
             onComplete={() => setIsTypingDone()}
           />
           :
-          !functions.isEmpty(msg?.department) ? (
+          !functions.isEmpty(data?.answer?.disease) ? (
             <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'150%'}>{`위 증상에 맞는 ${data?.answer?.disease} 의사를 추천해 드립니다.`}</CustomText>
           )
           :
