@@ -70,7 +70,7 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                             </Flex>
                         </PopoverTrigger>
                         <PopoverContent width={'150px'} bg={bgColor} borderColor={borderColor}>
-                        <PopoverBody borderRadius={'8px'} width={"150px"}>
+                        <PopoverBody borderRadius={'8px'} width={"130px"}>
                             <Flex flexDirection={'column'} alignItems={'flex-start'}>
                                 <Button leftIcon={<Icon as={BiEdit} width="16px" height="16px" color={iconColor} />} size='sm' onClick={() => onHandleDetail(data)} id="button_change_name"  bg="transparent">
                                     <CustomText fontSize='15px' color={iconColor}>수정하기</CustomText> 

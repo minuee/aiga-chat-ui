@@ -502,7 +502,7 @@ export default function ChatBot() {
           ...(Array.isArray(outputCode) ? outputCode : []),
           newItem,
         ]); */
-        console.log('setOutputCode 1',outputCode)
+        
      
         addMessage(newItem)
       }
@@ -510,6 +510,7 @@ export default function ChatBot() {
       try{
         setInputCode('')
         const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText.trim());
+        console.log('questionResult 1',questionResult)
         if ( mConstants.apiSuccessCode.includes(questionResult?.statusCode) ) {
           const answerMessage = questionResult?.data;
           setIn24UsedToken(answerMessage?.in24_used_token);

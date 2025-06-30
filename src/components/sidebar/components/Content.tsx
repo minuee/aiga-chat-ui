@@ -235,8 +235,9 @@ function SidebarContent(props: SidebarContent) {
   const fn_close_modal_mypage = async( isLogout = false) => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenSetupModal(false);
-    setOpenHistoryDrawer(false)
+   
     if ( isLogout ) {
+      setOpenHistoryDrawer(false)
       router.replace(`/${locale}/chat`);
       setTimeout(() => {
         mCookie.setCookie('currentPathname',``)
