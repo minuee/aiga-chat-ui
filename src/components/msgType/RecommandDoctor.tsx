@@ -20,8 +20,8 @@ import TypeAnimation  from'@/components/text/TypeAnimation2';
 
 type RecommandDoctorProps = {
     data : any;
-    isHistory : boolean;
     summary : any;
+    isHistory : boolean;
     onSendButton: (data: any,id:number) => void; 
 };
 
