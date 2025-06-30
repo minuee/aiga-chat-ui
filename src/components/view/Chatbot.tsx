@@ -1064,7 +1064,7 @@ export default function ChatBot() {
                     <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
                       <RecommandDoctor 
                         data={element}
-                        summary={functions.makeLinkify(functions.cleanEscapedCharacters(element.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
+                        summary={!functions.isEmpty(element?.summary) ? functions.makeLinkify(functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))) : ""}
                         isHistory={element?.isHistory}
                         onSendButton={onSendDoctorButton}
                       />
@@ -1075,7 +1075,7 @@ export default function ChatBot() {
                     <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
                       <SearchDoctor 
                         data={element}
-                        summary={functions.makeLinkify(functions.cleanEscapedCharacters(element.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
+                        summary={!functions.isEmpty(element?.summary) ? functions.makeLinkify(functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))) : ""}
                         isHistory={element?.isHistory}
                         onSendButton={onSendDoctorButton}
                       />
@@ -1089,7 +1089,7 @@ export default function ChatBot() {
                           indexKey={index}
                           isHistory={element?.isHistory}
                           msg={element.answer} 
-                          summary={functions.makeLinkify(functions.cleanEscapedCharacters(element.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
+                          summary={!functions.isEmpty(element?.summary) ? functions.makeLinkify(functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))) : ""} 
                         />
                       </Flex>
                     </Box>
