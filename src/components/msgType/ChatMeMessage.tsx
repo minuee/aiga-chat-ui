@@ -16,7 +16,7 @@ const ChatMeMessage = ({  question = "대답이 중지되었습니다.", indexKe
   const textSystemStopIconColor = useColorModeValue('#5E0018', 'navy.800');
   
   return (
-    <Flex w="100%" align={'center'} mb="10px"  mt="10px"  justifyContent='flex-end'>
+    <Flex w="100%" align={'center'} mb="28px"  mt={indexKey === 0 ? 0 : "28px"}  justifyContent='flex-end'>
       <Flex 
         padding="12px 20px" 
         border={`1px solid ${bgMeColor}`} 

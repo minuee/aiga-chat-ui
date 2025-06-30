@@ -77,7 +77,6 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
     return () => clearTimeout(timer);
   }, []);
 
-
   useEffect(() => {
     if ( !functions.isEmpty( data?.answer?.doctors )) {
       setDoctorList(data?.answer?.doctors)
@@ -102,7 +101,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
   if ( doctorList?.length == 0 ) {
     return (
       <Stack minWidth={'100%'} width={'auto'} minHeight={"50px"} maxHeight={"300px"} position={'relative'}>
-        <Box mt="5px">
+        <Box>
           <IconChatAiga width={'46px'} height={"12px"} />
         </Box>
         <Flex 
@@ -137,7 +136,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
         },
       }}
     >
-      <Box mt="5px">
+      <Box>
         <IconChatAiga width={'46px'} height={"12px"} />
       </Box>
       <Flex 
@@ -154,7 +153,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
         flexDirection={'column'}
       > 
         <Box>
-          <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'170%'}>{`위 증상에 맞는 ${data?.answer?.disease} 의사를 추천해 드립니다.`}</CustomText>
+          <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'150%'}>{`위 증상에 맞는 ${data?.answer?.disease} 의사를 추천해 드립니다.`}</CustomText>
         </Box>  
       </Flex>
       <Flex  alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"60px"} maxHeight={"250px"} ref={flexRef} overflowX={'auto'}>
@@ -168,7 +167,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory }: RecommandDoctorPro
               width={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
               maxWidth='300px' 
               px="10px"
-              borderRadius="20px"
+              borderRadius="8px"
               mr='5px'
               onClick={() => onSendButton(element,element?.doctor_id)} cursor={'pointer'}
             >

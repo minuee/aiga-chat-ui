@@ -94,16 +94,24 @@ export const globalStyles = {
   },
   styles: {
     global: (props: any) => ({
+      html: {
+        height: '100%',
+        width: '100%',
+        fontFamily: 'Noto Sans KR',
+      },
       body: {
+        height: '100%',
+        width: '100%',
         overflowX: 'hidden',
         bg: mode('#fdfeff', 'white')(props),
-        fontFamily: 'Noto Sans KR'
+        fontFamily: 'Noto Sans',
+      },
+      '#__next': {
+        height: '100%',
+        width: '100%',
       },
       input: {
         color: 'gray.700',
-      },
-      html: {
-        fontFamily: 'Noto Sans KR'
       },
     }),
   },

@@ -209,6 +209,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
             borderTopLeftRadius={"10px"}
             borderTopRightRadius={"10px"}
             alignItems={'center'}
+            zIndex={10000}
           > 
             <DrawerBody 
               w="100%" 
@@ -218,10 +219,11 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
               borderTopLeftRadius={"10px"}
               borderTopRightRadius={"10px"}
               position={'relative'}
+              zIndex={10000}
             >
               <Flex 
-                position={'absolute'} top={0} right={0} width="50px" height={'50px'} justifyContent={'center'} alignItems={'center'}
-                onClick={() => fn_close_modal_user_login()} cursor={'pointer'}
+                position={'absolute'} top={0} right={0} width="50px" height={'50px'} justifyContent={'center'} alignItems={'center'} zIndex={10000}
+                onClick={() => fn_close_modal_user_login()} cursor={'pointer'} 
               >
                 <Icon as={MdOutlineClose} width="20px" height="20px" color={oopsColor} />
               </Flex>

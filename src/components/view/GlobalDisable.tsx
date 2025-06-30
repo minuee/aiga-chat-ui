@@ -22,7 +22,7 @@ function GolbalDisable(props: GolbalDisableProps) {
   const dateColor = useColorModeValue('#7F879B', 'white');
   
   return (
-    <Flex flexDirection={'column'} justifyContent={'center'} minHeight={'calc( 100vh - 200px )'} width={'100%'}>
+    <Flex flexDirection={'column'} justifyContent={'center'} minHeight={'calc( 100vh - 55px )'} width={'100%'}>
       <Box display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={'50px'}> 
         <IconAttension boxSize={'40px'} />
       </Box>

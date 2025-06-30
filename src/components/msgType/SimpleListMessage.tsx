@@ -32,7 +32,7 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false}: SimpleList
 
   if ( hospitalsList?.length == 0 ) {
     return (
-      <Flex w="100%" flexDirection={'column'} mt="10px" px="5px">
+      <Flex w="100%" flexDirection={'column'} px="5px">
         <Box my="5px">
           <IconChatAiga width={'46px'} height={"12px"} />
         </Box>
@@ -55,7 +55,7 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false}: SimpleList
     )
   }
   return (
-    <Flex w="100%" flexDirection={'column'} mt="10px" px="5px">
+    <Flex w="100%" flexDirection={'column'}  px="5px">
       <Box my="5px">
         <IconChatAiga width={'46px'} height={"12px"} />
       </Box>

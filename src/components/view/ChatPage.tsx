@@ -77,6 +77,64 @@ export default function Index() {
    )
   }
 
+  if ( isMobileOnly ) {
+    return (
+      <Flex  justifyContent={'center'} >
+        <Box 
+          position={'fixed'}
+          top={0}
+          left={0}
+          right={0}
+          height={'60px'}
+          width="100%" 
+          maxWidth={`${mConstants.desktopMinWidth}px`}
+          display={'flex'}
+          justifyContent={'center'}
+          zIndex={9999}
+        >
+          <Navbar
+            onOpen={onOpen}
+            logoText={'AIGA Beta'}
+            brandText={getActiveRoute(routes, pathname)}
+            secondary={getActiveNavbar(routes, pathname)}
+          />
+        </Box>
+        <Flex
+          minHeight={"100%" }
+          height="100%"
+          overflow="hidden" /* 여기가 중요 */
+          position="relative"
+          maxHeight="100%"
+          w={{ base: '100%', md : `${mConstants.desktopMinWidth}px`  }}
+          maxW={`${mConstants.desktopMinWidth}px` }
+        >
+          {
+            ( process.env.NODE_ENV == 'development' || isGlobalState )
+            ?
+            <Flex 
+              mt="60px"
+              alignItems={'center'} 
+              px='basePadding' 
+              width="100%" 
+              maxWidth={`${mConstants.desktopMinWidth}px`} 
+              overflow={'hidden'}
+              bg={themeColor}
+            >
+              <SubPage />
+            </Flex>
+            :
+            <Flex alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
+              <GlobalDisable
+                setRetry={() => onHandleRetry() }
+              />
+            </Flex>
+          }
+        </Flex>
+      </Flex>
+
+  )
+  }
+
   return (
       <Flex  justifyContent={'center'} >
         <Flex
@@ -116,7 +174,7 @@ export default function Index() {
             />
           </Box>
           {
-            isGlobalState 
+            ( process.env.NODE_ENV == 'development' || isGlobalState )
             ?
             <Flex 
               mt="60px"

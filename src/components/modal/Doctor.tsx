@@ -280,7 +280,7 @@ function DoctorModal(props: DoctorModalProps) {
           </Box>
           <Divider orientation='horizontal' my={5} width="100%" color={"#E9EDF3"} />
           <ListItem
-            title={`경력(${careerList?.length})`}
+            title={`경력`}
             content={careerList}
             limintView={limintView}
             marginTop={0}
@@ -288,7 +288,7 @@ function DoctorModal(props: DoctorModalProps) {
           />
           <Divider orientation='horizontal' my={5} width="100%" color={"#E9EDF3"} />
           <ListItem
-            title={`학력(${educationList?.length})`}
+            title={`학력`}
             content={educationList}
             limintView={limintView}
             marginTop={2}
@@ -296,7 +296,7 @@ function DoctorModal(props: DoctorModalProps) {
           />
           <Divider orientation='horizontal' my={5} width="100%" color={"#E9EDF3"} />
           <ListItem
-            title={`논문(${paperList?.length})`}
+            title={`논문`}
             content={paperList}
             limintView={limintView}
             marginTop={2}

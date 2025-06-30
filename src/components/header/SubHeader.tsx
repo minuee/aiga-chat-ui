@@ -65,11 +65,15 @@ function SubHeader(props: SubHeaderProps) {
   return (
     <Head>
         <title>AIGA Beta</title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        
         <meta name='description' content='의사 추천 서비스 AIGA' />
         <meta name='keywords' content='중증, 의사' />
         <meta name='robots' content='index, follow' />
-        <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+        {/* <meta name='viewport' content='width=device-width, initial-scale=1.0' /> */}
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=nom shrink-to-fit=no"
+        />
         <meta charSet='utf-8' />
         <meta property='og:site_name' content='AIGA 의사추천 서비스' />
         <meta property='og:locale' content='ko_KR' />

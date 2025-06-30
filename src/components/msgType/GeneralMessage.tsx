@@ -19,8 +19,8 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
   const isOutputSame = previousOutputRef.current === output && previousOutputRef.current !== null;
   //const cleanedOutput = output.replace(/\\n/g, '\n')
   return (
-   <Flex w="100%" flexDirection={'column'} mt="10px" overflow={'hidden'}>
-      <Box my="5px">
+   <Flex w="100%" flexDirection={'column'} overflow={'hidden'}>
+      <Box mb="5px">
         <IconChatAiga width={'46px'} height={"12px"} />
       </Box>
       <Flex 

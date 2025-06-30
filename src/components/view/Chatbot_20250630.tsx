@@ -127,6 +127,49 @@ export default function ChatBot() {
     return () => setChatSessionId('');
   }, []); */
 
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  useEffect(() => {
+    const timer2 = setTimeout(() => {
+      const textarea = textareaRef.current;
+      console.log('textarea',textarea)
+      if (!textarea) return;
+
+      const handleTouchMove = (e: TouchEvent) => {
+        const top = textarea.scrollTop === 0;
+        const bottom = textarea.scrollHeight - textarea.scrollTop === textarea.clientHeight;
+        const isScrollingUp = e.touches[0].clientY > 0;
+        const isScrollingDown = e.touches[0].clientY < 0;
+        e.stopPropagation();
+      };
+
+      textarea.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+      return () => {
+        textarea.removeEventListener('touchmove', handleTouchMove);
+      };
+      
+    }, 500); // 0.5초 후에 강제 시도
+  
+    return () => clearTimeout(timer2);
+  }, [isFocus]);
+  
+  useEffect(() => {
+    if (isFocus) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = `-${window.scrollY}px`;
+    } else {
+      const scrollY = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.overflow = '';
+      document.body.style.width = '';
+      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    }
+  }, [isFocus]);
+
   const firstForceStep = () => {
     setChatSessionId('')
     setIsOpenReview(false)
@@ -502,7 +545,7 @@ export default function ChatBot() {
           ...(Array.isArray(outputCode) ? outputCode : []),
           newItem,
         ]); */
-        console.log('setOutputCode 1',outputCode)
+        
      
         addMessage(newItem)
       }
@@ -510,6 +553,7 @@ export default function ChatBot() {
       try{
         setInputCode('')
         const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText.trim());
+        console.log('questionResult 1',questionResult)
         if ( mConstants.apiSuccessCode.includes(questionResult?.statusCode) ) {
           const answerMessage = questionResult?.data;
           setIn24UsedToken(answerMessage?.in24_used_token);
@@ -987,6 +1031,22 @@ export default function ChatBot() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []); // ✅ 한 번만 등록
   
+
+ const lockScroll = () => {
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${window.scrollY}px`;
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+  };
+  
+ const unlockScroll = () => {
+    const scrollY = document.body.style.top;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    document.body.style.overflow = '';
+    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+  };
   if (isLoading) {
     return (
       <SkeletonDefaultText isOpen={isLoading} lineNum={10} />
@@ -1005,7 +1065,7 @@ export default function ChatBot() {
           as="div"
           direction="column" w="100%" maxWidth={`${mConstants.desktopMinWidth}px` }
           maxH={"calc(100vh - 130px)"} /* 여기가 하단 스크롤 영역 영향 받음 */
-          minH={"calc(100vh - 106px)" }
+          minH={"calc(100vh - 100px)" }
           overflowY='auto'
           ref={scrollRef}
           position="relative"
@@ -1138,8 +1198,12 @@ export default function ChatBot() {
           { isReceiving && ( <Box><Processing  msg="분석중" /></Box> ) }
           <Box ref={scrollBottomRef} h="1px" pb={"60px"} visibility="hidden" />
         </Flex>
-        <Flex position="fixed" bottom="0" left="0" w="100%"  bg={themeColor} zIndex="100" display={'flex'} justifyContent='center'>
-          <Box w={'100%'} position={'relative'} display={'flex'} flexDirection={'row'} zIndex="100" px="10px" py="10px" borderTop="1px solid #E9EDF3">
+        <Flex 
+          position="absolute" bottom="0" left="0" w="100%"  bg={themeColor} zIndex={1000} display={'flex'} justifyContent='center'
+          //borderBottomLeftRadius={ isDesktop ? '15px' : 0}
+          //borderBottomRightRadius={ isDesktop ? '15px' : 0} 
+        >
+          <Box w={'100%'} position={'relative'} display={'flex'} flexDirection={'row'} zIndex="100" px="20px" py="10px">
             {
               ( !isChatDisabled?.isState && !isChatDisabled?.isAlertMsg ) && (
                 <ChatDisable
@@ -1171,13 +1235,40 @@ export default function ChatBot() {
                 <Icon as={MdOutlineArrowDownward} width="25px" height="25px" color={navbarIcon} />
               </Box>
             </Flex>
+            
             <Textarea
-              minH="48px"
-              //minH="unset"
-              resize="none"
+              ref={textareaRef}
               as={ResizeTextarea}
-              h="100%"
-              maxH="120px"
+              width={'100%'}
+              minH="50px"
+              maxH="150px"
+              //h="auto" // ✅ 충돌 방지
+              resize="none"
+              overflowY="auto"
+              onTouchMove={(e) => {
+                const el = e.currentTarget;
+                const top = el.scrollTop === 0;
+                const bottom = el.scrollHeight - el.scrollTop === el.clientHeight;
+              
+                if ((top && e.touches[0].clientY > 0) || (bottom && e.touches[0].clientY < 0)) {
+                  e.preventDefault(); // 상단/하단에서 바깥 스크롤 방지
+                }
+                e.stopPropagation();
+              }}
+             /*  sx={{
+                WebkitOverflowScrolling: "touch",
+                overflowY: "auto",
+                touchAction: "manipulation",
+              }} */
+              onKeyDown={(e:any) => {
+                if (e.key === 'Enter' && !e.shiftKey && !isMobileOnly) {
+                  e.preventDefault(); // 줄바꿈 방지
+                  if (isChatDisabled?.isState && inputCode.trim() !== '') {
+                    handleSendMessage();
+                  }
+                }
+              }}
+              
               border="1px solid"
               borderColor={borderColor}
               bg={isFocus ? '#ffffff' :'#f4f6fa'}
@@ -1185,7 +1276,6 @@ export default function ChatBot() {
               maxLength={mConstants.inputMaxMessage}
               borderRadius="25px"
               lineHeight={inputCode?.length > 10 ? "150%" : "180%"}
-              //me="10px"
               fontSize="md"
               fontWeight="500"
               _focus={{ borderColor: '#2B8FFF' }}
@@ -1194,11 +1284,17 @@ export default function ChatBot() {
               value={inputCode}
               placeholder="메시지 입력"
               onChange={handleChange}
-              onFocus={() => setIsFocus(true)}
-              onBlur={() => setIsFocus(false)}
+              onFocus={() => { 
+                setIsFocus(true);//document.body.style.overflow = 'hidden'; 
+                 }}
+              onBlur={() => {
+                setIsFocus(false);
+                //const scrollY = document.body.style.top;
+              }}
               id={"textarea_content"}
               disabled={(!isChatDisabled?.isState || isReceiving)}
             />
+            
             <Box display={'flex'} position={'absolute'} bottom={'6px'} right={'20px'} w={'55px'} height={'55px'} justifyContent={'flex-end'} alignItems={'center'}>
               {
                 isReceiving
@@ -1253,7 +1349,7 @@ export default function ChatBot() {
                       <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                     </Box>
                     <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                      <CustomTextBold700 color={'white'} noOfLines={1}>{selectedDoctor?.name} 의사</CustomTextBold700>
+                      <CustomTextBold700 color={'white'} noOfLines={1}>{selectedDoctor?.name} 교수</CustomTextBold700>
                     </Box>
                     <Box 
                       position={'absolute'}

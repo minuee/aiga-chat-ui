@@ -18,7 +18,7 @@ const breakpoints = {
   base: '0em',
   //'mobile': '30em',
   sm: '350px',
-  sm2 : '400px',
+  sm2 : '530px',
   md: '640px',
   lg: '62em',
   xl: '80em',

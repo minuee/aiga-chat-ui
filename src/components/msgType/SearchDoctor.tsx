@@ -124,7 +124,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
     )
   }else if ( doctorList?.length  <  3 ) {
     return (
-      <Flex w="100%" flexDirection={'column'} mt="10px" px="5px">
+      <Flex w="100%" flexDirection={'column'} mt="10px">
         <Box my="5px">
           <IconChatAiga width={'46px'} height={"12px"} />
         </Box>
@@ -136,7 +136,6 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
           minHeight={"50px"} 
           //maxHeight={"0px"}  
           ref={flexRef} 
-          mt={'10px'}
         >
           {
             doctorList.map((element: any, index: number) => (
@@ -145,7 +144,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
                 bg={profileBgColor} 
                 width={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
                 padding="20px"
-                borderRadius="20px"
+                borderRadius="8px"
                 onClick={() => onSendButton(element,element?.doctor_id)} cursor={'pointer'}
               >
                 <Box flex={1} display={'flex'} justifyContent={'center'} alignItems={'center'} maxWidth={"70px"}>
@@ -184,18 +183,6 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
             ))
           }
         </Flex>
-        <Box justifyContent={'flex-end'} display={doctorList?.length == 0 ? 'none' : 'flex'} mt="10px">
-          <Box 
-            display="flex" justifyContent={'center'} alignItems={'center'} bg={"#DFF5ED"} borderRadius={"4px"} gap={"4px"} height={"32px"} px="20px" cursor={'pointer'}
-            onClick={() => onSendDoctorListButton()} 
-          >
-            <CustomTextBold700 fontSize={'15px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"}>
-            {doctorList[0]?.deptname} 전체보기
-            </CustomTextBold700>
-            <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
-          </Box>
-        </Box>
-
         {
           isOpenDocListModal && (
             <Modal
@@ -295,7 +282,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory }: SearchDoctorProps) => 
                 width={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
                 maxWidth='300px' 
                 px="10px"
-                borderRadius="20px"
+                borderRadius="8px"
                 mr='5px'
                 onClick={() => onSendButton(element,element?.doctor_id)} cursor={'pointer'}
               >
