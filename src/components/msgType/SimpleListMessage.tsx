@@ -114,7 +114,7 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false, summary}: S
       > 
         <Box>
         {
-          ( isHistory || isOutputSame )
+          (( isHistory || isOutputSame ) && !functions.isEmpty(summary) )
           ?
           <div
             style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}

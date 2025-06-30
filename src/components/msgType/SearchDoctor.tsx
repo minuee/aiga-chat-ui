@@ -180,7 +180,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary }: SearchDoctorPr
         > 
           <Box>
           {
-            ( isHistory || isOutputSame )
+            (( isHistory || isOutputSame ) && !functions.isEmpty(summary) )
             ?
             <div
               style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
@@ -316,7 +316,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary }: SearchDoctorPr
         minWidth={'100%'} width={'auto'} minHeight={"60px"} position={'relative'}
         sx={{
           '&::after': {
-            content: ( showGradient && doctorList?.length > 4 ) ? '""' : 'none', position: 'absolute', bottom: "50px",right: 0,width: '200px',height: '100%',maxHeight : "205px",
+            content: ( showGradient && doctorList?.length > 4 ) ? '""' : 'none', position: 'absolute', bottom: "40px",right: 0,width: '200px',height: '100%',maxHeight : "205px",
             background:  isDark ? 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0  , 1) 100%)' : 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)',
             pointerEvents: 'none', // 클릭 이벤트 방지
           },
