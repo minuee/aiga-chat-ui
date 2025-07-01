@@ -88,10 +88,10 @@ const functions = {
       // 날짜 비교용 (연/월/일만 비교)
       const isSameDay = now.toDateString() === target.toDateString();
     
-      const hours = target.getHours();
+      const hours:any = target.getHours();
       const minutes = target.getMinutes().toString().padStart(2, '0');
-    
-      const timeText = `${hours}시 ${minutes}분`;
+      const isAm = parseInt(hours) > 12 ? "오후" : "오전";
+      const timeText = `${isAm} ${hours}시 ${minutes}분`;
     
       if (isSameDay) {
         return `오늘 ${timeText}`;

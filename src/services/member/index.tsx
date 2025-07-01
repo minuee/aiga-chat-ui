@@ -128,8 +128,11 @@ export function setSignupAgree(): any {
         .then((response) => {
              return response?.data;
         }).catch((error) => {
-             console.log("eeeee",error)
-            return null;
+            return {
+                error: true,
+                status: error?.response?.status || 500,
+                message: error?.response?.data || 'Unknown error',
+              };
         });
         return res;
     }catch(error){

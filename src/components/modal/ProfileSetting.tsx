@@ -215,16 +215,21 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
           onHandleLogoutAction(); 
         }else{
-          toast({
-            title: res?.message || "처리중 오류가 발생하였습니다.",
-            position: 'top-right',
-            status: 'error',
-            containerStyle: {
-              color: '#ffffff',
-            },
-            isClosable: true,
-            duration:1500
-          });
+          if ( res?.message?.statusCode == '401') {
+            setReceiving(false);
+            onHandleLogoutAction(); 
+          }else{
+            toast({
+              title: res?.message || "처리중 오류가 발생하였습니다.",
+              position: 'top-right',
+              status: 'error',
+              containerStyle: {
+                color: '#ffffff',
+              },
+              isClosable: true,
+              duration:1500
+            });
+          }
         }        
       }
     }catch(e:any){
