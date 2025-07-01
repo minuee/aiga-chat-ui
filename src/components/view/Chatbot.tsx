@@ -8,7 +8,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
 import { Box,Flex,Icon,Textarea,Text,useColorModeValue,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,useToast,useColorMode } from '@chakra-ui/react';
 import ResizeTextarea from "react-textarea-autosize";
-import { useEffect, useState,useRef,useLayoutEffect } from 'react';
+import { useEffect, useState,useRef,useCallback } from 'react';
 import Image from "next/image";
 import { MdOutlineArrowDownward, MdFitbit, MdPerson,MdOutlineClose,MdArrowBack } from 'react-icons/md';
 import DoctorDetail  from '@/components/modal/Doctor';
@@ -26,7 +26,7 @@ import MotionWelcome,{MotionWelcomeImage}  from '@/components/msgType/MotionWelc
 import Processing  from '@/components/msgType/Processing';
 import SkeletonDefaultText from "@/components/fields/LoadingBar";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
-
+import debounce from 'lodash/debounce'
 import { useKeyboardHeight } from "@/hooks/useKeyboardHeight";
 import useKeyboardStatus from "@/hooks/useKeyboardStatus";
 import { useTranslations } from 'next-intl';
@@ -438,10 +438,17 @@ export default function ChatBot() {
     }
   }
 
+  const debouncedSend = useCallback(
+    debounce(() => {
+      if (!isReceiving && !hasSent) {
+        handleTranslate(inputCode);
+      }
+    }, 500),
+    [inputCode, isReceiving, hasSent]
+  );
+
   const handleSendMessage = () => {
-    if (!isReceiving && !hasSent) {
-      handleTranslate(inputCode);
-    }
+    debouncedSend();
   }
 
   const onHandleTypeDone = () => {
