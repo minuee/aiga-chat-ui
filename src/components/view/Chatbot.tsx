@@ -341,7 +341,6 @@ export default function ChatBot() {
       el.addEventListener("wheel", handleWheel);
       // 정리
       return () => {
-        console.log("handleWheel ❌ wheel 이벤트 해제");
         el.removeEventListener("wheel", handleWheel);
       };
     }, 500); // 0.5초 후에 강제 시도
@@ -355,11 +354,8 @@ export default function ChatBot() {
       const target = scrollBottomRef.current;
       
       if (el && target) {
-        console.log('✅ 초기화 성공:', el, target);
-  
         const observer = new IntersectionObserver(
           ([entry]) => {
-            console.log('📍 감지됨:', entry.isIntersecting);
             setShowScroll(!entry.isIntersecting);
           },
           {
@@ -492,13 +488,13 @@ export default function ChatBot() {
           setIsLoading(false);
           setReceiving(false);
           setIsFocus(false);
-          setTimeout(() => setHasSent(false), 500);
+          //setTimeout(() => setHasSent(false), 500);
           return;
         }else{
           setIsLoading(false);
           setReceiving(false);
           setIsFocus(false)
-          setTimeout(() => setHasSent(false), 500);
+          //setTimeout(() => setHasSent(false), 500);
           return;
         }
       }else{
@@ -527,7 +523,7 @@ export default function ChatBot() {
             setIsLoading(false);
             setReceiving(false);
             setIsFocus(false);
-            setTimeout(() => setHasSent(false), 500);
+            //setTimeout(() => setHasSent(false), 500);
           }
 
           setTimeout(() => {
@@ -594,7 +590,7 @@ export default function ChatBot() {
   const call_fn_error_message = () => {
     setIsLoading(false);
     setReceiving(false);
-    setTimeout(() => setHasSent(false), 500);
+    //setTimeout(() => setHasSent(false), 500);
     toast({
       title: 'AIGA',
       position: 'top-right',
@@ -1222,13 +1218,10 @@ export default function ChatBot() {
                 if (e.key === 'Enter' && !e.shiftKey && !isMobileOnly && !isReceiving)  {
                   e.preventDefault(); // 줄바꿈 방지
                   if (isChatDisabled?.isState && inputCode.trim() !== '' && !isReceiving) {
-                    setHasSent(true); // 일단 막고
+                    //setHasSent(true); // 일단 막고
                     handleSendMessage();
                     setIsFocus(false);
                     handleForceBlur();
-                   
-
-                    
                   }
                 }
               }}

@@ -20,8 +20,7 @@ import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/te
 import { MdArrowBack,MdInsertEmoticon,MdOutlineClose } from 'react-icons/md';
 import { TbBook2 } from "react-icons/tb";
 import { BsGeoAlt } from "react-icons/bs";
-import Image from 'next/image';
-//import IconSearch from "@/assets/icons/img-search.png";
+
 import { IconSearch } from '@/components/icons/svgIcons';
 const geolocationOptions = {
   enableHighAccuracy: true,
@@ -380,6 +379,7 @@ function DoctorListModal(props: DoctorListModalProps) {
                   <DoctorItems
                     data={item}
                     onSendDoctorButton={(data,ismode)=>{onSendDoctorButton(data);}}
+                    inputs={inputs}
                   />
                 </Box>
               )

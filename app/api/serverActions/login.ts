@@ -1,7 +1,6 @@
 
 export const signInWithCredentials = async (formData: FormData) => {
     try {
-      console.log("signInWithCredentials",formData.get('email'),formData.get('password'))
       /* await signIn('credentials', {
         email: formData.get('email'),
         password: formData.get('password'),

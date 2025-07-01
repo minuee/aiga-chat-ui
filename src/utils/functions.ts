@@ -43,7 +43,6 @@ const functions = {
 
     return text.replace(urlRegex, (url) => {
       const safeUrl = url.replace(/([^:]\/)\/+/g, '$1'); // 중복 슬래시 정리
-      console.log("safeUrl",url)
       return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:blue">링크</a>`;
     });
   },

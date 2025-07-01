@@ -48,23 +48,16 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false, summary}: S
 
   React.useEffect(() => {
 
-    console.log("SimpleListMessage",!functions.isEmpty(summary),isHistory,isOutputSame)
-
     if ( isOutputSame || isHistory ) {
-      console.log("SimpleListMessage else ")
       setLocalTypeDone(true)
     }else if (  !functions.isEmpty(summary)  ) {
-      console.log("SimpleListMessage else if ")
       //setLocalTypeDone(false)
     }else{
-      console.log("SimpleListMessage else ")
       setLocalTypeDone(true)
     }
   }, [summary]);
 
   const setIsTypingDone = () => {
-    console.log("SimpleListMessage setIsTypingDone",)
-    
     setTimeout(() => {
       setLocalTypeDone(true)
     }, 60);

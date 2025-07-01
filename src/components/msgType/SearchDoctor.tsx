@@ -96,24 +96,16 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary }: SearchDoctorPr
   }, [data]);
 
   useEffect(() => {
-
-    console.log("SimpleListMessage",!functions.isEmpty(summary),isHistory,isOutputSame)
-
     if ( isOutputSame || isHistory ) {
-      console.log("SimpleListMessage else ")
       setLocalTypeDone(true)
     }else if (  !functions.isEmpty(summary)  ) {
-      console.log("SimpleListMessage else if ")
       //setLocalTypeDone(false)
     }else{
-      console.log("SimpleListMessage else ")
       setLocalTypeDone(true)
     }
   }, [summary]);
 
   const setIsTypingDone = () => {
-    console.log("SimpleListMessage setIsTypingDone",)
-    
     setTimeout(() => {
       setLocalTypeDone(true)
     }, 60);
@@ -199,7 +191,8 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary }: SearchDoctorPr
           }
           </Box>
         </Flex>
-        <Flex  
+        <Box  
+          display={isLocalTypeDone ? 'flex' : 'none'}
           alignItems={"center"} 
           justifyContent={'flex-start'} 
           minWidth={'100%'} 
@@ -253,7 +246,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary }: SearchDoctorPr
               </Flex>
             ))
           }
-        </Flex>
+        </Box>
         {
           isOpenDocListModal && (
             <Modal
@@ -364,7 +357,10 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary }: SearchDoctorPr
           }
           </Box>
         </Flex>
-        <Flex  alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"60px"} maxHeight={"250px"} ref={flexRef} overflowX={'auto'}>
+        <Box  
+          display={isLocalTypeDone ? 'flex' : 'none'}
+          alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"60px"} maxHeight={"250px"} ref={flexRef} overflowX={'auto'}
+        >
           {
             doctorList.map((element: any, index: number) => (
               <Flex 
@@ -431,8 +427,8 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary }: SearchDoctorPr
             </Flex>
             )
           }
-        </Flex>
-        <Box pr={1} justifyContent={'flex-end'} display={doctorList?.length == 0 ? 'none' : 'flex'}>
+        </Box>
+        <Box pr={1} justifyContent={'flex-end'} display={doctorList?.length == 0 ? 'none' : isLocalTypeDone ? 'flex' : 'none'}>
           <Box 
             display="flex" justifyContent={'center'} alignItems={'center'} bg={"#DFF5ED"} borderRadius={"4px"} height={"32px"} px="20px" cursor={'pointer'}
             onClick={() => onSendDoctorListButton()} 

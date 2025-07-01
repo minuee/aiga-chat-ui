@@ -8,10 +8,11 @@ import CustomText, { CustomTextBold700 } from "@/components/text/CustomText";
 import DoctorAvatar from "@/assets/images/thumb_dr_basic.png";
 type DoctorListProps = {
     data: any;
+    inputs : any;
     onSendDoctorButton: (data: any, type:number) => void;
 };
   
-const DoctorList = ({ data, onSendDoctorButton }:DoctorListProps) => {
+const DoctorList = ({ data, onSendDoctorButton,inputs }:DoctorListProps) => {
    
     const nameText = useColorModeValue('#000000','white')
     const borderColor = useColorModeValue('gray.200', 'whiteAlpha.100');
@@ -22,8 +23,11 @@ const DoctorList = ({ data, onSendDoctorButton }:DoctorListProps) => {
                 <Box flex={3} flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} pr='15px' onClick={() => onSendDoctorButton(data,1)} cursor={'pointer'}>
                     <CustomTextBold700 fontSize={'15px'} color="#0AA464">{data?.hospital || ""}</CustomTextBold700>
                     <CustomTextBold700 fontSize={'19px'} color={nameText}  lineHeight={"200%"}>
-                        {!functions.isEmpty(data?.name) ? data?.name : ""} 교수
+                        {!functions.isEmpty(data?.name) ? data?.name : ""} 교수{/*  / 경도 {data?.lat} 위도 {data?.lon} */}
                     </CustomTextBold700>
+                    {/* <CustomText fontSize={'13px'} color="#5C5E69">
+                        {parseInt(functions.getDistance(inputs?.latitude, inputs?.longitude, data.lat, data.lon)/1000).toFixed(1)}km
+                    </CustomText> */}
                     <Flex mt="2" flexShrink={1} flexWrap={'wrap'}>
                         <Box display={'flex'} padding="2px 4px" bg="#DFF5ED" borderRadius={"4px"}  mr="1" mt="1">
                             <CustomText fontSize={'13px'} color="#5C5E69">{data?.deptname || ""}</CustomText>

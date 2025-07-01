@@ -91,13 +91,11 @@ export function updateChatHistoryTitle(session_id: string, title: string): any {
 }
 
 export function getChatMessage(session_id: string, msg: string): any {
-    console.log("getChatMessage",session_id)
     try{
         const res:any =  api.post(`/chat/${session_id}`,{question : msg})
             .then((response) => {
                 return response?.data;
             }).catch((error) => {
-                console.log("❌ getChatMessage error", error);
                 // 상황에 따라 에러를 더 명확하게 넘겨줄 수도 있어요
                 return {
                   error: true,

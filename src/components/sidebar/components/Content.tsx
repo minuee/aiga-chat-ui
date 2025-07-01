@@ -104,7 +104,6 @@ function SidebarContent(props: SidebarContent) {
     try{
       setIsReceiving(true)
       const res:any = await ChatService.removeChatHistory(session_id);
-      console.log('apidata onDeleteHistory',res)
       if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
         setIsReceiving(false)
         //const newHistoryData = historyData.filter((item:any) => item.session_id !== session_id);
@@ -134,7 +133,6 @@ function SidebarContent(props: SidebarContent) {
   }
 
   const onHandleNewChat = () => {
-    console.log("onHandleNewChat")
     onClose();
     onParentClose()
     setNewChatOpen(false);
@@ -145,7 +143,6 @@ function SidebarContent(props: SidebarContent) {
 
   const onHandReplaceHistory = async( data:any ) => {
     try{
-      console.log("newData 1",data)
       let newData = [] as any;
       data?.chattings.forEach((conversations:any) => {
         if ( mConstants.chatAnswerType.includes(conversations?.chat_type) ) {
@@ -169,7 +166,6 @@ function SidebarContent(props: SidebarContent) {
         }
       })
 
-      console.log("newData 2",newData)
       setOldHistoryData({
         session_id : data?.session_id,
         session_title : data?.title,
