@@ -23,10 +23,10 @@ const DoctorList = ({ data, onSendDoctorButton,inputs }:DoctorListProps) => {
                 <Box flex={3} flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} pr='15px' onClick={() => onSendDoctorButton(data,1)} cursor={'pointer'}>
                     <CustomTextBold700 fontSize={'15px'} color="#0AA464">{data?.hospital || ""}</CustomTextBold700>
                     <CustomTextBold700 fontSize={'19px'} color={nameText}  lineHeight={"200%"}>
-                        {!functions.isEmpty(data?.name) ? data?.name : ""} 교수{/*  / 경도 {data?.lat} 위도 {data?.lon} */}
+                        {!functions.isEmpty(data?.name) ? data?.name : ""} 교수
                     </CustomTextBold700>
                     {/* <CustomText fontSize={'13px'} color="#5C5E69">
-                        {parseInt(functions.getDistance(inputs?.latitude, inputs?.longitude, data.lat, data.lon)/1000).toFixed(1)}km
+                        {parseFloat(functions.getDistance(inputs?.latitude, inputs?.longitude, data.lat, data.lon )).toFixed(3)}km
                     </CustomText> */}
                     <Flex mt="2" flexShrink={1} flexWrap={'wrap'}>
                         <Box display={'flex'} padding="2px 4px" bg="#DFF5ED" borderRadius={"4px"}  mr="1" mt="1">

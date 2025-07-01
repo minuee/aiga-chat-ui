@@ -83,6 +83,7 @@ function DoctorListModal(props: DoctorListModalProps) {
   };
   
   React.useEffect(() => {
+    console.log("originDoctorData",originDoctorData)
     setDoctors(originDoctorData)
     setTimeout(() => {
       setIsLoading(false);
@@ -122,7 +123,7 @@ function DoctorListModal(props: DoctorListModalProps) {
     // 거리 포함 시 계산
     const withDistance = doctorData.map((doctor:any) => ({
       ...doctor,
-      distance: functions.getDistance(userLat, userLng, doctor.lat, doctor.lon),
+      distance: functions.getDistance(userLat, userLng, doctor.lat, doctor.lon ),
     }));
   
     // 정규화용 min/max 계산
@@ -365,7 +366,7 @@ function DoctorListModal(props: DoctorListModalProps) {
           </Flex>
           )
         }
-        {/* <Flex display={'flex'} flexDirection={'column'} minHeight={'40px'}  pt={10}>
+       {/*  <Flex display={'flex'} flexDirection={'column'} minHeight={'40px'}  pt={10}>
           <Box display={process.env.NODE_ENV == 'production' ? 'none' : 'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
             <CustomText color='#000000'>{`위도 : ${location?.latitude}`}</CustomText>
             <CustomText color='#000000'>{`경도 : ${location?.longitude}`}</CustomText>

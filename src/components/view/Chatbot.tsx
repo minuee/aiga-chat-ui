@@ -154,8 +154,35 @@ export default function ChatBot() {
     setIsOpenSignupAgreeModal(false);
     setOldHistoryData(null)
     setFromDoctorDepth2(false)
-    setOpenAlert(false)
+    setOpenAlert(false);
+    setChatDisabled({
+      isState :  true,
+      isAlertMsg : false,
+      reTryTimeStamp : 0
+    })
   }
+
+  useEffect(() => {
+    const userBasicInfo = UserStateStore.getState();
+    // userBasicInfo.isState가 true에서 false로 또는 false에서 true로 변경될 때 실행되는 코드
+    if (userBasicInfo?.isState) {
+      // true일 때 수행할 작업
+      console.log('상태가 true로 변경되었습니다.');
+      setChatDisabled({
+        isState :  true,
+        isAlertMsg : false,
+        reTryTimeStamp : 0
+      })
+    } else {
+      // false일 때 수행할 작업
+      console.log('상태가 false로 변경되었습니다.');
+      setChatDisabled({
+        isState :  true,
+        isAlertMsg : false,
+        reTryTimeStamp : 0
+      })
+    }
+  }, [UserStateStore.getState().isState]);
 
   useEffect(() => {
     if (!alreadyInitialized.current) {
@@ -420,7 +447,10 @@ export default function ChatBot() {
         position: 'top-right',
         description: '수신중입니다. 잠시만 기다려주세요',
         status: 'info',
-        duration: 2000,
+        containerStyle: {
+          color: '#ffffff',
+        },
+        duration: 1500,
         isClosable: true,
       });
     }
@@ -429,7 +459,16 @@ export default function ChatBot() {
   const onHandleTypeDone = () => {
     setIsLoading(false);
     setReceiving(false);
-    setIsFocus(false);
+    //setIsFocus(false);
+    console.log('textareaRef:', textareaRef.current);
+    
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef?.current?.focus()
+        console.log('✅ 포커싱 시도');
+      }
+    }, 100)
+    
   }
 
   const addMessage = (newItem: any) => {
@@ -488,13 +527,11 @@ export default function ChatBot() {
           setIsLoading(false);
           setReceiving(false);
           setIsFocus(false);
-          //setTimeout(() => setHasSent(false), 500);
           return;
         }else{
           setIsLoading(false);
           setReceiving(false);
           setIsFocus(false)
-          //setTimeout(() => setHasSent(false), 500);
           return;
         }
       }else{
@@ -523,7 +560,12 @@ export default function ChatBot() {
             setIsLoading(false);
             setReceiving(false);
             setIsFocus(false);
-            //setTimeout(() => setHasSent(false), 500);
+            setTimeout(() => {
+              if (textareaRef.current) {
+                textareaRef?.current?.focus()
+                console.log('✅ 포커싱 시도');
+              }
+            }, 100)
           }
 
           setTimeout(() => {
@@ -553,7 +595,13 @@ export default function ChatBot() {
               setIn24UsedToken(parsedMessage?.in24_used_token)
               setIsLoading(false);
               setReceiving(false);
-              setIsFocus(false)
+              //setIsFocus(false)
+              setTimeout(() => {
+                if (textareaRef.current) {
+                  textareaRef?.current?.focus()
+                  console.log('✅ 포커싱 시도');
+                }
+              }, 100)
               
               setTimeout(() => {
                 addMessage(
@@ -590,7 +638,12 @@ export default function ChatBot() {
   const call_fn_error_message = () => {
     setIsLoading(false);
     setReceiving(false);
-    //setTimeout(() => setHasSent(false), 500);
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef?.current?.focus()
+        console.log('✅ 포커싱 시도');
+      }
+    }, 100)
     toast({
       title: 'AIGA',
       position: 'top-right',
@@ -1218,10 +1271,15 @@ export default function ChatBot() {
                 if (e.key === 'Enter' && !e.shiftKey && !isMobileOnly && !isReceiving)  {
                   e.preventDefault(); // 줄바꿈 방지
                   if (isChatDisabled?.isState && inputCode.trim() !== '' && !isReceiving) {
-                    //setHasSent(true); // 일단 막고
+                    setHasSent(true); // 일단 막고
                     handleSendMessage();
                     setIsFocus(false);
                     handleForceBlur();
+                    setInputCode('')
+
+                    setTimeout(() => {
+                      setHasSent(false);
+                    }, 1500);
                   }
                 }
               }}
@@ -1235,6 +1293,10 @@ export default function ChatBot() {
                 <Box onClick={() => onHandleStopRequest()}  cursor={'pointer'} zIndex={10}>
                   <Image src={LoadingBar} alt="LoadingBar" style={{width:'30px', height:'30px'}} /> 
                 </Box>
+                :
+                (!isChatDisabled?.isState )
+                ?
+                <Box zIndex={10}> <SendButtonOff boxSize={'32px'} /></Box>
                 :
                 <Box
                   zIndex={10}
