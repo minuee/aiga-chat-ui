@@ -113,7 +113,6 @@ export default function Index() {
             <Flex 
               mt="60px"
               alignItems={'center'} 
-              px='basePadding' 
               width="100%" 
               maxWidth={`${mConstants.desktopMinWidth}px`} 
               overflow={'hidden'}
@@ -179,7 +178,6 @@ export default function Index() {
             <Flex 
               mt="58px"
               alignItems={'center'} 
-              
               width="100%" 
               maxWidth={`${mConstants.desktopMinWidth}px`} 
               overflow={'hidden'}
