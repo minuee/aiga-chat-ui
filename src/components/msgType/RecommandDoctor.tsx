@@ -118,7 +118,6 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
   const onSendDoctorListButton = async( id:any) => {
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_1}`);
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_1}`)   
-    console.log("originDoctorData doctorList",doctorList)
     setOpenDoctorListModal(true,id,doctorList);
   }
 

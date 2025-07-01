@@ -39,12 +39,17 @@ const functions = {
   },
 
   makeLinkify(text: string): string {
-    const urlRegex = /(https?:\/\/[^\s\\)]+)/g;
+    const urlWithTextRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+    return text.replace(urlWithTextRegex, '');
+  },
 
-    return text.replace(urlRegex, (url) => {
-      const safeUrl = url.replace(/([^:]\/)\/+/g, '$1'); // 중복 슬래시 정리
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:blue">링크</a>`;
-    });
+  makeLinkify_old(text: string): string {
+    //const urlRegex = /(https?:\/\/[^\s\\)]+)/g;
+    const urlRegex = /(https?:\/\/[^\s)]+)/g;
+    return text.replace(urlRegex, '');
+    //return text.replace(urlRegex, (url) => {
+      //return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:blue">링크</a>`;
+    //});
   },
 
   cleanEscapedCharacters(text: string): string {
