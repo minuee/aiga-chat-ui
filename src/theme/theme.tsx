@@ -27,7 +27,7 @@ const breakpoints = {
 
 
 export default extendTheme(
-/*   globalStyles,
+  globalStyles,
   badgeStyles, // badge styles
   buttonStyles, // button styles
   linkStyles, // link styles
@@ -35,7 +35,7 @@ export default extendTheme(
   inputStyles, // input styles
   textareaStyles, // textarea styles
   switchStyles, // switch styles
-  CardComponent, // card component */
+  CardComponent, // card component
   {
     breakpoints,
     zIndices: {
