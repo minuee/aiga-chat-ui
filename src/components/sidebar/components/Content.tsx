@@ -248,9 +248,9 @@ function SidebarContent(props: SidebarContent) {
 
   // SIDEBAR
   return (
-    <Flex direction="column" height="100%" borderRadius="30px" w="100%" >
+    <Flex direction="column" height="100%" borderRadius="30px" w="100%"  mt="20px">
       <Brand />
-      <Flex flexDirection={'column'} alignItems={'center'}  width={'100%'} px="basePadding" mb="10px" mt="20px">
+      <Flex flexDirection={'column'} alignItems={'center'}  width={'100%'} px="basePadding" my="10px">
         <Button 
           colorScheme='blue' 
           bgColor={buttonBgColor}
