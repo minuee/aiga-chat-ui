@@ -447,11 +447,11 @@ export default function ChatBot() {
   const onHandleTypeDone = () => {
     setIsLoading(false);
     setReceiving(false);
-    //setIsFocus(false);
+    setIsFocus(false);
     console.log('textareaRef:', textareaRef.current);
     
     setTimeout(() => {
-      if (textareaRef.current) {
+      if (textareaRef.current && !isMobileOnly) {
         textareaRef?.current?.focus()
         console.log('✅ 포커싱 시도');
       }
@@ -549,7 +549,7 @@ export default function ChatBot() {
             setReceiving(false);
             setIsFocus(false);
             setTimeout(() => {
-              if (textareaRef.current) {
+              if (textareaRef.current && !isMobileOnly) {
                 textareaRef?.current?.focus()
                 console.log('✅ 포커싱 시도');
               }
@@ -583,9 +583,9 @@ export default function ChatBot() {
               setIn24UsedToken(parsedMessage?.in24_used_token)
               setIsLoading(false);
               setReceiving(false);
-              //setIsFocus(false)
+              setIsFocus(false)
               setTimeout(() => {
-                if (textareaRef.current) {
+                if (textareaRef.current && !isMobileOnly) {
                   textareaRef?.current?.focus()
                   console.log('✅ 포커싱 시도');
                 }
@@ -626,8 +626,9 @@ export default function ChatBot() {
   const call_fn_error_message = () => {
     setIsLoading(false);
     setReceiving(false);
+    setIsFocus(false)
     setTimeout(() => {
-      if (textareaRef.current) {
+      if (textareaRef.current && !isMobileOnly) {
         textareaRef?.current?.focus()
         console.log('✅ 포커싱 시도');
       }
@@ -1267,7 +1268,7 @@ export default function ChatBot() {
 
                     setTimeout(() => {
                       setHasSent(false);
-                    }, 1500);
+                    }, 2000);
                   }
                 }
               }}

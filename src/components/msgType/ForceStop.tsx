@@ -20,7 +20,7 @@ const ForceStop = ({  msg = "대답이 중지되었습니다.", indexKey}: Force
   const textSystemStopIconColor = useColorModeValue('#5E0018', 'navy.800');
   
   return (
-    <Flex w="100%" key={indexKey} flexDirection={'column'} mt="10px">
+    <Flex w="100%" key={indexKey} flexDirection={'column'} my="10px">
       <Box my="5px">
         <IconChatAiga width={'46px'} height={"12px"} />
       </Box>
