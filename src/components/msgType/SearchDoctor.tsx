@@ -31,6 +31,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
   const pathnameRef = useRef(pathname);
   const textColor = useColorModeValue('navy.700', 'white')
   const flexRef = useRef<HTMLDivElement>(null);
+  const [selectChatId, setSelectselectChatId] = useState(0);
   const [showGradient, setShowGradient] = useState(true);
   const [doctorList, setDoctorList] = useState<any>([]);
   const isDark = useColorModeValue(false, true);
@@ -48,7 +49,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
   const iconColor = useColorModeValue('#0AA464','#0AA464');
   
   const modalBtnRef = useRef<HTMLButtonElement>(null);
-  const { isOpenDocListModal } = ModalDoctorListStore(state => state);
+  const { isOpenDocListModal,chatId,doctorAllList } = ModalDoctorListStore(state => state);
   const setOpenDoctorListModal = ModalDoctorListStore((state) => state.setOpenDoctorListModal);
 
 
@@ -92,6 +93,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
   }, []);
 
   useEffect(() => {
+    setSelectselectChatId(data?.chat_id)
     if ( !functions.isEmpty( data?.answer?.doctors )) {
       setDoctorList(data?.answer?.doctors)
     }
@@ -112,20 +114,22 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
     }, 100);
   }
 
-  const onSendDoctorListButton = async( ) => {
+  const onSendDoctorListButton = async( id:any) => {
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_1}`);
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_1}`)   
-    setOpenDoctorListModal(true);
+    console.log("originDoctorData doctorList",doctorList)
+    setOpenDoctorListModal(true,id,doctorList);
   }
 
   const fn_close_modal_doctor_list = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
-    setOpenDoctorListModal(false);
+    setOpenDoctorListModal(false,0,[]);
     router.replace(`/${locale}/chat`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname','') 
     }, 200);
   }
+
 
   
   if ( doctorList?.length == 0 && functions.isEmpty(summary)) {
@@ -288,7 +292,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
           }
         </Box>
         {
-          isOpenDocListModal && (
+          (isOpenDocListModal && chatId ==  selectChatId) && (
             <Modal
               onClose={() => fn_close_modal_doctor_list()}
               finalFocusRef={modalBtnRef}
@@ -457,7 +461,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
                   borderRadius={'20px'} 
                   flexDirection={'column'}
                   backgroundColor={navbarBgColor}
-                  onClick={()=> onSendDoctorListButton()}
+                  onClick={()=> onSendDoctorListButton(selectChatId)}
                   border={'1px solid #efefef'}
                   mb="5px"
                 >
@@ -471,7 +475,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
         <Box pr={1} justifyContent={'flex-end'} display={doctorList?.length == 0 ? 'none' : isLocalTypeDone ? 'flex' : 'none'}>
           <Box 
             display="flex" justifyContent={'center'} alignItems={'center'} bg={"#DFF5ED"} borderRadius={"4px"} height={"32px"} px="20px" cursor={'pointer'}
-            onClick={() => onSendDoctorListButton()} 
+            onClick={() => onSendDoctorListButton(selectChatId)} 
           >
             <CustomTextBold400 fontSize={'15px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"} >
             {doctorList[0]?.deptname} 전체보기

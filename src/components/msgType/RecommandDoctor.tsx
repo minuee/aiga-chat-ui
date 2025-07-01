@@ -36,8 +36,9 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
   const [showGradient, setShowGradient] = useState(true);
   const [isLocalTypeDone, setLocalTypeDone] = useState(true)
   const [doctorList, setDoctorList] = useState([]);
+  const [selectChatId, setSelectselectChatId] = useState(0);
   const isDark = useColorModeValue(false, true);
-  const { isOpenDocListModal } = ModalDoctorListStore(state => state);
+  const { isOpenDocListModal,chatId,doctorAllList } = ModalDoctorListStore(state => state);
   const setOpenDoctorListModal = ModalDoctorListStore((state) => state.setOpenDoctorListModal);
   const modalBtnRef = useRef<HTMLButtonElement>(null);
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.700');
@@ -92,6 +93,8 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
   }, []);
 
   useEffect(() => {
+    console.log("originDoctorData data?.answer?.doctors",data?.chat_id, data?.answer?.doctors?.length)
+    setSelectselectChatId(data?.chat_id)
     if ( !functions.isEmpty( data?.answer?.doctors )) {
       setDoctorList(data?.answer?.doctors)
     }
@@ -112,15 +115,16 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
     }, 100);
   }
 
-  const onSendDoctorListButton = async( ) => {
+  const onSendDoctorListButton = async( id:any) => {
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_1}`);
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_1}`)   
-    setOpenDoctorListModal(true);
+    console.log("originDoctorData doctorList",doctorList)
+    setOpenDoctorListModal(true,id,doctorList);
   }
 
   const fn_close_modal_doctor_list = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
-    setOpenDoctorListModal(false);
+    setOpenDoctorListModal(false,0,[]);
     router.replace(`/${locale}/chat`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname','') 
@@ -299,7 +303,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
                   borderRadius={'20px'} 
                   flexDirection={'column'}
                   backgroundColor={navbarBgColor}
-                  onClick={()=> onSendDoctorListButton()}
+                  onClick={()=> onSendDoctorListButton(selectChatId)}
                   border={'1px solid #efefef'}
                   mb="5px"
                 >
@@ -313,7 +317,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
         <Box pr={1} justifyContent={'flex-end'} display={doctorList?.length == 0 ? 'none' : isLocalTypeDone ? "flex" : 'none'}>
           <Box 
             display="flex" justifyContent={'center'} alignItems={'center'} bg={"#DFF5ED"} borderRadius={"4px"} height={"32px"} px="20px" cursor={'pointer'}
-            onClick={() => onSendDoctorListButton()} 
+            onClick={() => onSendDoctorListButton(selectChatId)} 
           >
             <CustomTextBold400 fontSize={'15px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"} >
             {data?.answer?.disease} 전체보기
@@ -322,11 +326,11 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
           </Box>
         </Box>
         {
-          isOpenDocListModal && (
+          (isOpenDocListModal && chatId ==  selectChatId) && (
             <Modal
               onClose={() => fn_close_modal_doctor_list()}
               finalFocusRef={modalBtnRef}
-              isOpen={isOpenDocListModal}
+              isOpen={(isOpenDocListModal && chatId ==  selectChatId)}
               scrollBehavior={'inside'}
               size={'full'}
             >
@@ -366,9 +370,9 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
                 </ModalHeader>
                 <ModalBody overflowY="auto" maxH="100vh" padding="basePadding" margin="0" >
                   <DoctorList
-                    isOpen={isOpenDocListModal}
+                    isOpen={(isOpenDocListModal && chatId ==  selectChatId)}
                     setClose={() => fn_close_modal_doctor_list()}
-                    originDoctorData={doctorList}
+                    originDoctorData={doctorAllList}
                   />
                 </ModalBody>
               </ModalContent>

@@ -16,11 +16,6 @@ body {
   overflow: auto;
 }
 
-.noscroll {
-  overflow: hidden !important;
-  touch-action: none !important;
-  overscroll-behavior: none !important;
-}
 
 body::-webkit-scrollbar {
   display: none;             /* Chrome, Safari, 최신 Edge */

@@ -163,7 +163,6 @@ export default function Index() {
             maxWidth={`${mConstants.desktopMinWidth}px`}
             display={'flex'}
             justifyContent={'center'}
-            overflowY='auto'
           >
             <Navbar
               onOpen={onOpen}

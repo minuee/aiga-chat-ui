@@ -38,12 +38,6 @@ export default extendTheme(
   CardComponent, // card component
   {
     breakpoints,
-    zIndices: {
-      hide: -1,
-      auto: 'auto',
-      base: 0,
-      header: 9999, // ✅ 여기에 추가
-    },
     space : {
       basePadding: '16px',
       baseTopContainerPadding : '28px',

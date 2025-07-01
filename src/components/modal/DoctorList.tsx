@@ -88,7 +88,7 @@ function DoctorListModal(props: DoctorListModalProps) {
     setTimeout(() => {
       setIsLoading(false);
     }, 60);
-  }, [isOpen]);
+  }, [isOpen,originDoctorData]);
 
   React.useEffect(() => {
     if (location?.latitude && location?.longitude) {
