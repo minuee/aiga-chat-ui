@@ -1191,7 +1191,7 @@ export default function ChatBot() {
             })
           }
           { isReceiving && ( <Box><Processing  msg="분석중" /></Box> ) }
-          <Box ref={scrollBottomRef} h="1px" pb={"60px"} visibility="hidden" />
+          <Box ref={scrollBottomRef} h="1px" pb={"120px"} visibility="hidden" />
         </Flex>
         <Flex 
           position="fixed" bottom={isMobileOnly ? `${keyboardHeight}px` : 0} left="0" w="100%"  bg={themeColor} zIndex="100" display={'flex'} justifyContent='center'
@@ -1276,7 +1276,7 @@ export default function ChatBot() {
             />
             <Box display={'flex'} position={'absolute'} bottom={'6px'} right={'20px'} w={'55px'} height={'55px'} justifyContent={'flex-end'} alignItems={'center'}>
               {
-                isReceiving
+                ( isReceiving && !hasSent )
                 ?
                 <Box onClick={() => onHandleStopRequest()}  cursor={'pointer'} zIndex={10}>
                   <Image src={LoadingBar} alt="LoadingBar" style={{width:'30px', height:'30px'}} /> 
