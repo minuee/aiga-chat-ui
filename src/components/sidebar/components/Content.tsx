@@ -250,7 +250,7 @@ function SidebarContent(props: SidebarContent) {
   return (
     <Flex direction="column" height="100%" borderRadius="30px" w="100%" >
       <Brand />
-      <Flex flexDirection={'column'} alignItems={'center'}  width={'100%'} px="basePadding" my="10px">
+      <Flex flexDirection={'column'} alignItems={'center'}  width={'100%'} px="basePadding" mb="10px" mt="20px">
         <Button 
           colorScheme='blue' 
           bgColor={buttonBgColor}

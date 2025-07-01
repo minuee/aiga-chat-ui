@@ -25,7 +25,7 @@ const Alert = ({ AppName, bodyContent, isOpen, onClose, onConfirm, closeText, co
             isCentered={isCentered}
         >
             <AlertDialogOverlay>
-                <AlertDialogContent backgroundColor={bgColor}>
+                <AlertDialogContent backgroundColor={bgColor}  maxW={{base : "90%", md:"400px"}}>
                     <AlertDialogHeader fontSize='lg' fontWeight='bold'>
                         {AppName}
                     </AlertDialogHeader>
