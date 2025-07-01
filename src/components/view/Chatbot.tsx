@@ -1259,6 +1259,7 @@ export default function ChatBot() {
               onKeyDown={(e:any) => {
                 if (e.key === 'Enter' && !e.shiftKey && !isMobileOnly && !isReceiving)  {
                   e.preventDefault(); // 줄바꿈 방지
+                  e.stopPropagation();
                   if (isChatDisabled?.isState && inputCode.trim() !== '' && !isReceiving) {
                     setHasSent(true); // 일단 막고
                     handleSendMessage();
@@ -1276,34 +1277,45 @@ export default function ChatBot() {
               disabled={(!isChatDisabled?.isState || isReceiving)}
             />
             <Box display={'flex'} position={'absolute'} bottom={'6px'} right={'20px'} w={'55px'} height={'55px'} justifyContent={'flex-end'} alignItems={'center'}>
-              {
-                ( isReceiving && !hasSent )
-                ?
-                <Box onClick={() => onHandleStopRequest()}  cursor={'pointer'} zIndex={10}>
-                  <Image src={LoadingBar} alt="LoadingBar" style={{width:'30px', height:'30px'}} /> 
+            {
+              isReceiving && !hasSent ? (
+                <Box
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onHandleStopRequest();
+                  }}
+                  cursor={'pointer'}
+                  zIndex={10}
+                >
+                  <Image src={LoadingBar} alt="LoadingBar" style={{ width: '30px', height: '30px' }} />
                 </Box>
-                :
-                (!isChatDisabled?.isState )
-                ?
-                <Box zIndex={10}> <SendButtonOff boxSize={'32px'} /></Box>
-                :
+              ) : !isChatDisabled?.isState ? (
+                <Box zIndex={10}>
+                  <SendButtonOff boxSize={'32px'} />
+                </Box>
+              ) : (
                 <Box
                   zIndex={10}
                   onMouseDown={(e) => {
                     e.preventDefault();
+                    e.stopPropagation(); // 이벤트 중첩 방지
                     handleSendMessage();
                   }}
                   onTouchStart={(e) => {
                     e.preventDefault();
+                    e.stopPropagation(); // 모바일 터치 대응
                     handleSendMessage();
                   }}
                   cursor={'pointer'}
                 >
-                {
-                  ( isFocus && isChatDisabled?.isState ) ? <SendButtonOn boxSize={'32px'} /> : <SendButtonOff boxSize={'32px'} />
-                }
+                  {isFocus && isChatDisabled?.isState ? (
+                    <SendButtonOn boxSize={'32px'} />
+                  ) : (
+                    <SendButtonOff boxSize={'32px'} />
+                  )}
                 </Box>
-              }
+              )
+            }
             </Box>
           </Box>
           
