@@ -21,9 +21,11 @@ type SearchDoctorProps = {
     summary : any;
     isHistory : boolean;
     onSendButton: (data: any,id:number) => void; 
+    isLiveChat? : boolean,
+    setIsTypingDone: () => void;
 };
 
-const SearchDoctor = ({  onSendButton , data,isHistory,summary }: SearchDoctorProps) => {
+const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsTypingDone }: SearchDoctorProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = useRef(pathname);
@@ -96,19 +98,18 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary }: SearchDoctorPr
   }, [data]);
 
   useEffect(() => {
-    if ( isOutputSame || isHistory ) {
-      setLocalTypeDone(true)
-    }else if (  !functions.isEmpty(summary)  ) {
-      //setLocalTypeDone(false)
+    if ( ( isLiveChat && !functions.isEmpty(summary)  )  ) {
+      setLocalTypeDone(false)
     }else{
       setLocalTypeDone(true)
     }
   }, [summary]);
 
-  const setIsTypingDone = () => {
+  const setTypingCompleteDone = () => {
     setTimeout(() => {
       setLocalTypeDone(true)
-    }, 60);
+      setIsTypingDone()
+    }, 100);
   }
 
   const onSendDoctorListButton = async( ) => {
@@ -127,7 +128,30 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary }: SearchDoctorPr
   }
 
   
-  if ( doctorList?.length == 0 ) {
+  if ( doctorList?.length == 0 && functions.isEmpty(summary)) {
+    return (
+      <Flex w="100%" flexDirection={'column'} mt="10px">
+        <Box>
+          <IconChatAiga width={'46px'} height={"12px"} />
+        </Box>
+        <Flex 
+          padding="12px 20px" 
+          border={`1px solid ${bgSystemColor}`} 
+          bgColor={bgSystemColor} 
+          borderTopLeftRadius="2px" 
+          borderTopRightRadius="20px" 
+          borderBottomLeftRadius="20px"
+          borderBottomRightRadius="20px" 
+          w="auto" 
+          zIndex={2}
+          justifyContent={'center'}
+          flexDirection={'column'}
+        > 
+          <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'170%'}>추천할 의사를 찾을 수 없습니다.</CustomText> 
+        </Flex>
+      </Flex>
+    )
+  }else if ( doctorList?.length == 0  && !functions.isEmpty(summary)) {
     return (
       <Flex w="100%" flexDirection={'column'} mt="10px" px="5px">
         <Box my="5px">
@@ -146,7 +170,10 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary }: SearchDoctorPr
           justifyContent={'center'}
           flexDirection={'column'}
         > 
-          <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'170%'}>추천할 의사를 찾을 수 없습니다.</CustomText> 
+          <div
+            style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
+            dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
+          />
         </Flex>
       </Flex>
     )
@@ -172,22 +199,32 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary }: SearchDoctorPr
         > 
           <Box>
           {
-            (( isHistory || isOutputSame ) && !functions.isEmpty(summary) )
+            ( isLiveChat && !functions.isEmpty(summary) && !isLocalTypeDone  )
+            ?
+            <TypeAnimation
+              msg={ summary.replace(/^"(.*)"$/, '$1')}
+              speed={30}
+              onComplete={() => setTypingCompleteDone()}
+            />
+            :
+            ( !isLiveChat && !functions.isEmpty(summary) )
             ?
             <div
               style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
               dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
             />
             :
-            ( !functions.isEmpty(summary) && !isOutputSame )
+            ( !functions.isEmpty(summary) )
             ?
-            <TypeAnimation
-              msg={ summary.replace(/^"(.*)"$/, '$1')}
-              speed={30}
-              onComplete={() => setIsTypingDone()}
+            <div
+              style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
+              dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
             />
             :
-            null
+            <div
+              style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
+              dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
+            />
           }
           </Box>
         </Flex>
@@ -209,7 +246,10 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary }: SearchDoctorPr
                 width={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
                 padding="20px"
                 borderRadius="8px"
+                alignItems={'center'}
                 onClick={() => onSendButton(element,element?.doctor_id)} cursor={'pointer'}
+                flexDirection={{base : "row" , 'sm2' : doctorList?.length == 1 ? 'row' : 'column'}}
+                mr={doctorList?.length == 2 ? index == 0 ? "5px" : doctorList?.length == 3 ?  index < 2 ? '5px' : 0 : 0 : 0}
               >
                 <Box flex={1} display={'flex'} justifyContent={'center'} alignItems={'center'} maxWidth={"70px"}>
                   <NextImage 
@@ -220,25 +260,25 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary }: SearchDoctorPr
                     height={60}
                   />
                 </Box>
-                <Flex flex={4} flexDirection={'column'} justifyContent={'center'} px="20px">
-                  <Box display={'flex'} alignItems={'center'} height={'26px'}>
+                <Flex flex={4} flexDirection={'column'} justifyContent={'center'} px="20px" mt={doctorList?.length > 1 ? "10px" : 0}>
+                  <Box display={'flex'}  justifyContent={doctorList?.length > 1 ? 'center' : 'flex-start'}  alignItems={'center'} height={'26px'}>
                     <CustomTextBold700 fontSize={'17px'} color={nameTextColor} lineHeight={"150%"} noOfLines={1}>
                       {element?.name}
                     </CustomTextBold700>
                   </Box>
-                  <Box display={'flex'}  alignItems={'center'} height={'26px'}>
+                  <Box display={'flex'}  justifyContent={doctorList?.length > 1 ? 'center' : 'flex-start'}  alignItems={'center'} height={'26px'}>
                     <CustomTextBold700 fontSize={'12px'} color='#0AA464' lineHeight={"150%"} noOfLines={1}>
                       {element?.hospital}
                     </CustomTextBold700>
                   </Box>
-                  <Box display={'flex'} alignItems={'center'} height={'26px'}>
+                  <Box display={'flex'} justifyContent={doctorList?.length > 1 ? 'center' : 'flex-start'}  alignItems={'center'}  height={'26px'}>
                     <CustomTextBold700 fontSize={'12px'} color={partTextColor} lineHeight={"150%"} letterSpacing={'-5%'} noOfLines={1}>
                       {element?.deptname}
                     </CustomTextBold700>
                   </Box>
                 </Flex>
                 <Box
-                  flex={1} display={'flex'} alignItems={'center'} justifyContent={'flex-end'}
+                  flex={1} display={doctorList?.length > 1 ? 'none' : 'flex'} alignItems={'center'} justifyContent={'flex-end'}
                   onClick={() => onSendButton(element,element?.doctor_id)} cursor={'pointer'}
                 >
                   <Icon as={BiChevronRight} width="20px" height="20px" color={arrowColor} />

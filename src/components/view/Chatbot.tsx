@@ -12,7 +12,6 @@ import { useEffect, useState,useRef,useCallback } from 'react';
 import Image from "next/image";
 import { MdOutlineArrowDownward, MdFitbit, MdPerson,MdOutlineClose,MdArrowBack } from 'react-icons/md';
 import DoctorDetail  from '@/components/modal/Doctor';
-import LoadingDots  from '@/components/icons/ProgressDot';
 import RecommandDoctor  from '@/components/msgType/RecommandDoctor';
 import SearchDoctor  from '@/components/msgType/SearchDoctor';
 import ForceStop  from '@/components/msgType/ForceStop';
@@ -27,8 +26,7 @@ import Processing  from '@/components/msgType/Processing';
 import SkeletonDefaultText from "@/components/fields/LoadingBar";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import debounce from 'lodash/debounce'
-import { useKeyboardHeight } from "@/hooks/useKeyboardHeight";
-import useKeyboardStatus from "@/hooks/useKeyboardStatus";
+
 import { useTranslations } from 'next-intl';
 import LoadingBar from "@/assets/icons/loading.gif";
 import mConstants from '@/utils/constants';
@@ -44,14 +42,13 @@ import {
  import UserStateStore from '@/store/userStore';
 import * as ChatService from "@/services/chat/index";
 import { SendButtonOff,SendButtonOn } from '@/components/icons/svgIcons';
-
+import useDetectKeyboardOpen from "use-detect-keyboard-open";
 
 export default function ChatBot() {
   const t = useTranslations('Messages');
   const { colorMode, toggleColorMode } = useColorMode();
   const alreadyInitialized = useRef(false);
-  const keyboardHeight = useKeyboardHeight();
-  const isKeyboardOpen = useKeyboardStatus();
+  const isKeyboardOpen = useDetectKeyboardOpen();
   // Input States
   const pathname = usePathname();
   const router = useRouter();
@@ -63,7 +60,7 @@ export default function ChatBot() {
   const [hasSent, setHasSent] = useState(false); // 메시지 중복 방지용
   const toast = useToast();
   // Response message
-  //const [outputCode, setOutputCode] = useState<any>([]);
+  const [realOutputCode, setRealOutputCode] = useState<any>([]);
   const outputCode = CurrentDialogStore(state => state.messageData);
   const setOutputCode = CurrentDialogStore((state) => state.setCurrentMessageData);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -167,7 +164,6 @@ export default function ChatBot() {
     // userBasicInfo.isState가 true에서 false로 또는 false에서 true로 변경될 때 실행되는 코드
     if (userBasicInfo?.isState) {
       // true일 때 수행할 작업
-      console.log('상태가 true로 변경되었습니다.');
       setChatDisabled({
         isState :  true,
         isAlertMsg : false,
@@ -175,7 +171,6 @@ export default function ChatBot() {
       })
     } else {
       // false일 때 수행할 작업
-      console.log('상태가 false로 변경되었습니다.');
       setChatDisabled({
         isState :  true,
         isAlertMsg : false,
@@ -187,64 +182,15 @@ export default function ChatBot() {
   useEffect(() => {
     if (!alreadyInitialized.current) {
       console.log('🔥 최초 1회만 실행');
+      if(!functions.isEmpty(outputCode)) {
+        setRealOutputCode(outputCode)
+      }
       //firstForceStep();
       //getNewSessionID(); // ✅ 여기서만 실행됨
       alreadyInitialized.current = true;
       
       setTimeout(() => {
         setIsLoading(false);
-        /* const msgLen = outputCode?.length;
-        const sampleMsg1 = mConstants.sample_msg_1;
-        const sampleMsg2 = mConstants.sample_msg_2;
-        const sampleMsg3 = mConstants.sample_msg_3;
-        const sampleMsg4 = mConstants.sample_msg_4;
-        const sampleMsg5 = mConstants.sample_msg_5;
-        const sampleMsg6 = mConstants.sample_msg_6;
-        setOutputCode((prevCode: any[]) => {
-          const newArray = [...prevCode];
-          const lastIndex = msgLen;
-          newArray[lastIndex] = {
-            ismode : 'server',
-            id: sampleMsg6?.chat_id,
-            user_question : sampleMsg6?.question,
-            answer : sampleMsg6?.answer,
-            chat_type: sampleMsg6?.chat_type,
-            used_token : sampleMsg6?.used_token
-          };
-          newArray[lastIndex+1] = {
-            ismode : 'server',
-            id: sampleMsg2?.chat_id,
-            user_question : sampleMsg2?.question,
-            answer : sampleMsg2?.answer,
-            chat_type: sampleMsg2?.chat_type,
-            used_token : sampleMsg2?.used_token
-          };
-          newArray[lastIndex+2] = {
-            ismode : 'server',
-            id: sampleMsg3?.chat_id,
-            user_question : sampleMsg3?.question,
-            answer : sampleMsg3?.answer,
-            chat_type: sampleMsg3?.chat_type,
-            used_token : sampleMsg3?.used_token
-          };
-          newArray[lastIndex+3] = {
-            ismode : 'server',
-            id: sampleMsg4?.chat_id,
-            user_question : sampleMsg4?.question,
-            answer : sampleMsg4?.answer,
-            chat_type: sampleMsg4?.chat_type,
-            used_token : sampleMsg4?.used_token
-          };
-          newArray[lastIndex] = {
-            ismode : 'server',
-            id: sampleMsg5?.chat_id,
-            user_question : sampleMsg5?.question,
-            answer : sampleMsg5?.answer,
-            chat_type: sampleMsg5?.chat_type,
-            used_token : sampleMsg5?.used_token
-          };
-          return newArray;
-        }) */
       }, 60);
     }
   }, []);
@@ -269,11 +215,12 @@ export default function ChatBot() {
   }
 
   useEffect(() => {
-    if ( isNewChat && outputCode.length > 0 ) {
+    if ( isNewChat && realOutputCode.length > 0 ) {
       // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
       
       setChatSessionId('')
       setOutputCode([]);
+      setRealOutputCode([])
       setChatDisabled({
         ...isChatDisabled,
         isState : true,
@@ -293,6 +240,7 @@ export default function ChatBot() {
       if ( !functions.isEmpty(oldHistoryData?.session_id) ) {
         setChatSessionId(oldHistoryData?.session_id)
         setOutputCode(oldHistoryData?.chattings);
+        setRealOutputCode(oldHistoryData?.chattings)
         setChatDisabled({
           ...isChatDisabled,
           isState : true,
@@ -430,8 +378,15 @@ export default function ChatBot() {
           ...outputCode,
           { chat_id: functions.getUUID(), ismode: "system_stop", msg: forceMsg }
         ]);
+        setRealOutputCode([
+          ...realOutputCode,
+          { chat_id: functions.getUUID(), ismode: "system_stop", msg: forceMsg }
+        ]);
       }else{
         setOutputCode([
+          { chat_id: functions.getUUID(), ismode: "system_stop", msg: forceMsg }
+        ]);
+        setRealOutputCode([
           { chat_id: functions.getUUID(), ismode: "system_stop", msg: forceMsg }
         ]);
       }
@@ -467,7 +422,10 @@ export default function ChatBot() {
   }
 
   const addMessage = (newItem: any) => {
-    CurrentDialogStore.getState().setCurrentMessageData((prev: any) => [...prev, newItem]);
+    if ( !newItem?.isOnlyLive) {
+      CurrentDialogStore.getState().setCurrentMessageData((prev: any) => [...prev, {...newItem,isLiveChat:false}]);
+    }
+    setRealOutputCode((prev:any) => [...prev, newItem]);
   }
 
   const handleTranslate = async( isText:any = '') => {
@@ -505,20 +463,24 @@ export default function ChatBot() {
     }
     if ( !functions.isEmpty(chat_sessinn_id)) {
       setReceiving(true);
-      const msgLen = parseInt(outputCode.length+1);
+      const msgLen = parseInt(realOutputCode.length+1);
       const inputCodeText = isText;
 
       if ( isSystemText.includes(inputCodeText) ) {
-        if( inputCodeText != outputCode[outputCode?.length -1]?.msg) { 
-          if (Array.isArray(outputCode)) {
+        if( inputCodeText != realOutputCode[realOutputCode?.length -1]?.msg) { 
+          if (Array.isArray(realOutputCode)) {
             setOutputCode([
               ...outputCode,
               { chat_id: functions.getUUID(), ismode: "system", msg: inputCodeText }
             ])
+            setRealOutputCode([
+              ...realOutputCode,
+              { chat_id: functions.getUUID(), ismode: "system", msg: inputCodeText }
+            ])
           }else{
             setOutputCode([{ chat_id: functions.getUUID(), ismode: "system", msg: inputCodeText }])
+            setRealOutputCode([{ chat_id: functions.getUUID(), ismode: "system", msg: inputCodeText }])
           }
-          //setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(), ismode: "system", msg: inputCodeText }]);
           setIsLoading(false);
           setReceiving(false);
           setIsFocus(false);
@@ -530,18 +492,12 @@ export default function ChatBot() {
           return;
         }
       }else{
-        //setOutputCode((prevCode: any[]) => [...prevCode, { chat_id: functions.getUUID(),ismode: "me", question: inputCodeText }]);
         const newItem = {
           chat_id: functions.getUUID(),
           ismode: "me",
           question: inputCodeText,
+          isOnlyLive : false
         };
-       /*  setOutputCode([
-          ...(Array.isArray(outputCode) ? outputCode : []),
-          newItem,
-        ]); */
-        console.log('setOutputCode 1',outputCode)
-     
         addMessage(newItem)
       }
      
@@ -562,12 +518,14 @@ export default function ChatBot() {
               }
             }, 100)
           }
-
+          
           setTimeout(() => {
             addMessage(
               {
                 ismode : 'server',
                 isHistory : false,
+                isLiveChat : true,
+                isOnlyLive : false,
                 id: answerMessage?.chat_id,
                 user_question : answerMessage?.question,
                 answer : answerMessage?.answer,
@@ -576,7 +534,7 @@ export default function ChatBot() {
                 used_token : answerMessage?.used_token
               }
             )
-          }, 60); 
+          }, 100); 
          
         }else{
           if ( questionResult?.message?.statusCode == '404') {
@@ -608,7 +566,8 @@ export default function ChatBot() {
                     answer : null,
                     msg: `일일 질문이 제한되었습니다.`,
                     chat_type : 'system',
-                    used_token : 0
+                    used_token : 0,
+                    isOnlyLive : true
                   }
                 )
               }, 60); 
@@ -644,8 +603,11 @@ export default function ChatBot() {
       title: 'AIGA',
       position: 'top-right',
       description: '시스템이 불안정합니다. 잠시 뒤에 다시 시도해주십시요',
-      status: 'info',
-      duration: 2000,
+      status: 'error',
+      containerStyle: {
+        color: '#ffffff',
+      },
+      duration: 1500,
       isClosable: true,
     });
   }
@@ -670,9 +632,9 @@ export default function ChatBot() {
     const timeout = setTimeout(() => {
       setShowScroll(false)
       scrollBottomRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }, outputCode?.ismode == "me" ? 0 : 300); // or 100ms 정도로 조정 가능
+    }, realOutputCode?.ismode == "me" ? 0 : 300); // or 100ms 정도로 조정 가능
     return () => clearTimeout(timeout);
-  }, [outputCode]);
+  }, [realOutputCode]);
 
   const handleChange = (Event: any) => {
     setInputCode(Event.target.value);
@@ -1054,10 +1016,13 @@ export default function ChatBot() {
   return (
     <Flex 
       w={'100%'} 
+      px='basePadding' 
       maxWidth={`${mConstants.desktopMinWidth}px`} 
       direction="column" 
       position="relative"
-     
+      //bg={isKeyboardOpen ? 'blue' : 'red'} maxH={isKeyboardOpen ? '50vh' : '100%'}
+      overflowY='auto'
+      ref={scrollRef}
     >
       <Flex direction="column" w={'100%'} maxWidth={`${mConstants.desktopMinWidth}px`} >
         <Flex
@@ -1066,11 +1031,9 @@ export default function ChatBot() {
           maxH={"calc(100vh - 130px)"} /* 여기가 하단 스크롤 영역 영향 받음 */
           height={'100%'}
           minH={isMobileOnly ? "100%" : "calc(100vh - 106px)" }
-          overflowY='auto'
-          ref={scrollRef}
           position="relative"
         >
-          <Box display={outputCode?.length == 0 ? 'flex' : 'none'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} >
+          <Box display={realOutputCode?.length == 0 ? 'flex' : 'none'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} >
             <MotionWelcomeImage
               pt="120px"
             />
@@ -1097,7 +1060,7 @@ export default function ChatBot() {
             />
           </Box> */}
           { 
-            outputCode.map((element:any,index:number) => {
+            realOutputCode.map((element:any,index:number) => {
               if ( element.ismode == 'me') {
                 return (
                   <Box key={index}>
@@ -1116,6 +1079,8 @@ export default function ChatBot() {
                         summary={!functions.isEmpty(element?.summary) ? functions.makeLinkify(functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))) : ""}
                         isHistory={element?.isHistory}
                         onSendButton={onSendDoctorButton}
+                        isLiveChat={element.isLiveChat}
+                        setIsTypingDone={() => onHandleTypeDone()}
                       />
                     </Box>
                   )
@@ -1127,6 +1092,8 @@ export default function ChatBot() {
                         summary={!functions.isEmpty(element?.summary) ? functions.makeLinkify(functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))) : ""}
                         isHistory={element?.isHistory}
                         onSendButton={onSendDoctorButton}
+                        isLiveChat={element.isLiveChat}
+                        setIsTypingDone={() => onHandleTypeDone()}
                       />
                     </Box>
                   )
@@ -1138,6 +1105,8 @@ export default function ChatBot() {
                           indexKey={index}
                           isHistory={element?.isHistory}
                           msg={element.answer} 
+                          isLiveChat={element.isLiveChat}
+                          setIsTypingDone={() => onHandleTypeDone()}
                           summary={!functions.isEmpty(element?.summary) ? functions.makeLinkify(functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))) : ""} 
                         />
                       </Flex>
@@ -1151,6 +1120,7 @@ export default function ChatBot() {
                           output={functions.makeLinkify(functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
                           isHistory={element?.isHistory}
                           setIsTypingDone={() => onHandleTypeDone()}
+                          isLiveChat={element.isLiveChat}
                         />
                       </Flex>
                     </Box>
@@ -1201,11 +1171,7 @@ export default function ChatBot() {
           { isReceiving && ( <Box><Processing  msg="분석중" /></Box> ) }
           <Box ref={scrollBottomRef} h="1px" pb={"120px"} visibility="hidden" />
         </Flex>
-        <Flex 
-          position="fixed" bottom={isMobileOnly ? `${keyboardHeight}px` : 0} left="0" w="100%"  bg={themeColor} zIndex="100" display={'flex'} justifyContent='center'
-          transition="transform 0.2s ease"
-          transform={`translateY(-${keyboardHeight}px)`}
-        >
+        <Flex position="fixed" bottom={0} left="0" w="100%"  bg={themeColor} zIndex="100" display={'flex'} justifyContent='center'>
           <Box w={'100%'} position={'relative'} display={'flex'} flexDirection={'row'} zIndex="100" px="10px" py="10px"  borderTop={`1px solid  ${borderTopColor}`}>
             {
               ( !isChatDisabled?.isState && !isChatDisabled?.isAlertMsg ) && (
@@ -1244,6 +1210,13 @@ export default function ChatBot() {
               resize="none"
               as={ResizeTextarea}
               h="100%"
+              //overflow="auto"
+              sx={{
+                WebkitOverflowScrolling: "touch",
+                overflowY: "auto",
+                touchAction: "manipulation",
+                
+              }}
               maxH="150px"
               border="1px solid"
               borderColor={borderColor}
@@ -1276,7 +1249,7 @@ export default function ChatBot() {
 
                     setTimeout(() => {
                       setHasSent(false);
-                    }, 2000);
+                    }, 1500);
                   }
                 }
               }}

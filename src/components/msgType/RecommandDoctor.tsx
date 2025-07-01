@@ -23,9 +23,11 @@ type RecommandDoctorProps = {
     summary : any;
     isHistory : boolean;
     onSendButton: (data: any,id:number) => void; 
+    isLiveChat? : boolean,
+    setIsTypingDone: () => void;
 };
 
-const RecommandDoctor = ({  onSendButton , data, isHistory ,summary}: RecommandDoctorProps) => {
+const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,setIsTypingDone }: RecommandDoctorProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = useRef(pathname);
@@ -96,20 +98,18 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary}: RecommandD
   }, [data]);
 
   useEffect(() => {
-
-    if ( isOutputSame || isHistory ) {
-      setLocalTypeDone(true)
-    }else if (  !functions.isEmpty(summary)  ) {
-      //setLocalTypeDone(false)
+    if ( ( isLiveChat && !functions.isEmpty(summary)  )  ) {
+      setLocalTypeDone(false)
     }else{
       setLocalTypeDone(true)
     }
   }, [summary]);
 
-  const setIsTypingDone = () => {
+  const setTypingCompleteDone = () => {
     setTimeout(() => {
       setLocalTypeDone(true)
-    }, 60);
+      setIsTypingDone()
+    }, 100);
   }
 
   const onSendDoctorListButton = async( ) => {
@@ -127,7 +127,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary}: RecommandD
     }, 200);
   }
 
-  if ( doctorList?.length == 0 ) {
+  if ( doctorList?.length == 0 && functions.isEmpty(summary) ) {
     return (
       <Stack minWidth={'100%'} width={'auto'} minHeight={"50px"} maxHeight={"300px"} position={'relative'}>
         <Box>
@@ -152,199 +152,232 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary}: RecommandD
         </Flex>
       </Stack>
     )
-  }
-
-  return (
-    <Stack
-      minWidth={'100%'} width={'auto'} minHeight={"60px"} position={'relative'}
-      sx={{
-        '&::after': {
-          content: ( showGradient && doctorList?.length > 4 ) ? '""' : 'none', position: 'absolute', bottom: "40px",right: 0,width: '200px',height: '100%',maxHeight : "205px",
-          background:  isDark ? 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0  , 1) 100%)' : 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)',
-          pointerEvents: 'none', // 클릭 이벤트 방지
-        },
-      }}
-    >
-      <Box>
-        <IconChatAiga width={'46px'} height={"12px"} />
-      </Box>
-      
-      <Flex 
-        padding="12px 20px" 
-        border={`1px solid ${bgSystemColor}`} 
-        bgColor={bgSystemColor} 
-        borderTopLeftRadius="2px" 
-        borderTopRightRadius="20px" 
-        borderBottomLeftRadius="20px"
-        borderBottomRightRadius="20px" 
-        w="auto" 
-        zIndex={2}
-        justifyContent={'center'}
-        flexDirection={'column'}
-      > 
-        <Box>
-        {
-          (( isHistory || isOutputSame ) && !functions.isEmpty(summary) )
-          ?
+  }else if ( doctorList?.length == 0  && !functions.isEmpty(summary)) {
+    return (
+      <Flex w="100%" flexDirection={'column'} mt="10px" px="5px">
+        <Box my="5px">
+          <IconChatAiga width={'46px'} height={"12px"} />
+        </Box>
+        <Flex 
+          padding="12px 20px" 
+          border={`1px solid ${bgSystemColor}`} 
+          bgColor={bgSystemColor} 
+          borderTopLeftRadius="2px" 
+          borderTopRightRadius="20px" 
+          borderBottomLeftRadius="20px"
+          borderBottomRightRadius="20px" 
+          w="auto" 
+          zIndex={2}
+          justifyContent={'center'}
+          flexDirection={'column'}
+        > 
           <div
             style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
             dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
           />
-          :
-          ( !functions.isEmpty(summary) && !isOutputSame )
-          ?
-          <TypeAnimation
-            msg={ summary.replace(/^"(.*)"$/, '$1')}
-            speed={30}
-            onComplete={() => setIsTypingDone()}
-          />
-          :
-          !functions.isEmpty(data?.answer?.disease) ? (
-            <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'150%'}>{`위 증상에 맞는 ${data?.answer?.disease} 의사를 추천해 드립니다.`}</CustomText>
-          )
-          :
-          null
-        }
-        </Box>
+        </Flex>
       </Flex>
-      <Box  
-        display={isLocalTypeDone ? 'flex' : 'none'}
-        alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"60px"} maxHeight={"250px"} ref={flexRef} overflowX={'auto'}
+    )
+  }else{
+
+    return (
+      <Stack
+        minWidth={'100%'} width={'auto'} minHeight={"60px"} position={'relative'}
+        sx={{
+          '&::after': {
+            content: ( showGradient && doctorList?.length > 4 ) ? '""' : 'none', position: 'absolute', bottom: "40px",right: 0,width: '200px',height: '100%',maxHeight : "205px",
+            background:  isDark ? 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0  , 1) 100%)' : 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)',
+            pointerEvents: 'none', // 클릭 이벤트 방지
+          },
+        }}
       >
-        {
-          doctorList.map((element: any, index: number) => (
-            <Flex 
-              key={index} 
-              flexDirection="column" 
-              bg={profileBgColor} 
-              minWidth={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
-              width={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
-              maxWidth='300px' 
-              px="10px"
-              borderRadius="8px"
-              mr='5px'
-              onClick={() => onSendButton(element,element?.doctor_id)} cursor={'pointer'}
-            >
-              <Box display={'flex'} justifyContent={'center'} alignItems={'center'} pt="20px" pb="16px">
-                <NextImage 
-                  src={DoctorAvatar}
-                  alt="프로필이미지"
-                  style={{ borderRadius: '50%', objectFit: 'cover' }} 
-                  width={60} 
-                  height={60}
-                />
-              </Box>
-              <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'26px'} pb="16px">
-                <CustomTextBold700 fontSize={'17px'} color={nameTextColor} lineHeight={"150%"} noOfLines={1}>
-                  {element?.name}
-                </CustomTextBold700>
-              </Box>
-              <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'26px'} pb="16px">
-                <CustomTextBold700 fontSize={'12px'} color='#0AA464' lineHeight={"150%"} noOfLines={1}>
-                  {element?.hospital}
-                </CustomTextBold700>
-              </Box>
-              <Box display={'flex'} justifyContent={'center'} alignItems={'center'} pb="32px" height={'26px'}>
-                <CustomTextBold700 fontSize={'12px'} color={partTextColor} lineHeight={"150%"} letterSpacing={'-5%'} noOfLines={1}>
-                  {element?.deptname}
-                </CustomTextBold700>
-              </Box>
-            </Flex>
-          ))
-        }
-        {
-          doctorList?.length > 4 && (
-            <Flex 
-              flexDirection="column" 
-              bg={navbarBgColor} 
-              minWidth="100px" 
-              height={"100%"}
-              justifyContent={'center'}
-              alignItems={'center'}
-            >
-              <Box
-                display={'flex'}  width="40px" height={"40px"} cursor={'pointer'} justifyContent='center' alignItems={'center'} 
-                borderRadius={'20px'} 
-                flexDirection={'column'}
-                backgroundColor={navbarBgColor}
-                onClick={()=> onSendDoctorListButton()}
-                border={'1px solid #efefef'}
-                mb="5px"
+        <Box>
+          <IconChatAiga width={'46px'} height={"12px"} />
+        </Box>
+        
+        <Flex 
+          padding="12px 20px" 
+          border={`1px solid ${bgSystemColor}`} 
+          bgColor={bgSystemColor} 
+          borderTopLeftRadius="2px" 
+          borderTopRightRadius="20px" 
+          borderBottomLeftRadius="20px"
+          borderBottomRightRadius="20px" 
+          w="auto" 
+          zIndex={2}
+          justifyContent={'center'}
+          flexDirection={'column'}
+        > 
+          <Box>
+          {
+              ( isLiveChat && !functions.isEmpty(summary) && !isLocalTypeDone  )
+              ?
+              <TypeAnimation
+                msg={ summary.replace(/^"(.*)"$/, '$1')}
+                speed={30}
+                onComplete={() => setTypingCompleteDone()}
+              />
+              :
+              ( !isLiveChat && !functions.isEmpty(summary) )
+              ?
+              <div
+                style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
+                dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
+              />
+              :
+              ( !functions.isEmpty(summary) )
+              ?
+              <div
+                style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
+                dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
+              />
+              :
+              <div
+                style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
+                dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
+              />
+            }
+          </Box>
+        </Flex>
+        <Box  
+          display={isLocalTypeDone ? 'flex' : 'none'}
+          alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"60px"} maxHeight={"250px"} ref={flexRef} overflowX={'auto'}
+        >
+          {
+            doctorList.map((element: any, index: number) => (
+              <Flex 
+                key={index} 
+                flexDirection="column" 
+                bg={profileBgColor} 
+                minWidth={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
+                width={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
+                maxWidth='300px' 
+                px="10px"
+                borderRadius="8px"
+                mr='5px'
+                onClick={() => onSendButton(element,element?.doctor_id)} cursor={'pointer'}
               >
-              <Icon as={MdOutlineArrowForward} width="25px" height="25px" color={navbarIcon} />
-            </Box>
-            <CustomTextBold400 fontSize={'15px'} fontWeight={'bold'} color={navbarIcon} lineHeight={"150%"}>전체 보기</CustomTextBold400>
-          </Flex>
+                <Box display={'flex'} justifyContent={'center'} alignItems={'center'} pt="20px" pb="16px">
+                  <NextImage 
+                    src={DoctorAvatar}
+                    alt="프로필이미지"
+                    style={{ borderRadius: '50%', objectFit: 'cover' }} 
+                    width={60} 
+                    height={60}
+                  />
+                </Box>
+                <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'26px'} pb="16px">
+                  <CustomTextBold700 fontSize={'17px'} color={nameTextColor} lineHeight={"150%"} noOfLines={1}>
+                    {element?.name}
+                  </CustomTextBold700>
+                </Box>
+                <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'26px'} pb="16px">
+                  <CustomTextBold700 fontSize={'12px'} color='#0AA464' lineHeight={"150%"} noOfLines={1}>
+                    {element?.hospital}
+                  </CustomTextBold700>
+                </Box>
+                <Box display={'flex'} justifyContent={'center'} alignItems={'center'} pb="32px" height={'26px'}>
+                  <CustomTextBold700 fontSize={'12px'} color={partTextColor} lineHeight={"150%"} letterSpacing={'-5%'} noOfLines={1}>
+                    {element?.deptname}
+                  </CustomTextBold700>
+                </Box>
+              </Flex>
+            ))
+          }
+          {
+            doctorList?.length > 4 && (
+              <Flex 
+                flexDirection="column" 
+                bg={navbarBgColor} 
+                minWidth="100px" 
+                height={"100%"}
+                justifyContent={'center'}
+                alignItems={'center'}
+              >
+                <Box
+                  display={'flex'}  width="40px" height={"40px"} cursor={'pointer'} justifyContent='center' alignItems={'center'} 
+                  borderRadius={'20px'} 
+                  flexDirection={'column'}
+                  backgroundColor={navbarBgColor}
+                  onClick={()=> onSendDoctorListButton()}
+                  border={'1px solid #efefef'}
+                  mb="5px"
+                >
+                <Icon as={MdOutlineArrowForward} width="25px" height="25px" color={navbarIcon} />
+              </Box>
+              <CustomTextBold400 fontSize={'15px'} fontWeight={'bold'} color={navbarIcon} lineHeight={"150%"}>전체 보기</CustomTextBold400>
+            </Flex>
+            )
+          }
+        </Box>
+        <Box pr={1} justifyContent={'flex-end'} display={doctorList?.length == 0 ? 'none' : isLocalTypeDone ? "flex" : 'none'}>
+          <Box 
+            display="flex" justifyContent={'center'} alignItems={'center'} bg={"#DFF5ED"} borderRadius={"4px"} height={"32px"} px="20px" cursor={'pointer'}
+            onClick={() => onSendDoctorListButton()} 
+          >
+            <CustomTextBold400 fontSize={'15px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"} >
+            {data?.answer?.disease} 전체보기
+            </CustomTextBold400>
+            <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
+          </Box>
+        </Box>
+        {
+          isOpenDocListModal && (
+            <Modal
+              onClose={() => fn_close_modal_doctor_list()}
+              finalFocusRef={modalBtnRef}
+              isOpen={isOpenDocListModal}
+              scrollBehavior={'inside'}
+              size={'full'}
+            >
+              <ModalOverlay />
+              <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
+                <ModalHeader bg={navbarBg} padding="basePadding">
+                  <Flex flexDirection={'row'} position={'relative'}>
+                    <Box 
+                      position={'absolute'}
+                      left={0}
+                      top={0}
+                      width="50px"
+                      height={'100%'}
+                      display={{base :'flex', md:'none'}} 
+                      alignItems={'center'}  
+                      onClick={() => fn_close_modal_doctor_list()} cursor={'pointer'}
+                    >
+                      <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
+                    </Box>
+                    <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
+                      <Text color={'white'} noOfLines={1}>{data?.answer?.disease ?? "의사소개"}</Text>
+                    </Box>
+                    <Box 
+                      position={'absolute'}
+                      right={0}
+                      top={0}
+                      width="50px"
+                      height={'100%'}
+                      display={{base :'none', md:'flex'}} 
+                      justifyContent={'flex-end'} 
+                      alignItems={'center'}  
+                      onClick={() => fn_close_modal_doctor_list()}  cursor={'pointer'}
+                      >
+                      <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
+                    </Box>
+                  </Flex>
+                </ModalHeader>
+                <ModalBody overflowY="auto" maxH="100vh" padding="basePadding" margin="0" >
+                  <DoctorList
+                    isOpen={isOpenDocListModal}
+                    setClose={() => fn_close_modal_doctor_list()}
+                    originDoctorData={doctorList}
+                  />
+                </ModalBody>
+              </ModalContent>
+            </Modal>
           )
         }
-      </Box>
-      <Box pr={1} justifyContent={'flex-end'} display={doctorList?.length == 0 ? 'none' : isLocalTypeDone ? "flex" : 'none'}>
-        <Box 
-          display="flex" justifyContent={'center'} alignItems={'center'} bg={"#DFF5ED"} borderRadius={"4px"} height={"32px"} px="20px" cursor={'pointer'}
-          onClick={() => onSendDoctorListButton()} 
-        >
-          <CustomTextBold400 fontSize={'15px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"} >
-          {data?.answer?.disease} 전체보기
-          </CustomTextBold400>
-          <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
-        </Box>
-      </Box>
-      {
-        isOpenDocListModal && (
-          <Modal
-            onClose={() => fn_close_modal_doctor_list()}
-            finalFocusRef={modalBtnRef}
-            isOpen={isOpenDocListModal}
-            scrollBehavior={'inside'}
-            size={'full'}
-          >
-            <ModalOverlay />
-            <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
-              <ModalHeader bg={navbarBg} padding="basePadding">
-                <Flex flexDirection={'row'} position={'relative'}>
-                  <Box 
-                    position={'absolute'}
-                    left={0}
-                    top={0}
-                    width="50px"
-                    height={'100%'}
-                    display={{base :'flex', md:'none'}} 
-                    alignItems={'center'}  
-                    onClick={() => fn_close_modal_doctor_list()} cursor={'pointer'}
-                  >
-                    <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
-                  </Box>
-                  <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                    <Text color={'white'} noOfLines={1}>{data?.answer?.disease ?? "의사소개"}</Text>
-                  </Box>
-                  <Box 
-                    position={'absolute'}
-                    right={0}
-                    top={0}
-                    width="50px"
-                    height={'100%'}
-                    display={{base :'none', md:'flex'}} 
-                    justifyContent={'flex-end'} 
-                    alignItems={'center'}  
-                    onClick={() => fn_close_modal_doctor_list()}  cursor={'pointer'}
-                    >
-                    <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
-                  </Box>
-                </Flex>
-              </ModalHeader>
-              <ModalBody overflowY="auto" maxH="100vh" padding="basePadding" margin="0" >
-                <DoctorList
-                  isOpen={isOpenDocListModal}
-                  setClose={() => fn_close_modal_doctor_list()}
-                  originDoctorData={doctorList}
-                />
-              </ModalBody>
-            </ModalContent>
-          </Modal>
-        )
-      }
-    </Stack>
-  )
+      </Stack>
+    )
+  }
 };
   
 export default RecommandDoctor;

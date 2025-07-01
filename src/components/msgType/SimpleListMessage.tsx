@@ -9,10 +9,12 @@ type SimpleListMessageProps = {
     msg: any;
     summary : any;
     isHistory : boolean;
-    indexKey : any
+    indexKey : any,
+    isLiveChat? : boolean,
+    setIsTypingDone: () => void;
 };
 
-const SimpleListMessage = ({  msg = [], indexKey, isHistory = false, summary}: SimpleListMessageProps) => {
+const SimpleListMessage = ({  msg = [], indexKey, isHistory = false, summary, isLiveChat = false,setIsTypingDone}: SimpleListMessageProps) => {
 
   const bgMeColor = useColorModeValue('#2B8FFF', 'white');
   const textMeColor = useColorModeValue('white', 'navy.800');
@@ -47,26 +49,24 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false, summary}: S
   }, [indexKey]);
 
   React.useEffect(() => {
-
-    if ( isOutputSame || isHistory ) {
-      setLocalTypeDone(true)
-    }else if (  !functions.isEmpty(summary)  ) {
-      //setLocalTypeDone(false)
+    if ( ( isLiveChat && !functions.isEmpty(summary)  )  ) {
+      setLocalTypeDone(false)
     }else{
       setLocalTypeDone(true)
     }
   }, [summary]);
 
-  const setIsTypingDone = () => {
+  const setTypingCompleteDone = () => {
     setTimeout(() => {
       setLocalTypeDone(true)
-    }, 60);
+      setIsTypingDone()
+    }, 100);
   }
 
   if ( hospitalsList?.length == 0 ) {
     return (
-      <Flex w="100%" flexDirection={'column'} px="5px">
-        <Box my="5px">
+      <Flex w="100%" flexDirection={'column'}>
+        <Box>
           <IconChatAiga width={'46px'} height={"12px"} />
         </Box>
         <Flex 
@@ -107,24 +107,27 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false, summary}: S
       > 
         <Box>
         {
-          (( isHistory || isOutputSame ) && !functions.isEmpty(summary) )
+          ( isLiveChat && !functions.isEmpty(summary) && !isLocalTypeDone  )
+          ?
+          <TypeAnimation
+            msg={ summary.replace(/^"(.*)"$/, '$1')}
+            speed={30}
+            onComplete={() => setTypingCompleteDone()}
+          />
+          :
+          ( !isLiveChat && !functions.isEmpty(summary) )
           ?
           <div
             style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
             dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
           />
           :
-          ( !functions.isEmpty(summary) && !isOutputSame )
+          !functions.isEmpty(summary)
           ?
-          <TypeAnimation
-            msg={ summary.replace(/^"(.*)"$/, '$1')}
-            speed={30}
-            onComplete={() => setIsTypingDone()}
+          <div
+            style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
+            dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
           />
-          :
-          !functions.isEmpty(msg?.department) ? (
-            <CustomText fontSize={'17px'} color={textSystemColor} lineHeight={'170%'}>{msg?.department} 진료를 잘하는 병원 {hospitalsList?.length}군데를 추천 드리겠습니다.</CustomText>
-          )
           :
           null
         }

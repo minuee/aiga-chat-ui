@@ -116,7 +116,6 @@ function DoctorListModal(props: DoctorListModalProps) {
     }
   };
 
-
   const sortDoctors = async( doctorData: any,userLat: number,userLng: number, selectedCriteria:any ) => {
     if (selectedCriteria.length === 0) return doctorData;
   
@@ -185,7 +184,6 @@ function DoctorListModal(props: DoctorListModalProps) {
     }
   }
   
-
   const onHandleSortChange  = async(sortType: string = 'all') => {
 
     const isExist = ( Array.isArray(inputs.sortType) && (inputs.sortType as string[]).includes(sortType) ) ? true : false ;
@@ -214,7 +212,6 @@ function DoctorListModal(props: DoctorListModalProps) {
       setIsReLoading(false);
     },60)
   }
-
 
   React.useEffect(() => {
     const flexElement = flexRef.current;
@@ -299,7 +296,7 @@ function DoctorListModal(props: DoctorListModalProps) {
               <Tag size={'lg'} borderRadius='full' px={5} ml={2} variant='solid' bg={makeBgColor('score')} onClick={() => onHandleSortChange('score')} cursor={'pointer'} flexShrink="0">
                 <TagLeftIcon boxSize='17px' as={TbBook2} color={makeTextColor('score')} />
                 <TagLabel color={makeTextColor('score')}>
-                  <CustomTextBold400 fontSize='15px' color={makeTextColor('distance')} letterSpacing={'-5%'}>논문 스코어</CustomTextBold400>
+                  <CustomTextBold400 fontSize='15px' color={makeTextColor('score')} letterSpacing={'-5%'}>논문 스코어</CustomTextBold400>
                 </TagLabel>
               </Tag>
               {

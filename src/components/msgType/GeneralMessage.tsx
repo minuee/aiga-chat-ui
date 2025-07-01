@@ -7,12 +7,13 @@ import TypeAnimation  from'@/components/text/TypeAnimation2';
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import { IconChatAiga} from '@/components/icons/svgIcons';
 
-const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,setIsTypingDone }: { output: any ,isHistory:boolean,setIsTypingDone: () => void;}) {
+const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,setIsTypingDone,isLiveChat }: { output: any,isLiveChat:boolean ,isHistory:boolean,setIsTypingDone: () => void;}) {
   
   const bgSystemColor = useColorModeValue('#F4F6FA', 'navy.600');
   const previousOutputRef = React.useRef<string | null>(null); // 이전 output 값을 저장
 
   React.useEffect(() => {
+    console.log("isLiveChat",isLiveChat)
     previousOutputRef.current =  output; // output이 변경될 때마다 이전 값을 업데이트
   }, [output]);
 
@@ -20,7 +21,7 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
   //const cleanedOutput = output.replace(/\\n/g, '\n')
   return (
    <Flex w="100%" flexDirection={'column'} overflow={'hidden'}>
-      <Box>
+      <Box mb="5px">
         <IconChatAiga width={'46px'} height={"12px"} />
       </Box>
       <Flex 
@@ -36,8 +37,14 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
         alignItems={'center'}
       > 
         {
-          isOutputSame
+          ( isLiveChat || isOutputSame )
           ?
+          <TypeAnimation
+            msg={ output.replace(/^"(.*)"$/, '$1')}
+            speed={30}
+            onComplete={() => setIsTypingDone()}
+          />
+          :
           <div
             style={{ fontSize: '17px', whiteSpace: 'pre-line' }}
             dangerouslySetInnerHTML={{
@@ -47,36 +54,6 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
                 .replace(/^"(.*)"$/, '$1'),
             }}
           />
-         /*  <CustomText
-            fontSize="17px"
-            style={{ whiteSpace: 'pre-line' }}
-            dangerouslySetInnerHTML={{
-              __html: output
-                .replace(/<br\s*\/?>/gi, '\n')      // <br> → 줄바꿈
-                .replace(/\\n/g, '\n')              // \\n → 줄바꿈
-                .replace(/^"(.*)"$/, '$1')          // 양끝 큰따옴표 제거
-            }}
-          >''</CustomText> */
-          :
-          isHistory
-          ?
-          <div
-            style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
-            dangerouslySetInnerHTML={{
-              __html: output
-                .replace(/<br\s*\/?>/gi, '\n')
-                .replace(/\\n/g, '\n')
-                .replace(/^"(.*)"$/, '$1'),
-            }}
-          />
-          
-          :
-          <TypeAnimation
-            msg={ output.replace(/^"(.*)"$/, '$1')}
-            speed={30}
-            onComplete={() => setIsTypingDone()}
-          />
-          
         }
       </Flex>
     </Flex>
@@ -84,13 +61,3 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
 }, (prevProps, nextProps) => prevProps.output === nextProps.output);
 
 export default GeneralMessage;
-{/* <CustomText
-            fontSize="17px"
-            style={{ whiteSpace: 'pre-line' }}
-            dangerouslySetInnerHTML={{
-              __html: output
-                .replace(/<br\s*\/?>/gi, '\n')      // <br> → 줄바꿈
-                .replace(/\\n/g, '\n')              // \\n → 줄바꿈
-                .replace(/^"(.*)"$/, '$1')          // 양끝 큰따옴표 제거
-            }}
-          >{''}</CustomText> */}

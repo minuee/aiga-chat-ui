@@ -164,6 +164,7 @@ export default function Index() {
             maxWidth={`${mConstants.desktopMinWidth}px`}
             display={'flex'}
             justifyContent={'center'}
+            overflowY='auto'
           >
             <Navbar
               onOpen={onOpen}
@@ -176,9 +177,9 @@ export default function Index() {
             ( process.env.NODE_ENV == 'development' || isGlobalState )
             ?
             <Flex 
-              mt="60px"
+              mt="58px"
               alignItems={'center'} 
-              px='basePadding' 
+              
               width="100%" 
               maxWidth={`${mConstants.desktopMinWidth}px`} 
               overflow={'hidden'}
