@@ -441,18 +441,6 @@ export default function ChatBot() {
   const handleSendMessage = () => {
     if (!isReceiving && !hasSent) {
       handleTranslate(inputCode);
-    } else {
-      toast({
-        title: 'AIGA',
-        position: 'top-right',
-        description: '수신중입니다. 잠시만 기다려주세요',
-        status: 'info',
-        containerStyle: {
-          color: '#ffffff',
-        },
-        duration: 1500,
-        isClosable: true,
-      });
     }
   }
 
