@@ -124,7 +124,6 @@ export default function Index() {
               maxWidth={`${mConstants.desktopMinWidth}px`} 
               overflow={'hidden'}
               bg={themeColor}
-              maxHeight={"50vh"}
             >
               <SubPage />
             </Flex>

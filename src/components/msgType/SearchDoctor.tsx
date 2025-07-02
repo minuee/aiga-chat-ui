@@ -93,7 +93,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
   }, []);
 
   useEffect(() => {
-    setSelectselectChatId(data?.chat_id)
+    setSelectselectChatId(!functions.isEmpty(data?.chat_id) ? data?.chat_id : !functions.isEmpty(data?.id) ? data?.id : 0)
     if ( !functions.isEmpty( data?.answer?.doctors )) {
       setDoctorList(data?.answer?.doctors)
     }

@@ -396,9 +396,9 @@ export default function ChatBot() {
   const debouncedSend = useCallback(
     debounce(() => {
       if (!isReceiving && !hasSent) {
-        handleTranslate(inputCode);
+        handleTranslate(functions.removeTrailingNewlines(inputCode));
       }
-    }, 500),
+    }, 100),
     [inputCode, isReceiving, hasSent]
   );
 
@@ -526,7 +526,7 @@ export default function ChatBot() {
                 isHistory : false,
                 isLiveChat : true,
                 isOnlyLive : false,
-                id: answerMessage?.chat_id,
+                chat_id: answerMessage?.chat_id,
                 user_question : answerMessage?.question,
                 answer : answerMessage?.answer,
                 chat_type: answerMessage?.chat_type,
@@ -537,7 +537,33 @@ export default function ChatBot() {
           }, 100); 
          
         }else{
-          if ( questionResult?.message?.statusCode == '404') {
+          if ( questionResult?.message?.statusCode == '400') {
+            setIsLoading(false);
+              setReceiving(false);
+              setIsFocus(false)
+              setTimeout(() => {
+                if (textareaRef.current && !isMobileOnly) {
+                  textareaRef?.current?.focus()
+                  console.log('✅ 포커싱 시도');
+                }
+              }, 100)
+              
+              setTimeout(() => {
+                addMessage(
+                  {
+                    ismode : 'system_400',
+                    isHistory : false,
+                    chat_id: functions.getUUID(),
+                    user_question : inputCodeText,
+                    answer : null,
+                    msg: questionResult?.message?.message,
+                    chat_type : 'system',
+                    used_token : 0,
+                    isOnlyLive : false
+                  }
+                )
+              }, 60); 
+          }else if ( questionResult?.message?.statusCode == '404') {
             const parsedMessage = parseLooselyFormattedJsonString(questionResult?.message?.message);
             if ( !functions.isEmpty(parsedMessage) && parsedMessage.message == '최대 토큰수 초과 에러') {
               setChatDisabled({
@@ -561,7 +587,7 @@ export default function ChatBot() {
                   {
                     ismode : 'system',
                     isHistory : false,
-                    id: functions.getUUID(),
+                    chat_id: functions.getUUID(),
                     user_question : inputCodeText,
                     answer : null,
                     msg: `일일 질문이 제한되었습니다.`,
@@ -1130,6 +1156,7 @@ export default function ChatBot() {
                     <Box key={index}>
                       <ChatWrongMessage
                         indexKey={index}
+                        isMode="system"
                         msg={'흠..뭔가 잘못된 것 같습니다'}
                       />
                     </Box>
@@ -1144,11 +1171,12 @@ export default function ChatBot() {
                     />
                   </Box>
                 )
-              }else if ( element.ismode == 'system') {
+              }else if ( element.ismode == 'system' || element.ismode == 'system_400') {
                 return (
                   <Box key={index}>
                     <ChatWrongMessage
                       indexKey={index}
+                      isMode={element.ismode}
                       msg={!functions.isEmpty(element?.msg) ? element?.msg : '흠..뭔가 잘못된 것 같습니다'}
                     />
                   </Box>
@@ -1217,7 +1245,7 @@ export default function ChatBot() {
                 touchAction: "manipulation",
                 
               }}
-              maxH="150px"
+              maxH={isMobileOnly ? "200px" : " 150px"}
               border="1px solid"
               borderColor={borderColor}
               bg={isFocus ? textareaBgcolor1 :textareaBgcolor2}
@@ -1232,7 +1260,7 @@ export default function ChatBot() {
               color={inputColor}
               _placeholder={placeholderColor}
               value={inputCode}
-              placeholder="메시지 입력"
+              placeholder="건강 관련 질문이나 증상을 알려주세요"
               onChange={handleChange}
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}

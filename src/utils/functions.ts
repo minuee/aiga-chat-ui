@@ -52,6 +52,10 @@ const functions = {
     //});
   },
 
+  removeTrailingNewlines(input:string) {
+    return input.replace(/[\r\n]+$/, '');
+  },
+
   cleanEscapedCharacters(text: string): string {
     return text
       .replaceAll(/\\"/g, '')   // \" → "
@@ -91,7 +95,7 @@ const functions = {
       const hours:any = target.getHours();
       const minutes = target.getMinutes().toString().padStart(2, '0');
       const isAm = parseInt(hours) > 12 ? "오후" : "오전";
-      const timeText = `${isAm} ${hours}시 ${minutes}분`;
+      const timeText = `${isAm} ${hours > 12 ? parseInt(hours)-12 : hours}시 ${minutes}분`;
     
       if (isSameDay) {
         return `오늘 ${timeText}`;
