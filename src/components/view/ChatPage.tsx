@@ -28,8 +28,15 @@ export default function Index() {
   const [isClient, setIsClient] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(true);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [hasMounted, setHasMounted] = React.useState(false);
 
   const themeColor = useColorModeValue('white', 'navy.800');
+
+  React.useEffect(() => {
+    setHasMounted(true);
+    setTimeout(() => setIsLoading(false), 600);
+  }, []);
+
 
   const getConfigData = React.useCallback(
     async() => {
@@ -69,7 +76,7 @@ export default function Index() {
     getConfigData();
   }
 
-  if (isLoading) {
+  if (!hasMounted || isLoading) {
    return (
     <Flex bg={themeColor} height={"100%"} minHeight={"100vh"} width="100%" justifyContent={'center'} alignItems={'center'}>
       <SkeletonCircle size='10' />
@@ -117,6 +124,7 @@ export default function Index() {
               maxWidth={`${mConstants.desktopMinWidth}px`} 
               overflow={'hidden'}
               bg={themeColor}
+              maxHeight={"50vh"}
             >
               <SubPage />
             </Flex>

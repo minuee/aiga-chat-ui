@@ -179,22 +179,22 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
           />
           <DrawerBody 
             w="100%"
-            maxW={`${mConstants.modalMaxWidth-10}px`} 
+            maxW={`${mConstants.modalMaxWidth}px`} 
             px="0rem" 
-            pb="0"
+            pt="20px"
           >
-            <Scrollbars
+            {/* <Scrollbars
               universal={true}
               autoHide
               renderTrackVertical={renderTrack}
               renderThumbVertical={renderThumb}
               renderView={renderView}
-            >
+            > */}
               <Content 
                 routes={routes} 
                 onParentClose={()=>fn_close_drawer_history()}
               />
-            </Scrollbars>
+            {/* </Scrollbars> */}
           </DrawerBody>
         </DrawerContent>
       </Drawer>

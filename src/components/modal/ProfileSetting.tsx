@@ -233,7 +233,8 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         }        
       }
     }catch(e:any){
-      setReceiving(false)
+      setReceiving(false);
+      onHandleLogoutAction(); 
       console.log("error of getNewSessionID",e)
     }
   }

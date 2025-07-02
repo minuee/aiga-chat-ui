@@ -16,6 +16,10 @@ body {
   overflow: auto;
 }
 
+:root {
+  --vh: 100%;
+  --isl-vh: 1%;
+}
 
 body::-webkit-scrollbar {
   display: none;             /* Chrome, Safari, 최신 Edge */
@@ -29,6 +33,31 @@ option {
 html {
   --vh: 1vh;
 }
+
+.header-fixed-consent {
+  background-color: #ff0000;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: min(var(--isl-vh) * 100, 100%);
+  overflow: hidden;
+  z-index: 999999;
+}
+
+
+@supports (position: fixed / fixed) {
+  .header-fixed-consent { position: fixed / fixed }
+
+  @media (zoom-level > 1) {
+    .header-fixed-consent { font-size: 0.8em }
+  }
+
+  @media (zoom-level > 2) {
+    .header-fixed-consent { font-size: 0.6em }
+  }
+}
+
 .opening_wrap {
   display: flex;
   flex-direction: column;

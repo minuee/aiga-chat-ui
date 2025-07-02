@@ -30,6 +30,7 @@ import { ModalMypageStore,DrawerHistoryStore } from '@/store/modalStore';
 import HistoryItem from '@/components/text/HistoryItem';
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import { IconNotice } from '@/components/icons/svgIcons';
+import TokenGuard from '@/components/apiModal/TokenGuard';
 
 interface SidebarContent extends PropsWithChildren {
   routes: IRoute[];
@@ -248,9 +249,14 @@ function SidebarContent(props: SidebarContent) {
 
   // SIDEBAR
   return (
-    <Flex direction="column" height="100%" borderRadius="30px" w="100%"  mt="20px">
+    <Flex direction="column" height="100%" borderRadius="30px" w="100%">
+      <TokenGuard />
       <Brand />
-      <Flex flexDirection={'column'} alignItems={'center'}  width={'100%'} px="basePadding" my="10px">
+      <Flex 
+        flexDirection={'column'} alignItems={'center'}  width={'100%'} px="basePadding" py="20px"
+        borderBottom={'1px solid'}
+        borderColor={borderColor}
+      >
         <Button 
           colorScheme='blue' 
           bgColor={buttonBgColor}
@@ -283,7 +289,7 @@ function SidebarContent(props: SidebarContent) {
               <Image src={LoadingBar} alt="LoadingBar" style={{width:'30px', height:'30px'}} /> 
             </Flex>)
           }
-          <Flex flexDirection={'column'} alignItems={'center'}  width={'100%'} pb="100px">
+          <Flex flexDirection={'column'} alignItems={'center'}  width={'100%'} pb="100px" overflowY={'auto'}>
             {
               historyData?.length == 0 
               ?
@@ -298,9 +304,9 @@ function SidebarContent(props: SidebarContent) {
                 </Box>
               </Flex>
               :
-              historyData.map(({ date, sessions } : any) => (
+              historyData.map(({ date, sessions } : any, index:number) => (
               <Flex key={date} flexDirection={'column'} width={'100%'}>
-                <HSeparator mt="20px" mb="15px" w="100%"  />
+                { index > 0 && <HSeparator mt="20px" mb="15px" w="100%"  />}  
                 <Box display={'flex'} width={'100%'} mt={1} py="basePadding" px="25px">
                   <CustomTextBold400 fontSize={'15px'} color={textColor2}>
                     {date? date.toString() : "YYYY-MM-DD"}

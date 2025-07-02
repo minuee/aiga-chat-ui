@@ -132,7 +132,7 @@ export function setSignupAgree(): any {
                 error: true,
                 status: error?.response?.status || 500,
                 message: error?.response?.data || 'Unknown error',
-              };
+            };
         });
         return res;
     }catch(error){

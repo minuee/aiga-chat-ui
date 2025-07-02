@@ -1,5 +1,7 @@
 'use client';
+
 import { Metadata } from 'next';
+import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
 import Head from 'next/head';
 export interface SubHeaderProps {
   addOption : any;
@@ -22,10 +24,10 @@ export const subMetadata:Metadata  = {
     generator: 'Next.js',
     applicationName: 'Next.js',
     referrer: 'no-referrer',
-    keywords: ['Next.js', 'React', 'JavaScript'],
-    authors: [{ name: 'Seb' }, { name: 'Josh', url: 'https://localhost:3000' }],
-    creator: 'Jiachi Liu',
-    publisher: 'Sebastian Markbåge',
+    keywords: ['doctor', 'kormedi', 'aiga'],
+    authors: [{ name: 'Seb' }, { name: 'Josh', url: 'https://aigadev.kormedi.com' }],
+    creator: 'kormedi',
+    publisher: 'kormedi',
     formatDetection: {
         email: false,
         address: false,
@@ -34,6 +36,9 @@ export const subMetadata:Metadata  = {
     viewport: {
         width: 'device-width',
         initialScale: 1,
+        maximumScale: 1,
+        interactiveWidget:'resizes-content',
+        userScalable: false
     },
     openGraph: {
         title: 'Next.js',
@@ -53,7 +58,7 @@ export const subMetadata:Metadata  = {
             alt: 'My custom alt',
         },
         ],
-        locale: 'en_US',
+        locale: 'ko',
         type: 'website',
     }
   }
@@ -64,16 +69,19 @@ function SubHeader(props: SubHeaderProps) {
 
   return (
     <Head>
-        <title>AIGA Beta</title>
+        <title>의사 추천 서비스 AIGA</title>
         
         <meta name='description' content='의사 추천 서비스 AIGA' />
         <meta name='keywords' content='중증, 의사' />
         <meta name='robots' content='index, follow' />
         {/* <meta name='viewport' content='width=device-width, initial-scale=1.0' /> */}
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=nom shrink-to-fit=no"
-        />
+        {
+          isMobileOnly
+          ?  
+          <meta name="viewport" content="width=device-width, maximum-scale=1.0,user-scalable=no, initial-scale=1.0, interactive-widget=resizes-content" />
+          :
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no shrink-to-fit=no" /> 
+        }
         <meta charSet='utf-8' />
         <meta property='og:site_name' content='AIGA 의사추천 서비스' />
         <meta property='og:locale' content='ko_KR' />
