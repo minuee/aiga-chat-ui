@@ -93,7 +93,6 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
   }, []);
 
   useEffect(() => {
-    console.log("originDoctorData data?.answer?.doctors",data, data?.answer?.doctors?.length)
     setSelectselectChatId(!functions.isEmpty(data?.chat_id) ? data?.chat_id : !functions.isEmpty(data?.id) ? data?.id : 0)
     if ( !functions.isEmpty( data?.answer?.doctors )) {
       setDoctorList(data?.answer?.doctors)

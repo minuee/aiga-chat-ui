@@ -86,7 +86,8 @@ const functions = {
   formatAvailabilityMessage(timestampMs: number, retryLimitSec : number): string {
     try{
       const now = new Date();
-      const baseTime = isNaN(timestampMs) || timestampMs <= 0 ? now.getTime() : timestampMs;
+      const sixteenHoursLater = new Date(now.getTime() + 16 * 60 * 60 * 1000);
+      const baseTime = isNaN(timestampMs) || timestampMs <= 0 ? sixteenHoursLater.getTime() : timestampMs;
 
       const target = new Date(baseTime + retryLimitSec * 1000);
       // 날짜 비교용 (연/월/일만 비교)

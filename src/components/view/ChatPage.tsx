@@ -3,7 +3,8 @@
 import React, { Children } from 'react';
 import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
 import SubPage from '@/components/view/Chatbot';
-import { Flex,Box, SkeletonCircle, useDisclosure,useColorModeValue,useColorMode } from '@chakra-ui/react';
+import SubMobilePage from '@/components/view/ChatbotMobile';
+import { Flex,Box,Text, SkeletonCircle, useDisclosure,useColorModeValue,useColorMode } from '@chakra-ui/react';
 import { usePathname } from 'next/navigation';
 import routes from '@/routes';
 import { getActiveRoute, getActiveNavbar } from '@/utils/navigation';
@@ -15,13 +16,17 @@ import GlobalDisable from "@/components/view/GlobalDisable";
 
 import * as CommonService from "@/services/common/index";
 import functions from '@/utils/functions';
+import useDetectKeyboardOpen from "use-detect-keyboard-open";
+const MOBILE_HEADER_HEIGHT = 60;
+const MOBILE_INPUT_HEIGHT = 60;
 
 export default function Index() {
-
+  
   const pathname = usePathname();
   const { colorMode, toggleColorMode } = useColorMode();
   const { userId, ...userInfo } = UserStateStore(state => state);
   const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
+  const alreadyInitialized = React.useRef(false);
   const setConfigInfoStore = ConfigInfoStore((state) => state.setConfigInfoStore);
   const { isGlobalState } = GlobalStateStore(state => state);
   const setGlobalState = GlobalStateStore((state) => state.setGlobalState);
@@ -32,15 +37,118 @@ export default function Index() {
 
   const themeColor = useColorModeValue('white', 'navy.800');
 
+  const isKeyboardOpen = useDetectKeyboardOpen();
+  const [mobileKeyboardOffset, setMobileKeyboardOffset] = React.useState(0);
+  const [mobileViewPortHeight, setMobileViewPortHeight] = React.useState(0);
+  const [mobileContainerHeight, setMobileContainerHeight] = React.useState(0);
+  const [mobileContentScrollHeight, setMobileContentScrollHeight] = React.useState(0);
+
+  const mobileScrollRef = React.useRef<HTMLDivElement>(null);
+
   React.useEffect(() => {
     setHasMounted(true);
-    setTimeout(() => setIsLoading(false), 600);
   }, []);
 
+
+  React.useEffect(() => {
+    if ( isMobileOnly ) {
+      if (isKeyboardOpen) {
+        const vpHeight = window.visualViewport?.height || window.innerHeight;
+        const maxContentHeight = vpHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
+        setMobileContentScrollHeight(maxContentHeight);
+      } else {
+        const fullHeight = window.innerHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
+        setMobileContentScrollHeight(fullHeight);
+      }
+    }
+  }, [isKeyboardOpen, mobileKeyboardOffset]);
+  
+  React.useEffect(() => {
+    if ( isMobileOnly ) {
+      const handleResize = () => {
+        const height = window.visualViewport?.height || window.innerHeight;
+        setMobileContainerHeight(height);
+      };
+
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', handleResize);
+        handleResize(); // 최초 호출
+      } else {
+        window.addEventListener('resize', handleResize);
+        handleResize();
+      }
+
+      return () => {
+        if (window.visualViewport) {
+          window.visualViewport.removeEventListener('resize', handleResize);
+        } else {
+          window.removeEventListener('resize', handleResize);
+        }
+      };
+    }
+  }, []);
+
+
+  React.useEffect(() => {
+    const updateOffset = () => {
+      const screenHeight = window.screen.height;
+      const innerHeight = window.innerHeight;
+      const keyboardHeight = screenHeight - innerHeight;
+
+      // 키보드가 열렸고, 최소 높이 기준 이상일 경우만 적용
+      if (isKeyboardOpen) {
+        const height =  window.innerHeight - mobileKeyboardOffset;
+        setMobileViewPortHeight(height);
+        setMobileKeyboardOffset(keyboardHeight);
+      } else {
+        setMobileViewPortHeight(window.innerHeight);
+        setMobileKeyboardOffset(0);
+      }
+    };
+    if ( isMobileOnly ) {
+      window.addEventListener('resize', updateOffset);
+      updateOffset();
+
+      return () => window.removeEventListener('resize', updateOffset);
+    }
+  }, []);
+
+
+
+  React.useEffect(() => {
+    if ( isMobileOnly ) {
+      const handleVisualViewportResize = () => {
+        const vpHeight = window.visualViewport?.height || window.innerHeight;
+        const fullHeight = window.innerHeight;
+
+        const keyboardHeight = fullHeight - vpHeight;
+        const isKeyboardVisible = keyboardHeight > 100;
+
+        const contentHeight = vpHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
+
+        setMobileKeyboardOffset(isKeyboardVisible ? keyboardHeight : 0);
+        setMobileViewPortHeight(contentHeight);
+        setMobileContainerHeight(vpHeight);
+      };
+
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", handleVisualViewportResize);
+        handleVisualViewportResize(); // 최초 실행
+      }
+
+      return () => {
+        if (window.visualViewport) {
+          window.visualViewport.removeEventListener("resize", handleVisualViewportResize);
+        }
+      };
+    }
+  }, [])
+  
 
   const getConfigData = React.useCallback(
     async() => {
       try{
+        alreadyInitialized.current = true;
         const res:any = await CommonService.getCommonConfig();
         if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
           setGlobalState(true)
@@ -51,6 +159,7 @@ export default function Index() {
             functions.isEmpty(res?.data?.config?.guest_max_token) ? 0 : parseInt(res?.data?.config?.guest_max_token),
             functions.isEmpty(res?.data?.config?.guest_retry_limit_sec) ? 0 : parseInt(res?.data?.config?.guest_retry_limit_sec)
           )
+          
         }else{
           setIsLoading(false)
           setGlobalState(false)
@@ -65,7 +174,9 @@ export default function Index() {
   );
 
   React.useEffect(() => {
-    getConfigData()
+    if (!alreadyInitialized.current) {
+      getConfigData()
+    }
   }, [getConfigData]);
 
   React.useEffect(() => {
@@ -86,58 +197,51 @@ export default function Index() {
 
   if ( isMobileOnly ) {
     return (
-      <Flex  justifyContent={'center'} >
-        <Flex
-          minHeight={"100%" }
-          height="100%"
-          overflow="hidden" /* 여기가 중요 */
-          position="relative"
-          maxHeight="100%"
-          w={{ base: '100%', md : `${mConstants.desktopMinWidth}px`  }}
-          maxW={`${mConstants.desktopMinWidth}px` }
-        >
-          <Box 
-            position={'fixed'}
-            top={0}
-            left={0}
-            right={0}
-            height={'60px'}
-            width="100%" 
-            maxWidth={`${mConstants.desktopMinWidth}px`}
-            display={'flex'}
-            justifyContent={'center'}
-          >
-            <Navbar
-              onOpen={onOpen}
-              logoText={'AIGA Beta'}
-              brandText={getActiveRoute(routes, pathname)}
-              secondary={getActiveNavbar(routes, pathname)}
-            />
-          </Box>
-          {
-            ( process.env.NODE_ENV == 'development' || isGlobalState )
-            ?
-            <Flex 
-              mt="60px"
-              alignItems={'center'} 
-              width="100%" 
-              maxWidth={`${mConstants.desktopMinWidth}px`} 
-              overflow={'hidden'}
-              bg={themeColor}
-            >
-              <SubPage />
-            </Flex>
-            :
-            <Flex alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
-              <GlobalDisable
-                setRetry={() => onHandleRetry() }
-              />
-            </Flex>
-          }
+      <Box height={`${mobileContainerHeight}px`} overflow={'hidden'} position={'relative'} ref={mobileScrollRef}>
+        <Flex position={'fixed'} top={0} left={0} right={0} height={'60px'} alignItems={'center'} justifyContent={'center'} zIndex={10}>
+          <Navbar
+            onOpen={onOpen}
+            logoText={'AIGA Beta'}
+            brandText={getActiveRoute(routes, pathname)}
+            secondary={getActiveNavbar(routes, pathname)}
+          />
         </Flex>
-      </Flex>
-
-  )
+        {/* ✅ 콘텐츠 영역 */}
+        {/* <Box
+          ref={mobileContentRef}
+          position={'absolute'} top={`${MOBILE_HEADER_HEIGHT}px`} left={0} right={0} bottom={`${MOBILE_INPUT_HEIGHT}px`} boxSizing={'border-box'}
+          overflowY={'auto'} width={'100%'} height={`${mobileContentScrollHeight}px`} maxHeight={`${mobileViewPortHeight}px`}
+        >
+          <Box height={`${mobileViewPortHeight}px`} maxHeight={`${mobileViewPortHeight}px`} overflow={'hidden'}> */}
+            {
+              ( process.env.NODE_ENV == 'development' || isGlobalState )
+              ?
+              <SubMobilePage 
+                mobileContentScrollHeight={mobileContentScrollHeight}
+                mobileViewPortHeight={mobileViewPortHeight}
+                mobileKeyboardOffset={mobileKeyboardOffset}
+              />
+              :
+              <Flex alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
+                <GlobalDisable
+                  setRetry={() => onHandleRetry() }
+                />
+              </Flex>
+            }
+          {/* </Box>
+        </Box> */}
+        {/* <Flex
+          position={'absolute'} bottom={`${mobileKeyboardOffset}px`} left={0} right={0} minHeight="60px" height={'auto'} alignItems={'center'} zIndex={10}
+          transition={'bottom 0.25s ease-in-out'}
+        >
+          <input
+            type="text"
+            placeholder="메시지를 입력하세요"
+            style={{ width: '100%',padding: '0.5rem',fontSize: '1rem',borderRadius: 6,border: '1px solid #ccc',}}
+          />
+        </Flex> */}
+      </Box>
+    )
   }
 
   return (

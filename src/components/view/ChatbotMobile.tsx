@@ -44,7 +44,12 @@ import * as ChatService from "@/services/chat/index";
 import { SendButtonOff,SendButtonOn } from '@/components/icons/svgIcons';
 import useDetectKeyboardOpen from "use-detect-keyboard-open";
 
-export default function ChatBot() {
+type ChatBotMobileProps = {
+  mobileContentScrollHeight: number;
+  mobileViewPortHeight : number;
+  mobileKeyboardOffset : number
+};
+const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 0, mobileKeyboardOffset=0}: ChatBotMobileProps) => {
   const t = useTranslations('Messages');
   const { colorMode, toggleColorMode } = useColorMode();
   const alreadyInitialized = useRef(false);
@@ -124,7 +129,104 @@ export default function ChatBot() {
   const placeholderColor = useColorModeValue({ color: 'gray.500' },{ color: 'gray' });
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
   const isSystemText = ["system_text","system_doctors","system_list","system_select","system_image"];
+
+  /* 여기서부턴 모바일 전용 */
+  const mobileContentRef = useRef<HTMLDivElement>(null);
+  const [isScrollLocked, setIsScrollLocked] = useState(false);
+  const MOBILE_HEADER_HEIGHT = 60;
+  const MOBILE_INPUT_HEIGHT = 60;
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const el: any = mobileContentRef.current;
+      if (!el) return;
   
+      // Wheel event (for desktop)
+      const handleWheel = (e: WheelEvent) => {
+        if (e.deltaX !== 0) return;
+        if (e.deltaY < 0) {
+          setIsScrollLocked(false);
+        }
+      };
+  
+      // Touch event (for mobile)
+      let startY = 0;
+      const handleTouchStart = (e: TouchEvent) => {
+        startY = e.touches[0].clientY;
+      };
+      const handleTouchMove = (e: TouchEvent) => {
+        const currentY = e.touches[0].clientY;
+        const diffY = currentY - startY;
+  
+        if (diffY > 10) { // 아래로 스와이프
+          setIsScrollLocked(false);
+        }
+      };
+      if ( isMobileOnly ) {
+        el.addEventListener("wheel", handleWheel);
+        el.addEventListener("touchstart", handleTouchStart);
+        el.addEventListener("touchmove", handleTouchMove);
+    
+        return () => {
+          el.removeEventListener("wheel", handleWheel);
+          el.removeEventListener("touchstart", handleTouchStart);
+          el.removeEventListener("touchmove", handleTouchMove);
+        };
+      }
+    }, 500);
+  
+    return () => clearTimeout(timer);
+  }, []);
+
+  // 스크롤 이벤트 감지
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const el = mobileContentRef.current;
+        if (!el) return;
+
+        const handleScroll = () => {
+          const scrollTop = el.scrollTop;
+          const scrollHeight = el.scrollHeight;
+          const clientHeight = el.clientHeight;
+
+          // ✅ 바닥에 도달하면 스크롤 잠금
+          if (scrollTop + clientHeight >= scrollHeight - 10) {
+            if (isKeyboardOpen) {
+              setIsScrollLocked(true);
+            }
+          }
+
+          // ✅ 위로 스크롤하면 잠금 해제
+          if (scrollTop + clientHeight < scrollHeight - 10) {
+            setIsScrollLocked(false);
+          }
+        };
+
+        el.addEventListener('scroll', handleScroll);
+        return () => el.removeEventListener('scroll', handleScroll);
+    }, 500); // 0.5초 후에 강제 시도
+    
+    return () => clearTimeout(timer);
+  }, [isKeyboardOpen]);
+  
+
+  useEffect(() => {
+    if (mobileContentRef.current) {
+      mobileContentRef.current.style.overflowY = (isScrollLocked && isKeyboardOpen ) ? 'hidden' : 'auto';
+    }
+  }, [isScrollLocked,isKeyboardOpen]);
+
+  useEffect(() => {
+    const preventTouch = (e: any) => {
+      if (isScrollLocked) e.preventDefault();
+    };
+  
+    document.addEventListener('touchmove', preventTouch, { passive: false });
+  
+    return () => {
+      document.removeEventListener('touchmove', preventTouch);
+    };
+  }, [isScrollLocked]);
   /* useEffect(() => {
     if ( functions.isEmpty(chatSessionId) ) {
       getNewSessionID();
@@ -1040,336 +1142,307 @@ export default function ChatBot() {
     )
   }
   return (
-    <Flex 
-      w={'100%'} 
-      px='basePadding' 
-      maxWidth={`${mConstants.desktopMinWidth}px`} 
-      direction="column" 
-      position="relative"
-      //bg={isKeyboardOpen ? 'blue' : 'red'} maxH={isKeyboardOpen ? '50vh' : '100%'}
-      overflowY='auto'
-      ref={scrollRef}
-    >
-      <Flex direction="column" w={'100%'} maxWidth={`${mConstants.desktopMinWidth}px`} >
-        <Flex
-          as="div"
-          direction="column" w="100%" maxWidth={`${mConstants.desktopMinWidth}px` }
-          maxH={"calc(100vh - 130px)"} /* 여기가 하단 스크롤 영역 영향 받음 */
-          height={'100%'}
-          minH={isMobileOnly ? "100%" : "calc(100vh - 106px)" }
-          position="relative"
+    <>
+      <Box
+        ref={mobileContentRef}
+        position={'absolute'} top={`${MOBILE_HEADER_HEIGHT}px`} left={0} right={0} bottom={`${MOBILE_INPUT_HEIGHT}px`}
+        overflowY={'auto'} width={'100%'} height={`${mobileContentScrollHeight}px`} maxHeight={`${mobileViewPortHeight}px`}
+        bg={themeColor}
+      >
+        <Box 
+          height={realOutputCode?.length == 0  ? `${mobileViewPortHeight*0.6}px` : `${mobileViewPortHeight}px`} 
+          maxHeight={realOutputCode?.length == 0  ? `${mobileViewPortHeight*0.6}px` :`${mobileViewPortHeight}px`}
+          overflow={'hidden'}
         >
-          <Box display={realOutputCode?.length == 0 ? 'flex' : 'none'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} >
-            <MotionWelcomeImage
-              pt="120px"
-            />
-            <MotionWelcome 
-              msg={`안녕하세요!`}
-              pt="30px"
-              classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
-            />
-            <MotionWelcome 
-              msg={`맞춤형 의사추천 챗봇 AIGA입니다.`}
-              pt="10px"
-              classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
-            />
-            <MotionWelcome 
-              msg={`어디가 아프거나 불편하신가요?`}
-              pt="10px"
-              classNames="opening_box_gray"
-            />
-          </Box>
-          {/* <Box>
-            <SelectType 
-              onSendButton={onSendTypeButton}
-              isDevelope={false}
-            />
-          </Box> */}
-          { 
-            realOutputCode.map((element:any,index:number) => {
-              if ( element.ismode == 'me') {
-                return (
-                  <Box key={index}>
-                    <ChatMeMessage
-                      indexKey={index}
-                      question={element.question}
-                    />
-                  </Box>
-                )
-              }else if ( element.ismode == 'server') {
-                if ( element.chat_type === "recommand_doctor" ) {
-                  return (
-                    <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
-                      <RecommandDoctor 
-                        data={element}
-                        summary={!functions.isEmpty(element?.summary) ? functions.makeLinkify(functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))) : ""}
-                        isHistory={element?.isHistory}
-                        onSendButton={onSendDoctorButton}
-                        isLiveChat={element.isLiveChat}
-                        setIsTypingDone={() => onHandleTypeDone()}
-                      />
-                    </Box>
-                  )
-                }else if ( element.chat_type === "search_doctor" ) {
-                  return (
-                    <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
-                      <SearchDoctor 
-                        data={element}
-                        summary={!functions.isEmpty(element?.summary) ? functions.makeLinkify(functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))) : ""}
-                        isHistory={element?.isHistory}
-                        onSendButton={onSendDoctorButton}
-                        isLiveChat={element.isLiveChat}
-                        setIsTypingDone={() => onHandleTypeDone()}
-                      />
-                    </Box>
-                  )
-                }else if ( element.chat_type === "recommand_hospital" ) {
-                  return (
-                    <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
-                      <Flex w="100%" key={index}>
-                        <SimpleListMessage 
-                          indexKey={index}
-                          isHistory={element?.isHistory}
-                          msg={element.answer} 
-                          isLiveChat={element.isLiveChat}
-                          setIsTypingDone={() => onHandleTypeDone()}
-                          summary={!functions.isEmpty(element?.summary) ? functions.makeLinkify(functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))) : ""} 
-                        />
-                      </Flex>
-                    </Box>
-                  )
-                }else if ( element.chat_type === "general" ) {
-                  return (
-                    <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
-                      <Flex w="100%" key={index}>
-                        <GeneralMessage 
-                          output={functions.makeLinkify(functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
-                          isHistory={element?.isHistory}
-                          setIsTypingDone={() => onHandleTypeDone()}
-                          isLiveChat={element.isLiveChat}
-                        />
-                      </Flex>
-                    </Box>
-                  )
-                }else {
-                  return (
-                    <Box key={index}>
-                      <ChatWrongMessage
-                        indexKey={index}
-                        isMode="system"
-                        msg={'흠..뭔가 잘못된 것 같습니다'}
-                      />
-                    </Box>
-                  )
-                }
-              }else if ( element.ismode == 'system_stop') {
-                return (
-                  <Box key={index}>
-                    <ForceStop
-                      indexKey={index}
-                      msg={element.msg}
-                    />
-                  </Box>
-                )
-              }else if ( element.ismode == 'system' || element.ismode == 'system_400') {
-                return (
-                  <Box key={index}>
-                    <ChatWrongMessage
-                      indexKey={index}
-                      isMode={element.ismode}
-                      msg={!functions.isEmpty(element?.msg) ? element?.msg : '흠..뭔가 잘못된 것 같습니다'}
-                    />
-                  </Box>
-                )
-              }else{
-                return (
-                  <Flex w="100%" key={index} mb="10px">
-                    <Flex
-                      borderRadius="full" justify="center" align="center" me="10px" h="40px" minH="40px"minW="40px"
-                      bg={'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)'}
-                    >
-                      <Icon as={MdFitbit} width="20px" height="20px" color="white" />
-                    </Flex>
-                    <MessageBoxChat output={element.msg} />
-                  </Flex>
-                )
-              }
-            })
-          }
-          { isReceiving && ( <Box><Processing  msg="분석중" /></Box> ) }
-          <Box ref={scrollBottomRef} h="1px" pb={"120px"} visibility="hidden" />
-        </Flex>
-        <Flex position="fixed" bottom={0} left="0" w="100%"  bg={themeColor} zIndex="100" display={'flex'} justifyContent='center'>
-          <Box w={'100%'} position={'relative'} display={'flex'} flexDirection={'row'} zIndex="100" padding="10px"  borderTop={`1px solid  ${borderTopColor}`}>
-            {
-              ( !isChatDisabled?.isState && !isChatDisabled?.isAlertMsg ) && (
-                <ChatDisable
-                  isChatDisabled={isChatDisabled}
-                  setChatDisabled={setChatDisabled}
-                  userBasicInfo={userBasicInfo}
-                />
-              )
-            }
-            { ( isFocus && isChatDisabled.isState ) && ( <ChatWarningInfo /> )}
-            <Flex 
-              position={'absolute'}
-              display={isShowScroll ? 'flex' : 'none'} 
-              top={isFocus ? {base : '-80px', md : '-70px'} : {base : '-55px', md : '-45px'}}
-              left={'0'}
-              w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
-              height={'30px'}
-              justifyContent={'center'}
-              alignItems={'center'}
-              bg='transparent'
-              zIndex={1000}
-            >
-              <Box
-                display={'flex'}  width="40px" height={"40px"} cursor={'pointer'} zIndex={10} justifyContent='center' alignItems={'center'} 
-                borderRadius={'20px'} backgroundColor={'#fff'}
-                onClick={()=> scrollToBottom()}
-                border={'1px solid #efefef'}
+          <Box height={'100%'} overflowY={'auto'} paddingBottom={`${MOBILE_INPUT_HEIGHT}px`}>
+            <Flex w={'100%'} px='basePadding' maxWidth={`${mConstants.desktopMinWidth}px`}  direction="column" position="relative">
+              <Flex 
+                direction="column" w={'100%'} maxWidth={`${mConstants.desktopMinWidth}px`} height={isKeyboardOpen ? `${mobileViewPortHeight*0.6}px` : `${mobileViewPortHeight}px`}
+                justifyContent={realOutputCode?.length == 0  ? 'center' : 'flex-start'} alignItems={realOutputCode?.length == 0  ? 'center' : '-moz-initial'} 
               >
-                <Icon as={MdOutlineArrowDownward} width="25px" height="25px" color={navbarIcon} />
-              </Box>
-            </Flex>
-            <Textarea
-              minH="48px"
-              //minH="unset"
-              resize="none"
-              as={ResizeTextarea}
-              h="100%"
-              //overflow="auto"
-              sx={{
-                WebkitOverflowScrolling: "touch",
-                overflowY: "auto",
-                touchAction: "manipulation",
-                
-              }}
-              maxH={isMobileOnly ? "200px" : "150px"}
-              border="1px solid"
-              borderColor={borderColor}
-              bg={isFocus ? textareaBgcolor1 :textareaBgcolor2}
-              readOnly={isReceiving}
-              maxLength={mConstants.inputMaxMessage}
-              borderRadius="25px"
-              lineHeight={inputCode?.length > 10 ? "150%" : "180%"}
-              ref={textareaRef}
-              fontSize="md"
-              fontWeight="500"
-              _focus={{ borderColor: '#2B8FFF' }}
-              color={inputColor}
-              _placeholder={placeholderColor}
-              value={inputCode}
-              placeholder="건강 관련 질문이나 증상을 알려주세요"
-              onChange={handleChange}
-              onFocus={() => setIsFocus(true)}
-              onBlur={() => setIsFocus(false)}
-              onKeyDown={(e:any) => {
-                if (e.key === 'Enter' && !e.shiftKey && !isMobileOnly && !isReceiving)  {
-                  e.preventDefault(); // 줄바꿈 방지
-                  e.stopPropagation();
-                  if (isChatDisabled?.isState && inputCode.trim() !== '' && !isReceiving) {
-                    setHasSent(true); // 일단 막고
-                    handleSendMessage();
-                    setIsFocus(false);
-                    handleForceBlur();
-                    setInputCode('')
-
-                    setTimeout(() => {
-                      setHasSent(false);
-                    }, 1500);
-                  }
-                }
-              }}
-              id={"textarea_content"}
-              disabled={(!isChatDisabled?.isState || isReceiving)}
-            />
-            <Box display={'flex'} position={'absolute'} bottom={'6px'} right={'20px'} w={'55px'} height={'55px'} justifyContent={'flex-end'} alignItems={'center'}>
-            {
-              isReceiving && !hasSent ? (
-                <Box
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation();onHandleStopRequest(); }}
-                  cursor={'pointer'}
-                  zIndex={10}
-                >
-                  <Image src={LoadingBar} alt="LoadingBar" style={{ width: '30px', height: '30px' }} />
-                </Box>
-              ) : !isChatDisabled?.isState ? (
-                <Box zIndex={10}>
-                  <SendButtonOff boxSize={'32px'} />
-                </Box>
-              ) : (
-                <Box
-                  zIndex={10}
-                  onMouseDown={(e) => {e.preventDefault();e.stopPropagation();handleSendMessage();
-                  }}
-                  onTouchStart={(e) => {e.preventDefault();e.stopPropagation();handleSendMessage(); }}
-                  cursor={'pointer'}
-                >
-                  {isFocus && isChatDisabled?.isState ? (
-                    <SendButtonOn boxSize={'32px'} />
-                  ) : (
-                    <SendButtonOff boxSize={'32px'} />
-                  )}
-                </Box>
-              )
-            }
-            </Box>
-          </Box>
-          
-        </Flex>
-        {
-          isOpenDoctorModal && (
-            <Modal
-              onClose={() => fn_close_modal_doctor_detail()}
-              isOpen={isOpenDoctorModal}
-              scrollBehavior={'inside'}
-              size={'full'}
-            >
-              <ModalOverlay />
-              <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1}>
-                <ModalHeader bg={navbarBg} padding="basePadding">
-                  <Flex flexDirection={'row'} position={'relative'}>
-                    <Box 
-                      position={'absolute'}
-                      left={0}
-                      top={0}
-                      width="50px"
-                      height={'100%'}
-                      display={{base :'flex', md:'none'}} 
-                      alignItems={'center'}  
-                      onClick={() => fn_close_modal_doctor_detail()} cursor={'pointer'}
-                    >
-                      <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
-                    </Box>
-                    <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                      <CustomTextBold700 color={'white'} noOfLines={1}>{selectedDoctor?.name?.replace("교수","")} 교수</CustomTextBold700>
-                    </Box>
-                    <Box 
-                      position={'absolute'}
-                      right={0}
-                      top={0}
-                      width="50px"
-                      height={'100%'}
-                      display={{base :'none', md:'flex'}} 
-                      justifyContent={'flex-end'} 
-                      alignItems={'center'}  
-                      onClick={() => fn_close_modal_doctor_detail()}  cursor={'pointer'}
-                     >
-                      <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
-                    </Box>
-                  </Flex>
-                </ModalHeader>
-                <ModalBody padding="basePadding" margin="0">
-                  <DoctorDetail
-                    selected_doctor={selectedDoctor}
+                <Box display={realOutputCode?.length == 0 ? 'flex' : 'none'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} >
+                  <MotionWelcomeImage
+                    pt="0"
                   />
-                </ModalBody>
-              </ModalContent>
-            </Modal>
+                  <MotionWelcome 
+                    msg={`안녕하세요!`}
+                    pt="30px"
+                    classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
+                  />
+                  <MotionWelcome 
+                    msg={`맞춤형 의사추천 챗봇 AIGA입니다.`}
+                    pt="10px"
+                    classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
+                  />
+                  <MotionWelcome 
+                    msg={`어디가 아프거나 불편하신가요?`}
+                    pt="10px"
+                    classNames="opening_box_gray"
+                  />
+                </Box>
+                { 
+                  realOutputCode.map((element:any,index:number) => {
+                    if ( element.ismode == 'me') {
+                      return (
+                        <Box key={index}>
+                          <ChatMeMessage
+                            indexKey={index}
+                            question={element.question}
+                          />
+                        </Box>
+                      )
+                    }else if ( element.ismode == 'server') {
+                      if ( element.chat_type === "recommand_doctor" ) {
+                        return (
+                          <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
+                            <RecommandDoctor 
+                              data={element}
+                              summary={!functions.isEmpty(element?.summary) ? functions.makeLinkify(functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))) : ""}
+                              isHistory={element?.isHistory}
+                              onSendButton={onSendDoctorButton}
+                              isLiveChat={element.isLiveChat}
+                              setIsTypingDone={() => onHandleTypeDone()}
+                            />
+                          </Box>
+                        )
+                      }else if ( element.chat_type === "search_doctor" ) {
+                        return (
+                          <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
+                            <SearchDoctor 
+                              data={element}
+                              summary={!functions.isEmpty(element?.summary) ? functions.makeLinkify(functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))) : ""}
+                              isHistory={element?.isHistory}
+                              onSendButton={onSendDoctorButton}
+                              isLiveChat={element.isLiveChat}
+                              setIsTypingDone={() => onHandleTypeDone()}
+                            />
+                          </Box>
+                        )
+                      }else if ( element.chat_type === "recommand_hospital" ) {
+                        return (
+                          <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
+                            <Flex w="100%" key={index}>
+                              <SimpleListMessage 
+                                indexKey={index}
+                                isHistory={element?.isHistory}
+                                msg={element.answer} 
+                                isLiveChat={element.isLiveChat}
+                                setIsTypingDone={() => onHandleTypeDone()}
+                                summary={!functions.isEmpty(element?.summary) ? functions.makeLinkify(functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))) : ""} 
+                              />
+                            </Flex>
+                          </Box>
+                        )
+                      }else if ( element.chat_type === "general" ) {
+                        return (
+                          <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
+                            <Flex w="100%" key={index}>
+                              <GeneralMessage 
+                                output={functions.makeLinkify(functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
+                                isHistory={element?.isHistory}
+                                setIsTypingDone={() => onHandleTypeDone()}
+                                isLiveChat={element.isLiveChat}
+                              />
+                            </Flex>
+                          </Box>
+                        )
+                      }else {
+                        return (
+                          <Box key={index}>
+                            <ChatWrongMessage
+                              indexKey={index}
+                              isMode="system"
+                              msg={'흠..뭔가 잘못된 것 같습니다'}
+                            />
+                          </Box>
+                        )
+                      }
+                    }else if ( element.ismode == 'system_stop') {
+                      return (
+                        <Box key={index}>
+                          <ForceStop
+                            indexKey={index}
+                            msg={element.msg}
+                          />
+                        </Box>
+                      )
+                    }else if ( element.ismode == 'system' || element.ismode == 'system_400') {
+                      return (
+                        <Box key={index}>
+                          <ChatWrongMessage
+                            indexKey={index}
+                            isMode={element.ismode}
+                            msg={!functions.isEmpty(element?.msg) ? element?.msg : '흠..뭔가 잘못된 것 같습니다'}
+                          />
+                        </Box>
+                      )
+                    }else{
+                      return (
+                        <Flex w="100%" key={index} mb="10px">
+                          <Flex
+                            borderRadius="full" justify="center" align="center" me="10px" h="40px" minH="40px"minW="40px"
+                            bg={'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)'}
+                          >
+                            <Icon as={MdFitbit} width="20px" height="20px" color="white" />
+                          </Flex>
+                          <MessageBoxChat output={element.msg} />
+                        </Flex>
+                      )
+                    }
+                  })
+                }
+                { isReceiving && ( <Box><Processing  msg="분석중" /></Box> ) }
+                <Box ref={scrollBottomRef} h="1px" pb={"120px"} visibility="hidden" />
+              </Flex>
+            </Flex>
+          </Box>
+        </Box>
+      </Box>
+      <Flex
+        position={'absolute'} bottom={`${mobileKeyboardOffset}px`} left={0} right={0} minHeight="60px" height={'auto'} alignItems={'center'} zIndex={10}
+        transition={'bottom 0.25s ease-in-out'}
+        padding="10px"  borderTop={`1px solid  ${borderTopColor}`}
+        bg={themeColor}
+      >
+        {
+          ( !isChatDisabled?.isState && !isChatDisabled?.isAlertMsg ) && (
+            <ChatDisable
+              isChatDisabled={isChatDisabled}
+              setChatDisabled={setChatDisabled}
+              userBasicInfo={userBasicInfo}
+            />
           )
         }
+        { ( isFocus && isChatDisabled.isState ) && ( <ChatWarningInfo /> )}
+        <Textarea
+          minH="48px"
+          resize="none"
+          as={ResizeTextarea}
+          h="100%"
+          sx={{WebkitOverflowScrolling: "touch",overflowY: "auto",touchAction: "manipulation"}}
+          maxH={"150px"}
+          border="1px solid"
+          borderColor={borderColor}
+          bg={isFocus ? textareaBgcolor1 :textareaBgcolor2}
+          readOnly={isReceiving}
+          maxLength={mConstants.inputMaxMessage}
+          borderRadius="25px"
+          lineHeight={inputCode?.length > 10 ? "150%" : "180%"}
+          ref={textareaRef}
+          fontSize="md"
+          fontWeight="500"
+          _focus={{ borderColor: '#2B8FFF' }}
+          color={inputColor}
+          _placeholder={placeholderColor}
+          value={inputCode}
+          placeholder="건강 관련 질문이나 증상을 알려주세요"
+          onChange={handleChange}
+          onFocus={() => setIsFocus(true)}
+          onBlur={() => setIsFocus(false)}
+          onKeyDown={(e:any) => {
+            if (e.key === 'Enter' && !e.shiftKey && !isMobileOnly && !isReceiving)  {
+              e.preventDefault(); // 줄바꿈 방지
+              e.stopPropagation();
+              if (isChatDisabled?.isState && inputCode.trim() !== '' && !isReceiving) {
+                setHasSent(true); // 일단 막고
+                handleSendMessage();
+                setIsFocus(false);
+                handleForceBlur();
+                setInputCode('')
+                setTimeout(() => {
+                  setHasSent(false);
+                }, 1500);
+              }
+            }
+          }}
+          id={"textarea_content"}
+          disabled={(!isChatDisabled?.isState || isReceiving)}
+        />
+        <Box display={'flex'} position={'absolute'} bottom={'6px'} right={'20px'} w={'55px'} height={'55px'} justifyContent={'flex-end'} alignItems={'center'}>
+          {
+            isReceiving && !hasSent ? (
+              <Box
+                onClick={(e) => { e.preventDefault(); e.stopPropagation();onHandleStopRequest(); }}
+                cursor={'pointer'}
+                zIndex={10}
+              >
+                <Image src={LoadingBar} alt="LoadingBar" style={{ width: '30px', height: '30px' }} />
+              </Box>
+            ) : !isChatDisabled?.isState ? (
+              <Box zIndex={10}>
+                <SendButtonOff boxSize={'32px'} />
+              </Box>
+            ) : (
+              <Box
+                zIndex={10}
+                onMouseDown={(e) => {e.preventDefault();e.stopPropagation();handleSendMessage();
+                }}
+                onTouchStart={(e) => {e.preventDefault();e.stopPropagation();handleSendMessage(); }}
+                cursor={'pointer'}
+              >
+                {isFocus && isChatDisabled?.isState ? (
+                  <SendButtonOn boxSize={'32px'} />
+                ) : (
+                  <SendButtonOff boxSize={'32px'} />
+                )}
+              </Box>
+            )
+          }
+          </Box>
       </Flex>
-    </Flex>
+      {
+        isOpenDoctorModal && (
+          <Modal
+            onClose={() => fn_close_modal_doctor_detail()}
+            isOpen={isOpenDoctorModal}
+            scrollBehavior={'inside'}
+            size={'full'}
+          >
+            <ModalOverlay />
+            <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1}>
+              <ModalHeader bg={navbarBg} padding="basePadding">
+                <Flex flexDirection={'row'} position={'relative'}>
+                  <Box 
+                    position={'absolute'}
+                    left={0}
+                    top={0}
+                    width="50px"
+                    height={'100%'}
+                    display={{base :'flex', md:'none'}} 
+                    alignItems={'center'}  
+                    onClick={() => fn_close_modal_doctor_detail()} cursor={'pointer'}
+                  >
+                    <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
+                  </Box>
+                  <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
+                    <CustomTextBold700 color={'white'} noOfLines={1}>{selectedDoctor?.name?.replace("교수","")} 교수</CustomTextBold700>
+                  </Box>
+                  <Box 
+                    position={'absolute'}
+                    right={0}
+                    top={0}
+                    width="50px"
+                    height={'100%'}
+                    display={{base :'none', md:'flex'}} 
+                    justifyContent={'flex-end'} 
+                    alignItems={'center'}  
+                    onClick={() => fn_close_modal_doctor_detail()}  cursor={'pointer'}
+                  >
+                    <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
+                  </Box>
+                </Flex>
+              </ModalHeader>
+              <ModalBody padding="basePadding" margin="0">
+                <DoctorDetail
+                  selected_doctor={selectedDoctor}
+                />
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        )
+      }
+    </>
   );
 }
+
+export default ChatBotMobile;

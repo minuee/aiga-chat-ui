@@ -73,7 +73,6 @@ export default function TokenGuard() {
 
     useEffect(() => {
         const token = mCookie.getCookie('aiga-minuee');
-        console.log("token",token);
         if (functions.isEmpty(token)) {
             onHandleLogoutAction();
         }

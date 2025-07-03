@@ -5,6 +5,7 @@ import {  MdInfoOutline, MdPerson,MdOutlineMoodBad,MdOutlineClose } from 'react-
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import functions from '@/utils/functions';
 import ConfigInfoStore,{ GlobalStateStore } from '@/store/configStore';
+import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
 
 type ChatDisableProps = {
   isChatDisabled : any;
@@ -35,24 +36,24 @@ export const ChatDisable = ({ isChatDisabled,userBasicInfo,setChatDisabled }: Ch
         borderTopRightRadius={"20px"}
         zIndex={10}
       >
-        <Flex  padding='20px' width={"100%"}  height={'100%'} flexDirection={'column'} alignItems={'space-evenly'}>
+        <Flex  padding={isMobileOnly ? "15px" : '20px'} width={"100%"}  height={'100%'} flexDirection={'column'} alignItems={'space-evenly'}>
           <Box display={'flex'} alignItems={'center'} flex={1}>
             <Icon as={MdOutlineMoodBad} width="20px" height="20px" color={oopsColor} mr={3} />
-            <CustomTextBold700 fontSize='17px' color={oopsColor} lineHeight={'150%'} letterSpacing={"-5%"}>
+            <CustomTextBold700 fontSize={isMobileOnly ? '16px' : '17px'} color={oopsColor} lineHeight={'150%'} letterSpacing={"-5%"}>
             비회원 일일 질문 제한
             </CustomTextBold700>
           </Box>
           <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} flex={2} mt='5px'>
-            <CustomTextBold400 fontSize='15px' color={oopsColor} lineHeight={'150%'} letterSpacing={"-5%"}>
+            <CustomTextBold400 fontSize={isMobileOnly ? '13px' : '15px'} color={oopsColor} lineHeight={isMobileOnly ? '130%' : '150%'} letterSpacing={isMobileOnly ? "-10%" : "-5%"}>
               오늘의 질문 제한에 도달했습니다. {functions.formatAvailabilityMessage(isChatDisabled?.reTrytimeStamp, userBasicInfo?.isGuest ? guestRetryLimitSec : userRetryLimitSec)} 이후에 다시 시도해 주세요.
             </CustomTextBold400>
-            <CustomTextBold400 fontSize='15px' color={oopsColor} lineHeight={'150%'} letterSpacing={"-5%"}>
+            <CustomTextBold400 fontSize={isMobileOnly ? '13px' : '15px'} color={oopsColor} lineHeight={isMobileOnly ? '130%' : '150%'}  letterSpacing={isMobileOnly ? "-10%" : "-5%"}>
               회원가입 하시면 다음과 같은 서비스를 제공받으실수 있습니다.
             </CustomTextBold400>
             <UnorderedList>
-              <ListItem color={oopsColor}><CustomTextBold400 fontSize={'15px'} color={oopsColor} lineHeight={'150%'} letterSpacing={"-5%"}>질문횟수증가</CustomTextBold400></ListItem>
-              <ListItem color={oopsColor}><CustomTextBold400 fontSize={'15px'} color={oopsColor} lineHeight={'150%'} letterSpacing={"-5%"}>대화내역저장</CustomTextBold400></ListItem>
-              <ListItem color={oopsColor}><CustomTextBold400 fontSize={'15px'} color={oopsColor} lineHeight={'150%'} letterSpacing={"-5%"}>개인 맞춤형 응답</CustomTextBold400></ListItem>
+              <ListItem color={oopsColor}><CustomTextBold400 fontSize={isMobileOnly ? '13px' : '15px'} color={oopsColor} lineHeight={isMobileOnly ? '130%' : '150%'} letterSpacing={"-5%"}>질문횟수증가</CustomTextBold400></ListItem>
+              <ListItem color={oopsColor}><CustomTextBold400 fontSize={isMobileOnly ? '13px' : '15px'} color={oopsColor} lineHeight={isMobileOnly ? '130%' : '150%'} letterSpacing={"-5%"}>대화내역저장</CustomTextBold400></ListItem>
+              <ListItem color={oopsColor}><CustomTextBold400 fontSize={isMobileOnly ? '13px' : '15px'} color={oopsColor} lineHeight={isMobileOnly ? '130%' : '150%'} letterSpacing={"-5%"}>개인 맞춤형 응답</CustomTextBold400></ListItem>
             </UnorderedList>
           </Box>
         </Flex>
@@ -132,10 +133,10 @@ export const ChatWarningInfo = () => {
   return (
     <Flex 
       position={'absolute'}
-      top={{base : "-37px", sm2:'-22px'}}
+      top={{base :isMobileOnly ?  "-31px": "-37px", sm2:isMobileOnly ?'-18px' :  '-22px'}}
       left={'0'}
       w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
-      minHeight={{base : '40px' , sm2:'25px'}}
+      minHeight={{base :isMobileOnly ? '38px' : '40px',sm2: isMobileOnly ? '21px' : '25px'}}
       height={'auto'}
       justifyContent={'center'}
       alignItems={'flex-end'}
@@ -143,7 +144,7 @@ export const ChatWarningInfo = () => {
       zIndex={9}
       borderTop={`1px solid  ${borderTopColor}`}
     >
-      <Box display='flex' alignItems='center' width={"100%"} px="16px">
+      <Box display='flex' alignItems='center' width={"100%"} px="10px">
         <Icon as={MdInfoOutline} width="14px" height="14px" color={infoIcon}  />
         <CustomText fontSize='12px' color={textColor} lineHeight={'130%'} letterSpacing={'-5%'} pl="5px" noOfLines={2}>
           AIGA는 실수를 할 수 있습니다. 본 AI서비스는 의료행위가 아니며 답변에 어떠한 책임을 지지 않습니다.

@@ -13,7 +13,6 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
   const previousOutputRef = React.useRef<string | null>(null); // 이전 output 값을 저장
 
   React.useEffect(() => {
-    console.log("isLiveChat",isLiveChat)
     previousOutputRef.current =  output; // output이 변경될 때마다 이전 값을 업데이트
   }, [output]);
 
