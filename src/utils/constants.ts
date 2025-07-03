@@ -299,7 +299,11 @@ const contrants  = {
   sample_msg_3,
   sample_msg_4,
   sample_msg_5,
-  sample_msg_6
+  sample_msg_6,
+  error_message_500 : '일시적인 문제가 발생하였습니다.',
+  error_message_404 : '일일 토큰 사용량이 최대치를 초과하였습니다.',
+  error_message_10_second : "일시적인 문제가 발생하였습니다.",
+  error_message_default : "흠, 뭔가 잘못된거 같습니다."
 }
 
 export default contrants;

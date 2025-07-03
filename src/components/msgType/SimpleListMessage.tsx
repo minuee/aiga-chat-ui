@@ -1,10 +1,10 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
-import { Box,Flex,Text,useColorModeValue ,UnorderedList,ListItem} from '@chakra-ui/react';
+import { Box,Flex,useColorMode ,useColorModeValue ,UnorderedList,ListItem} from '@chakra-ui/react';
 import functions from "@/utils/functions";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import TypeAnimation  from'@/components/text/TypeAnimation2';
-import { IconChatAiga} from '@/components/icons/svgIcons';
+import { IconChatAiga, DefaultHeaderLogo } from '@/components/icons/svgIcons';
 type SimpleListMessageProps = {
     msg: any;
     summary : any;
@@ -16,6 +16,7 @@ type SimpleListMessageProps = {
 
 const SimpleListMessage = ({  msg = [], indexKey, isHistory = false, summary, isLiveChat = false,setIsTypingDone}: SimpleListMessageProps) => {
 
+  const { colorMode, toggleColorMode } = useColorMode();
   const bgMeColor = useColorModeValue('#2B8FFF', 'white');
   const textMeColor = useColorModeValue('white', 'navy.800');
   const bgSystemColor = useColorModeValue('#F4F6FA', 'navy.600');
@@ -67,7 +68,7 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false, summary, is
     return (
       <Flex w="100%" flexDirection={'column'}>
         <Box>
-          <IconChatAiga width={'46px'} height={"12px"} />
+          { colorMode == 'dark' ? <DefaultHeaderLogo width={'46px'} height={'12px'} /> : <IconChatAiga width={'46px'} height={'12px'} /> }
         </Box>
         <Flex 
           padding="12px 20px" 
@@ -90,7 +91,7 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false, summary, is
   return (
     <Flex w="100%" flexDirection={'column'}  px="5px">
       <Box my="5px">
-        <IconChatAiga width={'46px'} height={"12px"} />
+        { colorMode == 'dark' ? <DefaultHeaderLogo width={'46px'} height={'12px'} /> : <IconChatAiga width={'46px'} height={'12px'} /> }
       </Box>
       <Flex 
         padding="12px 20px" 

@@ -1,6 +1,6 @@
 'use client';
-/*eslint-disable*/
-import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
+
+import { isMobileOnly } from "react-device-detect";
 import functions from '@/utils/functions';
 import MessageBoxChat from '@/components/MessageBox';
 import * as history from '@/utils/history';
@@ -10,7 +10,7 @@ import { Box,Flex,Icon,Textarea,Text,useColorModeValue,Modal,ModalOverlay,ModalC
 import ResizeTextarea from "react-textarea-autosize";
 import { useEffect, useState,useRef,useCallback } from 'react';
 import Image from "next/image";
-import { MdOutlineArrowDownward, MdFitbit, MdPerson,MdOutlineClose,MdArrowBack } from 'react-icons/md';
+import { MdOutlineArrowDownward, MdFitbit ,MdOutlineClose,MdArrowBack } from 'react-icons/md';
 import DoctorDetail  from '@/components/modal/Doctor';
 import RecommandDoctor  from '@/components/msgType/RecommandDoctor';
 import SearchDoctor  from '@/components/msgType/SearchDoctor';
@@ -19,12 +19,11 @@ import ChatMeMessage from '@/components/msgType/ChatMeMessage';
 import ChatWrongMessage from '@/components/msgType/ChatWrongMessage';
 import GeneralMessage from "@/components/msgType/GeneralMessage";
 import SimpleListMessage from '@/components/msgType/SimpleListMessage';
-import Welcome  from '@/components/msgType/Welcome';
 import { ChatDisable,ChatWarningInfo }  from '@/components/msgType/ChatOptionView';
 import MotionWelcome,{MotionWelcomeImage}  from '@/components/msgType/MotionWelcome';
 import Processing  from '@/components/msgType/Processing';
 import SkeletonDefaultText from "@/components/fields/LoadingBar";
-import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import CustomText, { CustomTextBold700 } from "@/components/text/CustomText";
 import debounce from 'lodash/debounce'
 
 import { useTranslations } from 'next-intl';
@@ -32,7 +31,7 @@ import LoadingBar from "@/assets/icons/loading.gif";
 import mConstants from '@/utils/constants';
 
 //새창열기 전역상태
-import ConfigInfoStore,{ GlobalStateStore } from '@/store/configStore';
+import ConfigInfoStore  from '@/store/configStore';
 import NewChatStateStore,{ ChatSesseionIdStore,CallHistoryDataStore,CurrentDialogStore } from '@/store/newChatStore';
 import historyStore from '@/store/historyStore';
 import { 
@@ -42,13 +41,11 @@ import {
  import UserStateStore from '@/store/userStore';
 import * as ChatService from "@/services/chat/index";
 import { SendButtonOff,SendButtonOn } from '@/components/icons/svgIcons';
-import useDetectKeyboardOpen from "use-detect-keyboard-open";
 
 export default function ChatBot() {
   const t = useTranslations('Messages');
   const { colorMode, toggleColorMode } = useColorMode();
   const alreadyInitialized = useRef(false);
-  const isKeyboardOpen = useDetectKeyboardOpen();
   // Input States
   const pathname = usePathname();
   const router = useRouter();
@@ -125,6 +122,8 @@ export default function ChatBot() {
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
   const isSystemText = ["system_text","system_doctors","system_list","system_select","system_image"];
   
+  const [requestId, setRequestId] = useState(0); // 현재 요청 식별자
+  const requestRef = useRef(0); // 최신 요청 ID 저장용
   /* useEffect(() => {
     if ( functions.isEmpty(chatSessionId) ) {
       getNewSessionID();
@@ -368,6 +367,7 @@ export default function ChatBot() {
   }
   const onHandleStopRequest = async() => {
     if ( isReceiving ) {
+      requestRef.current = -1; // 무효화
       await onHandleStopInquiry();
       const forceMsg = "대답이 중지되었습니다."
       setReceiving(false);
@@ -418,7 +418,6 @@ export default function ChatBot() {
         console.log('✅ 포커싱 시도');
       }
     }, 100)
-    
   }
 
   const addMessage = (newItem: any) => {
@@ -462,6 +461,9 @@ export default function ChatBot() {
       chat_sessinn_id = await getNewSessionID();
     }
     if ( !functions.isEmpty(chat_sessinn_id)) {
+      const newRequestId = Date.now(); // 혹은 증가값
+      setRequestId(newRequestId);
+      requestRef.current = newRequestId;
       setReceiving(true);
       const msgLen = parseInt(realOutputCode.length+1);
       const inputCodeText = isText;
@@ -504,6 +506,7 @@ export default function ChatBot() {
       try{
         setInputCode('')
         const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText.trim());
+        if (requestRef.current !== newRequestId) return;
         if ( mConstants.apiSuccessCode.includes(questionResult?.statusCode) ) {
           const answerMessage = questionResult?.data;
           setIn24UsedToken(answerMessage?.in24_used_token);
@@ -537,32 +540,58 @@ export default function ChatBot() {
           }, 100); 
          
         }else{
-          if ( questionResult?.message?.statusCode == '400') {
+          if ( questionResult?.statusCode == '408' || questionResult?.message?.statusCode == '408' ) {
             setIsLoading(false);
-              setReceiving(false);
-              setIsFocus(false)
-              setTimeout(() => {
-                if (textareaRef.current && !isMobileOnly) {
-                  textareaRef?.current?.focus()
-                  console.log('✅ 포커싱 시도');
+            setReceiving(false);
+            setIsFocus(false)
+            setTimeout(() => {
+              if (textareaRef.current && !isMobileOnly) {
+                textareaRef?.current?.focus()
+                console.log('✅ 포커싱 시도');
+              }
+            }, 100)
+            
+            setTimeout(() => {
+              addMessage(
+                {
+                  ismode : 'system_400',
+                  isHistory : false,
+                  chat_id: functions.getUUID(),
+                  user_question : inputCodeText,
+                  answer : null,
+                  msg: mConstants.error_message_10_second,
+                  chat_type : 'system',
+                  used_token : 0,
+                  isOnlyLive : false
                 }
-              }, 100)
-              
-              setTimeout(() => {
-                addMessage(
-                  {
-                    ismode : 'system_400',
-                    isHistory : false,
-                    chat_id: functions.getUUID(),
-                    user_question : inputCodeText,
-                    answer : null,
-                    msg: questionResult?.message?.message,
-                    chat_type : 'system',
-                    used_token : 0,
-                    isOnlyLive : false
-                  }
-                )
-              }, 60); 
+              )
+            }, 60); 
+          } else if ( questionResult?.message?.statusCode == '400') {
+            setIsLoading(false);
+            setReceiving(false);
+            setIsFocus(false)
+            setTimeout(() => {
+              if (textareaRef.current && !isMobileOnly) {
+                textareaRef?.current?.focus()
+                console.log('✅ 포커싱 시도');
+              }
+            }, 100)
+            
+            setTimeout(() => {
+              addMessage(
+                {
+                  ismode : 'system_400',
+                  isHistory : false,
+                  chat_id: functions.getUUID(),
+                  user_question : inputCodeText,
+                  answer : null,
+                  msg: questionResult?.message?.message,
+                  chat_type : 'system',
+                  used_token : 0,
+                  isOnlyLive : false
+                }
+              )
+            }, 60); 
           }else if ( questionResult?.message?.statusCode == '404') {
             const parsedMessage = parseLooselyFormattedJsonString(questionResult?.message?.message);
             if ( !functions.isEmpty(parsedMessage) && parsedMessage.message == '최대 토큰수 초과 에러') {
@@ -590,7 +619,7 @@ export default function ChatBot() {
                     chat_id: functions.getUUID(),
                     user_question : inputCodeText,
                     answer : null,
-                    msg: `일일 질문이 제한되었습니다.`,
+                    msg: mConstants.error_message_404,
                     chat_type : 'system',
                     used_token : 0,
                     isOnlyLive : true
@@ -599,43 +628,60 @@ export default function ChatBot() {
               }, 60); 
               
             }else{
-              call_fn_error_message();
+              call_fn_error_message(inputCodeText);
             }
           }else{
-            call_fn_error_message()
+            call_fn_error_message(inputCodeText)
           }
         }
       }catch(e:any){
         console.log("handleTranslate error",e);
-        call_fn_error_message();
+        call_fn_error_message(inputCodeText);
       }
     }else{
-      call_fn_error_message();
+      call_fn_error_message(isText);
     }
   }
 
 
-  const call_fn_error_message = () => {
+  const call_fn_error_message = (inputCodeText:any) => {
     setIsLoading(false);
     setReceiving(false);
     setIsFocus(false)
+    setTimeout(() => {
+      addMessage(
+        {
+          ismode : 'system',
+          isHistory : false,
+          chat_id: functions.getUUID(),
+          user_question : inputCodeText,
+          answer : null,
+          msg: mConstants.error_message_404,
+          chat_type : 'system',
+          used_token : 0,
+          isOnlyLive : true
+        }
+      )
+    }, 60);
     setTimeout(() => {
       if (textareaRef.current && !isMobileOnly) {
         textareaRef?.current?.focus()
         console.log('✅ 포커싱 시도');
       }
     }, 100)
-    toast({
+
+    
+   /*  toast({
       title: 'AIGA',
       position: 'top-right',
-      description: '시스템이 불안정합니다. 잠시 뒤에 다시 시도해주십시요',
+      description: mConstants.error_message_default,
       status: 'error',
       containerStyle: {
         color: '#ffffff',
       },
       duration: 1500,
       isClosable: true,
-    });
+    }); */
   }
 
   const  parseLooselyFormattedJsonString = (input:any)  => {
@@ -1301,8 +1347,7 @@ export default function ChatBot() {
               ) : (
                 <Box
                   zIndex={10}
-                  onMouseDown={(e) => {e.preventDefault();e.stopPropagation();handleSendMessage();
-                  }}
+                  onMouseDown={(e) => {e.preventDefault();e.stopPropagation();handleSendMessage();}}
                   onTouchStart={(e) => {e.preventDefault();e.stopPropagation();handleSendMessage(); }}
                   cursor={'pointer'}
                 >

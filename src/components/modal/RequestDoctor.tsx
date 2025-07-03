@@ -159,7 +159,8 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
                 onChange={(e) => setInputs({...inputs, content: e.target.value})} 
                 resize={'none'}  
                 minH={'200px'}
-                size={'17px'} 
+                fontSize={'15px'} 
+                padding={"10px"}
                 isInvalid={!functions.isEmpty(inputs.content)}
                 placeholder='수정요청 및 기타 문의사항을 입력해주세요 (필수, 최소 10자이상)'
                 id={"textarea_content"}

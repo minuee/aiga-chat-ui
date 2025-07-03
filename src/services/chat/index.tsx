@@ -92,16 +92,26 @@ export function updateChatHistoryTitle(session_id: string, title: string): any {
 
 export function getChatMessage(session_id: string, msg: string): any {
     try{
-        const res:any =  api.post(`/chat/${session_id}`,{question : msg})
+        const res:any =  api.post(`/chat/${session_id}`,{question : msg},{ timeout : 10000})
             .then((response) => {
                 return response?.data;
             }).catch((error) => {
                 // 상황에 따라 에러를 더 명확하게 넘겨줄 수도 있어요
-                return {
-                  error: true,
-                  status: error?.response?.status || 500,
-                  message: error?.response?.data || 'Unknown error',
-                };
+                if ( error.code == 'ECONNABORTED'){
+                    // 타임아웃 에러 처리
+                    return {
+                        error: true,
+                        status: 408,
+                        statusCode : 408,
+                        message: '요청 시간이 초과되었습니다. (10초 제한)',
+                    };
+                }else{
+                    return {
+                        error: true,
+                        status: error?.response?.status || 500,
+                        message: error?.response?.data || 'Unknown error',
+                    };
+                }
             });
             return res; 
    }catch(error){

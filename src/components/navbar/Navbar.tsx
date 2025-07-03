@@ -88,14 +88,7 @@ export default function AdminNavbar(props: {
         </Box>
         <Box display={'flex'} flex={1} alignItems={'center'} justifyContent={'center'}>
          {/*  <CustomTextBold700 fontSize={'17px'} color={basicColor}>AIGA</CustomTextBold700> */}
-         {
-            colorMode == 'dark' 
-            ?
-            <IconChatAiga width={'61px'} height={'17px'} />
-            :
-            <DefaultHeaderLogo width={'61px'} height={'17px'} />
-         }
-         
+         { colorMode == 'dark' ? <IconChatAiga width={'61px'} height={'17px'} /> : <DefaultHeaderLogo width={'61px'} height={'17px'} /> }
         </Box>
         <Box display={'flex'} flex={1} alignItems={'center'} justifyContent={'flex-end'} pr="10px">
           <NavbarLinks secondary={props.secondary} />

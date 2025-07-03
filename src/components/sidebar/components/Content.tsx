@@ -338,7 +338,7 @@ function SidebarContent(props: SidebarContent) {
           {
             functions.isEmpty(userBaseInfo?.profileImage) 
             ?
-            <DefaultProfile boxSize={'34px'} />
+            <DefaultProfile boxSize={'34px'} borderRadius={'17px'} />
             :
             <NextImage  src={userBaseInfo?.profileImage} alt="프로필이미지" style={{ borderRadius: '50%', objectFit: 'cover' }}  width={34} height={34}/>
           }
@@ -384,7 +384,8 @@ function SidebarContent(props: SidebarContent) {
             scrollBehavior={'inside'}
             blockScrollOnMount={false}
             preserveScrollBarGap={true}
-            trapFocus={false}
+            //trapFocus={false}
+            autoFocus={false}
             size={'full'} 
           >
             <ModalOverlay bg="rgba(0,0,0,0.6)" />

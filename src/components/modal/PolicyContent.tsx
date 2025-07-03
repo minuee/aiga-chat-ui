@@ -20,7 +20,7 @@ function PolicyModal() {
 3. 회사에 이미 입력한 정보가 있다면 반복한 입력을 생략하거나 회원을 위하여 입력 편의성을 제공할 수 있습니다. 그러나 처음 이용하는 경우 회사는 이용자에게 필수적으로 필요한 개인정보에 대한 입력을 요청할 수 있습니다.
 4. 회사는 대부분의 서비스에 대하여 ‘철회’ 또는 ‘취소’ 기능을 제공함으로써 이미 동의한 개인정보의 수집과 이용에 대하여 필요시 항시 취소하고 삭제할 수 있는 방법을 제공하고 있습니다. 단, 개인신용정보 수집 및 이용등에 동의하지 않는 경우 서비스 이용이 불가능할 수 있습니다.
 
-`}
+`}</CustomTextBold400>
  <Box overflowX="auto">
     <table style={{ borderCollapse: 'collapse', width: '100%' }}>
       <thead>
@@ -53,8 +53,7 @@ function PolicyModal() {
         </tr>
       </tbody>
     </table>
-  </Box>
- 
+  </Box><CustomTextBold400 fontSize={"17px"}>
 {`
 가. 개인정보 수집방법
 1) 회사 웹에서 이용자가 직접 입력한 정보
@@ -119,7 +118,7 @@ function PolicyModal() {
 제8조 (개인정보의 위탁처리)
 1.회사는 이용자에게 편리한 서비스 제공 등 원활한 업무 수행을 위하여 다음과 같이 개인정보 처리 업무를 위탁하고 있습니다. 위탁업무 서비스를 제공하는 경우에는 다음의 내용을 이용자에게 알리고 동의를 받으며, 변경된 사항이 있는 경우에도 동일합니다.
 `}
-
+</CustomTextBold400>
 <Box overflowX="auto">
     <table style={{ borderCollapse: 'collapse', width: '100%' }}>
       <thead>
@@ -142,7 +141,7 @@ function PolicyModal() {
         </tr>
       </tbody>
     </table>
-  </Box>
+  </Box><CustomTextBold400 fontSize={"17px"}>
 {`
 제9조 (가명화 정보의 활용)
 1. 회사는 수집된 개인정보를 비식별 가명화 처리하여 다음 목적으로 활용할 수 있습니다. 가명화 처리란 개인을 직접 식별할 수 있는 정보를 제거하거나 대체하는 것을 말합니다. 

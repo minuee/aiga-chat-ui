@@ -1,15 +1,16 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: false });
-import { useColorModeValue,Text,Flex,Box } from '@chakra-ui/react'
+import { useColorModeValue,useColorMode,Flex,Box } from '@chakra-ui/react'
 import Card from '@/components/card/Card';
 import TypeAnimation  from'@/components/text/TypeAnimation2';
 import LogoImage from "@/assets/images/logo.png";
 import Image from "next/image";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
-import { IconChatAiga} from '@/components/icons/svgIcons';
+import { IconChatAiga,DefaultHeaderLogo} from '@/components/icons/svgIcons';
 const MessageBox = React.memo(function MessageBox({ output }: { output: any }) {
   
+  const { colorMode, toggleColorMode } = useColorMode();
   const textColor = useColorModeValue('navy.700', 'white');
   const bgMeColor = useColorModeValue('#2B8FFF', 'white');
   const textMeColor = useColorModeValue('white', 'navy.800');
@@ -29,7 +30,7 @@ const MessageBox = React.memo(function MessageBox({ output }: { output: any }) {
   return (
    <Flex w="100%" flexDirection={'column'} mt="10px">
       <Box my="5px">
-        <IconChatAiga width={'46px'} height={"12px"} />
+        { colorMode == 'dark' ? <DefaultHeaderLogo width={'46px'} height={'12px'} /> : <IconChatAiga width={'46px'} height={'12px'} /> }
       </Box>
       <Flex 
         padding="12px 20px" 

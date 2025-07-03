@@ -32,8 +32,8 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
     const bgColor = useColorModeValue('#FAFBFD', 'navy.700');
     const borderColor = useColorModeValue('#7F879B', 'navy.900');
     const moreColor = useColorModeValue('#AFB5C3', 'white');
-    const iconColor = useColorModeValue('#AFB5C3','white');
-    const iconRedColor = useColorModeValue('#FA6464','white');
+    const iconColor = useColorModeValue('#AFB5C3','white')
+    const iconRedColor = useColorModeValue('#FA6464','#FA6464');
     const bgDefaultColor = useColorModeValue('#ffffff', 'navy.800');
     const bgCurrentColor = useColorModeValue('#EAF4FF', 'navy.800');
 
@@ -120,7 +120,7 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
                                             <CustomText fontSize='15px' color={iconColor}>이름변경</CustomText> 
                                         </Button>
                                         <Button leftIcon={<Icon as={BiTrash} width="16px" height="16px" color={iconRedColor}  />} size='sm' onClick={onOpen} color={iconRedColor} id="button_remove"  bg="transparent" alignItems="center">  
-                                        <CustomText fontSize='15px' color={iconColor}>삭제하기</CustomText> 
+                                            <CustomText fontSize='15px' color={iconRedColor}>삭제하기</CustomText> 
                                         </Button>
                                     </Flex>
                                 </PopoverBody>

@@ -25,12 +25,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
 import { SkeletonDefaultMixed } from "@/components/fields/LoadingBar";
 import { DefaultProfile } from '@/components/icons/svgIcons';
-import { NextAvatar } from '@/components/image/Avatar';
-import Image from 'next/image';
 import { MdOutlineClose,MdArrowBack,MdLogout } from 'react-icons/md';
 import { BiDetail,BiInfoCircle,BiGroup,BiEdit,BiChevronRight } from "react-icons/bi";
 import { iconAlertEntire } from "@/components/icons/IconImage"
-import { text } from 'stream/consumers';
 
 export interface ProfileSettingModalProps extends PropsWithChildren {
   isOpen : boolean;
@@ -72,6 +69,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   const yakwanBtnRef = React.useRef<any>();
 
   const toast = useToast();
+  const nicknameRef = React.useRef<HTMLInputElement>(null);
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
   const bgColor = useColorModeValue('white', 'navy.800');
   const buttonBgColor = useColorModeValue('#2b8fff', 'navy.500');
@@ -98,6 +96,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         nickName : userBaseInfo?.nickName
       })
       setIsLoading(false);
+      nicknameRef.current?.blur();
     }, 60);
   }, [isOpen]);
 
@@ -277,6 +276,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_5}`);
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_5}`)
     setIsOpenNoticeListModal(true);
+    nicknameRef.current?.blur();
   }
 
   const fn_close_modal_mypage_notice = async() => {
@@ -300,6 +300,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_6}`);
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_6}`)
     setIsOpenMypageRequestModal(true);
+    nicknameRef.current?.blur();
   }
 
   const fn_close_modal_mypage_request = async() => {
@@ -315,6 +316,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_7}`);
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_7}`)
     setIsOpenEntireModal(true);
+    nicknameRef.current?.blur();
   }
 
   const fn_close_modal_mypage_entire = async() => {
@@ -330,6 +332,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_9}`);
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_9}`)
     setIsOpenPolicyModal(true);
+    nicknameRef.current?.blur();
   }
 
   const fn_close_modal_mypage_policy = async() => {
@@ -345,6 +348,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_8}`);
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_8}`)
     setIsOpenYakwanModal(true);
+    nicknameRef.current?.blur();
   }
 
   const fn_close_modal_mypage_yakwan = async() => {
@@ -373,7 +377,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
             {
               functions.isEmpty(userBaseInfo?.profileImage) 
               ?
-              <DefaultProfile boxSize={'48px'} />
+              <DefaultProfile boxSize={'48px'} borderRadius={'24px'} />
               :
               <NextImage 
                 src={userBaseInfo?.profileImage}
@@ -398,11 +402,11 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
             <Box padding="20px">
               <FormControl variant="floatingLabel">
                 <FormLabel color={textColor} flexDirection={'row'}>
-                <CustomTextBold700 color={textColor} fontSize="17px">닉네임<span style={{ color: textRedcolor, fontSize: '13px',paddingLeft:"10px" }}>(필수)</span></CustomTextBold700>
+                <CustomTextBold700 color={textColor} fontSize="17px">닉네임<span style={{ color: textRedcolor, fontSize: '13px',paddingLeft:"10px" }}>(필1수)</span></CustomTextBold700>
                 </FormLabel>
                 <Input 
-                  type="text" 
-                  isRequired
+                  type="text"
+                  ref={nicknameRef}
                   name='nickName'
                   value={inputs.nickName}
                   placeholder='닉네임을 입력해주세요' 
@@ -494,7 +498,8 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               scrollBehavior={'inside'}
               blockScrollOnMount={false}
               preserveScrollBarGap={true}
-              trapFocus={false}
+              //trapFocus={false}
+              autoFocus={false}
               size={'full'}
             >
               <ModalOverlay />
@@ -539,7 +544,8 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               scrollBehavior={'inside'}
               blockScrollOnMount={false}
               preserveScrollBarGap={true}
-              trapFocus={false}
+              //trapFocus={false}
+              autoFocus={false}
               size={'full'}
             >
               <ModalOverlay />
@@ -596,7 +602,8 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               scrollBehavior={'inside'}
               blockScrollOnMount={false}
               preserveScrollBarGap={true}
-              trapFocus={false}
+              //trapFocus={false}
+              autoFocus={false}
               size={'full'}
             >
               <ModalOverlay />
@@ -639,7 +646,8 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               scrollBehavior={'inside'}
               blockScrollOnMount={false}
               preserveScrollBarGap={true}
-              trapFocus={false}
+              //trapFocus={false}
+              autoFocus={false}
               size={'full'}
             >
               <ModalOverlay />
@@ -679,7 +687,8 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               scrollBehavior={'inside'}
               blockScrollOnMount={false}
               preserveScrollBarGap={true}
-              trapFocus={false}
+              //trapFocus={false}
+              autoFocus={false}
               size={'full'}
             >
               <ModalOverlay />

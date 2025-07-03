@@ -1,9 +1,8 @@
 import Image from "next/image";
-import { Box,Flex,Text,useColorModeValue ,Icon} from '@chakra-ui/react';
+import { Box,Flex,useColorMode,useColorModeValue ,Icon} from '@chakra-ui/react';
 import { AiOutlineMeh } from "react-icons/ai";
-import LogoImage from "@/assets/images/logo.png";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
-import { IconChatAiga} from '@/components/icons/svgIcons';
+import { IconChatAiga,DefaultHeaderLogo} from '@/components/icons/svgIcons';
 
 type ChatWrongMessageProps = {
     msg: string;
@@ -13,6 +12,7 @@ type ChatWrongMessageProps = {
 
 const ChatWrongMessage = ({  isMode, msg = "흠..뭔가 잘못된 것 같습니다.", indexKey}: ChatWrongMessageProps) => {
 
+  const { colorMode, toggleColorMode } = useColorMode();
   const bgMeColor = useColorModeValue('#2B8FFF', 'white');
   const textMeColor = useColorModeValue('white', 'navy.800');
   const bgSystemColor = useColorModeValue('#F4F6FA', 'navy.600');
@@ -26,7 +26,7 @@ const ChatWrongMessage = ({  isMode, msg = "흠..뭔가 잘못된 것 같습니�
   return (
     <Flex w="100%" key={indexKey} flexDirection={'column'} mt="10px">
       <Box my="5px">
-        <IconChatAiga width={'46px'} height={"12px"} />
+        { colorMode == 'dark' ? <DefaultHeaderLogo width={'46px'} height={'12px'} /> : <IconChatAiga width={'46px'} height={'12px'} /> }
       </Box>
       <Flex 
         padding="12px 20px" 

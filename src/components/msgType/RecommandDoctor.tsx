@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import NextImage from 'next/legacy/image';
 import Image from 'next/image';
-import { Box,Flex,Stack,useColorModeValue,Text,Icon, Modal,ModalOverlay,ModalContent,ModalHeader,SimpleGrid,ModalBody } from '@chakra-ui/react';
+import { Box,Flex,Stack,useColorModeValue,useColorMode,Icon, Modal,ModalOverlay,ModalContent,ModalHeader,SimpleGrid,ModalBody } from '@chakra-ui/react';
 import mConstants from "@/utils/constants";
 import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
@@ -13,7 +13,7 @@ import { sampleDoctor1, sampleDoctor2,sampleDoctor3 } from "@/components/icons/I
 import { MdArrowBack,MdOutlineClose } from 'react-icons/md';
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import { BiChevronRight } from "react-icons/bi";
-import { IconChatAiga} from '@/components/icons/svgIcons';
+import { IconChatAiga,DefaultHeaderLogo } from '@/components/icons/svgIcons';
 import DoctorAvatar from "@/assets/images/doctor_default_white.png";
 import { MdOutlineArrowForward } from 'react-icons/md';
 import TypeAnimation  from'@/components/text/TypeAnimation2';
@@ -31,6 +31,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = useRef(pathname);
+  const { colorMode, toggleColorMode } = useColorMode();
   const textColor = useColorModeValue('navy.700', 'white')
   const flexRef = useRef<HTMLDivElement>(null);
   const [showGradient, setShowGradient] = useState(true);
@@ -133,7 +134,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
     return (
       <Stack minWidth={'100%'} width={'auto'} minHeight={"50px"} maxHeight={"300px"} position={'relative'}>
         <Box>
-          <IconChatAiga width={'46px'} height={"12px"} />
+          { colorMode == 'dark' ? <DefaultHeaderLogo width={'46px'} height={'12px'} /> : <IconChatAiga width={'46px'} height={'12px'} /> }
         </Box>
         <Flex 
           padding="12px 20px" 
@@ -158,7 +159,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
     return (
       <Flex w="100%" flexDirection={'column'} mt="10px" px="5px">
         <Box my="5px">
-          <IconChatAiga width={'46px'} height={"12px"} />
+          { colorMode == 'dark' ? <DefaultHeaderLogo width={'46px'} height={'12px'} /> : <IconChatAiga width={'46px'} height={'12px'} /> }
         </Box>
         <Flex 
           padding="12px 20px" 
@@ -194,9 +195,8 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
         }}
       >
         <Box>
-          <IconChatAiga width={'46px'} height={"12px"} />
+          { colorMode == 'dark' ? <DefaultHeaderLogo width={'46px'} height={'12px'} /> : <IconChatAiga width={'46px'} height={'12px'} /> }
         </Box>
-        
         <Flex 
           padding="12px 20px" 
           border={`1px solid ${bgSystemColor}`} 
@@ -349,7 +349,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
                       <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                     </Box>
                     <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                      <Text color={'white'} noOfLines={1}>{data?.answer?.disease ?? "의사소개"}</Text>
+                      <CustomText color={'white'} noOfLines={1}>{data?.answer?.disease ?? "의사소개"}</CustomText>
                     </Box>
                     <Box 
                       position={'absolute'}

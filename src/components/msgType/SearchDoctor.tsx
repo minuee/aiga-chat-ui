@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import NextImage from 'next/legacy/image';
 import Image from 'next/image';
-import { Box,Flex,Stack,useColorModeValue,Text,Icon,Modal,ModalOverlay,ModalContent,ModalHeader,SimpleGrid,ModalBody } from '@chakra-ui/react';
+import { Box,Flex,Stack,useColorModeValue,Text,useColorMode,Icon,Modal,ModalOverlay,ModalContent,ModalHeader,SimpleGrid,ModalBody } from '@chakra-ui/react';
 import mConstants from "@/utils/constants";
 import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
@@ -10,7 +10,7 @@ import functions from "@/utils/functions";
 import { BiChevronRight } from "react-icons/bi";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import DoctorAvatar from "@/assets/images/doctor_default_white.png";
-import { IconChatAiga} from '@/components/icons/svgIcons';
+import { IconChatAiga, DefaultHeaderLogo } from '@/components/icons/svgIcons';
 import { ModalDoctorListStore } from '@/store/modalStore';
 import { MdArrowBack,MdOutlineClose } from 'react-icons/md';
 import DoctorList from "@/components/modal/DoctorList";
@@ -29,7 +29,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = useRef(pathname);
-  const textColor = useColorModeValue('navy.700', 'white')
+  const { colorMode, toggleColorMode } = useColorMode();
   const flexRef = useRef<HTMLDivElement>(null);
   const [selectChatId, setSelectselectChatId] = useState(0);
   const [showGradient, setShowGradient] = useState(true);
@@ -135,7 +135,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
     return (
       <Flex w="100%" flexDirection={'column'} mt="10px">
         <Box>
-          <IconChatAiga width={'46px'} height={"12px"} />
+          { colorMode == 'dark' ? <DefaultHeaderLogo width={'46px'} height={'12px'} /> : <IconChatAiga width={'46px'} height={'12px'} /> }
         </Box>
         <Flex 
           padding="12px 20px" 
@@ -158,7 +158,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
     return (
       <Flex w="100%" flexDirection={'column'} mt="10px" px="5px">
         <Box my="5px">
-          <IconChatAiga width={'46px'} height={"12px"} />
+          { colorMode == 'dark' ? <DefaultHeaderLogo width={'46px'} height={'12px'} /> : <IconChatAiga width={'46px'} height={'12px'} /> }
         </Box>
         <Flex 
           padding="12px 20px" 
@@ -184,7 +184,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
     return (
       <Flex w="100%" flexDirection={'column'} mt="10px">
         <Box my="5px">
-          <IconChatAiga width={'46px'} height={"12px"} />
+          { colorMode == 'dark' ? <DefaultHeaderLogo width={'46px'} height={'12px'} /> : <IconChatAiga width={'46px'} height={'12px'} /> }
         </Box>
         <Flex 
           padding="12px 20px" 
@@ -316,7 +316,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
                       <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                     </Box>
                     <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                      <Text color={'white'} noOfLines={1}>{doctorList[0]?.deptname ?? "의사 소개"}</Text>
+                      <CustomText color={'white'} noOfLines={1}>{doctorList[0]?.deptname ?? "의사 소개"}</CustomText>
                     </Box>
                     <Box 
                       position={'absolute'}
@@ -359,7 +359,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
         }}
       >
         <Box mt="5px">
-          <IconChatAiga width={'46px'} height={"12px"} />
+          { colorMode == 'dark' ? <DefaultHeaderLogo width={'46px'} height={'12px'} /> : <IconChatAiga width={'46px'} height={'12px'} /> }
         </Box>
         <Flex 
           padding="12px 20px" 
@@ -508,7 +508,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
                       <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
                     </Box>
                     <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                      <Text color={'white'} noOfLines={1}>{doctorList[0]?.deptname}</Text>
+                      <CustomText color={'white'} noOfLines={1}>{doctorList[0]?.deptname}</CustomText>
                     </Box>
                     <Box 
                       position={'absolute'}
