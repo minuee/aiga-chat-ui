@@ -18,7 +18,8 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
   }, [output]);
 
   const isOutputSame = previousOutputRef.current === output && previousOutputRef.current !== null;
-  //const cleanedOutput = output.replace(/\\n/g, '\n')
+  
+  
   return (
    <Flex w="100%" flexDirection={'column'} overflow={'hidden'}>
       <Box mb="5px">

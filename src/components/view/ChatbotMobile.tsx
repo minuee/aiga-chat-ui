@@ -1188,13 +1188,17 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     <>
       <Box
         ref={mobileContentRef}
-        position={'absolute'} top={`${MOBILE_HEADER_HEIGHT}px`} left={0} right={0} bottom={`${MOBILE_INPUT_HEIGHT}px`}
+        position={'absolute'} top={`${MOBILE_HEADER_HEIGHT}px`} left={0} right={0} 
+        //bottom={`${MOBILE_INPUT_HEIGHT}px`}
         overflowY={'auto'} width={'100%'} height={`${mobileContentScrollHeight}px`} maxHeight={`${mobileViewPortHeight}px`}
         bg={themeColor}
       >
         <Box 
           height={realOutputCode?.length == 0  ? `${mobileViewPortHeight*0.6}px` : `${mobileViewPortHeight}px`} 
+          //height={`${mobileViewPortHeight}px`}
+          //maxHeight={`${mobileViewPortHeight}px`}
           maxHeight={realOutputCode?.length == 0  ? `${mobileViewPortHeight*0.6}px` :`${mobileViewPortHeight}px`}
+          transition="height 0.3s ease-in-out"
           overflow={'hidden'}
         >
           <Box height={'100%'} overflowY={'auto'} paddingBottom={`${MOBILE_INPUT_HEIGHT}px`}>
@@ -1342,7 +1346,10 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         </Box>
       </Box>
       <Flex
-        position={'absolute'} bottom={`${mobileKeyboardOffset}px`} left={0} right={0} minHeight="60px" height={'auto'} alignItems={'center'} zIndex={10}
+        position={'absolute'} 
+        //bottom={`${mobileKeyboardOffset}px`} 
+        bottom={0} 
+        left={0} right={0} minHeight="60px" height={'auto'} alignItems={'center'} zIndex={10}
         transition={'bottom 0.25s ease-in-out'}
         padding="10px"  borderTop={`1px solid  ${borderTopColor}`}
         bg={themeColor}
@@ -1379,6 +1386,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
           _placeholder={placeholderColor}
           value={inputCode}
           placeholder="건강 관련 질문이나 증상을 알려주세요"
+          //placeholder={`높이 :${mobileKeyboardOffset}px`}
           onChange={handleChange}
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}

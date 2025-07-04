@@ -4,7 +4,7 @@ import React, { Children } from 'react';
 import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
 import SubPage from '@/components/view/Chatbot';
 import SubMobilePage from '@/components/view/ChatbotMobile';
-import { Flex,Box,Text, SkeletonCircle, useDisclosure,useColorModeValue,useColorMode } from '@chakra-ui/react';
+import { Flex,Box,Text, SkeletonCircle, useDisclosure,useColorModeValue,useColorMode,useToast } from '@chakra-ui/react';
 import { usePathname } from 'next/navigation';
 import routes from '@/routes';
 import { getActiveRoute, getActiveNavbar } from '@/utils/navigation';
@@ -24,6 +24,7 @@ export default function Index() {
   
   const pathname = usePathname();
   const { colorMode, toggleColorMode } = useColorMode();
+  const toast = useToast();
   const { userId, ...userInfo } = UserStateStore(state => state);
   const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
   const alreadyInitialized = React.useRef(false);
@@ -97,7 +98,9 @@ export default function Index() {
 
       // 키보드가 열렸고, 최소 높이 기준 이상일 경우만 적용
       if (isKeyboardOpen) {
-        const height =  window.innerHeight - mobileKeyboardOffset;
+        //const height =  window.innerHeight - mobileKeyboardOffset;
+        const offset = keyboardHeight > 0 ? keyboardHeight : mobileKeyboardOffset;
+        const height = window.innerHeight - offset;
         setMobileViewPortHeight(height);
         setMobileKeyboardOffset(keyboardHeight);
       } else {
@@ -111,7 +114,7 @@ export default function Index() {
 
       return () => window.removeEventListener('resize', updateOffset);
     }
-  }, []);
+  }, [isKeyboardOpen]);
 
 
 
