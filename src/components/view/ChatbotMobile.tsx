@@ -161,7 +161,16 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         const currentY = e.touches[0].clientY;
         const diffY = currentY - startY;
   
-        if (diffY > 10) { // 아래로 스와이프
+        if (diffY > 20) { // 아래로 스와이프
+          toast({
+            title: "스크롤 락 풀림",
+            position: 'top-right',
+            status: 'error',
+            containerStyle: {
+              color: '#ffffff',
+            },
+            isClosable: true,
+          });
           setIsScrollLocked(false);
         }
       };

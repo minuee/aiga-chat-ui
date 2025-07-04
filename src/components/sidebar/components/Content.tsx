@@ -384,7 +384,7 @@ function SidebarContent(props: SidebarContent) {
             scrollBehavior={'inside'}
             blockScrollOnMount={false}
             preserveScrollBarGap={true}
-            //trapFocus={false}
+            trapFocus={false}
             autoFocus={false}
             size={'full'} 
           >
