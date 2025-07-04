@@ -47,7 +47,7 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
           />
           :
           <div
-            style={{ fontSize: '17px', whiteSpace: 'pre-line' }}
+            style={{ fontSize: '17px', whiteSpace: 'pre-line',fontFamily:'Noto Sans' }}
             dangerouslySetInnerHTML={{
               __html: output
                 .replace(/<br\s*\/?>/gi, '\n')

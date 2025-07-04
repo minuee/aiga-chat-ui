@@ -619,7 +619,7 @@ export default function ChatBot() {
                     chat_id: functions.getUUID(),
                     user_question : inputCodeText,
                     answer : null,
-                    msg: mConstants.error_message_404,
+                    msg: `${mConstants.error_message_404} ${functions.formatAvailabilityMessage(parseInt(parsedMessage?.timestamp), userBasicInfo?.isGuest ? guestRetryLimitSec : userRetryLimitSec)} 이후에 다시 시도해 주세요.`,
                     chat_type : 'system',
                     used_token : 0,
                     isOnlyLive : true

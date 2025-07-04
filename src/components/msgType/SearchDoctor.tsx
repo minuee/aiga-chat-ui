@@ -154,13 +154,14 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
         </Flex>
       </Flex>
     )
-  }else if ( doctorList?.length == 0  && !functions.isEmpty(summary)) {
+  }else if ( doctorList?.length == 0  && !functions.isEmpty(summary) && summary?.length > 10) {
     return (
       <Flex w="100%" flexDirection={'column'} mt="10px" px="5px">
         <Box my="5px">
           { colorMode == 'dark' ? <DefaultHeaderLogo width={'46px'} height={'12px'} /> : <IconChatAiga width={'46px'} height={'12px'} /> }
         </Box>
-        <Flex 
+        <Box 
+          display={summary?.length > 10 ? 'flex' : 'none'}
           padding="12px 20px" 
           border={`1px solid ${bgSystemColor}`} 
           bgColor={bgSystemColor} 
@@ -177,7 +178,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
             style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
             dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
           />
-        </Flex>
+        </Box>
       </Flex>
     )
   }else if ( doctorList?.length  <  3 ) {
@@ -186,7 +187,8 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
         <Box my="5px">
           { colorMode == 'dark' ? <DefaultHeaderLogo width={'46px'} height={'12px'} /> : <IconChatAiga width={'46px'} height={'12px'} /> }
         </Box>
-        <Flex 
+        <Box 
+          display={summary?.length > 10 ? 'flex' : 'none'}
           padding="12px 20px" 
           border={`1px solid ${bgSystemColor}`} 
           bgColor={bgSystemColor} 
@@ -210,7 +212,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
               onComplete={() => setTypingCompleteDone()}
             />
             :
-            ( !isLiveChat && !functions.isEmpty(summary) )
+            ( !isLiveChat && !functions.isEmpty(summary) && summary?.length > 10 )
             ?
             <div
               style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
@@ -230,7 +232,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
             />
           }
           </Box>
-        </Flex>
+        </Box>
         <Box  
           display={isLocalTypeDone ? 'flex' : 'none'}
           alignItems={"center"} 
@@ -353,7 +355,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
         sx={{
           '&::after': {
             content: ( showGradient && doctorList?.length > 4 ) ? '""' : 'none', position: 'absolute', bottom: "40px",right: 0,width: '200px',height: '100%',maxHeight : "205px",
-            background:  isDark ? 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0  , 1) 100%)' : 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)',
+            background:  isDark ? 'linear-gradient(to right, rgba(26, 54, 93, 0) 0%, rgba(26, 54, 93, 1) 100%)' : 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)',
             pointerEvents: 'none', // 클릭 이벤트 방지
           },
         }}
@@ -361,7 +363,8 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
         <Box mt="5px">
           { colorMode == 'dark' ? <DefaultHeaderLogo width={'46px'} height={'12px'} /> : <IconChatAiga width={'46px'} height={'12px'} /> }
         </Box>
-        <Flex 
+        <Box 
+          display={summary?.length > 10 ? 'flex' : 'none'}
           padding="12px 20px" 
           border={`1px solid ${bgSystemColor}`} 
           bgColor={bgSystemColor} 
@@ -399,7 +402,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
             null
           }
           </Box>
-        </Flex>
+        </Box>
         <Box  
           display={isLocalTypeDone ? 'flex' : 'none'}
           alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"60px"} maxHeight={"250px"} ref={flexRef} overflowX={'auto'}

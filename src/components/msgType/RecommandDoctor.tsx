@@ -9,7 +9,6 @@ import * as mCookie from "@/utils/cookies";
 import functions from "@/utils/functions";
 import { ModalDoctorListStore } from '@/store/modalStore';
 import DoctorList from "@/components/modal/DoctorList";
-import { sampleDoctor1, sampleDoctor2,sampleDoctor3 } from "@/components/icons/IconImage";
 import { MdArrowBack,MdOutlineClose } from 'react-icons/md';
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import { BiChevronRight } from "react-icons/bi";
@@ -61,9 +60,6 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
     if ( !functions.isEmpty(summary)) previousOutputRef.current =  summary; 
     else previousOutputRef.current = null
   }, [summary]);
-
-  const isOutputSame = previousOutputRef.current === summary && previousOutputRef.current !== null;
-  
 
   const handleScroll = () => {
     if (flexRef.current) {
@@ -161,7 +157,8 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
         <Box my="5px">
           { colorMode == 'dark' ? <DefaultHeaderLogo width={'46px'} height={'12px'} /> : <IconChatAiga width={'46px'} height={'12px'} /> }
         </Box>
-        <Flex 
+        <Box 
+          display={summary?.length > 10 ? 'flex' : 'none'}
           padding="12px 20px" 
           border={`1px solid ${bgSystemColor}`} 
           bgColor={bgSystemColor} 
@@ -178,7 +175,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
             style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
             dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
           />
-        </Flex>
+        </Box>
       </Flex>
     )
   }else{
@@ -189,7 +186,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
         sx={{
           '&::after': {
             content: ( showGradient && doctorList?.length > 4 ) ? '""' : 'none', position: 'absolute', bottom: "40px",right: 0,width: '200px',height: '100%',maxHeight : "205px",
-            background:  isDark ? 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0  , 1) 100%)' : 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)',
+            background:  isDark ? 'linear-gradient(to right, rgba(26, 54, 93, 0) 0%, rgba(26, 54, 93, 1) 100%)' : 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)',
             pointerEvents: 'none', // 클릭 이벤트 방지
           },
         }}
@@ -197,7 +194,8 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
         <Box>
           { colorMode == 'dark' ? <DefaultHeaderLogo width={'46px'} height={'12px'} /> : <IconChatAiga width={'46px'} height={'12px'} /> }
         </Box>
-        <Flex 
+        <Box 
+          display={summary?.length > 10 ? 'flex' : 'none'}
           padding="12px 20px" 
           border={`1px solid ${bgSystemColor}`} 
           bgColor={bgSystemColor} 
@@ -240,7 +238,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
               />
             }
           </Box>
-        </Flex>
+        </Box>
         <Box  
           display={isLocalTypeDone ? 'flex' : 'none'}
           alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"60px"} maxHeight={"250px"} ref={flexRef} overflowX={'auto'}
@@ -288,22 +286,11 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
           }
           {
             doctorList?.length > 4 && (
-              <Flex 
-                flexDirection="column" 
-                bg={navbarBgColor} 
-                minWidth="100px" 
-                height={"100%"}
-                justifyContent={'center'}
-                alignItems={'center'}
-              >
+              <Flex flexDirection="column" bg={navbarBgColor} minWidth="100px" height={"100%"} justifyContent={'center'} alignItems={'center'}>
                 <Box
                   display={'flex'}  width="40px" height={"40px"} cursor={'pointer'} justifyContent='center' alignItems={'center'} 
-                  borderRadius={'20px'} 
-                  flexDirection={'column'}
-                  backgroundColor={navbarBgColor}
+                  borderRadius={'20px'} flexDirection={'column'} backgroundColor={navbarBgColor} border={'1px solid #efefef'} mb="5px"
                   onClick={()=> onSendDoctorListButton(selectChatId)}
-                  border={'1px solid #efefef'}
-                  mb="5px"
                 >
                 <Icon as={MdOutlineArrowForward} width="25px" height="25px" color={navbarIcon} />
               </Box>
@@ -337,13 +324,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
                 <ModalHeader bg={navbarBg} padding="basePadding">
                   <Flex flexDirection={'row'} position={'relative'}>
                     <Box 
-                      position={'absolute'}
-                      left={0}
-                      top={0}
-                      width="50px"
-                      height={'100%'}
-                      display={{base :'flex', md:'none'}} 
-                      alignItems={'center'}  
+                      position={'absolute'} left={0} top={0} width="50px" height={'100%'} display={{base :'flex', md:'none'}} alignItems={'center'}  
                       onClick={() => fn_close_modal_doctor_list()} cursor={'pointer'}
                     >
                       <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
@@ -352,14 +333,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
                       <CustomText color={'white'} noOfLines={1}>{data?.answer?.disease ?? "의사소개"}</CustomText>
                     </Box>
                     <Box 
-                      position={'absolute'}
-                      right={0}
-                      top={0}
-                      width="50px"
-                      height={'100%'}
-                      display={{base :'none', md:'flex'}} 
-                      justifyContent={'flex-end'} 
-                      alignItems={'center'}  
+                      position={'absolute'} right={0} top={0} width="50px" height={'100%'} display={{base :'none', md:'flex'}} justifyContent={'flex-end'} alignItems={'center'}  
                       onClick={() => fn_close_modal_doctor_list()}  cursor={'pointer'}
                       >
                       <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />

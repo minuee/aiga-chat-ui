@@ -4,7 +4,7 @@ import React, { Children } from 'react';
 import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
 import SubPage from '@/components/view/Chatbot';
 import SubMobilePage from '@/components/view/ChatbotMobile';
-import { Flex,Box,Text, SkeletonCircle, useDisclosure,useColorModeValue,useColorMode,useToast } from '@chakra-ui/react';
+import { Flex,Box,Text, SkeletonCircle, useDisclosure,useColorModeValue } from '@chakra-ui/react';
 import { usePathname } from 'next/navigation';
 import routes from '@/routes';
 import { getActiveRoute, getActiveNavbar } from '@/utils/navigation';
@@ -23,10 +23,7 @@ const MOBILE_INPUT_HEIGHT = 60;
 export default function Index() {
   
   const pathname = usePathname();
-  const { colorMode, toggleColorMode } = useColorMode();
-  const toast = useToast();
   const { userId, ...userInfo } = UserStateStore(state => state);
-  const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
   const alreadyInitialized = React.useRef(false);
   const setConfigInfoStore = ConfigInfoStore((state) => state.setConfigInfoStore);
   const { isGlobalState } = GlobalStateStore(state => state);
@@ -49,7 +46,6 @@ export default function Index() {
   React.useEffect(() => {
     setHasMounted(true);
   }, []);
-
 
   React.useEffect(() => {
     if ( isMobileOnly ) {
@@ -89,7 +85,6 @@ export default function Index() {
     }
   }, []);
 
-
   React.useEffect(() => {
     const updateOffset = () => {
       const screenHeight = window.screen.height;
@@ -115,8 +110,6 @@ export default function Index() {
       return () => window.removeEventListener('resize', updateOffset);
     }
   }, [isKeyboardOpen]);
-
-
 
   React.useEffect(() => {
     if ( isMobileOnly ) {
@@ -147,7 +140,6 @@ export default function Index() {
     }
   }, [])
   
-
   const getConfigData = React.useCallback(
     async() => {
       try{

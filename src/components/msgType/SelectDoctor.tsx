@@ -88,7 +88,7 @@ const SelectDoctor = ({  onSendButton  }: SelectDoctorProps) => {
           width: '200px',
           height: '100%',
           maxHeight : "250px",
-          background:  isDark ? 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0  , 1) 100%)' : 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)',
+          background:  isDark ? 'linear-gradient(to right, rgba(26, 54, 93, 0) 0%, rgba(26, 54, 93, 1) 100%)' : 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)',
           pointerEvents: 'none', // 클릭 이벤트 방지
         },
       }}

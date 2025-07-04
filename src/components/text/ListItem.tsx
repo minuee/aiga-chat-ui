@@ -19,7 +19,9 @@ const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 ,is
     setExpandedCount(expandedCount ? undefined : limintView);
     const nameText = useColorModeValue('#000000','white');
     const textColor = useColorModeValue('#5C5E69','white');
-    const iconBgColor = useColorModeValue('#E9EDF3','navy.900')
+    const iconBgColor = useColorModeValue('#E9EDF3','navy.600')
+    const iconColor = useColorModeValue('#555',"white");
+
     return (
         <Flex  flexDirection={'column'} justifyContent={'center'} mt={marginTop}>
             <CustomTextBold700 fontSize={'15px'} color={nameText}>{title}</CustomTextBold700>
@@ -62,7 +64,7 @@ const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 ,is
                             onClick={handleToggle}
                             id="button_toggle"
                         >
-                            {!expandedCount ? <Icon as={FiChevronUp} color={'#555'} /> : <Icon as={FiChevronDown} color={'#555'} />}
+                            {!expandedCount ? <Icon as={FiChevronUp} color={iconColor} /> : <Icon as={FiChevronDown} color={iconColor} />}
                         </Button>
                     </Box>
                 )

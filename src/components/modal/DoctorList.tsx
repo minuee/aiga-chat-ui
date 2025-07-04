@@ -263,7 +263,7 @@ function DoctorListModal(props: DoctorListModalProps) {
             )
           }
           <Stack
-            position='absolute' left={"0"} top={"60px"} width="100%"
+            position='absolute' left={"0"} top={"58px"} width="100%"
             sx={{
               '&::after': {
                 content: showGradient ? '""' : 'none', 
@@ -272,7 +272,7 @@ function DoctorListModal(props: DoctorListModalProps) {
                 right: 0,
                 width: '50px',
                 height: '100%',
-                background:  isDark ? 'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0  , 1) 100%)' : 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)',
+                background:  isDark ? 'linear-gradient(to right, rgba(26, 54, 93, 0) 0%, rgba(26, 54, 93, 1) 100%)' : 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)',
                 pointerEvents: 'none', // 클릭 이벤트 방지
               },
             }}

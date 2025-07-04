@@ -2,11 +2,8 @@
 import React, { PropsWithChildren } from 'react';
 import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
 // chakra imports
-import { 
-  Box,Flex,Button,useColorModeValue,Text,SkeletonCircle,SkeletonText,Divider,Icon,
-  Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,Portal
-} from '@chakra-ui/react';
-import * as DoctorService from "@/services/doctor/index";
+import { Box,Flex,Button,useColorModeValue,Text,SkeletonCircle,SkeletonText,Divider,Icon,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,Portal} from '@chakra-ui/react';
+
 import NextImage from 'next/legacy/image';
 import Alert from '@/components/alert/CustomAlert';
 import UserStateStore from '@/store/userStore';import * as history from '@/utils/history';
@@ -125,7 +122,6 @@ function DoctorModal(props: DoctorModalProps) {
       fn_close_modal_doctor_review();
       setSelectedDoctorId(props.selected_doctor?.doctor_id);
     }, 60);
-   
   }
 
   const onHandleRequestDoctor = (data:any) => {
@@ -248,14 +244,8 @@ function DoctorModal(props: DoctorModalProps) {
         </Flex>
         <Flex flexDirection={'row'} justifyContent={'space-evenly'} alignItems={'center'} minHeight={'100px'}>
           <Box 
-            display={'flex'} flex={1} justifyContent={'center'} alignItems={'center'} mr={1}
-            bg='#DFF2FF' 
-            borderRadius={'8px'}
-            height={"50px"}
-            onClick={() => {
-              !functions.isEmpty(doctorBasicData?.url) ? window.open(doctorBasicData?.url) : console.log("")
-            }}
-            cursor={'pointer'}
+            display={'flex'} flex={1} justifyContent={'center'} alignItems={'center'} mr={1} bg='#DFF2FF' borderRadius={'8px'} height={"50px"} cursor={'pointer'}
+            onClick={() => { !functions.isEmpty(doctorBasicData?.url) ? window.open(doctorBasicData?.url) : console.log("")}}
           >
             <Icon as={MdComputer} color={'#2B8FFF'} size="4em" />
             <CustomTextBold700 fontSize={'15px'}  color="#2B8FFF" ml="2">온라인 예약</CustomTextBold700>
