@@ -162,7 +162,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         const diffY = currentY - startY;
   
         if (diffY > 20) { // 아래로 스와이프
-          toast({
+          /* toast({
             title: "스크롤 락 풀림",
             position: 'top-right',
             status: 'error',
@@ -170,7 +170,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
               color: '#ffffff',
             },
             isClosable: true,
-          });
+          }); */
           setIsScrollLocked(false);
         }
       };
