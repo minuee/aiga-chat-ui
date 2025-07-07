@@ -402,7 +402,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
             <Box padding="20px">
               <FormControl variant="floatingLabel">
                 <FormLabel color={textColor} flexDirection={'row'}>
-                <CustomTextBold700 color={textColor} fontSize="17px">닉네임<span style={{ color: textRedcolor, fontSize: '13px',paddingLeft:"10px" }}>(필1수)</span></CustomTextBold700>
+                <CustomTextBold700 color={textColor} fontSize="17px">닉네임<span style={{ color: textRedcolor, fontSize: '13px',paddingLeft:"10px" }}>(필수)</span></CustomTextBold700>
                 </FormLabel>
                 <Input 
                   type="text"

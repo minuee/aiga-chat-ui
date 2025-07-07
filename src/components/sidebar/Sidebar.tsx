@@ -208,7 +208,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
           <DrawerOverlay />
           <DrawerContent
             w="100%"
-            height={{base:"60vh", md:"60vh"}}
+            height={{base:"60vh",sm:"70vh", md:"60vh"}}
             maxW={`${mConstants.modalMaxWidth}px`}
             bg={drawerBackgroundColor}
             borderTopLeftRadius={"10px"}

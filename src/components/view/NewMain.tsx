@@ -396,7 +396,7 @@ export default function MainPage() {
             className="bubble-link"
         >
         <div className="chat-btn-icon">
-            <IconAigaVer2 boxSize={'100px'} />
+            <IconAigaVer2 boxSize={{base : '100px', sm:'75px'}} />
         </div>
         
         </Link>

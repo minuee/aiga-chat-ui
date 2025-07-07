@@ -16,7 +16,13 @@ body {
   overflow: auto;
 }
 
-
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+}
 body::-webkit-scrollbar {
   display: none;             /* Chrome, Safari, 최신 Edge */
 }

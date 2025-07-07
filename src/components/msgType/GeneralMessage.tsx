@@ -38,7 +38,7 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
         alignItems={'center'}
       > 
         {
-          ( isLiveChat || isOutputSame )
+          isLiveChat
           ?
           <TypeAnimation
             msg={ output.replace(/^"(.*)"$/, '$1')}

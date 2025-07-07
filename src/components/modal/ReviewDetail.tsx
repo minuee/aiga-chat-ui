@@ -271,7 +271,8 @@ function ReviewModal(props: ReviewModalProps) {
               onChange={(e) => setInputs({...inputs, content: e.target.value})} 
               resize={'none'}  
               minH={'150px'}
-              size={'sm'} 
+              //size={'sm'} 
+              fontSize={"17px"}
               bg={contentBgColor2}
               borderRadius={"10px"}
               //isInvalid={!functions.isEmpty(inputs.content)}

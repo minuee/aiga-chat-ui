@@ -15,36 +15,37 @@ type ListItemScreenProps = {
   
 const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 ,isType='career'}:ListItemScreenProps) => {
     const [expandedCount, setExpandedCount] = React.useState<any>(content.length > limintView ? limintView : undefined);
-    const handleToggle = () =>
-    setExpandedCount(expandedCount ? undefined : limintView);
+    
     const nameText = useColorModeValue('#000000','white');
     const textColor = useColorModeValue('#5C5E69','white');
     const iconBgColor = useColorModeValue('#E9EDF3','navy.600')
     const iconColor = useColorModeValue('#555',"white");
 
+    const [isExpanded, setIsExpanded] = React.useState(false);
+    const visibleItems = isExpanded ? content : content.slice(0, limintView);
+    const handleToggle = () => setIsExpanded((prev) => !prev);
+
     return (
-        <Flex  flexDirection={'column'} justifyContent={'center'} mt={marginTop}>
+        <Flex  flexDirection={'column'} justifyContent={'center'} mt={marginTop} minWidth={0}>
             <CustomTextBold700 fontSize={'15px'} color={nameText}>{title}</CustomTextBold700>
-            {/* <Divider orientation='horizontal' my={2}/> */}
             <Box 
-                noOfLines={expandedCount}
                 mt={3}
             >
                 <List spacing={2}>
-                    {content.map((item:any, index:number) => (
+                    {visibleItems.map((item:any, index:number) => (
                         <ListItem key={index}>
                             <CustomText fontSize={'15px'}  color={textColor} letterSpacing={"-5%"}>
-                                {
-                                    isType == 'education' 
-                                    ?
-                                    functions.stripHtmlTags(item?.action)
-                                    :
-                                    isType == 'career' 
-                                    ?
-                                    functions.stripHtmlTags(item?.action)
-                                    :
-                                    functions.stripHtmlTags(item)
-                                }
+                            {
+                                isType == 'education' 
+                                ?
+                                functions.stripHtmlTags(item?.action)
+                                :
+                                isType == 'career' 
+                                ?
+                                functions.stripHtmlTags(item?.action)
+                                :
+                                functions.stripHtmlTags(item)
+                            }
                             </CustomText>
                         </ListItem>
                     ))}

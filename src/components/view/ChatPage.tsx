@@ -1,10 +1,10 @@
 'use client';
 
 import React, { Children } from 'react';
-import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
+import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile, isMobileSafari} from "react-device-detect";
 import SubPage from '@/components/view/Chatbot';
 import SubMobilePage from '@/components/view/ChatbotMobile';
-import { Flex,Box,Text, SkeletonCircle, useDisclosure,useColorModeValue } from '@chakra-ui/react';
+import { Flex,Box,Text, SkeletonCircle, useDisclosure,useColorModeValue,useToast } from '@chakra-ui/react';
 import { usePathname } from 'next/navigation';
 import routes from '@/routes';
 import { getActiveRoute, getActiveNavbar } from '@/utils/navigation';
@@ -23,6 +23,7 @@ const MOBILE_INPUT_HEIGHT = 60;
 export default function Index() {
   
   const pathname = usePathname();
+  const toast = useToast();
   const { userId, ...userInfo } = UserStateStore(state => state);
   const alreadyInitialized = React.useRef(false);
   const setConfigInfoStore = ConfigInfoStore((state) => state.setConfigInfoStore);
@@ -36,12 +37,15 @@ export default function Index() {
   const themeColor = useColorModeValue('white', 'navy.800');
 
   const isKeyboardOpen = useDetectKeyboardOpen();
+  const [isKeyboardOpenSafari, setIsKeyboardOpenSafari] = React.useState(false);
   const [mobileKeyboardOffset, setMobileKeyboardOffset] = React.useState(0);
+  
   const [mobileViewPortHeight, setMobileViewPortHeight] = React.useState(0);
   const [mobileContainerHeight, setMobileContainerHeight] = React.useState(0);
   const [mobileContentScrollHeight, setMobileContentScrollHeight] = React.useState(0);
 
   const mobileScrollRef = React.useRef<HTMLDivElement>(null);
+  const initialViewportHeight = React.useRef<number | null>(null);
 
   React.useEffect(() => {
     setHasMounted(true);
@@ -49,7 +53,11 @@ export default function Index() {
 
   React.useEffect(() => {
     if ( isMobileOnly ) {
-      if (isKeyboardOpen) {
+      const vpHeight = window.visualViewport?.height || window.innerHeight;
+      const fullHeight = window.innerHeight;
+      const keyboardHeight = fullHeight - vpHeight;
+      const isKeyboardVisible = keyboardHeight > 100;
+      if (isKeyboardOpen || isKeyboardVisible) {
         const vpHeight = window.visualViewport?.height || window.innerHeight;
         const maxContentHeight = vpHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
         setMobileContentScrollHeight(maxContentHeight);
@@ -85,60 +93,139 @@ export default function Index() {
     }
   }, []);
 
-  React.useEffect(() => {
+  /* React.useEffect(() => {
     const updateOffset = () => {
-      const screenHeight = window.screen.height;
+      const screenHeight = isMobileSafari ? window.visualViewport?.height || window.innerHeight :  window.screen.height;
       const innerHeight = window.innerHeight;
       const keyboardHeight = screenHeight - innerHeight;
-
+      const isKeyboardVisible = keyboardHeight > 100;
       // 키보드가 열렸고, 최소 높이 기준 이상일 경우만 적용
-      if (isKeyboardOpen) {
+      if (isKeyboardOpen || isKeyboardVisible) {
         //const height =  window.innerHeight - mobileKeyboardOffset;
         const offset = keyboardHeight > 0 ? keyboardHeight : mobileKeyboardOffset;
-        const height = window.innerHeight - offset;
+        const height = screenHeight - offset;
         setMobileViewPortHeight(height);
-        setMobileKeyboardOffset(keyboardHeight);
+       // setMobileKeyboardOffset(keyboardHeight);
       } else {
         setMobileViewPortHeight(window.innerHeight);
-        setMobileKeyboardOffset(0);
+        //setMobileKeyboardOffset(0);
       }
     };
     if ( isMobileOnly ) {
       window.addEventListener('resize', updateOffset);
+      window.visualViewport?.addEventListener('resize', updateOffset); // ⬅ 추가
       updateOffset();
 
-      return () => window.removeEventListener('resize', updateOffset);
+      return () => {
+        window.removeEventListener('resize', updateOffset);
+        window.visualViewport?.removeEventListener('resize', updateOffset); // ⬅ 추가
+      };
     }
-  }, [isKeyboardOpen]);
+  }, []);
 
   React.useEffect(() => {
-    if ( isMobileOnly ) {
-      const handleVisualViewportResize = () => {
-        const vpHeight = window.visualViewport?.height || window.innerHeight;
-        const fullHeight = window.innerHeight;
+  
+    const handleVisualViewportResize = () => {
 
-        const keyboardHeight = fullHeight - vpHeight;
-        const isKeyboardVisible = keyboardHeight > 100;
+      const currentHeight = window.visualViewport?.height || window.innerHeight;
 
-        const contentHeight = vpHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
-
-        setMobileKeyboardOffset(isKeyboardVisible ? keyboardHeight : 0);
-        setMobileViewPortHeight(contentHeight);
-        setMobileContainerHeight(vpHeight);
-      };
-
-      if (window.visualViewport) {
-        window.visualViewport.addEventListener("resize", handleVisualViewportResize);
-        handleVisualViewportResize(); // 최초 실행
+      if (!initialViewportHeight.current) {
+        initialViewportHeight.current = currentHeight;
       }
 
-      return () => {
-        if (window.visualViewport) {
-          window.visualViewport.removeEventListener("resize", handleVisualViewportResize);
-        }
-      };
+      const vpHeight = window.visualViewport?.height || window.innerHeight;
+      const fullHeight = window.innerHeight;
+
+      const keyboardHeight = (initialViewportHeight.current ?? currentHeight) - currentHeight;//fullHeight - vpHeight;
+      const isKeyboardVisible = keyboardHeight > 100;
+      const contentHeight = vpHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
+      if ( isKeyboardVisible ) {
+        toast({
+          title:`vpHeight ${vpHeight},fullHeight ${fullHeight}`,
+          position: 'top-right',
+          status: 'error',
+          containerStyle: {
+            color: '#ffffff',
+          },
+          isClosable: true,
+          duration:10000
+        });
+      }
+      setMobileKeyboardOffset( ( isKeyboardOpen || isKeyboardVisible ) ? keyboardHeight : 0);
+      setMobileViewPortHeight(currentHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT);
+      setMobileContainerHeight(currentHeight);
+    };
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", handleVisualViewportResize);
+      handleVisualViewportResize(); // 최초 실행
     }
-  }, [])
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener("resize", handleVisualViewportResize);
+      }
+    };
+
+  }, []) */
+
+  React.useEffect(() => {
+    if (!isMobileSafari) return; // iOS Safari에서만 적용
+  
+    const handleResize = () => {
+      const visualHeight = window.visualViewport?.height ?? window.innerHeight;
+  
+      if (!initialViewportHeight.current) {
+        initialViewportHeight.current = visualHeight;
+      }
+  
+      const keyboardHeight = initialViewportHeight.current - visualHeight;
+      const isKeyboardVisible = keyboardHeight > 100;
+  
+      const safeKeyboardHeight = isKeyboardVisible ? keyboardHeight : 0;
+      const contentHeight = visualHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
+      setIsKeyboardOpenSafari(isKeyboardVisible)
+      setMobileKeyboardOffset(safeKeyboardHeight);
+      setMobileViewPortHeight(contentHeight);
+      setMobileContainerHeight(visualHeight);
+    };
+  
+    window.visualViewport?.addEventListener('resize', handleResize);
+    window.addEventListener('touchend', handleResize); // iOS Safari 딜레이 대응
+  
+    handleResize(); // 초기 실행
+  
+    return () => {
+      window.visualViewport?.removeEventListener('resize', handleResize);
+      window.removeEventListener('touchend', handleResize);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (!isMobileOnly || isMobileSafari) return; // 사파리는 제외
+  
+    const updateOffset = () => {
+      const screenHeight = window.screen.height;
+      const innerHeight = window.innerHeight;
+      const keyboardHeight = screenHeight - innerHeight;
+      const isKeyboardVisible = keyboardHeight > 100;
+  
+      const height = isKeyboardVisible
+        ? innerHeight - keyboardHeight
+        : innerHeight;
+  
+      setMobileViewPortHeight(height);
+      setMobileKeyboardOffset(isKeyboardVisible ? keyboardHeight : 0);
+    };
+  
+    window.addEventListener('resize', updateOffset);
+    updateOffset(); // 초기 실행
+  
+    return () => {
+      window.removeEventListener('resize', updateOffset);
+    };
+  }, []);
+  
   
   const getConfigData = React.useCallback(
     async() => {
@@ -187,55 +274,56 @@ export default function Index() {
     <Flex bg={themeColor} height={"100%"} minHeight={"100vh"} width="100%" justifyContent={'center'} alignItems={'center'}>
       <SkeletonCircle size='10' />
     </Flex>
-   )
+    )
   }
 
   if ( isMobileOnly ) {
     return (
-      <Box height={`${mobileContainerHeight}px`} overflow={'hidden'} position={'relative'} ref={mobileScrollRef}>
-        <Flex position={'fixed'} top={0} left={0} right={0} height={'60px'} alignItems={'center'} justifyContent={'center'} zIndex={10}>
-          <Navbar
-            onOpen={onOpen}
-            logoText={'AIGA Beta'}
-            brandText={getActiveRoute(routes, pathname)}
-            secondary={getActiveNavbar(routes, pathname)}
-          />
-        </Flex>
-        {/* ✅ 콘텐츠 영역 */}
-        {/* <Box
-          ref={mobileContentRef}
-          position={'absolute'} top={`${MOBILE_HEADER_HEIGHT}px`} left={0} right={0} bottom={`${MOBILE_INPUT_HEIGHT}px`} boxSizing={'border-box'}
-          overflowY={'auto'} width={'100%'} height={`${mobileContentScrollHeight}px`} maxHeight={`${mobileViewPortHeight}px`}
-        >
-          <Box height={`${mobileViewPortHeight}px`} maxHeight={`${mobileViewPortHeight}px`} overflow={'hidden'}> */}
-            {
-              ( process.env.NODE_ENV == 'development' || isGlobalState )
-              ?
-              <SubMobilePage 
-                mobileContentScrollHeight={mobileContentScrollHeight}
-                mobileViewPortHeight={mobileViewPortHeight}
-                mobileKeyboardOffset={mobileKeyboardOffset}
-              />
-              :
-              <Flex alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
-                <GlobalDisable
-                  setRetry={() => onHandleRetry() }
+        <Box height={`${mobileContainerHeight}px`} overflow={isMobileSafari ? 'auto' : 'hidden'} position={'relative'} ref={mobileScrollRef}>
+          <Flex position={'fixed'} top={0} left={0} right={0} height={'60px'} alignItems={'center'} justifyContent={'center'} zIndex={10}>
+            <Navbar
+              onOpen={onOpen}
+              logoText={'AIGA Alpha'}
+              brandText={getActiveRoute(routes, pathname)}
+              secondary={getActiveNavbar(routes, pathname)}
+            />
+          </Flex>
+          {/* ✅ 콘텐츠 영역 */}
+          {/* <Box
+            ref={mobileContentRef}
+            position={'absolute'} top={`${MOBILE_HEADER_HEIGHT}px`} left={0} right={0} bottom={`${MOBILE_INPUT_HEIGHT}px`} boxSizing={'border-box'}
+            overflowY={'auto'} width={'100%'} height={`${mobileContentScrollHeight}px`} maxHeight={`${mobileViewPortHeight}px`}
+          >
+            <Box height={`${mobileViewPortHeight}px`} maxHeight={`${mobileViewPortHeight}px`} overflow={'hidden'}> */}
+              {
+                ( process.env.NODE_ENV == 'development' || isGlobalState )
+                ?
+                <SubMobilePage 
+                  mobileContentScrollHeight={mobileContentScrollHeight}
+                  mobileViewPortHeight={mobileViewPortHeight}
+                  mobileKeyboardOffset={mobileKeyboardOffset}
+                  isKeyboardOpenSafari={isKeyboardOpenSafari}
                 />
-              </Flex>
-            }
-          {/* </Box>
-        </Box> */}
-        {/* <Flex
-          position={'absolute'} bottom={`${mobileKeyboardOffset}px`} left={0} right={0} minHeight="60px" height={'auto'} alignItems={'center'} zIndex={10}
-          transition={'bottom 0.25s ease-in-out'}
-        >
-          <input
-            type="text"
-            placeholder="메시지를 입력하세요"
-            style={{ width: '100%',padding: '0.5rem',fontSize: '1rem',borderRadius: 6,border: '1px solid #ccc',}}
-          />
-        </Flex> */}
-      </Box>
+                :
+                <Flex alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
+                  <GlobalDisable
+                    setRetry={() => onHandleRetry() }
+                  />
+                </Flex>
+              }
+            {/* </Box>
+          </Box> */}
+          {/* <Flex
+            position={'absolute'} bottom={`${mobileKeyboardOffset}px`} left={0} right={0} minHeight="60px" height={'auto'} alignItems={'center'} zIndex={10}
+            transition={'bottom 0.25s ease-in-out'}
+          >
+            <input
+              type="text"
+              placeholder="메시지를 입력하세요"
+              style={{ width: '100%',padding: '0.5rem',fontSize: '1rem',borderRadius: 6,border: '1px solid #ccc',}}
+            />
+          </Flex> */}
+        </Box>
     )
   }
 

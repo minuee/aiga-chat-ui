@@ -1,12 +1,12 @@
 'use client';
 /*eslint-disable*/
-import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
+import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile,isMobileSafari} from "react-device-detect";
 import functions from '@/utils/functions';
 import MessageBoxChat from '@/components/MessageBox';
 import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
-import { Box,Flex,Icon,Textarea,Text,useColorModeValue,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,useToast,useColorMode } from '@chakra-ui/react';
+import { Box,Flex,Icon,Textarea,Text,useColorModeValue,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,useToast,useColorMode,Portal } from '@chakra-ui/react';
 import ResizeTextarea from "react-textarea-autosize";
 import { useEffect, useState,useRef,useCallback } from 'react';
 import Image from "next/image";
@@ -47,9 +47,10 @@ import useDetectKeyboardOpen from "use-detect-keyboard-open";
 type ChatBotMobileProps = {
   mobileContentScrollHeight: number;
   mobileViewPortHeight : number;
-  mobileKeyboardOffset : number
+  mobileKeyboardOffset : number;
+  isKeyboardOpenSafari : boolean;
 };
-const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 0, mobileKeyboardOffset=0}: ChatBotMobileProps) => {
+const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 0, mobileKeyboardOffset=0,isKeyboardOpenSafari=false}: ChatBotMobileProps) => {
   const t = useTranslations('Messages');
   const { colorMode, toggleColorMode } = useColorMode();
   const alreadyInitialized = useRef(false);
@@ -73,7 +74,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   const handleForceBlur = () => {
     textareaRef.current?.blur(); // 👈 강제로 blur 발생시킴
   }
-  // ChatGPT model
+
   const [isChatDisabled, setChatDisabled] = useState<any>({
     isState :  true,
     isAlertMsg : false,
@@ -139,6 +140,31 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   const MOBILE_HEADER_HEIGHT = 60;
   const MOBILE_INPUT_HEIGHT = 60;
 
+  const [isZooming, setIsZooming] = useState(false);
+
+  useEffect(() => {
+    if (!isMobileSafari || !window.visualViewport) return;
+
+    const handleZoom = () => {
+      const scale = window.visualViewport?.scale ?? 1;
+      const offsetTop = window.visualViewport?.offsetTop ?? 0;
+
+      const zooming = scale !== 1 || offsetTop > 0;
+
+      setIsZooming(zooming);
+    };
+
+    window.visualViewport.addEventListener("resize", handleZoom);
+    window.visualViewport.addEventListener("scroll", handleZoom); // scroll도 zoom 시 발생
+
+    handleZoom();
+
+    return () => {
+      window.visualViewport?.removeEventListener("resize", handleZoom);
+      window.visualViewport?.removeEventListener("scroll", handleZoom);
+    };
+  }, []);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       const el: any = mobileContentRef.current;
@@ -160,8 +186,8 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
       const handleTouchMove = (e: TouchEvent) => {
         const currentY = e.touches[0].clientY;
         const diffY = currentY - startY;
-  
-        if (diffY > 20) { // 아래로 스와이프
+        const smoothValue = isMobileSafari ? 10 : 20
+        if (diffY > smoothValue) { // 아래로 스와이프
           /* toast({
             title: "스크롤 락 풀림",
             position: 'top-right',
@@ -185,7 +211,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
           el.removeEventListener("touchmove", handleTouchMove);
         };
       }
-    }, 500);
+    }, 300);
   
     return () => clearTimeout(timer);
   }, []);
@@ -203,7 +229,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
 
           // ✅ 바닥에 도달하면 스크롤 잠금
           if (scrollTop + clientHeight >= scrollHeight - 10) {
-            if (isKeyboardOpen) {
+            if (isKeyboardOpen || isKeyboardOpenSafari) {
               setIsScrollLocked(true);
             }
           }
@@ -219,14 +245,14 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     }, 500); // 0.5초 후에 강제 시도
     
     return () => clearTimeout(timer);
-  }, [isKeyboardOpen]);
+  }, [isKeyboardOpen,isKeyboardOpenSafari]);
   
 
   useEffect(() => {
     if (mobileContentRef.current) {
-      mobileContentRef.current.style.overflowY = (isScrollLocked && isKeyboardOpen ) ? 'hidden' : 'auto';
+      mobileContentRef.current.style.overflowY = (isScrollLocked && ( isKeyboardOpen || isKeyboardOpenSafari ) ) ? 'hidden' : 'auto';
     }
-  }, [isScrollLocked,isKeyboardOpen]);
+  }, [isScrollLocked,isKeyboardOpen,isKeyboardOpenSafari]);
 
   useEffect(() => {
     const preventTouch = (e: any) => {
@@ -272,6 +298,20 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
       reTryTimeStamp : 0
     })
   }
+
+  useEffect(() => {
+    if (isMobileSafari && ( isKeyboardOpen || isKeyboardOpenSafari )) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'relative';
+      document.body.style.height = '100vh';
+      document.documentElement.style.overscrollBehavior = 'none';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.height = '';
+      document.documentElement.style.overscrollBehavior = '';
+    }
+  }, [isKeyboardOpen, isKeyboardOpenSafari]);
 
   useEffect(() => {
     const userBasicInfo = UserStateStore.getState();
@@ -728,7 +768,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                 }
               }, 100)
               
-              setTimeout(() => {
+              /* setTimeout(() => {
                 addMessage(
                   {
                     ismode : 'system',
@@ -742,7 +782,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                     isOnlyLive : true
                   }
                 )
-              }, 60); 
+              }, 60);  */
               
             }else{
               call_fn_error_message();
@@ -1188,28 +1228,41 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     <>
       <Box
         ref={mobileContentRef}
-        position={'absolute'} top={`${MOBILE_HEADER_HEIGHT}px`} left={0} right={0} 
-        //bottom={`${MOBILE_INPUT_HEIGHT}px`}
-        overflowY={'auto'} width={'100%'} height={`${mobileContentScrollHeight}px`} maxHeight={`${mobileViewPortHeight}px`}
+        //position={'absolute'}
+        //position={(isMobileSafari && ( isKeyboardOpen || isKeyboardOpenSafari ) ) ? 'absolute' : isMobileSafari ? 'fixed' : 'absolute'}
+        position={isMobileSafari ? 'fixed' : 'absolute'}
+        top={`${MOBILE_HEADER_HEIGHT}px`} 
+        left={0} 
+        overflowY={'auto'} 
+        width={'100%'} 
+        height={isMobileSafari ? `${mobileViewPortHeight}px` : `${mobileContentScrollHeight}px`} 
+        maxHeight={`${mobileViewPortHeight}px`}
         bg={themeColor}
       >
         <Box 
-          height={realOutputCode?.length == 0  ? `${mobileViewPortHeight*0.6}px` : `${mobileViewPortHeight}px`} 
+          height={isMobileSafari ? `${mobileViewPortHeight}px` : realOutputCode?.length == 0  ? `${mobileViewPortHeight*0.6}px` : `${mobileViewPortHeight}px`} 
           //height={`${mobileViewPortHeight}px`}
           //maxHeight={`${mobileViewPortHeight}px`}
-          maxHeight={realOutputCode?.length == 0  ? `${mobileViewPortHeight*0.6}px` :`${mobileViewPortHeight}px`}
+          maxHeight={isMobileSafari ? `cacl ( 100vh 120px )` :  realOutputCode?.length == 0  ? `${mobileViewPortHeight*0.6}px` :`${mobileViewPortHeight}px`}
           transition="height 0.3s ease-in-out"
           overflow={'hidden'}
         >
-          <Box height={'100%'} overflowY={'auto'} paddingBottom={`${MOBILE_INPUT_HEIGHT}px`}>
+          <Box 
+            height={'100%'} 
+            overflowY={'auto'} 
+            paddingBottom={0}
+            //paddingBottom={`${mobileKeyboardOffset}px`}
+          >
             <Flex w={'100%'} px='basePadding' maxWidth={`${mConstants.desktopMinWidth}px`}  direction="column" position="relative">
               <Flex 
-                direction="column" w={'100%'} maxWidth={`${mConstants.desktopMinWidth}px`} height={isKeyboardOpen ? `${mobileViewPortHeight*0.6}px` : `${mobileViewPortHeight}px`}
-                justifyContent={realOutputCode?.length == 0  ? 'center' : 'flex-start'} alignItems={realOutputCode?.length == 0  ? 'center' : '-moz-initial'} 
+                direction="column" w={'100%'} maxWidth={`${mConstants.desktopMinWidth}px`} 
+                height={isMobileSafari ?  `100%` :  isKeyboardOpen ? `${mobileViewPortHeight*0.6}px` : `${mobileViewPortHeight}px`}
+                justifyContent={realOutputCode?.length == 0  ? 'center' : 'flex-start'} 
+                alignItems={realOutputCode?.length == 0  ? 'center' : '-moz-initial'} 
               >
-                <Box display={realOutputCode?.length == 0 ? 'flex' : 'none'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} >
+                <Box display={realOutputCode?.length == 0 ? 'flex' : 'noflexne'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} >
                   <MotionWelcomeImage
-                    pt="0"
+                    pt={isMobileSafari ? "40px":  "0"}
                   />
                   <MotionWelcome 
                     msg={`안녕하세요!`}
@@ -1339,16 +1392,17 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                   })
                 }
                 { isReceiving && ( <Box><Processing  msg="분석중" /></Box> ) }
-                <Box ref={scrollBottomRef} h="1px" pb={"120px"} visibility="hidden" />
+                <Box ref={scrollBottomRef} h="1px" pb={isMobileSafari ? "50px" : "120px"} visibility="hidden" bg={themeColor}/>
               </Flex>
             </Flex>
           </Box>
         </Box>
       </Box>
+      
       <Flex
-        position={'absolute'} 
-        //bottom={`${mobileKeyboardOffset}px`} 
-        bottom={0} 
+        position={isMobileSafari ? 'fixed' : 'absolute'}
+        bottom={isMobileSafari ? isZooming ? 0 : `${mobileKeyboardOffset}px` : 0} 
+        //bottom={0}
         left={0} right={0} minHeight="60px" height={'auto'} alignItems={'center'} zIndex={10}
         transition={'bottom 0.25s ease-in-out'}
         padding="10px"  borderTop={`1px solid  ${borderTopColor}`}
@@ -1386,9 +1440,19 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
           _placeholder={placeholderColor}
           value={inputCode}
           placeholder="건강 관련 질문이나 증상을 알려주세요"
-          //placeholder={`높이 :${mobileKeyboardOffset}px`}
+          //placeholder={`높이 :${mobileViewPortHeight}px`}
           onChange={handleChange}
-          onFocus={() => setIsFocus(true)}
+          onFocus={(e:any) => {
+            setIsFocus(true);
+            if ( isMobileSafari ) {
+              setTimeout(() => {
+                try {
+                  e.target.scrollIntoView({ block: 'center', behavior: 'auto' });
+                } catch (err) {}
+              }, 100);
+            }
+          }}
+          //onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}
           onKeyDown={(e:any) => {
             if (e.key === 'Enter' && !e.shiftKey && !isMobileOnly && !isReceiving)  {
@@ -1439,7 +1503,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
               </Box>
             )
           }
-          </Box>
+        </Box>
       </Flex>
       {
         isOpenDoctorModal && (

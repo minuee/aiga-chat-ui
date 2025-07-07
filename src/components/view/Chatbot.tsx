@@ -611,7 +611,7 @@ export default function ChatBot() {
                 }
               }, 100)
               
-              setTimeout(() => {
+              /* setTimeout(() => {
                 addMessage(
                   {
                     ismode : 'system',
@@ -625,7 +625,7 @@ export default function ChatBot() {
                     isOnlyLive : true
                   }
                 )
-              }, 60); 
+              }, 60);  */
               
             }else{
               call_fn_error_message(inputCodeText);

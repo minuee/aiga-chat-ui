@@ -107,9 +107,10 @@ export const DefaultProfile2 = createIcon({
 
 const SvgComponent = (props: React.SVGProps<SVGSVGElement>) => (
     <svg
-      viewBox="0 0 100 100"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 100 100"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        overflow="visible"
       {...props}
     >
         <g filter="url(#filter0_d_744_6156)">
