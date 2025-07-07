@@ -65,7 +65,7 @@ const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 ,is
                             onClick={handleToggle}
                             id="button_toggle"
                         >
-                            {!expandedCount ? <Icon as={FiChevronUp} color={iconColor} /> : <Icon as={FiChevronDown} color={iconColor} />}
+                            {isExpanded ? <Icon as={FiChevronUp} color={iconColor} /> : <Icon as={FiChevronDown} color={iconColor} />}
                         </Button>
                     </Box>
                 )

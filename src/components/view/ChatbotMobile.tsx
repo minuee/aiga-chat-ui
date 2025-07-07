@@ -1260,7 +1260,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                 justifyContent={realOutputCode?.length == 0  ? 'center' : 'flex-start'} 
                 alignItems={realOutputCode?.length == 0  ? 'center' : '-moz-initial'} 
               >
-                <Box display={realOutputCode?.length == 0 ? 'flex' : 'noflexne'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} >
+                <Box display={realOutputCode?.length == 0 ? 'flex' : 'none'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} >
                   <MotionWelcomeImage
                     pt={isMobileSafari ? "40px":  "0"}
                   />
