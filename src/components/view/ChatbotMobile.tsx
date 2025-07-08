@@ -522,14 +522,25 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
 
     try{
       if ( !functions.isEmpty(chatSessionId)  ) {
-        const lastItem = realOutputCode.length > 0 ? realOutputCode[realOutputCode.length-1]:"값없음";
+        const lastItem = realOutputCode.length > 0 ? realOutputCode[realOutputCode.length - 1] :"값없음";
         const fromMessage = "질문 중지";
         const questionResult:any = await ChatService.saveErrorLog(chatSessionId,JSON.stringify(lastItem),fromMessage);
       }
     }catch(e:any){
+      console.log("questionResult e",e)
     }
   }
+
+  const debouncedStopRequest = useCallback(
+    debounce(() => {
+      if (hasSent) return;
+      onHandleStopRequest();
+    }, 300), // 300ms 안에 여러 번 눌러도 한 번만 실행
+    [hasSent]
+  );
+
   const onHandleStopRequest = async() => {
+    if (hasSent) return; 
     if ( isReceiving ) {
       requestRef.current = -1; // 무효화
       await onHandleStopInquiry();
@@ -1433,6 +1444,27 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         padding="10px"  borderTop={`1px solid  ${borderTopColor}`}
         bg={themeColor}
       >
+        <Box 
+          position={'absolute'}
+          display={isShowScroll ? 'flex' : 'none'} 
+          top={isFocus ? {base : '-80px', md : '-70px'} : {base : '-55px', md : '-45px'}}
+          left={'0'}
+          w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
+          height={'30px'}
+          justifyContent={'center'}
+          alignItems={'center'}
+          bg='transparent'
+          zIndex={1000}
+        >
+          <Box
+            display={'flex'}  width="40px" height={"40px"} cursor={'pointer'} zIndex={10} justifyContent='center' alignItems={'center'} 
+            borderRadius={'20px'} backgroundColor={'#fff'}
+            onClick={()=> scrollToBottom()}
+            border={'1px solid #efefef'}
+          >
+            <Icon as={MdOutlineArrowDownward} width="25px" height="25px" color={navbarIcon} />
+          </Box>
+        </Box>
         {
           ( !isChatDisabled?.isState && !isChatDisabled?.isAlertMsg ) && (
             <ChatDisable
@@ -1502,7 +1534,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
           {
             isReceiving && !hasSent ? (
               <Box
-                onClick={(e) => { e.preventDefault(); e.stopPropagation();onHandleStopRequest(); }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation();debouncedStopRequest(); }}
                 cursor={'pointer'}
                 zIndex={10}
               >
@@ -1510,20 +1542,33 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
               </Box>
             ) : !isChatDisabled?.isState ? (
               <Box zIndex={10}>
-                <SendButtonOff boxSize={'32px'} />
+                <SendButtonOff boxSize={'132px'}  />
               </Box>
             ) : (
               <Box
-                zIndex={10}
-                onMouseDown={(e) => {e.preventDefault();e.stopPropagation();handleSendMessage();
+                zIndex={101}
+                pointerEvents="auto"
+                onTouchEnd={(e:any) => {
+                  console.log("onClick 1",isChatDisabled?.isState,isReceiving,inputCode);
+                  e.preventDefault();e.stopPropagation();
+                  if (isChatDisabled?.isState && !functions.isEmpty(inputCode) && !isReceiving) {
+                    console.log("onClick 2")
+                    setHasSent(true); // 일단 막고
+                    handleSendMessage();
+                    setIsFocus(false);
+                    handleForceBlur();
+                    setTimeout(() => {
+                      setHasSent(false);
+                    }, 1000);
+                  }
                 }}
-                onTouchStart={(e) => {e.preventDefault();e.stopPropagation();handleSendMessage(); }}
                 cursor={'pointer'}
               >
-                {isFocus && isChatDisabled?.isState ? (
-                  <SendButtonOn boxSize={'32px'} />
+                { 
+                isFocus ? (
+                  <SendButtonOn boxSize={'32px'} style={{ pointerEvents: 'none' }}  />
                 ) : (
-                  <SendButtonOff boxSize={'32px'} />
+                  <SendButtonOff boxSize={'32px'} style={{ pointerEvents: 'none' }} />
                 )}
               </Box>
             )

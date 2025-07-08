@@ -376,7 +376,19 @@ export default function ChatBot() {
       console.log("questionResult e",e)
     }
   }
+
+  const debouncedStopRequest = useCallback(
+    debounce(() => {
+      if (hasSent) return;
+      onHandleStopRequest();
+    }, 300), // 300ms 안에 여러 번 눌러도 한 번만 실행
+    [hasSent]
+  );
+
   const onHandleStopRequest = async() => {
+    console.log("onClick onHandleStopRequest 1",hasSent)
+    if (hasSent) return; 
+    console.log("onClick onHandleStopRequest 2",isReceiving)
     if ( isReceiving ) {
       requestRef.current = -1; // 무효화
       await onHandleStopInquiry();
@@ -1251,7 +1263,7 @@ export default function ChatBot() {
               )
             }
             { ( isFocus && isChatDisabled.isState ) && ( <ChatWarningInfo /> )}
-            <Flex 
+            <Box 
               position={'absolute'}
               display={isShowScroll ? 'flex' : 'none'} 
               top={isFocus ? {base : '-80px', md : '-70px'} : {base : '-55px', md : '-45px'}}
@@ -1271,7 +1283,7 @@ export default function ChatBot() {
               >
                 <Icon as={MdOutlineArrowDownward} width="25px" height="25px" color={navbarIcon} />
               </Box>
-            </Flex>
+            </Box>
             <Textarea
               minH="48px"
               //minH="unset"
@@ -1283,7 +1295,8 @@ export default function ChatBot() {
                 WebkitOverflowScrolling: "touch",
                 overflowY: "auto",
                 touchAction: "manipulation",
-                
+                position: 'relative',
+                zIndex:9
               }}
               maxH={isMobileOnly ? "200px" : "150px"}
               border="1px solid"
@@ -1317,38 +1330,53 @@ export default function ChatBot() {
 
                     setTimeout(() => {
                       setHasSent(false);
-                    }, 1500);
+                    }, 1000);
                   }
                 }
               }}
               id={"textarea_content"}
               disabled={(!isChatDisabled?.isState || isReceiving)}
             />
-            <Box display={'flex'} position={'absolute'} bottom={'6px'} right={'20px'} w={'55px'} height={'55px'} justifyContent={'flex-end'} alignItems={'center'}>
+            <Box display={'flex'} position={'absolute'} bottom={'6px'} right={'20px'} w={'55px'} height={'55px'} justifyContent={'flex-end'} alignItems={'center'} zIndex={101}>
             {
               isReceiving && !hasSent ? (
                 <Box
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation();onHandleStopRequest(); }}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation();debouncedStopRequest(); }}
                   cursor={'pointer'}
-                  zIndex={10}
+                  zIndex={101}
                 >
                   <Image src={LoadingBar} alt="LoadingBar" style={{ width: '30px', height: '30px' }} />
                 </Box>
               ) : !isChatDisabled?.isState ? (
-                <Box zIndex={10}>
+                <Box zIndex={101} onClick={(e) => {console.log("onClick 22222");}} >
                   <SendButtonOff boxSize={'32px'} />
                 </Box>
               ) : (
                 <Box
-                  zIndex={10}
-                  onMouseDown={(e) => {e.preventDefault();e.stopPropagation();handleSendMessage();}}
-                  onTouchStart={(e) => {e.preventDefault();e.stopPropagation();handleSendMessage(); }}
+                  zIndex={101}
+                  pointerEvents="auto"
+                  onMouseDown={(e:any) => {
+                    
+                    console.log("onClick 1",isChatDisabled?.isState,isReceiving,inputCode);
+                    e.preventDefault();e.stopPropagation();
+                    if (isChatDisabled?.isState && !functions.isEmpty(inputCode) && !isReceiving) {
+                      console.log("onClick 2")
+                      setHasSent(true); // 일단 막고
+                      handleSendMessage();
+                      setIsFocus(false);
+                      handleForceBlur();
+                      setTimeout(() => {
+                        setHasSent(false);
+                      }, 1000);
+                    }
+                  }}
                   cursor={'pointer'}
                 >
-                  {isFocus && isChatDisabled?.isState ? (
-                    <SendButtonOn boxSize={'32px'} />
+                  { 
+                  isFocus ? (
+                    <SendButtonOn boxSize={'32px'} style={{ pointerEvents: 'none' }}  />
                   ) : (
-                    <SendButtonOff boxSize={'32px'} />
+                    <SendButtonOff boxSize={'32px'} style={{ pointerEvents: 'none' }} />
                   )}
                 </Box>
               )
