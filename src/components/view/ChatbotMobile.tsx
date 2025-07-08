@@ -451,36 +451,46 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   }, [in24UsedToken,oldHistoryData,isNewChat]);
 
   useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-  
-    let startY = 0;
-  
-    const handleTouchStart = (e: TouchEvent) => {
-      startY = e.touches[0].clientY;
-    };
-  
-    const handleTouchMove = (e: TouchEvent) => {
-      const currentY = e.touches[0].clientY;
-      const diffY = currentY - startY;
-      const isGap = isMobileSafari ? 20 : 30;
-      const isGap2 = isMobileSafari ? -20 : -30;
-      if (diffY > isGap) {
-        // 위로 스와이프 → showScroll true
-        setShowScroll(true);
-      } else if (diffY < isGap2) {
-        // 아래로 스와이프 → showScroll false
-        setShowScroll(false);
-      }
-    };
-  
-    el.addEventListener('touchstart', handleTouchStart, { passive: true });
-    el.addEventListener('touchmove', handleTouchMove, { passive: true });
-  
-    return () => {
-      el.removeEventListener('touchstart', handleTouchStart);
-      el.removeEventListener('touchmove', handleTouchMove);
-    };
+    const timer = setTimeout(() => {
+      const el = scrollRef.current;
+      if (!el) return;
+    
+      let startY = 0;
+      const handleWheel = (e: WheelEvent) => {
+        if (e.deltaX !== 0) return;
+        setShowScroll((prev) => {
+          const goingUp = e.deltaY < 0;
+          return goingUp !== prev ? !prev : prev;
+        });
+      };
+      const handleTouchStart = (e: TouchEvent) => {
+        startY = e.touches[0].clientY;
+      };
+    
+      const handleTouchMove = (e: TouchEvent) => {
+        const currentY = e.touches[0].clientY;
+        const diffY = currentY - startY;
+        const isGap = isMobileSafari ? 20 : 30;
+        const isGap2 = isMobileSafari ? -20 : -30;
+        if (diffY > isGap) {
+          // 위로 스와이프 → showScroll true
+          setShowScroll(true);
+        } else if (diffY < isGap2) {
+          // 아래로 스와이프 → showScroll false
+          setShowScroll(false);
+        }
+      };
+      el.addEventListener("wheel", handleWheel);
+      el.addEventListener('touchstart', handleTouchStart, { passive: true });
+      el.addEventListener('touchmove', handleTouchMove, { passive: true });
+    
+      return () => {
+        el.removeEventListener('touchstart', handleTouchStart);
+        el.removeEventListener('touchmove', handleTouchMove);
+        el.removeEventListener("wheel", handleWheel);
+      };
+    }, 500); // 0.5초 후에 강제 시도
+    return () => clearTimeout(timer);
   }, []);
   
 
