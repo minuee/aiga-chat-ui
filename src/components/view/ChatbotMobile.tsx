@@ -469,18 +469,18 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   }, [outputCode,chatSessionId]); */
   useEffect(() => {
     const timer = setTimeout(() => {
-      const el = scrollRef.current;
+      const el = mobileContentRef.current;
       if (!el) return;
       let lastScrollTop = el.scrollTop
       const handleScroll = () => {
         const currentScrollTop = el.scrollTop;
-        const goingUp = currentScrollTop < lastScrollTop;
+        const goingUp = currentScrollTop > lastScrollTop;
   
         setShowScroll((prev) => goingUp !== prev ? !prev : prev);
   
         lastScrollTop = currentScrollTop;
       };
-  
+
       el.addEventListener("scroll", handleScroll);
 
       return () => {
@@ -493,7 +493,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
 
   useEffect(() => {
     const check = setInterval(() => {
-      const el = scrollRef.current;
+      const el = mobileContentRef.current;
       const target = scrollBottomRef.current;
       
       if (el && target) {
@@ -510,7 +510,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         observer.observe(target);
         clearInterval(check);
       }
-    }, 100);
+    }, 500);
   
     return () => clearInterval(check);
   }, []);
@@ -1442,7 +1442,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                   })
                 }
                 { isReceiving && ( <Box><Processing  msg="분석중" /></Box> ) }
-                <Box ref={scrollBottomRef} h="1px" pb={isMobileSafari ? "50px" : "120px"} visibility="hidden" bg={themeColor}/>
+                <Box ref={scrollBottomRef} height={isMobileSafari ? "50px" : "120px"} visibility="hidden" bg={themeColor}/>
               </Flex>
             </Flex>
           </Box>
@@ -1460,7 +1460,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
       >
         <Box 
           position={'absolute'}
-          display={isShowScroll ? 'flex' : 'none'} 
+          display={( isShowScroll && !isMobileSafari ) ? 'flex' : 'none'} 
           top={isFocus ? {base : '-80px', md : '-70px'} : {base : '-55px', md : '-45px'}}
           left={'0'}
           w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
