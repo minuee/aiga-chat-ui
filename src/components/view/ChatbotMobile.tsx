@@ -167,11 +167,10 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      const el = mobileContentRef.current;
+      const el: any = mobileContentRef.current;
       if (!el) return;
   
-      let startY = 0;
-  
+      // Wheel event (for desktop)
       const handleWheel = (e: WheelEvent) => {
         if (e.deltaX !== 0) return;
         if (e.deltaY < 0) {
@@ -179,34 +178,43 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         }
       };
   
+      // Touch event (for mobile)
+      let startY = 0;
       const handleTouchStart = (e: TouchEvent) => {
         startY = e.touches[0].clientY;
       };
-  
       const handleTouchMove = (e: TouchEvent) => {
         const currentY = e.touches[0].clientY;
         const diffY = currentY - startY;
-        const threshold = isMobileSafari ? 20 : 30;
-        if (diffY > threshold) {
+        const smoothValue = isMobileSafari ? 10 : 20
+        if (diffY > smoothValue) { // 아래로 스와이프
+          /* toast({
+            title: "스크롤 락 풀림",
+            position: 'top-right',
+            status: 'error',
+            containerStyle: {
+              color: '#ffffff',
+            },
+            isClosable: true,
+          }); */
           setIsScrollLocked(false);
         }
       };
-  
-      // 리스너 등록
-      el.addEventListener("touchstart", handleTouchStart, { passive: true });
-      el.addEventListener("touchmove", handleTouchMove, { passive: false });
-      el.addEventListener("wheel", handleWheel);
-  
-      return () => {
-        el.removeEventListener("touchstart", handleTouchStart);
-        el.removeEventListener("touchmove", handleTouchMove);
-        el.removeEventListener("wheel", handleWheel);
-      };
+      if ( isMobileOnly ) {
+        el.addEventListener("wheel", handleWheel);
+        el.addEventListener("touchstart", handleTouchStart);
+        el.addEventListener("touchmove", handleTouchMove);
+    
+        return () => {
+          el.removeEventListener("wheel", handleWheel);
+          el.removeEventListener("touchstart", handleTouchStart);
+          el.removeEventListener("touchmove", handleTouchMove);
+        };
+      }
     }, 300);
   
     return () => clearTimeout(timer);
   }, []);
-  
 
   // 스크롤 이벤트 감지
   useEffect(() => {
@@ -441,51 +449,44 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
       }
     }
   }, [in24UsedToken,oldHistoryData,isNewChat]);
-  /* 대화 불능 상태 컨트롤 */
- /*  useEffect(() => {
- 
-    if ( outputCode.length == mConstants.userMaxToken && !functions.isEmpty(chatSessionId)) {
-      console.log('handleTranslate outputCode,chatSessionId chatSessionId else')
-      setChatDisabled({
-        ...isChatDisabled,
-        isState : false,
-        isAlertMsg : false
-      })
-    }else if (  outputCode.length < mConstants.userMaxToken && !functions.isEmpty(chatSessionId) ) {
-      setChatDisabled({
-        ...isChatDisabled,
-        isState : true,
-        isAlertMsg : true
-      })
-    }
-  }, [outputCode,chatSessionId]); */
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      const el = mobileContentRef.current;
-      if (!el) return;
-      let lastScrollTop = el.scrollTop
-      const handleScroll = () => {
-        const currentScrollTop = el.scrollTop;
-        const goingUp = currentScrollTop > lastScrollTop;
+    const el = scrollRef.current;
+    if (!el) return;
   
-        setShowScroll((prev) => goingUp !== prev ? !prev : prev);
+    let startY = 0;
   
-        lastScrollTop = currentScrollTop;
-      };
-
-      el.addEventListener("scroll", handleScroll);
-
-      return () => {
-        el.removeEventListener("scroll", handleScroll);
-      };
-    }, 500); // 0.5초 후에 강제 시도
+    const handleTouchStart = (e: TouchEvent) => {
+      startY = e.touches[0].clientY;
+    };
   
-    return () => clearTimeout(timer);
+    const handleTouchMove = (e: TouchEvent) => {
+      const currentY = e.touches[0].clientY;
+      const diffY = currentY - startY;
+      const isGap = isMobileSafari ? 20 : 30;
+      const isGap2 = isMobileSafari ? -20 : -30;
+      if (diffY > isGap) {
+        // 위로 스와이프 → showScroll true
+        setShowScroll(true);
+      } else if (diffY < isGap2) {
+        // 아래로 스와이프 → showScroll false
+        setShowScroll(false);
+      }
+    };
+  
+    el.addEventListener('touchstart', handleTouchStart, { passive: true });
+    el.addEventListener('touchmove', handleTouchMove, { passive: true });
+  
+    return () => {
+      el.removeEventListener('touchstart', handleTouchStart);
+      el.removeEventListener('touchmove', handleTouchMove);
+    };
   }, []);
+  
 
   useEffect(() => {
     const check = setInterval(() => {
-      const el = mobileContentRef.current;
+      const el = scrollRef.current;
       const target = scrollBottomRef.current;
       
       if (el && target) {
@@ -502,7 +503,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         observer.observe(target);
         clearInterval(check);
       }
-    }, 500);
+    }, 100);
   
     return () => clearInterval(check);
   }, []);
@@ -1434,7 +1435,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                   })
                 }
                 { isReceiving && ( <Box><Processing  msg="분석중" /></Box> ) }
-                <Box ref={scrollBottomRef} height={isMobileSafari ? "50px" : "120px"} visibility="hidden" bg={themeColor}/>
+                <Box ref={scrollBottomRef} h="1px" pb={isMobileSafari ? "50px" : "120px"} visibility="hidden" bg={themeColor}/>
               </Flex>
             </Flex>
           </Box>
@@ -1452,7 +1453,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
       >
         <Box 
           position={'absolute'}
-          display={( isShowScroll && !isMobileSafari ) ? 'flex' : 'none'} 
+          display={isShowScroll ? 'flex' : 'none'} 
           top={isFocus ? {base : '-80px', md : '-70px'} : {base : '-55px', md : '-45px'}}
           left={'0'}
           w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
