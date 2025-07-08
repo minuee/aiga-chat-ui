@@ -1555,7 +1555,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
               </Box>
             ) : !isChatDisabled?.isState ? (
               <Box zIndex={10}>
-                <SendButtonOff boxSize={'132px'}  />
+                <SendButtonOff boxSize={'32px'}  />
               </Box>
             ) : (
               <Box
