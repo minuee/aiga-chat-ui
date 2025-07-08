@@ -594,7 +594,7 @@ export default function ChatBot() {
             }, 60); 
           }else if ( questionResult?.message?.statusCode == '404' || questionResult?.message?.statusCode == '403' ) {
             const parsedMessage = parseLooselyFormattedJsonString(questionResult?.message?.message);
-            if ( !functions.isEmpty(parsedMessage) && parsedMessage.message == '최대 토큰수 초과 에러') {
+            if ( !functions.isEmpty(parsedMessage) && ( parsedMessage.message == '최대 토큰수 초과 에러' || parsedMessage.message == '비회원 최대 토큰 초과 에러' )) {
               setChatDisabled({
                 reTrytimeStamp : parseInt(parsedMessage?.timestamp),
                 isState : false,
@@ -612,7 +612,7 @@ export default function ChatBot() {
               }, 100)
               
             }else{
-              call_fn_error_message(inputCodeText,chat_sessinn_id,"not");
+              call_fn_error_message(inputCodeText,chat_sessinn_id,"토큰 만료 체크 오류");
             }
           }else{
             call_fn_error_message(inputCodeText,chat_sessinn_id,"not")
