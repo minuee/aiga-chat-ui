@@ -360,9 +360,20 @@ export default function ChatBot() {
     try{
       if ( !functions.isEmpty(chatSessionId)  ) {
         const res:any = await ChatService.setRequestStop(chatSessionId);     
-      }
+        }
     }catch(e:any){
       setReceiving(false)
+    }
+
+    try{
+      if ( !functions.isEmpty(chatSessionId)  ) {
+        const lastItem = realOutputCode.length > 0 ? realOutputCode[realOutputCode.length - 1] :"값없음";
+        const fromMessage = "질문 중지";
+        const questionResult:any = await ChatService.saveErrorLog(chatSessionId,JSON.stringify(lastItem),fromMessage);
+        //console.log("questionResult",questionResult)
+      }
+    }catch(e:any){
+      console.log("questionResult e",e)
     }
   }
   const onHandleStopRequest = async() => {

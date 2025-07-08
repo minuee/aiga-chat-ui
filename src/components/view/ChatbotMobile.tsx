@@ -519,6 +519,15 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     }catch(e:any){
       setReceiving(false)
     }
+
+    try{
+      if ( !functions.isEmpty(chatSessionId)  ) {
+        const lastItem = realOutputCode.length > 0 ? realOutputCode[realOutputCode.length-1]:"값없음";
+        const fromMessage = "질문 중지";
+        const questionResult:any = await ChatService.saveErrorLog(chatSessionId,JSON.stringify(lastItem),fromMessage);
+      }
+    }catch(e:any){
+    }
   }
   const onHandleStopRequest = async() => {
     if ( isReceiving ) {
@@ -785,7 +794,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
               }, 60);  */
               
             }else{
-              call_fn_error_message(inputCodeText,chat_sessinn_id,"토큰 만료 체크 오류");
+               call_fn_error_message(inputCodeText,chat_sessinn_id,"토큰 만료 체크 오류");
             }
           }else{
             call_fn_error_message(inputCodeText,chat_sessinn_id,"not")
