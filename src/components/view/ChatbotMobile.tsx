@@ -471,19 +471,20 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     const timer = setTimeout(() => {
       const el = scrollRef.current;
       if (!el) return;
+      let lastScrollTop = el.scrollTop
+      const handleScroll = () => {
+        const currentScrollTop = el.scrollTop;
+        const goingUp = currentScrollTop < lastScrollTop;
   
-      const handleWheel = (e: WheelEvent) => {
-        if (e.deltaX !== 0) return;
-        setShowScroll((prev) => {
-          const goingUp = e.deltaY < 0;
-          return goingUp !== prev ? !prev : prev;
-        });
+        setShowScroll((prev) => goingUp !== prev ? !prev : prev);
+  
+        lastScrollTop = currentScrollTop;
       };
   
-      el.addEventListener("wheel", handleWheel);
-      // 정리
+      el.addEventListener("scroll", handleScroll);
+
       return () => {
-        el.removeEventListener("wheel", handleWheel);
+        el.removeEventListener("scroll", handleScroll);
       };
     }, 500); // 0.5초 후에 강제 시도
   
