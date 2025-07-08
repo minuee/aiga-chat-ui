@@ -482,13 +482,13 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
             </Flex>
           </Flex>
           <Flex 
-            display={'flex'} height={'50px'} width="100%" position={'absolute'} right={0} bottom={0} justifyContent={'flex-end'}
+            height={'100px'} width="100%" justifyContent={'flex-end'} mt="30px" alignItems={'flex-end'}
             onClick={() => onSendMyPageEntireButton()} cursor={'pointer'} pr="20px"
           >
             <CustomTextBold400 fontSize={'17px'} textDecoration={'underline'} color={entireTextColor}>탈퇴하기</CustomTextBold400>
           </Flex>
         </Flex>
-        <Box height={'100px'} />
+        <Box height={'10px'} />
         {
           isOpenMypageRequestModal && (   
             <Modal

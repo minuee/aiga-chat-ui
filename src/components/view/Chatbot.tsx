@@ -611,43 +611,38 @@ export default function ChatBot() {
                 }
               }, 100)
               
-              /* setTimeout(() => {
-                addMessage(
-                  {
-                    ismode : 'system',
-                    isHistory : false,
-                    chat_id: functions.getUUID(),
-                    user_question : inputCodeText,
-                    answer : null,
-                    msg: `${mConstants.error_message_404} ${functions.formatAvailabilityMessage(parseInt(parsedMessage?.timestamp), userBasicInfo?.isGuest ? guestRetryLimitSec : userRetryLimitSec)} 이후에 다시 시도해 주세요.`,
-                    chat_type : 'system',
-                    used_token : 0,
-                    isOnlyLive : true
-                  }
-                )
-              }, 60);  */
-              
             }else{
-              call_fn_error_message(inputCodeText);
+              call_fn_error_message(inputCodeText,chat_sessinn_id,"not");
             }
           }else{
-            call_fn_error_message(inputCodeText)
+            call_fn_error_message(inputCodeText,chat_sessinn_id,"not")
           }
         }
       }catch(e:any){
+        const fromMessage = `Try Catch Error: ${JSON.stringify(e)}`;
         console.log("handleTranslate error",e);
-        call_fn_error_message(inputCodeText);
+        call_fn_error_message(inputCodeText,chat_sessinn_id,fromMessage);
       }
     }else{
-      call_fn_error_message(isText);
+      const fromMessage = "Session Id가 없습니다."
+      call_fn_error_message(isText,chat_sessinn_id,fromMessage);
     }
   }
 
 
-  const call_fn_error_message = (inputCodeText:any) => {
+  const call_fn_error_message = async(inputCodeText:any,chat_sessinn_id:string, fromMessage:string = "") => {
     setIsLoading(false);
     setReceiving(false);
-    setIsFocus(false)
+    setIsFocus(false);
+
+    if ( fromMessage !== 'not') {
+      try{
+        const questionResult:any = await ChatService.saveErrorLog(chat_sessinn_id,inputCodeText.trim(),fromMessage);
+      }catch(e:any){
+        console.log("e",e)
+      }
+    }
+     
     setTimeout(() => {
       addMessage(
         {
@@ -656,7 +651,7 @@ export default function ChatBot() {
           chat_id: functions.getUUID(),
           user_question : inputCodeText,
           answer : null,
-          msg: mConstants.error_message_404,
+          msg: mConstants.error_message_500,
           chat_type : 'system',
           used_token : 0,
           isOnlyLive : true
@@ -670,18 +665,6 @@ export default function ChatBot() {
       }
     }, 100)
 
-    
-   /*  toast({
-      title: 'AIGA',
-      position: 'top-right',
-      description: mConstants.error_message_default,
-      status: 'error',
-      containerStyle: {
-        color: '#ffffff',
-      },
-      duration: 1500,
-      isClosable: true,
-    }); */
   }
 
   const  parseLooselyFormattedJsonString = (input:any)  => {
