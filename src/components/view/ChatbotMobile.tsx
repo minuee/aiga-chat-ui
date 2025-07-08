@@ -167,10 +167,11 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      const el: any = mobileContentRef.current;
+      const el = mobileContentRef.current;
       if (!el) return;
   
-      // Wheel event (for desktop)
+      let startY = 0;
+  
       const handleWheel = (e: WheelEvent) => {
         if (e.deltaX !== 0) return;
         if (e.deltaY < 0) {
@@ -178,43 +179,34 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         }
       };
   
-      // Touch event (for mobile)
-      let startY = 0;
       const handleTouchStart = (e: TouchEvent) => {
         startY = e.touches[0].clientY;
       };
+  
       const handleTouchMove = (e: TouchEvent) => {
         const currentY = e.touches[0].clientY;
         const diffY = currentY - startY;
-        const smoothValue = isMobileSafari ? 10 : 20
-        if (diffY > smoothValue) { // 아래로 스와이프
-          /* toast({
-            title: "스크롤 락 풀림",
-            position: 'top-right',
-            status: 'error',
-            containerStyle: {
-              color: '#ffffff',
-            },
-            isClosable: true,
-          }); */
+        const threshold = isMobileSafari ? 20 : 30;
+        if (diffY > threshold) {
           setIsScrollLocked(false);
         }
       };
-      if ( isMobileOnly ) {
-        el.addEventListener("wheel", handleWheel);
-        el.addEventListener("touchstart", handleTouchStart);
-        el.addEventListener("touchmove", handleTouchMove);
-    
-        return () => {
-          el.removeEventListener("wheel", handleWheel);
-          el.removeEventListener("touchstart", handleTouchStart);
-          el.removeEventListener("touchmove", handleTouchMove);
-        };
-      }
+  
+      // 리스너 등록
+      el.addEventListener("touchstart", handleTouchStart, { passive: true });
+      el.addEventListener("touchmove", handleTouchMove, { passive: false });
+      el.addEventListener("wheel", handleWheel);
+  
+      return () => {
+        el.removeEventListener("touchstart", handleTouchStart);
+        el.removeEventListener("touchmove", handleTouchMove);
+        el.removeEventListener("wheel", handleWheel);
+      };
     }, 300);
   
     return () => clearTimeout(timer);
   }, []);
+  
 
   // 스크롤 이벤트 감지
   useEffect(() => {
