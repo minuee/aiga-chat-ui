@@ -81,6 +81,7 @@ function RequestModal(props: RequestModalProps) {
                 isRequired
                 minH={'150px'}
                 size={'17px'} 
+                padding={"10px"}
                 isInvalid={!functions.isEmpty(inputs.content)}
                 placeholder='문의 내용을 자세하게 남겨주시면 빠른 답변에 도움이 됩니다.(최소 10자이상)'
                 id={"textarea_content"}

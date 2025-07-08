@@ -159,25 +159,47 @@ export default function ChatBot() {
   }
 
   useEffect(() => {
+    console.log("userBasicInfo isChatDisabled changed:", isChatDisabled);
+  }, [isChatDisabled]);
+  //( !isChatDisabled?.isState && !isChatDisabled?.isAlertMsg ) && (
+  /* useEffect(() => {
     const userBasicInfo = UserStateStore.getState();
+    console.log('userBasicInfo',userBasicInfo)
     // userBasicInfo.isState가 true에서 false로 또는 false에서 true로 변경될 때 실행되는 코드
     if (userBasicInfo?.isState) {
+      console.log('userBasicInfo if')
       // true일 때 수행할 작업
       setChatDisabled({
         isState :  true,
-        isAlertMsg : false,
+        isAlertMsg : true,
         reTryTimeStamp : 0
       })
     } else {
+      console.log('userBasicInfo else')
       // false일 때 수행할 작업
       setChatDisabled({
         isState :  true,
-        isAlertMsg : false,
+        isAlertMsg : true,
         reTryTimeStamp : 0
       })
     }
+  }, [UserStateStore.getState().isState]); */
+
+  useEffect(() => {
+    const userBasicInfo = UserStateStore.getState();
+    console.log('userBasicInfo in24UsedToken',in24UsedToken)
+    // userBasicInfo.isState가 true에서 false로 또는 false에서 true로 변경될 때 실행되는 코드
+    if (userBasicInfo?.isState) {
+      console.log('userBasicInfo if')
+      setIn24UsedToken(0)
+    } else {
+      console.log('userBasicInfo else')
+      // false일 때 수행할 작업
+      setIn24UsedToken(0)
+    }
   }, [UserStateStore.getState().isState]);
 
+  
   useEffect(() => {
     if (!alreadyInitialized.current) {
       console.log('🔥 최초 1회만 실행');
@@ -213,7 +235,7 @@ export default function ChatBot() {
     }
   }
 
-  useEffect(() => {
+  /* useEffect(() => {
     if ( isNewChat && realOutputCode.length > 0 ) {
       // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
       
@@ -232,7 +254,7 @@ export default function ChatBot() {
         setNewChatOpen(false);
       }, 60);
     }
-  }, [isNewChat]);
+  }, [isNewChat]); */
 
   useEffect(() => {
     if ( !functions.isEmpty(oldHistoryData) ) {
@@ -279,26 +301,30 @@ export default function ChatBot() {
           })
         }
       }
+    }else{
+      if ( isNewChat && realOutputCode.length > 0 ) {
+        // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
+        console.log("userBasicInfo 2222")
+        setChatSessionId('')
+        setOutputCode([]);
+        setRealOutputCode([])
+        setChatDisabled({
+          ...isChatDisabled,
+          isState : true,
+          isAlertMsg : false,
+        })
+        setCurrentPathname('')
+        mCookie.setCookie('currentPathname','')
+        firstForceStep();
+        setTimeout(() => {
+          setNewChatOpen(false);
+        }, 60);
+      }else{
+        console.log("userBasicInfo 1111")
+      }
     }
   }, [in24UsedToken,oldHistoryData,isNewChat]);
-  /* 대화 불능 상태 컨트롤 */
- /*  useEffect(() => {
- 
-    if ( outputCode.length == mConstants.userMaxToken && !functions.isEmpty(chatSessionId)) {
-      console.log('handleTranslate outputCode,chatSessionId chatSessionId else')
-      setChatDisabled({
-        ...isChatDisabled,
-        isState : false,
-        isAlertMsg : false
-      })
-    }else if (  outputCode.length < mConstants.userMaxToken && !functions.isEmpty(chatSessionId) ) {
-      setChatDisabled({
-        ...isChatDisabled,
-        isState : true,
-        isAlertMsg : true
-      })
-    }
-  }, [outputCode,chatSessionId]); */
+
   useEffect(() => {
     const timer = setTimeout(() => {
       const el = scrollRef.current;
@@ -589,7 +615,7 @@ export default function ChatBot() {
                 }
               )
             }, 60); 
-          } else if ( questionResult?.message?.statusCode == '400') {
+          } else if ( questionResult?.message?.statusCode == '404' ||  questionResult?.message?.statusCode == '400') {
             setIsLoading(false);
             setReceiving(false);
             setIsFocus(false)
@@ -615,7 +641,7 @@ export default function ChatBot() {
                 }
               )
             }, 60); 
-          }else if ( questionResult?.message?.statusCode == '404' || questionResult?.message?.statusCode == '403' ) {
+          }else if ( questionResult?.message?.statusCode == '403' ) {
             const parsedMessage = parseLooselyFormattedJsonString(questionResult?.message?.message);
             if ( !functions.isEmpty(parsedMessage) && ( parsedMessage.message == '최대 토큰수 초과 에러' || parsedMessage.message == '비회원 최대 토큰 초과 에러' )) {
               setChatDisabled({
@@ -1209,7 +1235,7 @@ export default function ChatBot() {
                       <ChatWrongMessage
                         indexKey={index}
                         isMode="system"
-                        msg={'흠..뭔가 잘못된 것 같습니다'}
+                        msg={mConstants.error_message_default}
                       />
                     </Box>
                   )
@@ -1229,7 +1255,7 @@ export default function ChatBot() {
                     <ChatWrongMessage
                       indexKey={index}
                       isMode={element.ismode}
-                      msg={!functions.isEmpty(element?.msg) ? element?.msg : '흠..뭔가 잘못된 것 같습니다'}
+                      msg={!functions.isEmpty(element?.msg) ? element?.msg : mConstants.error_message_default}
                     />
                   </Box>
                 )

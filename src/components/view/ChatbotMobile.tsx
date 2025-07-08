@@ -315,21 +315,15 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
 
   useEffect(() => {
     const userBasicInfo = UserStateStore.getState();
+    console.log('userBasicInfo in24UsedToken',in24UsedToken)
     // userBasicInfo.isState가 true에서 false로 또는 false에서 true로 변경될 때 실행되는 코드
     if (userBasicInfo?.isState) {
-      // true일 때 수행할 작업
-      setChatDisabled({
-        isState :  true,
-        isAlertMsg : false,
-        reTryTimeStamp : 0
-      })
+      console.log('userBasicInfo if')
+      setIn24UsedToken(0)
     } else {
+      console.log('userBasicInfo else')
       // false일 때 수행할 작업
-      setChatDisabled({
-        isState :  true,
-        isAlertMsg : false,
-        reTryTimeStamp : 0
-      })
+      setIn24UsedToken(0)
     }
   }, [UserStateStore.getState().isState]);
 
@@ -433,6 +427,25 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
             isState : true,
           })
         }
+      }
+    }else{
+      if ( isNewChat && realOutputCode.length > 0 ) {
+        // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
+        console.log("userBasicInfo 2222")
+        setChatSessionId('')
+        setOutputCode([]);
+        setRealOutputCode([])
+        setChatDisabled({
+          ...isChatDisabled,
+          isState : true,
+          isAlertMsg : false,
+        })
+        setCurrentPathname('')
+        mCookie.setCookie('currentPathname','')
+        firstForceStep();
+        setTimeout(() => {
+          setNewChatOpen(false);
+        }, 60);
       }
     }
   }, [in24UsedToken,oldHistoryData,isNewChat]);
@@ -743,7 +756,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                 }
               )
             }, 60); 
-          } else if ( questionResult?.message?.statusCode == '400') {
+          } else if ( questionResult?.message?.statusCode == '400' || questionResult?.message?.statusCode == '404') {
             setIsLoading(false);
             setReceiving(false);
             setIsFocus(false)
@@ -769,7 +782,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                 }
               )
             }, 60); 
-          }else if ( questionResult?.message?.statusCode == '404' || questionResult?.message?.statusCode == '403') {
+          }else if ( questionResult?.message?.statusCode == '403') {
             const parsedMessage = parseLooselyFormattedJsonString(questionResult?.message?.message);
             if ( !functions.isEmpty(parsedMessage) && ( parsedMessage.message == '최대 토큰수 초과 에러' || parsedMessage.message == '비회원 최대 토큰 초과 에러' )) {
               setChatDisabled({
