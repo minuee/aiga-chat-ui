@@ -200,10 +200,10 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         if (scrollLockRef.current) return; // 감추기 잠금 중이면 무시
         if (diffY < -threshold) {
           // 위로 스와이프 → 화면 위로 → 버튼 보여줌
-          setShowScroll(true);
+          setShowScroll(false);
         } else if (diffY > threshold) {
           // 아래로 스와이프 → 버튼 숨김
-          setShowScroll(false);
+          setShowScroll(true);
         }
       };
   
