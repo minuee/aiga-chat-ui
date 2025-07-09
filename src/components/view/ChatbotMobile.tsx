@@ -226,39 +226,34 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   useEffect(() => {
     const timer = setTimeout(() => {
       const el = mobileContentRef.current;
-      if (!el) return;
-  
-      let lastScrollTop = el.scrollTop;
-      const isGap = isMobileSafari ? 20 : 15;
-  
-      const handleScroll = () => {
-        const scrollTop = el.scrollTop;
-        const scrollHeight = el.scrollHeight;
-        const clientHeight = el.clientHeight;
-  
-        const isAtBottom = scrollTop + clientHeight >= scrollHeight - isGap;
-        const isScrollingUp = scrollTop < lastScrollTop;
-  
-        // ✅ 바닥에서 키보드 열려 있으면 잠금
-        if (isAtBottom && (isKeyboardOpen || isKeyboardOpenSafari)) {
-          setIsScrollLocked(true);
-        }
-  
-        // ✅ 위로 스크롤할 경우에만 잠금 해제
-        if (!isAtBottom && isScrollingUp) {
+        if (!el) return;
+        if ( !isKeyboardOpen || ! isKeyboardOpenSafari) {
           setIsScrollLocked(false);
         }
-  
-        lastScrollTop = scrollTop;
-      };
-  
-      el.addEventListener('scroll', handleScroll);
-      return () => el.removeEventListener('scroll', handleScroll);
-    }, 500);
-  
+        const handleScroll = () => {
+          const scrollTop = el.scrollTop;
+          const scrollHeight = el.scrollHeight;
+          const clientHeight = el.clientHeight;
+          const isGap = isMobileSafari ? 20 : 15;
+          // ✅ 바닥에 도달하면 스크롤 잠금
+          if (scrollTop + clientHeight >= scrollHeight - isGap) {
+            if (isKeyboardOpen || isKeyboardOpenSafari) {
+              setIsScrollLocked(true);
+            }
+          }
+
+          // ✅ 위로 스크롤하면 잠금 해제
+          if (scrollTop + clientHeight < scrollHeight - isGap) {
+            setIsScrollLocked(false);
+          }
+        };
+
+        el.addEventListener('scroll', handleScroll);
+        return () => el.removeEventListener('scroll', handleScroll);
+    }, 500); // 0.5초 후에 강제 시도
+    
     return () => clearTimeout(timer);
-  }, [isKeyboardOpen, isKeyboardOpenSafari]);
-  
+  }, [isKeyboardOpen,isKeyboardOpenSafari]);
   
 
   useEffect(() => {
