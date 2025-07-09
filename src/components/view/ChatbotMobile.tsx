@@ -84,6 +84,8 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollBottomRef = useRef<HTMLDivElement>(null);
   const scrollLockRef = useRef(false); // 컴포넌트 맨 위에 선언
+  const lastScrollStateRef = useRef<'up' | 'down' | null>(null);
+  const lastToastTimeRef = useRef(0)
   const [isLoading, setIsLoading] = useState(true);
 
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
@@ -172,20 +174,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
       if (!el) return;
   
       el.style.overflowY = 'auto'; // 모바일에서 scroll 가능하도록
-  
-      // wheel: 데스크탑
-      const handleWheel = (e: WheelEvent) => {
-        if (e.deltaX !== 0) return;
-        if (scrollLockRef.current) return; // 감추기 잠금 중이면 무시
-        if (e.deltaY < 0) {
-          // 위로 스크롤 → 버튼 보여줌
-          setShowScroll(true);
-        } else if (e.deltaY > 0) {
-          // 아래로 스크롤 → 버튼 숨김
-          setShowScroll(false);
-        }
-      };
-  
       // touch: 모바일
       let startY = 0;
   
@@ -197,22 +185,28 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         const currentY = e.touches[0].clientY;
         const diffY = currentY - startY;
         const threshold = isMobileSafari ? 20 : 30;
+        const now = Date.now();
+
         if (scrollLockRef.current) return; // 감추기 잠금 중이면 무시
         if (diffY < -threshold) {
-          // 위로 스와이프 → 화면 위로 → 버튼 보여줌
-          setShowScroll(false);
+          //if ( isShowScroll ) setShowScroll(false);
+          if (lastScrollStateRef.current !== 'up') {
+            setShowScroll(false);
+            lastScrollStateRef.current = 'up';
+          }
         } else if (diffY > threshold) {
-          // 아래로 스와이프 → 버튼 숨김
-          setShowScroll(true);
+          if (lastScrollStateRef.current !== 'down') {
+            setShowScroll(true);
+            lastScrollStateRef.current = 'down';
+          }
         }
       };
   
-      el.addEventListener('wheel', handleWheel, { passive: true });
       el.addEventListener('touchstart', handleTouchStart, { passive: true });
       el.addEventListener('touchmove', handleTouchMove, { passive: true });
   
       return () => {
-        el.removeEventListener('wheel', handleWheel);
+
         el.removeEventListener('touchstart', handleTouchStart);
         el.removeEventListener('touchmove', handleTouchMove);
       };
@@ -220,47 +214,140 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   
     return () => clearTimeout(timer);
   }, []);
+
+  
+  useEffect(() => {
+    const check = setInterval(() => {
+      const el = scrollRef.current;
+      const target = scrollBottomRef.current;
+      
+      if (el && target) {
+        const observer = new IntersectionObserver(
+          ([entry]) => {
+            setShowScroll(!entry.isIntersecting);
+          },
+          {
+            root: el,
+            threshold: 0.1,
+          }
+        );
+  
+        observer.observe(target);
+        clearInterval(check);
+      }
+    }, 300);
+  
+    return () => clearInterval(check);
+  }, []);
+  
+
+  // 스크롤을 맨 아래로 내리는 함수
+  const scrollToBottom = () => {
+    const el = scrollBottomRef.current;
+    if (el) {
+      scrollBottomRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      
+      // 버튼 감추고 일정 시간 동안 잠금
+      setShowScroll(false);
+      scrollLockRef.current = true;
+      lastScrollStateRef.current = 'up';
+      setTimeout(() => {
+        scrollLockRef.current = false;
+      }, 1000); // 예: 1초 동안 잠금
+    }
+  };
   
 
   // 스크롤 이벤트 감지
   useEffect(() => {
     const timer = setTimeout(() => {
       const el = mobileContentRef.current;
-        if (!el) return;
-        if ( !isKeyboardOpen || ! isKeyboardOpenSafari) {
+      if (!el) return;
+  
+      if (!isKeyboardOpen && !isKeyboardOpenSafari) {
+        setIsScrollLocked(false);
+      }
+  
+      let lastTouchY = 0;
+      let unlockTimeout: NodeJS.Timeout | null = null;
+  
+      const handleTouchStart = (e: TouchEvent) => {
+        lastTouchY = e.touches[0].clientY;
+        if (unlockTimeout) {
+          clearTimeout(unlockTimeout);
+          unlockTimeout = null;
+        }
+      };
+  
+      const handleTouchMove = (e: TouchEvent) => {
+        const currentY = e.touches[0].clientY;
+        const diffY = currentY - lastTouchY;
+  
+        const isGap = isMobileSafari ? 20 : 15;
+        const scrollTop = el.scrollTop;
+        const scrollHeight = el.scrollHeight;
+        const clientHeight = el.clientHeight;
+  
+        const atBottom = scrollTop + clientHeight >= scrollHeight - isGap;
+  
+        // 👆 위로 스와이프하는 중이고, 바닥에 도달해있다면 → 락 해제
+        if (!atBottom) {
+          setIsScrollLocked(false);
+          return;
+        }
+  
+        // diffY가 양수(아래로 스와이프)일 때만 락 해제 시도
+        if (diffY > 0) {
+          // 갑작스러운 큰 움직임에 즉시 락 해제하지 않고, 200ms 딜레이 후에 락 해제
+          if (!unlockTimeout) {
+            unlockTimeout = setTimeout(() => {
+              setIsScrollLocked(false);
+              unlockTimeout = null;
+            }, 200);
+          }
+        } else {
+          // diffY가 음수거나 0이면 락 유지, 딜레이도 취소
+          if (unlockTimeout) {
+            clearTimeout(unlockTimeout);
+            unlockTimeout = null;
+          }
+          setIsScrollLocked(true);
+        }
+      };
+  
+      const handleScroll = () => {
+        const scrollTop = el.scrollTop;
+        const scrollHeight = el.scrollHeight;
+        const clientHeight = el.clientHeight;
+        const isGap = isMobileSafari ? 20 : 15;
+  
+        // ✅ 바닥에 도달하면 잠금
+        if (scrollTop + clientHeight >= scrollHeight - isGap) {
+          if (isKeyboardOpen || isKeyboardOpenSafari) {
+            setIsScrollLocked(true);
+          }
+        }
+  
+        // ✅ 위로 스크롤 시 잠금 해제
+        if (scrollTop + clientHeight < scrollHeight - isGap) {
           setIsScrollLocked(false);
         }
-        const handleScroll = () => {
-          const scrollTop = el.scrollTop;
-          const scrollHeight = el.scrollHeight;
-          const clientHeight = el.clientHeight;
-          const isGap = isMobileSafari ? 20 : 15;
-          // ✅ 바닥에 도달하면 스크롤 잠금
-          if (scrollTop + clientHeight >= scrollHeight - isGap) {
-            if (isKeyboardOpen || isKeyboardOpenSafari) {
-              setIsScrollLocked(true);
-            }
-          }
-
-          // ✅ 위로 스크롤하면 잠금 해제
-          if (scrollTop + clientHeight < scrollHeight - isGap) {
-            setIsScrollLocked(false);
-          }
-        };
-
-        el.addEventListener('scroll', handleScroll);
-        return () => el.removeEventListener('scroll', handleScroll);
-    }, 500); // 0.5초 후에 강제 시도
-    
-    return () => clearTimeout(timer);
-  }, [isKeyboardOpen,isKeyboardOpenSafari]);
+      };
   
-
-  useEffect(() => {
-    if (mobileContentRef.current) {
-      mobileContentRef.current.style.overflowY = (isScrollLocked && ( isKeyboardOpen || isKeyboardOpenSafari ) ) ? 'hidden' : 'auto';
-    }
-  }, [isScrollLocked,isKeyboardOpen,isKeyboardOpenSafari]);
+      el.addEventListener('scroll', handleScroll);
+      el.addEventListener('touchstart', handleTouchStart, { passive: true });
+      el.addEventListener('touchmove', handleTouchMove, { passive: true });
+  
+      return () => {
+        el.removeEventListener('scroll', handleScroll);
+        el.removeEventListener('touchstart', handleTouchStart);
+        el.removeEventListener('touchmove', handleTouchMove);
+      };
+    }, 500);
+  
+    return () => clearTimeout(timer);
+  }, [isKeyboardOpen, isKeyboardOpenSafari]);
+  
 
   useEffect(() => {
     const preventTouch = (e: any) => {
@@ -323,13 +410,10 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
 
   useEffect(() => {
     const userBasicInfo = UserStateStore.getState();
-    console.log('userBasicInfo in24UsedToken',in24UsedToken)
     // userBasicInfo.isState가 true에서 false로 또는 false에서 true로 변경될 때 실행되는 코드
     if (userBasicInfo?.isState) {
-      console.log('userBasicInfo if')
       setIn24UsedToken(0)
     } else {
-      console.log('userBasicInfo else')
       // false일 때 수행할 작업
       setIn24UsedToken(0)
     }
@@ -458,90 +542,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     }
   }, [in24UsedToken,oldHistoryData,isNewChat]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const el = scrollRef.current;
-      if (!el) return;
-    
-      let startY = 0;
-      const handleWheel = (e: WheelEvent) => {
-        if (e.deltaX !== 0) return;
-        setShowScroll((prev) => {
-          const goingUp = e.deltaY < 0;
-          return goingUp !== prev ? !prev : prev;
-        });
-      };
-      const handleTouchStart = (e: TouchEvent) => {
-        startY = e.touches[0].clientY;
-      };
-    
-      const handleTouchMove = (e: TouchEvent) => {
-        const currentY = e.touches[0].clientY;
-        const diffY = currentY - startY;
-        const isGap = isMobileSafari ? 20 : 30;
-        const isGap2 = isMobileSafari ? -20 : -30;
-        if (diffY > isGap) {
-          // 위로 스와이프 → showScroll true
-          setShowScroll(true);
-        } else if (diffY < isGap2) {
-          // 아래로 스와이프 → showScroll false
-          setShowScroll(false);
-        }
-      };
-      el.addEventListener("wheel", handleWheel);
-      el.addEventListener('touchstart', handleTouchStart, { passive: true });
-      el.addEventListener('touchmove', handleTouchMove, { passive: true });
-    
-      return () => {
-        el.removeEventListener('touchstart', handleTouchStart);
-        el.removeEventListener('touchmove', handleTouchMove);
-        el.removeEventListener("wheel", handleWheel);
-      };
-    }, 500); // 0.5초 후에 강제 시도
-    return () => clearTimeout(timer);
-  }, []);
   
-
-  useEffect(() => {
-    const check = setInterval(() => {
-      const el = scrollRef.current;
-      const target = scrollBottomRef.current;
-      
-      if (el && target) {
-        const observer = new IntersectionObserver(
-          ([entry]) => {
-            setShowScroll(!entry.isIntersecting);
-          },
-          {
-            root: el,
-            threshold: 0.1,
-          }
-        );
-  
-        observer.observe(target);
-        clearInterval(check);
-      }
-    }, 300);
-  
-    return () => clearInterval(check);
-  }, []);
-  
-
-  // 스크롤을 맨 아래로 내리는 함수
-  const scrollToBottom = () => {
-    const el = scrollBottomRef.current;
-    if (el) {
-      scrollBottomRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      
-      // 버튼 감추고 일정 시간 동안 잠금
-      setShowScroll(false);
-      scrollLockRef.current = true;
-  
-      setTimeout(() => {
-        scrollLockRef.current = false;
-      }, 1000); // 예: 1초 동안 잠금
-    }
-  };
 
   const onHandleStopInquiry = async() => {
     try{
@@ -819,23 +820,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                   console.log('✅ 포커싱 시도');
                 }
               }, 100)
-              
-              /* setTimeout(() => {
-                addMessage(
-                  {
-                    ismode : 'system',
-                    isHistory : false,
-                    chat_id: functions.getUUID(),
-                    user_question : inputCodeText,
-                    answer : null,
-                    msg: `${mConstants.error_message_404} ${functions.formatAvailabilityMessage(parseInt(parsedMessage?.timestamp), userBasicInfo?.isGuest ? guestRetryLimitSec : userRetryLimitSec)} 이후에 다시 시도해 주세요.`,
-                    chat_type : 'system',
-                    used_token : 0,
-                    isOnlyLive : true
-                  }
-                )
-              }, 60);  */
-              
             }else{
                call_fn_error_message(inputCodeText,chat_sessinn_id,"토큰 만료 체크 오류");
             }
@@ -1478,7 +1462,8 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
       >
         <Box 
           position={'absolute'}
-          display={isShowScroll ? 'flex' : 'none'} 
+          display={(isShowScroll && !isKeyboardOpen && !isKeyboardOpenSafari) ? 'flex' : 'none'}
+          pointerEvents="auto" // 이거 추가
           top={isFocus ? {base : '-80px', md : '-70px'} : {base : '-55px', md : '-45px'}}
           left={'0'}
           w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
@@ -1486,10 +1471,10 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
           justifyContent={'center'}
           alignItems={'center'}
           bg='transparent'
-          zIndex={1000}
+          zIndex={9999}
         >
           <Box
-            display={'flex'}  width="40px" height={"40px"} cursor={'pointer'} zIndex={10} justifyContent='center' alignItems={'center'} 
+            display={'flex'}  width="40px" height={"40px"} cursor={'pointer'} zIndex={9999} justifyContent='center' alignItems={'center'} 
             borderRadius={'20px'} backgroundColor={'#fff'}
             onClick={()=> scrollToBottom()}
             border={'1px solid #efefef'}
@@ -1581,10 +1566,8 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                 zIndex={101}
                 pointerEvents="auto"
                 onTouchEnd={(e:any) => {
-                  console.log("onClick 1",isChatDisabled?.isState,isReceiving,inputCode);
                   e.preventDefault();e.stopPropagation();
                   if (isChatDisabled?.isState && !functions.isEmpty(inputCode) && !isReceiving) {
-                    console.log("onClick 2")
                     setHasSent(true); // 일단 막고
                     handleSendMessage();
                     setIsFocus(false);

@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next'
 export default function manifest(): MetadataRoute.Manifest {
   
   return {
-    name: 'AIGA Chatbot',
+    name: 'AIGA 의사 추천',
     short_name: 'AIGA',
     description: 'AIGA 의사 추천 ',
     id:"/ko",

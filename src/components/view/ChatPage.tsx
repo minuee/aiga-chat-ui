@@ -174,7 +174,7 @@ export default function Index() {
   
     const handleResize = () => {
       const visualHeight = window.visualViewport?.height ?? window.innerHeight;
-  
+      
       if (!initialViewportHeight.current) {
         initialViewportHeight.current = visualHeight;
       }
@@ -205,16 +205,15 @@ export default function Index() {
     if (!isMobileOnly || isMobileSafari) return; // 사파리는 제외
   
     const updateOffset = () => {
+      const isNaverInApp = /NAVER\(inapp/.test(navigator.userAgent);
       const screenHeight = window.screen.height;
       const innerHeight = window.innerHeight;
       const keyboardHeight = screenHeight - innerHeight;
       const isKeyboardVisible = keyboardHeight > 100;
+      const safeKeyboardHeight = isKeyboardVisible ? keyboardHeight : 0;
+      const height = isKeyboardVisible ? innerHeight - keyboardHeight : innerHeight;
   
-      const height = isKeyboardVisible
-        ? innerHeight - keyboardHeight
-        : innerHeight;
-  
-      setMobileViewPortHeight(height);
+      setMobileViewPortHeight(isNaverInApp ? height+safeKeyboardHeight : height);
       setMobileKeyboardOffset(isKeyboardVisible ? keyboardHeight : 0);
     };
   
