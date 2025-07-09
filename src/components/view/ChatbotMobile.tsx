@@ -201,7 +201,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         if (diffY < -threshold) {
           // 위로 스와이프 → 화면 위로 → 버튼 보여줌
           setShowScroll(false);
-          setIsScrollLocked(false);
         } else if (diffY > threshold) {
           // 아래로 스와이프 → 버튼 숨김
           setShowScroll(true);
@@ -227,32 +226,39 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   useEffect(() => {
     const timer = setTimeout(() => {
       const el = mobileContentRef.current;
-        if (!el) return;
-
-        const handleScroll = () => {
-          const scrollTop = el.scrollTop;
-          const scrollHeight = el.scrollHeight;
-          const clientHeight = el.clientHeight;
-
-          // ✅ 바닥에 도달하면 스크롤 잠금
-          if (scrollTop + clientHeight >= scrollHeight - 10) {
-            if (isKeyboardOpen || isKeyboardOpenSafari) {
-              setIsScrollLocked(true);
-            }
-          }
-
-          // ✅ 위로 스크롤하면 잠금 해제
-          if (scrollTop + clientHeight < scrollHeight - 10) {
-            setIsScrollLocked(false);
-          }
-        };
-
-        el.addEventListener('scroll', handleScroll);
-        return () => el.removeEventListener('scroll', handleScroll);
-    }, 500); // 0.5초 후에 강제 시도
-    
+      if (!el) return;
+  
+      let lastScrollTop = el.scrollTop;
+      const isGap = isMobileSafari ? 20 : 15;
+  
+      const handleScroll = () => {
+        const scrollTop = el.scrollTop;
+        const scrollHeight = el.scrollHeight;
+        const clientHeight = el.clientHeight;
+  
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight - isGap;
+        const isScrollingUp = scrollTop < lastScrollTop;
+  
+        // ✅ 바닥에서 키보드 열려 있으면 잠금
+        if (isAtBottom && (isKeyboardOpen || isKeyboardOpenSafari)) {
+          setIsScrollLocked(true);
+        }
+  
+        // ✅ 위로 스크롤할 경우에만 잠금 해제
+        if (!isAtBottom && isScrollingUp) {
+          setIsScrollLocked(false);
+        }
+  
+        lastScrollTop = scrollTop;
+      };
+  
+      el.addEventListener('scroll', handleScroll);
+      return () => el.removeEventListener('scroll', handleScroll);
+    }, 500);
+  
     return () => clearTimeout(timer);
-  }, [isKeyboardOpen,isKeyboardOpenSafari]);
+  }, [isKeyboardOpen, isKeyboardOpenSafari]);
+  
   
 
   useEffect(() => {
