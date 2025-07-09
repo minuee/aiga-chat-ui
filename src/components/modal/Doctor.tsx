@@ -2,7 +2,7 @@
 import React, { PropsWithChildren } from 'react';
 import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
 // chakra imports
-import { Box,Flex,Button,useColorModeValue,Text,SkeletonCircle,SkeletonText,Divider,Icon,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,Portal} from '@chakra-ui/react';
+import { Box,Flex,Button,useColorModeValue,useToast,SkeletonCircle,SkeletonText,Divider,Icon,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,Portal} from '@chakra-ui/react';
 
 import NextImage from 'next/legacy/image';
 import Alert from '@/components/alert/CustomAlert';
@@ -38,7 +38,7 @@ function DoctorModal(props: DoctorModalProps) {
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
-
+  const toast = useToast();
   const [isLoading, setIsLoading] = React.useState(true);
   
   const [doctorBasicData, setDoctorBasicData] = React.useState<any>({
@@ -204,6 +204,35 @@ function DoctorModal(props: DoctorModalProps) {
     setIsOpenSignupModal(true);
   }
 
+  const handleCopy = async (textToCopy : string) => {
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      toast({
+        title: "복사 완료!",
+        position: 'top-right',
+        description: `"${textToCopy}"가 클립보드에 복사되었습니다.`,
+        status: 'info',
+        containerStyle: {
+          color: '#ffffff',
+        },
+        duration: 2000,
+        isClosable: true,
+      });
+    } catch (err) {
+      toast({
+        title: "복사 실패",
+        position: 'top-right',
+        description: "클립보드 복사 중 문제가 발생했어요.",
+        status: "error",
+        containerStyle: {
+          color: '#ffffff',
+        },
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  };
+
 
   if ( isLoading ) {
     return (
@@ -250,15 +279,43 @@ function DoctorModal(props: DoctorModalProps) {
             <Icon as={MdComputer} color={'#2B8FFF'} size="4em" />
             <CustomTextBold700 fontSize={'15px'}  color="#2B8FFF" ml="2">온라인 예약</CustomTextBold700>
           </Box>
-          { ( isMobileOnly || process.env.NODE_ENV === 'development' ) && (
+          {
+            isMobileOnly 
+            ?
+            functions.isEmpty(doctorBasicData?.telephone)
+            ?
+            null
+            :
+            <Box 
+              display={'flex'} flex={1} justifyContent={'center'} alignItems={'center'} ml={1}  bg='#DFF2FF' borderRadius={'8px'} height={"50px"}
+              onClick={() => window.open(`tel:${doctorBasicData?.telephone}`)} cursor={'pointer'}
+            >
+              <Icon as={BiPhone} color={'#2B8FFF'} />
+              <CustomTextBold700 fontSize={'15px'}  color="#2B8FFF" ml="2"> 전화 예약</CustomTextBold700>
+            </Box>
+            :
+            functions.isEmpty(doctorBasicData?.telephone)
+            ?
+            null
+            :
+            <Box 
+              display={'flex'} flex={1} justifyContent={'center'} alignItems={'center'} ml={1}  bg='#E9EDF3' borderRadius={'8px'} height={"50px"}
+              onClick={() => handleCopy(doctorBasicData?.telephone)} cursor={'pointer'}
+            >
+              <Icon as={BiPhone} color={'#7F879B'} />
+              <CustomTextBold700 fontSize={'15px'}  color="#7F879B" ml="2">{doctorBasicData?.telephone}</CustomTextBold700>
+            </Box>
+          }
+
+          {/* { (( isMobileOnly || process.env.NODE_ENV === 'development' ) && !functions.isEmpty(doctorBasicData?.telephone) ) && (
           <Box 
             display={'flex'} flex={1} justifyContent={'center'} alignItems={'center'} ml={1}  bg='#DFF2FF' borderRadius={'8px'} height={"50px"}
-            onClick={() => !functions.isEmpty(doctorBasicData?.contact) ? window.open(`tel:${doctorBasicData?.telephone}`) : null} cursor={'pointer'}
+            onClick={() => !functions.isEmpty(doctorBasicData?.telephone) ? window.open(`tel:${doctorBasicData?.telephone}`) : null} cursor={'pointer'}
           >
             <Icon as={BiPhone} color={'#2B8FFF'} />
             <CustomTextBold700 fontSize={'15px'}  color="#2B8FFF" ml="2"> 전화 예약</CustomTextBold700>
           </Box>
-          )}
+          )} */}
         </Flex>
         <Flex display={'flex'} flexDirection={'column'}  mt={4} bg={contentBgColor} alignContent={'center'} padding="20px">
           <Box display={'flex'} flex={1}  alignItems={'center'}>

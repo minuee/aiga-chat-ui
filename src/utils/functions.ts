@@ -85,11 +85,18 @@ const functions = {
 
   formatAvailabilityMessage(timestampMs: number, retryLimitSec : number): string {
     try{
+      //console.log("formatAvailabilityMessage 현재 시각 (now):", new Date());
+      //console.log("formatAvailabilityMessage 입력된 timestampMs 시간:", new Date(timestampMs));
+      //console.log("formatAvailabilityMessage 16시간 후 target 시간:", new Date(timestampMs + retryLimitSec * 1000));
+      //console.log("formatAvailabilityMessage 1", timestampMs)
+      //console.log("formatAvailabilityMessage 2", retryLimitSec)
       const now = new Date();
       const sixteenHoursLater = new Date(now.getTime() + 16 * 60 * 60 * 1000);
       const baseTime = isNaN(timestampMs) || timestampMs <= 0 ? sixteenHoursLater.getTime() : timestampMs;
-
+      //console.log("formatAvailabilityMessage 3", isNaN(timestampMs) )
+      //console.log("formatAvailabilityMessage 4", baseTime )
       const target = new Date(baseTime + retryLimitSec * 1000);
+      //console.log("formatAvailabilityMessage 5", target )
       // 날짜 비교용 (연/월/일만 비교)
       const isSameDay = now.toDateString() === target.toDateString();
     

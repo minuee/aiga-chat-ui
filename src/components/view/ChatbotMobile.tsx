@@ -83,6 +83,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollBottomRef = useRef<HTMLDivElement>(null);
+  const scrollLockRef = useRef(false); // 컴포넌트 맨 위에 선언
   const [isLoading, setIsLoading] = useState(true);
 
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
@@ -167,54 +168,59 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      const el: any = mobileContentRef.current;
+      const el = mobileContentRef.current;
       if (!el) return;
   
-      // Wheel event (for desktop)
+      el.style.overflowY = 'auto'; // 모바일에서 scroll 가능하도록
+  
+      // wheel: 데스크탑
       const handleWheel = (e: WheelEvent) => {
         if (e.deltaX !== 0) return;
+        if (scrollLockRef.current) return; // 감추기 잠금 중이면 무시
         if (e.deltaY < 0) {
-          setIsScrollLocked(false);
+          // 위로 스크롤 → 버튼 보여줌
+          setShowScroll(true);
+        } else if (e.deltaY > 0) {
+          // 아래로 스크롤 → 버튼 숨김
+          setShowScroll(false);
         }
       };
   
-      // Touch event (for mobile)
+      // touch: 모바일
       let startY = 0;
+  
       const handleTouchStart = (e: TouchEvent) => {
         startY = e.touches[0].clientY;
       };
+  
       const handleTouchMove = (e: TouchEvent) => {
         const currentY = e.touches[0].clientY;
         const diffY = currentY - startY;
-        const smoothValue = isMobileSafari ? 10 : 20
-        if (diffY > smoothValue) { // 아래로 스와이프
-          /* toast({
-            title: "스크롤 락 풀림",
-            position: 'top-right',
-            status: 'error',
-            containerStyle: {
-              color: '#ffffff',
-            },
-            isClosable: true,
-          }); */
-          setIsScrollLocked(false);
+        const threshold = isMobileSafari ? 20 : 30;
+        if (scrollLockRef.current) return; // 감추기 잠금 중이면 무시
+        if (diffY < -threshold) {
+          // 위로 스와이프 → 화면 위로 → 버튼 보여줌
+          setShowScroll(true);
+        } else if (diffY > threshold) {
+          // 아래로 스와이프 → 버튼 숨김
+          setShowScroll(false);
         }
       };
-      if ( isMobileOnly ) {
-        el.addEventListener("wheel", handleWheel);
-        el.addEventListener("touchstart", handleTouchStart);
-        el.addEventListener("touchmove", handleTouchMove);
-    
-        return () => {
-          el.removeEventListener("wheel", handleWheel);
-          el.removeEventListener("touchstart", handleTouchStart);
-          el.removeEventListener("touchmove", handleTouchMove);
-        };
-      }
-    }, 300);
+  
+      el.addEventListener('wheel', handleWheel, { passive: true });
+      el.addEventListener('touchstart', handleTouchStart, { passive: true });
+      el.addEventListener('touchmove', handleTouchMove, { passive: true });
+  
+      return () => {
+        el.removeEventListener('wheel', handleWheel);
+        el.removeEventListener('touchstart', handleTouchStart);
+        el.removeEventListener('touchmove', handleTouchMove);
+      };
+    }, 500);
   
     return () => clearTimeout(timer);
   }, []);
+  
 
   // 스크롤 이벤트 감지
   useEffect(() => {
@@ -513,7 +519,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         observer.observe(target);
         clearInterval(check);
       }
-    }, 100);
+    }, 300);
   
     return () => clearInterval(check);
   }, []);
@@ -524,7 +530,14 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     const el = scrollBottomRef.current;
     if (el) {
       scrollBottomRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      setShowScroll(false)
+      
+      // 버튼 감추고 일정 시간 동안 잠금
+      setShowScroll(false);
+      scrollLockRef.current = true;
+  
+      setTimeout(() => {
+        scrollLockRef.current = false;
+      }, 1000); // 예: 1초 동안 잠금
     }
   };
 
@@ -1445,7 +1458,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                   })
                 }
                 { isReceiving && ( <Box><Processing  msg="분석중" /></Box> ) }
-                <Box ref={scrollBottomRef} h="1px" pb={isMobileSafari ? "50px" : "120px"} visibility="hidden" bg={themeColor}/>
+                <Box ref={scrollBottomRef} height={isMobileSafari ? "50px" : "120px"} visibility="hidden" bg={themeColor}/>
               </Flex>
             </Flex>
           </Box>

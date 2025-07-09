@@ -134,7 +134,7 @@ export function getChatMessage(session_id: string, msg: string): any {
                 return response?.data;
             }).catch((error) => {
 
-                console.log("djfdljfdlfdjlfd",error)
+               
                 const { email,userId,isGuest} = UserStateStore.getState();
                 const userAgent = getClientEnvInfo()
                 const errorPayload = {
