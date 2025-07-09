@@ -26,7 +26,7 @@ export default function Index() {
   const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
 
   return (
-    <PageLayout title="AIGA Chatbot">
+    <PageLayout title="AIGA 의사추천">
       <CahtPageView />
     </PageLayout>
   )

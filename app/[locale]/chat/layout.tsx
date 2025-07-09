@@ -12,7 +12,7 @@ type Props = {
 export const metadata: Metadata = {
   ...subMetadata,
   title: {
-    default: 'AIGA Chatbot',
+    default: 'AIGA 의사추천',
     template: '%s',
   },
   description: 'AIGA 의사 추천 서비스',

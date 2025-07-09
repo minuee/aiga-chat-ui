@@ -20,7 +20,7 @@ export default function Index(  ) {
   },[params?.locale]);
 
   return (
-    <PageLayout title="AIGA Chatbot">
+    <PageLayout title="AIGA 의사추천">
      <MainPage />
     </PageLayout>
   )
