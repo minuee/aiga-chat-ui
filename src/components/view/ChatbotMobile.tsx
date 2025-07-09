@@ -802,6 +802,32 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                 }
               )
             }, 60); 
+          } else if ( questionResult?.message?.statusCode == '506' ) {
+            setIsLoading(false);
+            setReceiving(false);
+            setIsFocus(false)
+            setTimeout(() => {
+              if (textareaRef.current && !isMobileOnly) {
+                textareaRef?.current?.focus()
+                console.log('✅ 포커싱 시도');
+              }
+            }, 100)
+            
+            setTimeout(() => {
+              addMessage(
+                {
+                  ismode : 'system_400',
+                  isHistory : false,
+                  chat_id: functions.getUUID(),
+                  user_question : inputCodeText,
+                  answer : null,
+                  msg: mConstants.error_message_500_llm,
+                  chat_type : 'system',
+                  used_token : 0,
+                  isOnlyLive : false
+                }
+              )
+            }, 60); 
           }else if ( questionResult?.message?.statusCode == '403') {
             const parsedMessage = parseLooselyFormattedJsonString(questionResult?.message?.message);
             if ( !functions.isEmpty(parsedMessage) && ( parsedMessage.message == '최대 토큰수 초과 에러' || parsedMessage.message == '비회원 최대 토큰 초과 에러' )) {
@@ -1315,21 +1341,25 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                 <Box display={realOutputCode?.length == 0 ? 'flex' : 'none'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} >
                   <MotionWelcomeImage
                     pt={isMobileSafari ? "40px":  "0"}
+                    isMobile={true}
                   />
                   <MotionWelcome 
                     msg={`안녕하세요!`}
                     pt="30px"
                     classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
+                    isMobile={true}
                   />
                   <MotionWelcome 
                     msg={`맞춤형 의사추천 챗봇 AIGA입니다.`}
                     pt="10px"
                     classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
+                    isMobile={true}
                   />
                   <MotionWelcome 
                     msg={`어디가 아프거나 불편하신가요?`}
                     pt="10px"
                     classNames="opening_box_gray"
+                    isMobile={true}
                   />
                 </Box>
                 { 
@@ -1507,7 +1537,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
           borderRadius="25px"
           lineHeight={inputCode?.length > 10 ? "150%" : "180%"}
           ref={textareaRef}
-          fontSize="md"
+          fontSize="17px"
           fontWeight="500"
           _focus={{ borderColor: '#2B8FFF' }}
           color={inputColor}

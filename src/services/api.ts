@@ -3,6 +3,7 @@ import * as mCookie from "@/utils/cookies";
 import mConstants from '@/utils/constants';
 import { decryptToken } from "@/utils/secureToken";
 import functions from '@/utils/functions';
+import UserStateStore from '@/store/userStore';
 
 export type ApiResponse<T> = Promise<AxiosResponse<T>>;
 type State = 'true' | 'false';
@@ -29,9 +30,9 @@ axios.interceptors.request.use(
 
 axios.interceptors.request.use((config) => {
   try{
-
+    const { email,userId,isGuest} = UserStateStore.getState();
     const accessTmpToken =  mCookie.getCookie(mConstants.apiTokenName);//'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidWlkX2ViZjE4YzE5LWE1N2UtNDlhMC1hY2JkLTMwZGQ2MzU4NDRhNSIsInNuc190eXBlIjoia2FrYW8iLCJzbnNfaWQiOiI0MjkxODg1MjIzIiwiaWF0IjoxNzUwMTE5MjE3LCJleHAiOjE3NTAyMDU2MTd9.3Qjc-inX5H79FMzTLI-uJMnb2o2w0D53EP6DUc9DP8c';
-    if ( !functions.isEmpty(accessTmpToken)) { 
+    if ( !functions.isEmpty(accessTmpToken) && !functions.isEmpty(email)) { 
       const accessToken =  decryptToken(accessTmpToken)
       config.headers['Authorization'] = `Bearer ${accessToken}` 
     }

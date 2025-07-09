@@ -93,26 +93,36 @@ export const globalStyles = {
     },
   },
   styles: {
-    global: (props: any) => ({
-      html: {
-        height: '100%',
-        width: '100%',
-        fontFamily: 'Noto Sans KR',
-      },
-      body: {
-        height: '100%',
-        width: '100%',
-        overflowX: 'hidden',
-        bg: mode('#fdfeff', 'white')(props),
-        fontFamily: 'Noto Sans',
-      },
-      '#__next': {
-        height: '100%',
-        width: '100%',
-      },
-      input: {
-        color: 'gray.700',
-      },
-    }),
+    global: (props: any) => {
+      const baseBg = mode('#fdfeff', 'navy.800')(props);
+  
+      return {
+        html: {
+          height: '100%',
+          width: '100%',
+          fontFamily: 'Noto Sans',
+        },
+        body: {
+          height: '100%',
+          width: '100%',
+          overflowX: 'hidden',
+          fontFamily: 'Noto Sans',
+  
+          // ✅ breakpoint + color mode 동시 처리
+          bg: {
+            base: baseBg,                 // 모바일 기준 기본 배경
+            md: '#fdfeff', // md 이상일 때만 transparent 적용 (다크모드 한정)
+          },
+        },
+        '#__next': {
+          height: '100%',
+          width: '100%',
+        },
+        input: {
+          color: 'gray.700',
+        },
+      };
+    },
   },
+  
 };
