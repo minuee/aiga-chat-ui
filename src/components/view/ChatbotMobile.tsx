@@ -1474,7 +1474,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                   })
                 }
                 { isReceiving && ( <Box><Processing  msg="분석중" /></Box> ) }
-                <Box ref={scrollBottomRef} height={isMobileSafari ? "50px" : "120px"} visibility="hidden" bg={themeColor}/>
+                <Box ref={scrollBottomRef}  height={isMobileSafari ? "10px" : "50px"} pb={isMobileSafari ? "10px" : "50px"} visibility="hidden" bg={themeColor}/>
               </Flex>
             </Flex>
           </Box>
