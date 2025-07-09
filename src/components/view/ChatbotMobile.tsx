@@ -201,6 +201,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         if (diffY < -threshold) {
           // 위로 스와이프 → 화면 위로 → 버튼 보여줌
           setShowScroll(false);
+          setIsScrollLocked(false);
         } else if (diffY > threshold) {
           // 아래로 스와이프 → 버튼 숨김
           setShowScroll(true);
