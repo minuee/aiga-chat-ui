@@ -13,6 +13,9 @@ import { IconVote1,IconVote2,IconVote3,IconVote4 } from '@/components/icons/svgI
 import ImageEntire from "@/assets/images/img-entire.png";
 import { BiDetail,BiInfoCircle,BiGroup,BiEdit,BiChevronRight } from "react-icons/bi";
 import Alert from '@/components/alert/CustomAlert';
+
+import BadWords from "@/utils/badword"
+
 import { iconAlertModify,iconAlertReview } from "@/components/icons/IconImage"
 import ProcessingBar from "@/assets/icons/processing2x.gif";
 export interface ReviewModalProps extends PropsWithChildren {
@@ -109,10 +112,21 @@ function ReviewModal(props: ReviewModalProps) {
 
   /* isRegist if true 등록 else 수정 */
   const onHandleReviewRegist = async(data:any, isRegist:boolean = true) => {
+    const swear_words_arr = BadWords;
+    const swearRegex = new RegExp(swear_words_arr.join("|"), "gi");
     try{
+      const filteredContent = data.content.replace(
+        swearRegex,
+        (match:any) => "*".repeat(match.length)
+      ); 
+      const reInputData = {
+        ...inputs,
+        content : filteredContent
+      }
       if ( !functions.isEmpty(data?.doctor_id) ) {
         setReceiving(true)
-        const res:any = await DoctorService.setReviewData(data,isRegist);
+       
+        const res:any = await DoctorService.setReviewData(reInputData,isRegist);
         if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
           setOpenAlert(true)
           setReceiving(false);

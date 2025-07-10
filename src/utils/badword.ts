@@ -147,3 +147,5 @@ const swear_words_arr = new Array(
     "teat", "teez", "titi", "tits", "titt", "turd", "tush", "tw4t", "twat", "wang", "wank", "yaoi", "zubb", "a$$", "a2m", "a55", "ass", "azz", "bbw", "cok", "cum", "fag", 
     "fuc", "gfy", "jap", "jiz", "jiz", "pee", "s0b", "sex", "t1t", "tit", "vag", "wad", "wog", "wop", "wtf", "yid"
 );
+
+export default swear_words_arr;

@@ -306,51 +306,65 @@ export default function Index() {
   }
 
   return (
-    <Flex  justifyContent={'center'} >
-      <Flex
-        minHeight={isMobileOnly ? "100%" : "100vh"}
-        height="100%"
-        overflow="hidden" /* 여기가 중요 */
-        position="relative"
-        maxHeight="100%"
-        w={{ base: '100%', md : `${mConstants.desktopMinWidth}px`  }}
-        maxW={`${mConstants.desktopMinWidth}px` }
-        borderRadius="sm"
-        boxShadow="0 4px 30px rgba(0, 0, 0, 0.1)"
-        backdropFilter="blur(10px)"
-      >
-        <Box 
-          position={'fixed'}
-          top={0}
-          left={0}
-          right={0}
-          height={'60px'}
-          width="100%" 
-          maxWidth={`${mConstants.desktopMinWidth}px`}
-          display={'flex'}
-          justifyContent={'center'}
+      <Flex  justifyContent={'center'} >
+        <Flex
+          minHeight={isMobileOnly ? "100%" : "100vh"}
+          height="100%"
+          overflow="hidden" /* 여기가 중요 */
+          position="relative"
+          maxHeight="100%"
+          w={{ base: '100%', md : `${mConstants.desktopMinWidth}px`  }}
+          maxW={`${mConstants.desktopMinWidth}px` }
+          
+          //borderBottomLeftRadius={ isDesktop ? '15px' : 0}
+          //borderBottomRightRadius={ isDesktop ? '15px' : 0} 
+          
+          //bg='green'뒤에 쉐도우 주는거 
+          borderRadius="sm"
+          boxShadow="0 4px 30px rgba(0, 0, 0, 0.1)"
+          backdropFilter="blur(10px)"
+          //border="1px solid rgba(255, 255, 255, 0.3)"
         >
-          <Navbar
-            onOpen={onOpen}
-            logoText={'AIGA Beta'}
-            brandText={getActiveRoute(routes, pathname)}
-            secondary={getActiveNavbar(routes, pathname)}
-          />
-        </Box>
-        {
-          ( process.env.NODE_ENV == 'development' || isGlobalState )
-          ?
-          <Flex mt="58px" alignItems={'center'} width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
-            <SubPage />
-          </Flex>
-          :
-          <Flex alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
-            <GlobalDisable
-              setRetry={() => onHandleRetry() }
+          <Box 
+            position={'fixed'}
+            top={0}
+            left={0}
+            right={0}
+            height={'60px'}
+            width="100%" 
+            maxWidth={`${mConstants.desktopMinWidth}px`}
+            display={'flex'}
+            justifyContent={'center'}
+          >
+            <Navbar
+              onOpen={onOpen}
+              logoText={'AIGA Beta'}
+              brandText={getActiveRoute(routes, pathname)}
+              secondary={getActiveNavbar(routes, pathname)}
             />
-          </Flex>
-        }
+          </Box>
+          {
+            ( process.env.NODE_ENV == 'development' || isGlobalState )
+            ?
+            <Flex 
+              mt="58px"
+              alignItems={'center'} 
+              width="100%" 
+              maxWidth={`${mConstants.desktopMinWidth}px`} 
+              overflow={'hidden'}
+              bg={themeColor}
+            >
+              <SubPage />
+            </Flex>
+            :
+            <Flex alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
+              <GlobalDisable
+                setRetry={() => onHandleRetry() }
+              />
+            </Flex>
+          }
+        </Flex>
       </Flex>
-    </Flex>
+
   )
 }

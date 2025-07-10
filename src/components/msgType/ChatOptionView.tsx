@@ -45,7 +45,7 @@ export const ChatDisable = ({ isChatDisabled,userBasicInfo,setChatDisabled }: Ch
           </Box>
           <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} flex={2} mt='5px'>
             <CustomTextBold400 fontSize={isMobileOnly ? '13px' : '15px'} color={oopsColor} lineHeight={isMobileOnly ? '130%' : '150%'} letterSpacing={isMobileOnly ? "-10%" : "-5%"}>
-              오늘의 질문 제한에 도달했습니다. {functions.formatAvailabilityMessage(isChatDisabled?.reTrytimeStamp, userBasicInfo?.isGuest ? guestRetryLimitSec : userRetryLimitSec)} 이후에 다시 시도해 주세요.
+              오늘의 질문 제한에 도달했습니다. {functions.formatAvailabilityMessage2(isChatDisabled?.reTrytimeStamp, isChatDisabled?.remainTimeStamp)} 이후에 다시 시도해 주세요.
             </CustomTextBold400>
             <CustomTextBold400 fontSize={isMobileOnly ? '13px' : '15px'} color={oopsColor} lineHeight={isMobileOnly ? '130%' : '150%'}  letterSpacing={isMobileOnly ? "-10%" : "-5%"}>
               회원가입 하시면 다음과 같은 서비스를 제공받으실수 있습니다.
@@ -100,7 +100,7 @@ export const ChatDisable = ({ isChatDisabled,userBasicInfo,setChatDisabled }: Ch
         </Box>
         <Box display={'flex'} alignItems={'center'} flex={2}>
           <CustomText fontSize='15px' color={oopsColor} lineHeight={'150%'} letterSpacing={"-5%"}>
-            오늘의 질문 제한에 도달했습니다. {functions.formatAvailabilityMessage(isChatDisabled?.reTrytimeStamp, userBasicInfo?.isGuest ? guestRetryLimitSec : userRetryLimitSec)} 이후에 다시 시도해 주세요.
+            오늘의 질문 제한에 도달했습니다. {functions.formatAvailabilityMessage2(isChatDisabled?.reTrytimeStamp, isChatDisabled?.remainTimeStamp)} 이후에 다시 시도해 주세요.
           </CustomText>
         </Box>
       </Flex>
@@ -121,8 +121,6 @@ export const ChatDisable = ({ isChatDisabled,userBasicInfo,setChatDisabled }: Ch
     </Flex>
   )
 };
-
-
 
 export const ChatWarningInfo = () => {
 

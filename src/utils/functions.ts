@@ -121,6 +121,43 @@ const functions = {
   },
   
 
+  formatAvailabilityMessage2(currentTimestamp: number, remainLimitSec: number): string {
+    try {
+      const now = new Date();
+      const baseTime = isNaN(currentTimestamp) || currentTimestamp <= 0 ? now.getTime() : currentTimestamp;
+      const baseRemainLimitSec = isNaN(remainLimitSec) || remainLimitSec <= 0 ? 57600 : remainLimitSec;
+      // 제한 해제 시각 = 제한 시작 시간 + 남은 제한 시간
+      const unlockTime = new Date(baseTime + baseRemainLimitSec * 1000);
+  
+      // 날짜 비교용 (연/월/일만 비교)
+      const isSameDay = now.toDateString() === unlockTime.toDateString();
+  
+      const hours = unlockTime.getHours();
+      const minutes = unlockTime.getMinutes().toString().padStart(2, '0');
+      const isAm = hours >= 12 ? "오후" : "오전";
+      const hour12 = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
+      const timeText = `${isAm} ${hour12}시 ${minutes}분`;
+  
+      if (isSameDay) {
+        return `오늘 ${timeText}`;
+      }
+  
+      const tomorrow = new Date(now);
+      tomorrow.setDate(now.getDate() + 1);
+  
+      const isTomorrow = unlockTime.toDateString() === tomorrow.toDateString();
+      if (isTomorrow) {
+        return `내일 ${timeText}`;
+      }
+  
+      const month = unlockTime.getMonth() + 1;
+      const date = unlockTime.getDate();
+      return `${month}월 ${date}일 ${timeText}`;
+    } catch (e) {
+      return `잠시 뒤에 `;
+    }
+  },
+
   parseMaybeJson(str:any) {
     try {
       const parsed = JSON.parse(str);

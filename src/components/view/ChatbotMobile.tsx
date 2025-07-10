@@ -78,7 +78,8 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   const [isChatDisabled, setChatDisabled] = useState<any>({
     isState :  true,
     isAlertMsg : false,
-    reTryTimeStamp : 0
+    reTryTimeStamp : 0,
+    remainTimeStamp : 0
   });
   
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -239,7 +240,15 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   
     return () => clearInterval(check);
   }, []);
-  
+
+  useEffect(() => {
+    if ( isMobileSafari && ( isKeyboardOpen || isKeyboardOpenSafari )) {
+      const el = mobileContentRef.current;
+      if (el) {
+        mobileContentRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+  }, [isKeyboardOpen,isKeyboardOpenSafari]);
 
   // 스크롤을 맨 아래로 내리는 함수
   const scrollToBottom = () => {
@@ -392,7 +401,8 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     setChatDisabled({
       isState :  true,
       isAlertMsg : false,
-      reTryTimeStamp : 0
+      reTryTimeStamp : 0,
+      remainTimeStamp : 0
     })
   }
 
@@ -646,6 +656,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
           setChatDisabled({
             ...isChatDisabled,
             reTryTimeStamp : nowTimeStamp,
+            remainTimeStamp : 57600,
             isAlertMsg : false,
             isState : false,
           })
@@ -656,6 +667,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
           setChatDisabled({
             ...isChatDisabled,
             reTryTimeStamp : nowTimeStamp,
+            remainTimeStamp : 57600,
             isAlertMsg : false,
             isState : false,
           })
@@ -827,6 +839,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
             const parsedMessage = parseLooselyFormattedJsonString(questionResult?.message?.message);
             if ( !functions.isEmpty(parsedMessage) && ( parsedMessage.message == '최대 토큰수 초과 에러' || parsedMessage.message == '비회원 최대 토큰 초과 에러' )) {
               setChatDisabled({
+                remainTimeStamp : parseInt(parsedMessage?.remainingTime),
                 reTrytimeStamp : parseInt(parsedMessage?.timestamp),
                 isState : false,
                 isAlertMsg : false

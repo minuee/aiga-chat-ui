@@ -36,6 +36,16 @@ const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 ,is
                         <ListItem key={index}>
                             <CustomText fontSize={'15px'}  color={textColor} letterSpacing={"-5%"}>
                             {
+                                ( isType == 'career' ||  isType == 'education' )
+                                ?
+                                !functions.isEmpty(item?.period) ?  
+                                functions.stripHtmlTags(item?.period) + " " 
+                                :
+                                ""
+                                :
+                                ''
+                            }
+                            {
                                 isType == 'education' 
                                 ?
                                 functions.stripHtmlTags(item?.action)
