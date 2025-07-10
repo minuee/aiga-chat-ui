@@ -16,12 +16,10 @@ export function getAuthOrigin(props: MemberAuthProps): any {
         .then((response) => {
             return response.data.url;
         }).catch((error) => {
-            console.log("eeeee",error)
             return null;
         });
         return res;
     }catch(error){
-        console.log("eeeee 22222",error)
         return null;   
     }
 }

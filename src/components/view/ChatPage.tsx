@@ -225,7 +225,6 @@ export default function Index() {
     };
   }, []);
   
-  
   const getConfigData = React.useCallback(
     async() => {
       try{
@@ -240,7 +239,6 @@ export default function Index() {
             functions.isEmpty(res?.data?.config?.guest_max_token) ? 0 : parseInt(res?.data?.config?.guest_max_token),
             functions.isEmpty(res?.data?.config?.guest_retry_limit_sec) ? 0 : parseInt(res?.data?.config?.guest_retry_limit_sec)
           )
-          
         }else{
           setIsLoading(false)
           setGlobalState(false)
@@ -269,123 +267,90 @@ export default function Index() {
   }
 
   if (!hasMounted || isLoading) {
-   return (
-    <Flex bg={themeColor} height={"100%"} minHeight={"100vh"} width="100%" justifyContent={'center'} alignItems={'center'}>
-      <SkeletonCircle size='10' />
-    </Flex>
+    return (
+      <Flex bg={themeColor} height={"100%"} minHeight={"100vh"} width="100%" justifyContent={'center'} alignItems={'center'}>
+        <SkeletonCircle size='10' />
+      </Flex>
     )
   }
 
   if ( isMobileOnly ) {
     return (
-        <Box height={`${mobileContainerHeight}px`} overflow={isMobileSafari ? 'auto' : 'hidden'} position={'relative'} ref={mobileScrollRef}>
-          <Flex position={'fixed'} top={0} left={0} right={0} height={'60px'} alignItems={'center'} justifyContent={'center'} zIndex={10}>
-            <Navbar
-              onOpen={onOpen}
-              logoText={'AIGA Alpha'}
-              brandText={getActiveRoute(routes, pathname)}
-              secondary={getActiveNavbar(routes, pathname)}
+      <Box height={`${mobileContainerHeight}px`} overflow={isMobileSafari ? 'auto' : 'hidden'} position={'relative'} ref={mobileScrollRef}>
+        <Flex position={'fixed'} top={0} left={0} right={0} height={'60px'} alignItems={'center'} justifyContent={'center'} zIndex={10}>
+          <Navbar
+            onOpen={onOpen}
+            logoText={'AIGA Alpha'}
+            brandText={getActiveRoute(routes, pathname)}
+            secondary={getActiveNavbar(routes, pathname)}
+          />
+        </Flex>
+        {
+          ( process.env.NODE_ENV == 'development' || isGlobalState )
+          ?
+          <SubMobilePage 
+            mobileContentScrollHeight={mobileContentScrollHeight}
+            mobileViewPortHeight={mobileViewPortHeight}
+            mobileKeyboardOffset={mobileKeyboardOffset}
+            isKeyboardOpenSafari={isKeyboardOpenSafari}
+          />
+          :
+          <Flex alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
+            <GlobalDisable
+              setRetry={() => onHandleRetry() }
             />
           </Flex>
-          {/* ✅ 콘텐츠 영역 */}
-          {/* <Box
-            ref={mobileContentRef}
-            position={'absolute'} top={`${MOBILE_HEADER_HEIGHT}px`} left={0} right={0} bottom={`${MOBILE_INPUT_HEIGHT}px`} boxSizing={'border-box'}
-            overflowY={'auto'} width={'100%'} height={`${mobileContentScrollHeight}px`} maxHeight={`${mobileViewPortHeight}px`}
-          >
-            <Box height={`${mobileViewPortHeight}px`} maxHeight={`${mobileViewPortHeight}px`} overflow={'hidden'}> */}
-              {
-                ( process.env.NODE_ENV == 'development' || isGlobalState )
-                ?
-                <SubMobilePage 
-                  mobileContentScrollHeight={mobileContentScrollHeight}
-                  mobileViewPortHeight={mobileViewPortHeight}
-                  mobileKeyboardOffset={mobileKeyboardOffset}
-                  isKeyboardOpenSafari={isKeyboardOpenSafari}
-                />
-                :
-                <Flex alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
-                  <GlobalDisable
-                    setRetry={() => onHandleRetry() }
-                  />
-                </Flex>
-              }
-            {/* </Box>
-          </Box> */}
-          {/* <Flex
-            position={'absolute'} bottom={`${mobileKeyboardOffset}px`} left={0} right={0} minHeight="60px" height={'auto'} alignItems={'center'} zIndex={10}
-            transition={'bottom 0.25s ease-in-out'}
-          >
-            <input
-              type="text"
-              placeholder="메시지를 입력하세요"
-              style={{ width: '100%',padding: '0.5rem',fontSize: '1rem',borderRadius: 6,border: '1px solid #ccc',}}
-            />
-          </Flex> */}
-        </Box>
+        }
+      </Box>
     )
   }
 
   return (
-      <Flex  justifyContent={'center'} >
-        <Flex
-          minHeight={isMobileOnly ? "100%" : "100vh"}
-          height="100%"
-          overflow="hidden" /* 여기가 중요 */
-          position="relative"
-          maxHeight="100%"
-          w={{ base: '100%', md : `${mConstants.desktopMinWidth}px`  }}
-          maxW={`${mConstants.desktopMinWidth}px` }
-          
-          //borderBottomLeftRadius={ isDesktop ? '15px' : 0}
-          //borderBottomRightRadius={ isDesktop ? '15px' : 0} 
-          
-          //bg='green'뒤에 쉐도우 주는거 
-          borderRadius="sm"
-          boxShadow="0 4px 30px rgba(0, 0, 0, 0.1)"
-          backdropFilter="blur(10px)"
-          //border="1px solid rgba(255, 255, 255, 0.3)"
+    <Flex  justifyContent={'center'} >
+      <Flex
+        minHeight={isMobileOnly ? "100%" : "100vh"}
+        height="100%"
+        overflow="hidden" /* 여기가 중요 */
+        position="relative"
+        maxHeight="100%"
+        w={{ base: '100%', md : `${mConstants.desktopMinWidth}px`  }}
+        maxW={`${mConstants.desktopMinWidth}px` }
+        borderRadius="sm"
+        boxShadow="0 4px 30px rgba(0, 0, 0, 0.1)"
+        backdropFilter="blur(10px)"
+      >
+        <Box 
+          position={'fixed'}
+          top={0}
+          left={0}
+          right={0}
+          height={'60px'}
+          width="100%" 
+          maxWidth={`${mConstants.desktopMinWidth}px`}
+          display={'flex'}
+          justifyContent={'center'}
         >
-          <Box 
-            position={'fixed'}
-            top={0}
-            left={0}
-            right={0}
-            height={'60px'}
-            width="100%" 
-            maxWidth={`${mConstants.desktopMinWidth}px`}
-            display={'flex'}
-            justifyContent={'center'}
-          >
-            <Navbar
-              onOpen={onOpen}
-              logoText={'AIGA Beta'}
-              brandText={getActiveRoute(routes, pathname)}
-              secondary={getActiveNavbar(routes, pathname)}
+          <Navbar
+            onOpen={onOpen}
+            logoText={'AIGA Beta'}
+            brandText={getActiveRoute(routes, pathname)}
+            secondary={getActiveNavbar(routes, pathname)}
+          />
+        </Box>
+        {
+          ( process.env.NODE_ENV == 'development' || isGlobalState )
+          ?
+          <Flex mt="58px" alignItems={'center'} width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
+            <SubPage />
+          </Flex>
+          :
+          <Flex alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
+            <GlobalDisable
+              setRetry={() => onHandleRetry() }
             />
-          </Box>
-          {
-            ( process.env.NODE_ENV == 'development' || isGlobalState )
-            ?
-            <Flex 
-              mt="58px"
-              alignItems={'center'} 
-              width="100%" 
-              maxWidth={`${mConstants.desktopMinWidth}px`} 
-              overflow={'hidden'}
-              bg={themeColor}
-            >
-              <SubPage />
-            </Flex>
-            :
-            <Flex alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
-              <GlobalDisable
-                setRetry={() => onHandleRetry() }
-              />
-            </Flex>
-          }
-        </Flex>
+          </Flex>
+        }
       </Flex>
-
+    </Flex>
   )
 }

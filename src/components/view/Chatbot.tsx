@@ -159,42 +159,11 @@ export default function ChatBot() {
   }
 
   useEffect(() => {
-    console.log("userBasicInfo isChatDisabled changed:", isChatDisabled);
-  }, [isChatDisabled]);
-  //( !isChatDisabled?.isState && !isChatDisabled?.isAlertMsg ) && (
-  /* useEffect(() => {
     const userBasicInfo = UserStateStore.getState();
-    console.log('userBasicInfo',userBasicInfo)
     // userBasicInfo.isState가 true에서 false로 또는 false에서 true로 변경될 때 실행되는 코드
     if (userBasicInfo?.isState) {
-      console.log('userBasicInfo if')
-      // true일 때 수행할 작업
-      setChatDisabled({
-        isState :  true,
-        isAlertMsg : true,
-        reTryTimeStamp : 0
-      })
-    } else {
-      console.log('userBasicInfo else')
-      // false일 때 수행할 작업
-      setChatDisabled({
-        isState :  true,
-        isAlertMsg : true,
-        reTryTimeStamp : 0
-      })
-    }
-  }, [UserStateStore.getState().isState]); */
-
-  useEffect(() => {
-    const userBasicInfo = UserStateStore.getState();
-    console.log('userBasicInfo in24UsedToken',in24UsedToken)
-    // userBasicInfo.isState가 true에서 false로 또는 false에서 true로 변경될 때 실행되는 코드
-    if (userBasicInfo?.isState) {
-      console.log('userBasicInfo if')
       setIn24UsedToken(0)
     } else {
-      console.log('userBasicInfo else')
-      // false일 때 수행할 작업
       setIn24UsedToken(0)
     }
   }, [UserStateStore.getState().isState]);
@@ -304,7 +273,6 @@ export default function ChatBot() {
     }else{
       if ( isNewChat && realOutputCode.length > 0 ) {
         // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
-        console.log("userBasicInfo 2222")
         setChatSessionId('')
         setOutputCode([]);
         setRealOutputCode([])
@@ -319,8 +287,6 @@ export default function ChatBot() {
         setTimeout(() => {
           setNewChatOpen(false);
         }, 60);
-      }else{
-        console.log("userBasicInfo 1111")
       }
     }
   }, [in24UsedToken,oldHistoryData,isNewChat]);
@@ -396,7 +362,6 @@ export default function ChatBot() {
         const lastItem = realOutputCode.length > 0 ? realOutputCode[realOutputCode.length - 1] :"값없음";
         const fromMessage = "질문 중지";
         const questionResult:any = await ChatService.saveErrorLog(chatSessionId,JSON.stringify(lastItem),fromMessage);
-        //console.log("questionResult",questionResult)
       }
     }catch(e:any){
       console.log("questionResult e",e)
@@ -412,9 +377,7 @@ export default function ChatBot() {
   );
 
   const onHandleStopRequest = async() => {
-    console.log("onClick onHandleStopRequest 1",hasSent)
     if (hasSent) return; 
-    console.log("onClick onHandleStopRequest 2",isReceiving)
     if ( isReceiving ) {
       requestRef.current = -1; // 무효화
       await onHandleStopInquiry();
@@ -459,12 +422,10 @@ export default function ChatBot() {
     setIsLoading(false);
     setReceiving(false);
     setIsFocus(false);
-    console.log('textareaRef:', textareaRef.current);
     
     setTimeout(() => {
       if (textareaRef.current && !isMobileOnly) {
         textareaRef?.current?.focus()
-        console.log('✅ 포커싱 시도');
       }
     }, 100)
   }
@@ -566,7 +527,6 @@ export default function ChatBot() {
             setTimeout(() => {
               if (textareaRef.current && !isMobileOnly) {
                 textareaRef?.current?.focus()
-                console.log('✅ 포커싱 시도');
               }
             }, 100)
           }
@@ -596,7 +556,6 @@ export default function ChatBot() {
             setTimeout(() => {
               if (textareaRef.current && !isMobileOnly) {
                 textareaRef?.current?.focus()
-                console.log('✅ 포커싱 시도');
               }
             }, 100)
             
@@ -622,7 +581,6 @@ export default function ChatBot() {
             setTimeout(() => {
               if (textareaRef.current && !isMobileOnly) {
                 textareaRef?.current?.focus()
-                console.log('✅ 포커싱 시도');
               }
             }, 100)
             
@@ -648,7 +606,6 @@ export default function ChatBot() {
             setTimeout(() => {
               if (textareaRef.current && !isMobileOnly) {
                 textareaRef?.current?.focus()
-                console.log('✅ 포커싱 시도');
               }
             }, 100)
             
@@ -682,7 +639,6 @@ export default function ChatBot() {
               setTimeout(() => {
                 if (textareaRef.current && !isMobileOnly) {
                   textareaRef?.current?.focus()
-                  console.log('✅ 포커싱 시도');
                 }
               }, 100)
               
@@ -695,7 +651,6 @@ export default function ChatBot() {
         }
       }catch(e:any){
         const fromMessage = `Try Catch Error: ${JSON.stringify(e)}`;
-        console.log("handleTranslate error",e);
         call_fn_error_message(inputCodeText,chat_sessinn_id,fromMessage);
       }
     }else{
@@ -736,7 +691,6 @@ export default function ChatBot() {
     setTimeout(() => {
       if (textareaRef.current && !isMobileOnly) {
         textareaRef?.current?.focus()
-        console.log('✅ 포커싱 시도');
       }
     }, 100)
 
@@ -770,7 +724,6 @@ export default function ChatBot() {
     setInputCode(Event.target.value);
     /* const nowTokens = calculateTokenCount(Event.target.value);
     const nowTimeStamp = functions.getKSTUnixTimestamp();
-    console.log('nowTokens',in24UsedToken,nowTokens,nowTimeStamp)
     if ( in24UsedToken > 0 ) { 
       const realTimeIn24UsedToken = in24UsedToken+nowTokens;
       if ( userBasicInfo?.isGuest  ) {//비회원
@@ -1412,11 +1365,8 @@ export default function ChatBot() {
                   zIndex={101}
                   pointerEvents="auto"
                   onMouseDown={(e:any) => {
-                    
-                    console.log("onClick 1",isChatDisabled?.isState,isReceiving,inputCode);
                     e.preventDefault();e.stopPropagation();
                     if (isChatDisabled?.isState && !functions.isEmpty(inputCode) && !isReceiving) {
-                      console.log("onClick 2")
                       setHasSent(true); // 일단 막고
                       handleSendMessage();
                       setIsFocus(false);

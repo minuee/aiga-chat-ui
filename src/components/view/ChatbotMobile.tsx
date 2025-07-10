@@ -351,7 +351,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
 
   useEffect(() => {
     const preventTouch = (e: any) => {
-      if (isScrollLocked) e.preventDefault();
+      if ((isScrollLocked && !isKeyboardOpen && !isKeyboardOpenSafari)) e.preventDefault();
     };
   
     document.addEventListener('touchmove', preventTouch, { passive: false });
@@ -437,6 +437,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
 
   useEffect(() => {
     pathnameRef.current = pathname; // 항상 최신값 유지
+    setIsScrollLocked(false);
   }, [pathname]);
 
   const getNewSessionID =  async() => {
@@ -523,7 +524,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     }else{
       if ( isNewChat && realOutputCode.length > 0 ) {
         // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
-        console.log("userBasicInfo 2222")
         setChatSessionId('')
         setOutputCode([]);
         setRealOutputCode([])
@@ -618,12 +618,9 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     setIsLoading(false);
     setReceiving(false);
     setIsFocus(false);
-    console.log('textareaRef:', textareaRef.current);
-    
     setTimeout(() => {
       if (textareaRef.current && !isMobileOnly) {
         textareaRef?.current?.focus()
-        console.log('✅ 포커싱 시도');
       }
     }, 100)
     
@@ -727,7 +724,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
             setTimeout(() => {
               if (textareaRef.current && !isMobileOnly) {
                 textareaRef?.current?.focus()
-                console.log('✅ 포커싱 시도');
               }
             }, 100)
           }
@@ -757,7 +753,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
             setTimeout(() => {
               if (textareaRef.current && !isMobileOnly) {
                 textareaRef?.current?.focus()
-                console.log('✅ 포커싱 시도');
               }
             }, 100)
             
@@ -783,7 +778,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
             setTimeout(() => {
               if (textareaRef.current && !isMobileOnly) {
                 textareaRef?.current?.focus()
-                console.log('✅ 포커싱 시도');
               }
             }, 100)
             
@@ -809,7 +803,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
             setTimeout(() => {
               if (textareaRef.current && !isMobileOnly) {
                 textareaRef?.current?.focus()
-                console.log('✅ 포커싱 시도');
               }
             }, 100)
             
@@ -843,7 +836,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
               setTimeout(() => {
                 if (textareaRef.current && !isMobileOnly) {
                   textareaRef?.current?.focus()
-                  console.log('✅ 포커싱 시도');
                 }
               }, 100)
             }else{
@@ -855,7 +847,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         }
       }catch(e:any){
         const fromMessage = `Try Catch Error: ${JSON.stringify(e)}`;
-        console.log("handleTranslate error",e);
         call_fn_error_message(inputCodeText,chat_sessinn_id,fromMessage);
       }
     }else{
@@ -895,7 +886,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     setTimeout(() => {
       if (textareaRef.current && !isMobileOnly) {
         textareaRef?.current?.focus()
-        console.log('✅ 포커싱 시도');
       }
     }, 100)
 
@@ -929,7 +919,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     setInputCode(Event.target.value);
     /* const nowTokens = calculateTokenCount(Event.target.value);
     const nowTimeStamp = functions.getKSTUnixTimestamp();
-    console.log('nowTokens',in24UsedToken,nowTokens,nowTimeStamp)
     if ( in24UsedToken > 0 ) { 
       const realTimeIn24UsedToken = in24UsedToken+nowTokens;
       if ( userBasicInfo?.isGuest  ) {//비회원

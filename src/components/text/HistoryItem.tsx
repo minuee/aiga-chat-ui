@@ -35,7 +35,7 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
     const iconColor = useColorModeValue('#AFB5C3','white')
     const iconRedColor = useColorModeValue('#FA6464','#FA6464');
     const bgDefaultColor = useColorModeValue('#ffffff', 'navy.800');
-    const bgCurrentColor = useColorModeValue('#EAF4FF', 'navy.800');
+    const bgCurrentColor = useColorModeValue('#EAF4FF', 'rgb(0, 133, 250)');
 
     const bgCurrentBorderColor = useColorModeValue('#EAF4FF', 'navy.300');
     const bgDefaultBorderColor = useColorModeValue('#EAF4FF', 'navy.300');
