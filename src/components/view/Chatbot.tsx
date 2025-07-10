@@ -69,7 +69,8 @@ export default function ChatBot() {
   const [isChatDisabled, setChatDisabled] = useState<any>({
     isState :  true,
     isAlertMsg : false,
-    reTryTimeStamp : 0
+    reTryTimeStamp : 0,
+    remainTimeStamp : 0
   });
   
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -154,7 +155,8 @@ export default function ChatBot() {
     setChatDisabled({
       isState :  true,
       isAlertMsg : false,
-      reTryTimeStamp : 0
+      reTryTimeStamp : 0,
+      remainTimeStamp : 0
     })
   }
 
@@ -448,6 +450,7 @@ export default function ChatBot() {
           setChatDisabled({
             ...isChatDisabled,
             reTryTimeStamp : nowTimeStamp,
+            remainTimeStamp : 57600,
             isAlertMsg : false,
             isState : false,
           })
@@ -458,6 +461,7 @@ export default function ChatBot() {
           setChatDisabled({
             ...isChatDisabled,
             reTryTimeStamp : nowTimeStamp,
+            remainTimeStamp : 57600,
             isAlertMsg : false,
             isState : false,
           })
@@ -629,6 +633,7 @@ export default function ChatBot() {
             if ( !functions.isEmpty(parsedMessage) && ( parsedMessage.message == '최대 토큰수 초과 에러' || parsedMessage.message == '비회원 최대 토큰 초과 에러' )) {
               setChatDisabled({
                 reTrytimeStamp : parseInt(parsedMessage?.timestamp),
+                remainTimeStamp : parseInt(parsedMessage?.remainingTime),
                 isState : false,
                 isAlertMsg : false
               })
