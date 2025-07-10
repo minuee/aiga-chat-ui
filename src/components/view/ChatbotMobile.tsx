@@ -351,7 +351,9 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
 
   useEffect(() => {
     const preventTouch = (e: any) => {
-      if ((isScrollLocked && !isKeyboardOpen && !isKeyboardOpenSafari)) e.preventDefault();
+      if (isScrollLocked && (isKeyboardOpen || isKeyboardOpenSafari)) {
+        e.preventDefault();
+      }
     };
   
     document.addEventListener('touchmove', preventTouch, { passive: false });
