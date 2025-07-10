@@ -630,7 +630,7 @@ export default function ChatBot() {
             }, 60); 
           }else if ( questionResult?.message?.statusCode == '403' ) {
             const parsedMessage = parseLooselyFormattedJsonString(questionResult?.message?.message);
-            if ( !functions.isEmpty(parsedMessage) && ( parsedMessage.message == '최대 토큰수 초과 에러' || parsedMessage.message == '비회원 최대 토큰 초과 에러' )) {
+            if ( !functions.isEmpty(parsedMessage)) {
               setChatDisabled({
                 reTrytimeStamp : parseInt(parsedMessage?.timestamp),
                 remainTimeStamp : parseInt(parsedMessage?.remainingTime),
