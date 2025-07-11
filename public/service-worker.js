@@ -22,6 +22,6 @@ self.addEventListener("install", function () {
   
   self.addEventListener("notificationclick", (event) => {
     event.notification.close();
-    const urlToOpen = event.notification.data;
+    const urlToOpen = event.notification.data.url || '/';  // url 프로퍼티 명확히
     event.waitUntil(self.clients.openWindow(urlToOpen));
   });

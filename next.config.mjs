@@ -38,5 +38,5 @@ const nextConfig = {
     unoptimized: true,
   },
 };
-export default withNextIntl(nextConfig)
-//export default withPWA(withNextIntl(nextConfig))
+//export default withNextIntl(nextConfig)
+export default withPWA(withNextIntl(nextConfig))

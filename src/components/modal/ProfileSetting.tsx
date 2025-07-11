@@ -26,7 +26,7 @@ import * as mCookie from "@/utils/cookies";
 import { SkeletonDefaultMixed } from "@/components/fields/LoadingBar";
 import { DefaultProfile } from '@/components/icons/svgIcons';
 import { MdOutlineClose,MdArrowBack,MdLogout } from 'react-icons/md';
-import { BiDetail,BiInfoCircle,BiGroup,BiEdit,BiChevronRight } from "react-icons/bi";
+import { BiDetail,BiInfoCircle,BiGroup,BiEdit,BiChevronRight,BiNotification } from "react-icons/bi";
 import { iconAlertEntire } from "@/components/icons/IconImage"
 
 export interface ProfileSettingModalProps extends PropsWithChildren {
@@ -45,6 +45,10 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   const { ...userBaseInfo } = UserStateStore(state => state);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isReceiving, setReceiving] = React.useState(false);
+  const [isPWAPermission, setPWAPermission] = React.useState(false); // 알림 권한 여부
+  const [isSubscribed, setIsSubscribed] = React.useState(false);     // 실제 구독 상태
+  const [subscription, setSubscription] = React.useState<PushSubscription | null>(null);
+
   const [isOpenLogoutModal, setIsOpenLogoutModal] = React.useState(false);
   const [isOpenAlert, setOpenAlert] = React.useState(false);  
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
@@ -359,6 +363,151 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`)
     }, 200);
   }
+/* 
+  const sendNotification = async() => {
+    try {
+      const bodyDat = {
+        ...myToken,
+        endpoint: "http://localhost:3000/chat"
+      }
+      const response = await fetch('/api/sendpush', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(myToken),
+      }).then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error('Error:', error));;
+    } catch (error) {
+        console.error('Error sending notification:', error);
+    }
+  } */
+  
+  React.useEffect(() => {
+    if ( process.env.NODE_ENV == 'development' || userBaseInfo?.email == "minuee47@gmail.com") {
+      checkPushStatus();
+    }
+  }, []);
+
+  const checkPushStatus = async () => {
+    const permission = Notification.permission;
+    console.log("permission",permission)
+    setPWAPermission(permission === 'granted');
+  
+    const registration = await navigator.serviceWorker.ready;
+    console.log("permission 2",registration)
+    const currentSub = await registration.pushManager.getSubscription();
+    console.log("permission 3",currentSub)
+    if (currentSub) {
+      setIsSubscribed(true);
+      setSubscription(currentSub);
+    } else {
+      setIsSubscribed(false);
+      setSubscription(null);
+    }
+  };
+
+  const requestPermissionAndSubscribe = async () => {
+    try{
+      const permission = await Notification.requestPermission();
+      console.log("permission 2222",permission)
+      if (permission !== 'granted') {
+        toast({
+          title: '알림 권한이 차단되어 있어요',
+          description: '브라우저 정보(i) 아이콘을 눌러 권한을 다시 허용해주세요.',
+          position: 'top-right',
+          status: 'warning',
+          containerStyle: {
+            color: '#ffffff',
+          },
+          isClosable: true,
+          duration:1500
+        });
+        setPWAPermission(false);
+        return;
+      }
+    
+      setPWAPermission(true);
+    
+      const registration = await navigator.serviceWorker.ready;
+      console.log("permission 3333",registration)
+      const currentSub = await registration.pushManager.getSubscription();
+      console.log("permission 4444",currentSub)
+      if (!currentSub) {
+        const newSub = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+        });
+        setSubscription(newSub);
+        setIsSubscribed(true);
+        toast({
+          title: '알림 구독 감사합니다.',
+          position: 'top-right',
+          status: 'success',
+          containerStyle: {
+            color: '#ffffff',
+          },
+          isClosable: true,
+          duration:1500
+        });
+        // 서버에 구독 정보 전송
+        // await fetch('/api/subscribe', { ... });
+      } else {
+        toast({
+          title: '이미 구독된 상태입니다.',
+          position: 'top-right',
+          status: 'info',
+          containerStyle: {
+            color: '#ffffff',
+          },
+          isClosable: true,
+          duration:1500
+        });
+        setSubscription(currentSub);
+        setIsSubscribed(true);
+      }
+    }catch(e:any) {
+      console.log("permission eeee",e)
+    }
+  };
+
+  const unsubscribePush = async () => {
+    if (!subscription) return;
+  
+    const success = await subscription.unsubscribe();
+    if (success) {
+      setSubscription(null);
+      setIsSubscribed(false);
+  
+      toast({
+        title: '알림 구독이 해지되었습니다.',
+        position: 'top-right',
+        status: 'success',
+        containerStyle: {
+          color: '#ffffff',
+        },
+        isClosable: true,
+        duration:1500
+      });
+  
+      // 서버에 구독 해지 알림
+      // await fetch('/api/unsubscribe', { ... });
+    } else {
+      toast({
+        title: '구독 해지 실패하였습니다.',
+        position: 'top-right',
+        status: 'error',
+        containerStyle: {
+          color: '#ffffff',
+        },
+        isClosable: true,
+        duration:1500
+      });
+    }
+  };
+  
+  
 
   if ( isLoading ) {
     return (
@@ -479,6 +628,29 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                   <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
                 </Box>
               </Box>
+              {
+               ( process.env.NODE_ENV == 'development' || userBaseInfo?.email == "minuee47@gmail.com") 
+               &&
+               (
+                <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
+                  {
+                    isPWAPermission && isSubscribed
+                    ? (
+                      <Box display={'flex'} alignItems={'center'} flex={5} onClick={unsubscribePush} cursor={'pointer'}>
+                        <Icon as={BiNotification} width="20px" height="20px" color={iconColor} />
+                        <CustomTextBold400 fontSize={'17px'} ml={2} color={textColor3}>알림 해지</CustomTextBold400>
+                      </Box>
+                    )
+                    : (
+                      <Box display={'flex'} alignItems={'center'} flex={5} onClick={requestPermissionAndSubscribe} cursor={'pointer'} >
+                        <Icon as={BiNotification} width="20px" height="20px" color={iconColor} />
+                        <CustomTextBold400 fontSize={'17px'} ml={2} color={textColor3}>알림 신청</CustomTextBold400>
+                      </Box>
+                    )
+                  }
+                </Box>
+               )
+              }
             </Flex>
           </Flex>
           <Flex height={'100px'} width="100%" justifyContent={'flex-end'} mt="30px" alignItems={'flex-end'}  pr="20px">
