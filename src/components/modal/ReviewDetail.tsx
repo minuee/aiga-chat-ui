@@ -12,10 +12,11 @@ import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/te
 import { IconVote1,IconVote2,IconVote3,IconVote4 } from '@/components/icons/svgIcons';
 import ImageEntire from "@/assets/images/img-entire.png";
 import { BiDetail,BiInfoCircle,BiGroup,BiEdit,BiChevronRight } from "react-icons/bi";
-import Alert from '@/components/alert/CustomAlert';
-
+import CustomAlert from '@/components/alert/CustomAlert';
+import Alert from '@/components/alert/Alert';
+import * as mCookie from "@/utils/cookies";
 import BadWords from "@/utils/badword"
-
+import  {TempReivewStore } from '@/store/historyStore';
 import { iconAlertModify,iconAlertReview } from "@/components/icons/IconImage"
 import ProcessingBar from "@/assets/icons/processing2x.gif";
 export interface ReviewModalProps extends PropsWithChildren {
@@ -31,7 +32,13 @@ function ReviewModal(props: ReviewModalProps) {
   const toast = useToast();
   const [isLoading, setIsLoading] = React.useState(true);
   const [isReceiving, setReceiving] = React.useState(false);
-  const [isOpenAlert, setOpenAlert] = React.useState(false);  
+  const [isOpenAlert, setOpenAlert] = React.useState(false); 
+  const [isOpenAlert2, setOpenAlert2] = React.useState(false);  
+
+  const { tempReviewData } = TempReivewStore(state => state);
+  const setTempReviewData = TempReivewStore((state) => state.setTempReviewData);
+  const removeTempReviewData = TempReivewStore((state) => state.removeTempReviewData);
+
   const skeletonColor = useColorModeValue('white', 'gray.700');
   const textColor2 = useColorModeValue('black', 'white');
   const buttonBgColor = useColorModeValue('#2b8fff', 'white');
@@ -51,10 +58,9 @@ function ReviewModal(props: ReviewModalProps) {
   });
 
   React.useEffect(() => {
-   
-    console.log("reviewData",reviewData,selected_doctor)
-
-    if( !functions.isEmpty(reviewData?.doctor_id) ){
+    console.log('inputs reviewData',reviewData)
+    console.log('inputs selected_doctor',selected_doctor)
+    if( !functions.isEmpty(reviewData?.doctor_id) ){ // 기존거 불러오는거 
       //getReviewData(reviewData?.doctor_id)
       setInputs({
         ...reviewData,
@@ -68,16 +74,63 @@ function ReviewModal(props: ReviewModalProps) {
       setTimeout(() => {
         setIsLoading(false);
       }, 60);
+    }else{ ////없으면 신규 
+      setNewReviewForm()
+    }
+  }, [isOpen,reviewData]);
+
+  const setNewReviewForm = async() => {
+    const reviewForDoctor = tempReviewData.find(item => item.doctor_id === selected_doctor?.doctor_id);
+    console.log('inputs reviewForDoctor',reviewForDoctor)
+    if( !functions.isEmpty(reviewForDoctor) ){
+      setOpenAlert2(true)
     }else{
+      console.log('inputs 1111',selected_doctor?.doctor_id)
       setInputs({
         ...inputs,
         doctor_id : selected_doctor?.doctor_id
       })
+      
       setTimeout(() => {
         setIsLoading(false);
       }, 60);
+    } 
+  }
+
+  const onRemoveTempData = async() => {
+    removeTempReviewData(selected_doctor?.doctor_id)
+    setOpenAlert2(false)
+    setIsLoading(false);
+  }
+
+  const onCallTempData = async() => {
+    const reviewForDoctor = await tempReviewData.find(item => item.doctor_id === selected_doctor?.doctor_id);
+    setInputs({
+      ...inputs,
+      doctor_id : reviewForDoctor?.doctor_id,
+      content: reviewForDoctor?.content,
+      kindness_score: reviewForDoctor?.kindness_score,
+      satisfaction_score: reviewForDoctor?.satisfaction_score,
+      explaination_score: reviewForDoctor?.explaination_score,
+      recommand_score: reviewForDoctor?.recommand_score,
+    })
+    setTimeout(() => {
+      setOpenAlert2(false)
+      setIsLoading(false);
+    }, 60);
+  }
+
+  React.useEffect(() => {
+    if( 
+      !functions.isEmpty(inputs?.doctor_id) && functions.isEmpty(reviewData?.review_id)  
+      && 
+      (
+        !functions.isEmpty(inputs?.content) || inputs?.kindness_score > 0 || inputs?.satisfaction_score > 0 || inputs?.explaination_score > 0 || inputs?.recommand_score > 0
+      )
+    ){
+      setTempReviewData(inputs)
     }
-  }, [isOpen,reviewData]);
+  }, [inputs]);
 
   const getReviewData = async(did:any) => {
     const res:any = await DoctorService.getReviewData(did);
@@ -128,6 +181,7 @@ function ReviewModal(props: ReviewModalProps) {
        
         const res:any = await DoctorService.setReviewData(reInputData,isRegist);
         if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
+          removeTempReviewData(reInputData?.doctor_id)
           setOpenAlert(true)
           setReceiving(false);
         }else{
@@ -158,6 +212,19 @@ function ReviewModal(props: ReviewModalProps) {
       <Box padding='6' boxShadow='lg' bg={skeletonColor}>
         <SkeletonCircle size='10' />
         <SkeletonText mt='4' noOfLines={4} spacing='4' skeletonHeight='2' />
+        {
+          isOpenAlert2 && (
+            <Alert 
+              AppName='AIGA'
+              bodyContent='기존에 작성중인 리뷰데이터가 있습니다. 불러오시겠습니까?'
+              isOpen={isOpenAlert2}
+              onClose={() => onRemoveTempData()}
+              onConfirm={() => onCallTempData()}
+              closeText='취소(삭제)'
+              confirmText='불러오기'
+            />
+          )
+        }
       </Box>
     )
   }else{
@@ -325,12 +392,11 @@ function ReviewModal(props: ReviewModalProps) {
           }
         </Box>
         </Flex>
-        
-
         <Box height={'50px'} />
+        
         {
           isOpenAlert && (
-            <Alert 
+            <CustomAlert 
               isShowAppname={false}
               AppName='AIGA'
               bodyContent={

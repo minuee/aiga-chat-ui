@@ -7,7 +7,7 @@ import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
 import functions from "@/utils/functions";
-import { ModalDoctorListStore } from '@/store/modalStore';
+import { ModalDoctorListStore,ModalDoctorReviewStore,ModalDoctorRequestStore,ModalDoctorDetailStore } from '@/store/modalStore';
 import DoctorList from "@/components/modal/DoctorList";
 import { MdArrowBack,MdOutlineClose } from 'react-icons/md';
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
@@ -40,6 +40,9 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
   const isDark = useColorModeValue(false, true);
   const { isOpenDocListModal,chatId,doctorAllList } = ModalDoctorListStore(state => state);
   const setOpenDoctorListModal = ModalDoctorListStore((state) => state.setOpenDoctorListModal);
+  const setIsOpenReview = ModalDoctorReviewStore((state) => state.setModalState);
+  const setIsOpenRequestModal = ModalDoctorRequestStore((state) => state.setModalState);
+  const setIsOpenDoctorDetailModal = ModalDoctorDetailStore((state) => state.setOpenDoctorDetailModal);
   const modalBtnRef = useRef<HTMLButtonElement>(null);
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.700');
   const starColor = useColorModeValue('#0000ff', '#ffffff');
@@ -114,6 +117,9 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
   const onSendDoctorListButton = async( id:any) => {
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_1}`);
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_1}`)   
+    setIsOpenReview(false);
+    setIsOpenRequestModal(false);
+    setIsOpenDoctorDetailModal(false);
     setOpenDoctorListModal(true,id,doctorList);
   }
 

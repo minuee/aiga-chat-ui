@@ -11,7 +11,7 @@ import { BiChevronRight } from "react-icons/bi";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import DoctorAvatar from "@/assets/images/doctor_default_white.png";
 import { IconChatAiga, DefaultHeaderLogo } from '@/components/icons/svgIcons';
-import { ModalDoctorListStore } from '@/store/modalStore';
+import { ModalDoctorListStore,ModalDoctorReviewStore,ModalDoctorRequestStore,ModalDoctorDetailStore } from '@/store/modalStore';
 import { MdArrowBack,MdOutlineClose } from 'react-icons/md';
 import DoctorList from "@/components/modal/DoctorList";
 import { MdOutlineArrowForward } from 'react-icons/md';
@@ -51,7 +51,9 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
   const modalBtnRef = useRef<HTMLButtonElement>(null);
   const { isOpenDocListModal,chatId,doctorAllList } = ModalDoctorListStore(state => state);
   const setOpenDoctorListModal = ModalDoctorListStore((state) => state.setOpenDoctorListModal);
-
+  const setIsOpenReview = ModalDoctorReviewStore((state) => state.setModalState);
+  const setIsOpenRequestModal = ModalDoctorRequestStore((state) => state.setModalState);
+  const setIsOpenDoctorDetailModal = ModalDoctorDetailStore((state) => state.setOpenDoctorDetailModal);
 
   const previousOutputRef = useRef<string | null>(null);
 
@@ -117,6 +119,9 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
   const onSendDoctorListButton = async( id:any) => {
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_1}`);
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_1}`)   
+    setIsOpenReview(false);
+    setIsOpenRequestModal(false);
+    setIsOpenDoctorDetailModal(false);
     setOpenDoctorListModal(true,id,doctorList);
   }
 

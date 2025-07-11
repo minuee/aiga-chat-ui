@@ -381,7 +381,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   const firstForceStep = () => {
     setChatSessionId('')
     setIsOpenReview(false)
-    setIsOpenDoctorDetailModal(false);
     setOpenHistoryDrawer(false);
     setIsOpenRequestModal(false);
     setOpenDoctorListModal(false);
@@ -994,6 +993,9 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_2}`);
     setCurrentPathname(`${mConstants.pathname_modal_2}`)
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2}`)
+    setOpenDoctorListModal(false);
+    setIsOpenReview(false);
+    setIsOpenRequestModal(false);
     setIsOpenDoctorModal(true);
   }
 
@@ -1531,7 +1533,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
           resize="none"
           as={ResizeTextarea}
           h="100%"
-          sx={{WebkitOverflowScrolling: "touch",overflowY: "auto",touchAction: "manipulation"}}
+          sx={{WebkitOverflowScrolling: "touch",overflowY: "auto",touchAction: "manipulation", pr:'40px'}}
           maxH={"150px"}
           border="1px solid"
           borderColor={borderColor}

@@ -481,11 +481,10 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               </Box>
             </Flex>
           </Flex>
-          <Flex 
-            height={'100px'} width="100%" justifyContent={'flex-end'} mt="30px" alignItems={'flex-end'}
-            onClick={() => onSendMyPageEntireButton()} cursor={'pointer'} pr="20px"
-          >
-            <CustomTextBold400 fontSize={'17px'} textDecoration={'underline'} color={entireTextColor}>탈퇴하기</CustomTextBold400>
+          <Flex height={'100px'} width="100%" justifyContent={'flex-end'} mt="30px" alignItems={'flex-end'}  pr="20px">
+            <Box onClick={() => onSendMyPageEntireButton()} cursor={'pointer'} padding={0} margin={0}>
+              <CustomTextBold400 fontSize={'17px'} textDecoration={'underline'} color={entireTextColor}>탈퇴하기</CustomTextBold400>
+            </Box>
           </Flex>
         </Flex>
         <Box height={'10px'} />
