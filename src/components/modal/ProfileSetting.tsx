@@ -480,6 +480,16 @@ const getServiceWorkerRegistration = async () => {
       }
     }catch(e:any) {
       console.log("permission eeee",e)
+      toast({
+        title: `에러 : ${e}`,
+        position: 'top-right',
+        status: 'info',
+        containerStyle: {
+          color: '#ffffff',
+        },
+        isClosable: true,
+        duration:5000
+      });
     }
   };
 
