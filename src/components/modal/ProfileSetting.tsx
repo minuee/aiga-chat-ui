@@ -47,7 +47,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   const [isReceiving, setReceiving] = React.useState(false);
   const [isPWAPermission, setPWAPermission] = React.useState(false); // 알림 권한 여부
   const [isSubscribed, setIsSubscribed] = React.useState(false);     // 실제 구독 상태
-  const [subscription, setSubscription] = React.useState<PushSubscription | null>(null);
+  const [subscriptionJson, setSubscription] = React.useState<PushSubscription | null>(null);
 
   const [isOpenLogoutModal, setIsOpenLogoutModal] = React.useState(false);
   const [isOpenAlert, setOpenAlert] = React.useState(false);  
@@ -407,11 +407,23 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       setSubscription(null);
     }
   };
-
+const getServiceWorkerRegistration = async () => {
+  // 사파리 호환용: ready 대신 getRegistration 사용, 없으면 등록 시도
+  const isSafari = functions.isSafari();
+  if ( isSafari ) {
+    let registration = await navigator.serviceWorker.getRegistration();
+    if (!registration) {
+      registration = await navigator.serviceWorker.register('/service-worker.js');
+    }
+    return registration;
+  }else{
+    return await navigator.serviceWorker.ready;
+  }
+};
   const requestPermissionAndSubscribe = async () => {
     try{
       const permission = await Notification.requestPermission();
-      console.log("permission 2222",permission)
+     
       if (permission !== 'granted') {
         toast({
           title: '알림 권한이 차단되어 있어요',
@@ -429,11 +441,10 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       }
     
       setPWAPermission(true);
-    
-      const registration = await navigator.serviceWorker.ready;
-      console.log("permission 3333",registration)
+  
+      const registration =  await getServiceWorkerRegistration();
+   
       const currentSub = await registration.pushManager.getSubscription();
-      console.log("permission 4444",currentSub)
       if (!currentSub) {
         const newSub = await registration.pushManager.subscribe({
           userVisibleOnly: true,
@@ -473,9 +484,9 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   };
 
   const unsubscribePush = async () => {
-    if (!subscription) return;
+    if (!subscriptionJson) return;
   
-    const success = await subscription.unsubscribe();
+    const success = await subscriptionJson.unsubscribe();
     if (success) {
       setSubscription(null);
       setIsSubscribed(false);
@@ -506,8 +517,6 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       });
     }
   };
-  
-  
 
   if ( isLoading ) {
     return (
@@ -634,7 +643,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                (
                 <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
                   {
-                    isPWAPermission && isSubscribed
+                    ( isPWAPermission && isSubscribed )
                     ? (
                       <Box display={'flex'} alignItems={'center'} flex={5} onClick={unsubscribePush} cursor={'pointer'}>
                         <Icon as={BiNotification} width="20px" height="20px" color={iconColor} />
@@ -648,6 +657,9 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                       </Box>
                     )
                   }
+                  {/* <Box>
+                  <CustomText fontSize={'12px'}>{JSON.stringify(subscriptionJson)}</CustomText>
+                  </Box> */}
                 </Box>
                )
               }

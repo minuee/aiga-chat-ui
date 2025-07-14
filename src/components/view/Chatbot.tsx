@@ -291,7 +291,7 @@ export default function ChatBot() {
         }, 60);
       }
     }
-  }, [in24UsedToken,oldHistoryData,isNewChat]);
+  }, [in24UsedToken,isNewChat]);
 
   useEffect(() => {
     const timer = setTimeout(() => {

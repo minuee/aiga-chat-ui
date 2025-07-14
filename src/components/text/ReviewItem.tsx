@@ -76,7 +76,7 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
                                     <CustomText fontSize='15px' color={iconColor}>수정하기</CustomText> 
                                 </Button>
                                 <Button leftIcon={<Icon as={BiTrash} width="16px" height="16px" color={iconRedColor}  />} size='sm' onClick={() => setOpenAlert(true)} color={iconRedColor} id="button_remove"  bg="transparent">  
-                                    <CustomText fontSize='15px' color={iconColor}>삭제하기</CustomText> 
+                                    <CustomText fontSize='15px' color={iconRedColor}>삭제하기</CustomText> 
                                 </Button>
                             </Flex>
                         </PopoverBody>

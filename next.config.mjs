@@ -14,10 +14,8 @@ const withNextIntl = createNextIntlPlugin();
 }); */
 const withPWA = withPWAInit({
   dest: 'public',
-  //register: true,
-  //skipWaiting: true,
-  //customWorkerDir: 'worker',
-  //runtimeCaching,
+  register: false,
+  skipWaiting: true,
   disable: process.env.NODE_ENV !== "production",
   runtimeCaching,
   buildExcludes: [/middleware-manifest.json$/,/app-build-manifest.json$/]

@@ -7,14 +7,14 @@ self.addEventListener("install", function () {
   });
 
   self.addEventListener('push', (event) => {
-    const payload = event.data.text();
+    const payload = event.data.json();
     const options = {
-      body: payload,
-      icon: 'img/icon.png',
-      badge: 'img/badge.png',
+      body: payload.body,
+      icon: payload.icon || '/img/fav/Icon-196.png',
+      badge: payload.badge || '/img/fav/Icon-72.png',
       vibrate: [200, 100, 200],
       data: {
-        url: 'https://aigadev.kormedi.com',
+        url: payload.data?.url || 'https://aigadev.kormedi.com/ko/chat',
       },
     };
     event.waitUntil(self.registration.showNotification('푸시 알림', options));

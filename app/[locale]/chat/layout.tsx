@@ -4,6 +4,9 @@ import React, { ReactNode } from 'react';
 import {routing} from '@/i18n/routing';
 import { subMetadata } from '@/components/header/SubHeader';
 import type { Metadata } from 'next';
+
+import RegisterSW from '@/components/RegisterSW'
+
 type Props = {
   children: ReactNode;
   params: Promise<{locale: string}>;
@@ -30,7 +33,10 @@ export default async function LocaleLayout({children, params}: Props) {
 
   return (
     <>
-      <NextIntlClientProvider>{children}</NextIntlClientProvider>
+      <NextIntlClientProvider>
+        <RegisterSW />
+        {children}
+      </NextIntlClientProvider>
     </>
   );
 }

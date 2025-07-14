@@ -551,7 +551,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         }, 60);
       }
     }
-  }, [in24UsedToken,oldHistoryData,isNewChat]);
+  }, [in24UsedToken,isNewChat]);
 
   
 

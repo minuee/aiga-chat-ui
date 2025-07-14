@@ -56,6 +56,11 @@ const functions = {
     return input.replace(/[\r\n]+$/, '');
   },
 
+  isSafari(){
+    const ua = navigator.userAgent.toLowerCase();
+    return ua.includes('safari') && !ua.includes('chrome') && !ua.includes('android');
+  },
+
   cleanEscapedCharacters(text: string): string {
     return text
       .replaceAll(/\\"/g, '')   // \" → "
