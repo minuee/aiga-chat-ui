@@ -7,18 +7,32 @@ self.addEventListener("install", function () {
   });
 
   self.addEventListener('push', (event) => {
-    const payload = event.data.json();
+    let payload = {};
+    try {
+      payload = event.data?.json() || {};
+    } catch (e) {
+      console.warn('푸시 payload 없음, 기본 알림 사용');
+      payload = {
+        title: '기본 푸시 제목',
+        body: '기본 메시지입니다.',
+      };
+    }
+  
+    const title = payload.title || '알림';
     const options = {
-      body: payload.body,
-      icon: payload.icon || '/img/fav/Icon-196.png',
-      badge: payload.badge || '/img/fav/Icon-72.png',
-      vibrate: [200, 100, 200],
+      body: payload.body || '내용 없음',
+      icon: '/img/fav/Icon-196.png',
+      badge: '/img/fav/Icon-72.png',
       data: {
-        url: payload.data?.url || 'https://aigadev.kormedi.com/ko/chat',
+        url: payload.data?.url || '/',
       },
     };
-    event.waitUntil(self.registration.showNotification('푸시 알림', options));
+   
+    event.waitUntil(
+      self.registration.showNotification(title, options)
+    );
   });
+  
   
   self.addEventListener("notificationclick", (event) => {
     event.notification.close();
