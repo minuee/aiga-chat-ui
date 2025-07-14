@@ -3,6 +3,13 @@ import * as mCookie from "@/utils/cookies";
 import functions from "@/utils/functions";
 import axios, { AxiosResponse } from 'axios';
 
+const logApi = axios.create({
+    baseURL: process.env.NEXT_PUBLIC_ADMIN_API_BASE_URL, // 실제 로그 서버 주소로 변경
+    timeout: 5000,
+});
+
+import UserStateStore from '@/store/userStore';
+
 interface MemberAuthProps {
     joinType: string;
 }
@@ -138,3 +145,54 @@ export function setSignupAgree(): any {
         return null;   
     }
  }
+
+
+ export function regitPWAToken(newSub: any): any {
+    try{
+        const { email,userId,isGuest} = UserStateStore.getState();
+        const userAgent = getClientEnvInfo()
+        const payload = {
+            user_id : isGuest ? "guest" : userId,
+            user_email : isGuest ? "guest" : email,
+            user_agent : JSON.stringify(userAgent),
+            endpoint: newSub ? newSub?.endpoint : null,
+            scribe_key: newSub ? JSON.stringify(newSub) : null,
+        };
+
+        logApi.post('/subscribe', payload).catch(() => {});
+   }catch(error){
+        console.log("eeeee",error)
+        return null;   
+   }
+}
+
+export function removePWAToken(newSub: any): any {
+    try{
+        if ( newSub?.endpoint ) {
+            const endpoint = newSub ? newSub?.endpoint : null
+
+            logApi.delete(`/subscribe?key=${endpoint}`).catch(() => {});
+        }else {
+            return true;
+        }
+   }catch(error){
+        console.log("eeeee",error)
+        return null;   
+   }
+}
+
+function getClientEnvInfo() {
+    if (typeof window === 'undefined') return {};
+
+    return {
+        userAgent: navigator.userAgent,
+        language: navigator.language,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        platform: navigator.platform,
+        screen: {
+            width: window.innerWidth,
+            height: window.innerHeight,
+            pixelRatio: window.devicePixelRatio,
+        }
+    };
+}

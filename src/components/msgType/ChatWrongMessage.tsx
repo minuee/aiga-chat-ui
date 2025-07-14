@@ -13,11 +13,8 @@ type ChatWrongMessageProps = {
 const ChatWrongMessage = ({  isMode, msg = "흠..뭔가 잘못된 것 같습니다.", indexKey}: ChatWrongMessageProps) => {
 
   const { colorMode, toggleColorMode } = useColorMode();
-  const bgMeColor = useColorModeValue('#2B8FFF', 'white');
-  const textMeColor = useColorModeValue('white', 'navy.800');
-  const bgSystemColor = useColorModeValue('#F4F6FA', 'navy.600');
-  const textSystemColor = useColorModeValue('#212127', 'white');
-  const bgSystemStopColor = useColorModeValue('#FFF0F0', 'white');
+
+  const bgSystemStopColor = useColorModeValue('#FFF0F0', 'navy.600');
   const textSystemStopColor = useColorModeValue('#F94848', 'navy.800');
   const textSystem400Color = useColorModeValue('#0AA464', 'white');
   const textSystemStopIconColor = useColorModeValue('#5E0018', 'navy.800');

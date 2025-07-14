@@ -61,6 +61,15 @@ const functions = {
     return ua.includes('safari') && !ua.includes('chrome') && !ua.includes('android');
   },
 
+  isSamsungBrowser(){
+    return /SamsungBrowser/i.test(navigator.userAgent);
+  },
+
+  cleanEscapeAsterrisk(text:string) : string {
+    const cleaned = text.replace(/\*.*$/, '').trim();
+    return cleaned;
+  },
+
   cleanEscapedCharacters(text: string): string {
     return text
       .replaceAll(/\\"/g, '')   // \" → "

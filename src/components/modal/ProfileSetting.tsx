@@ -27,7 +27,9 @@ import { SkeletonDefaultMixed } from "@/components/fields/LoadingBar";
 import { DefaultProfile } from '@/components/icons/svgIcons';
 import { MdOutlineClose,MdArrowBack,MdLogout } from 'react-icons/md';
 import { BiDetail,BiInfoCircle,BiGroup,BiEdit,BiChevronRight,BiNotification } from "react-icons/bi";
-import { iconAlertEntire } from "@/components/icons/IconImage"
+import { iconAlertEntire } from "@/components/icons/IconImage";
+
+
 
 export interface ProfileSettingModalProps extends PropsWithChildren {
   isOpen : boolean;
@@ -385,23 +387,34 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   } */
 
   const isPushAvailable = () => {
-    return (
-      typeof window !== 'undefined' &&
+    if (typeof window === 'undefined') return false;
+    const hasPush =
       'Notification' in window &&
       'serviceWorker' in navigator &&
-      'PushManager' in window
-    );
+      'PushManager' in window;
+  
+    const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    const isStandalone = (window.navigator as any).standalone === true;
+  
+    if (isIOS) {
+      // iOS는 홈 화면 추가(PWA 설치) 상태여야 푸시 가능
+      return hasPush && isStandalone;
+    }
+  
+    return hasPush;
   };
   
   React.useEffect(() => {
     if ( process.env.NODE_ENV == 'development' || userBaseInfo?.email == "minuee47@gmail.com") {
+      console.log("Notification in window:", 'Notification' in window);
+      console.log("serviceWorker in navigator:", 'serviceWorker' in navigator);
+      console.log("PushManager in window:", 'PushManager' in window);
       checkPushStatus();
     }
   }, []);
 
   const checkPushStatus = async () => {
-    if (!isPushAvailable()) {
-      alert("이 기기에서는 푸시 알림이 지원되지 않습니다.");
+ /*    if (!isPushAvailable()) {
       toast({
         title: 'AIGA',
         description: '이 기기에서는 푸시 알림이 지원되지 않습니다.',
@@ -414,36 +427,40 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         duration:1500
       });
       return;
-    }
-    const permission = Notification.permission;
-    console.log("permission",permission)
-    setPWAPermission(permission === 'granted');
-  
-    const registration = await navigator.serviceWorker.ready;
-    console.log("permission 2",registration)
-    const currentSub = await registration.pushManager.getSubscription();
-    console.log("permission 3",currentSub)
-    if (currentSub) {
-      setIsSubscribed(true);
-      setSubscription(currentSub);
-    } else {
-      setIsSubscribed(false);
-      setSubscription(null);
+    } */
+    try{
+      const permission = Notification.permission;
+      setPWAPermission(permission === 'granted');
+    
+      const registration = await navigator.serviceWorker.ready;
+      const currentSub = await registration.pushManager.getSubscription();
+      if (currentSub) {
+        setIsSubscribed(true);
+        setSubscription(currentSub);
+      } else {
+        setIsSubscribed(false);
+        setSubscription(null);
+      }
+    }catch(e:any) {
+      console.log("checkPushStatus eeee",e)
     }
   };
-const getServiceWorkerRegistration = async () => {
-  // 사파리 호환용: ready 대신 getRegistration 사용, 없으면 등록 시도
-  const isSafari = functions.isSafari();
-  if ( isSafari ) {
-    let registration = await navigator.serviceWorker.getRegistration();
-    if (!registration) {
-      registration = await navigator.serviceWorker.register('/service-worker.js');
+
+  
+  const getServiceWorkerRegistration = async () => {
+    // 사파리 호환용: ready 대신 getRegistration 사용, 없으면 등록 시도
+    const isSafari = functions.isSafari();
+    const isSamsungBrowser = functions.isSamsungBrowser()
+    if ( isSafari || isSamsungBrowser) {
+      let registration = await navigator.serviceWorker.getRegistration();
+      if (!registration) {
+        registration = await navigator.serviceWorker.register('/service-worker.js');
+      }
+      return registration;
+    }else{
+      return await navigator.serviceWorker.ready;
     }
-    return registration;
-  }else{
-    return await navigator.serviceWorker.ready;
-  }
-};
+  };
   const requestPermissionAndSubscribe = async () => {
     try{
       const permission = await Notification.requestPermission();
@@ -476,6 +493,8 @@ const getServiceWorkerRegistration = async () => {
         });
         setSubscription(newSub);
         setIsSubscribed(true);
+         // 서버에 구독 정보 전송
+        const res:any = await MemberService.regitPWAToken(newSub);
         toast({
           title: '알림 구독 감사합니다.',
           position: 'top-right',
@@ -486,8 +505,7 @@ const getServiceWorkerRegistration = async () => {
           isClosable: true,
           duration:1500
         });
-        // 서버에 구독 정보 전송
-        // await fetch('/api/subscribe', { ... });
+       
       } else {
         toast({
           title: '이미 구독된 상태입니다.',
@@ -524,7 +542,8 @@ const getServiceWorkerRegistration = async () => {
     if (success) {
       setSubscription(null);
       setIsSubscribed(false);
-  
+      // 서버에 구독 해지 알림
+      const res:any = await MemberService.removePWAToken(subscriptionJson);
       toast({
         title: '알림 구독이 해지되었습니다.',
         position: 'top-right',
@@ -535,9 +554,6 @@ const getServiceWorkerRegistration = async () => {
         isClosable: true,
         duration:1500
       });
-  
-      // 서버에 구독 해지 알림
-      // await fetch('/api/unsubscribe', { ... });
     } else {
       toast({
         title: '구독 해지 실패하였습니다.',
