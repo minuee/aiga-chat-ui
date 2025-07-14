@@ -14,7 +14,7 @@ const withNextIntl = createNextIntlPlugin();
 }); */
 const withPWA = withPWAInit({
   dest: 'public',
-  //register: false,
+  register: true,
   skipWaiting: true,
   //disable: process.env.NODE_ENV !== "production",
   runtimeCaching,

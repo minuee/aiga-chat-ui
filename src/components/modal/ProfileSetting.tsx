@@ -383,6 +383,15 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         console.error('Error sending notification:', error);
     }
   } */
+
+  const isPushAvailable = () => {
+    return (
+      typeof window !== 'undefined' &&
+      'Notification' in window &&
+      'serviceWorker' in navigator &&
+      'PushManager' in window
+    );
+  };
   
   React.useEffect(() => {
     if ( process.env.NODE_ENV == 'development' || userBaseInfo?.email == "minuee47@gmail.com") {
@@ -391,6 +400,21 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   }, []);
 
   const checkPushStatus = async () => {
+    if (!isPushAvailable()) {
+      alert("이 기기에서는 푸시 알림이 지원되지 않습니다.");
+      toast({
+        title: 'AIGA',
+        description: '이 기기에서는 푸시 알림이 지원되지 않습니다.',
+        position: 'top-right',
+        status: 'warning',
+        containerStyle: {
+          color: '#ffffff',
+        },
+        isClosable: true,
+        duration:1500
+      });
+      return;
+    }
     const permission = Notification.permission;
     console.log("permission",permission)
     setPWAPermission(permission === 'granted');
