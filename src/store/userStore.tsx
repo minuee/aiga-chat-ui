@@ -53,6 +53,7 @@ export const PWATokenStore = create<PWATokenStoreState>()(
       persist(
           (set) => ({
               userPWAPermission: false,
+              userPWAToken: null, // ✅ 추가
               setUserPWATokenInfo: (userPWAPermission:boolean,userPWAToken :any ) => {
                   set({userPWAPermission, userPWAToken});
               },
