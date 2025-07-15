@@ -406,9 +406,9 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   
   React.useEffect(() => {
     if ( process.env.NODE_ENV == 'development' || userBaseInfo?.email == "minuee47@gmail.com" || userBaseInfo?.email == "lena47@naver.com") {
-      console.log("Notification in window:", 'Notification' in window);
-      console.log("serviceWorker in navigator:", 'serviceWorker' in navigator);
-      console.log("PushManager in window:", 'PushManager' in window);
+      //console.log("Notification in window:", 'Notification' in window);
+      //console.log("serviceWorker in navigator:", 'serviceWorker' in navigator);
+      //console.log("PushManager in window:", 'PushManager' in window);
       checkPushStatus();
     }
   }, []);
@@ -432,17 +432,53 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       const permission = Notification.permission;
       setPWAPermission(permission === 'granted');
     
-      const registration = await navigator.serviceWorker.ready;
-      const currentSub = await registration.pushManager.getSubscription();
-      if (currentSub) {
-        setIsSubscribed(true);
-        setSubscription(currentSub);
-      } else {
-        setIsSubscribed(false);
-        setSubscription(null);
+      const isSafari = functions.isSafari();
+      //console.log('isSafari',isSafari)
+      const isSamsungBrowser = functions.isSamsungBrowser()
+      ///console.log('isSamsungBrowser',isSamsungBrowser)
+      if ( isSafari || isSamsungBrowser) {
+        let registration = await navigator.serviceWorker.getRegistration();
+        ///console.log('getServiceWorkerRegistration if',registration)
+        if (!registration) {
+          navigator.serviceWorker.getRegistration().then((reg:any) => {
+            reg.showNotification('테스트 알림입니다!', {
+              body: 'Service Worker는 살아있어요',
+            });
+          });
+          registration = await navigator.serviceWorker.register('/service-worker.js');
+          const currentSub = await registration.pushManager.getSubscription();
+          if (currentSub) {
+            setIsSubscribed(true);
+            setSubscription(currentSub);
+          } else {
+            setIsSubscribed(false);
+            setSubscription(null);
+          }
+        }
+      }else{
+        const registration = await navigator.serviceWorker.ready;
+        const currentSub = await registration.pushManager.getSubscription();
+        if (currentSub) {
+          setIsSubscribed(true);
+          setSubscription(currentSub);
+        } else {
+          setIsSubscribed(false);
+          setSubscription(null);
+        }
       }
     }catch(e:any) {
-      console.log("checkPushStatus eeee",e)
+      //console.log("checkPushStatus eeee",e)
+      toast({
+        title: '에러',
+        description: `eee:${e.toString()}`,
+        position: 'top-right',
+        status: 'warning',
+        containerStyle: {
+          color: '#ffffff',
+        },
+        isClosable: true,
+        duration:3000
+      });
     }
   };
 
@@ -457,15 +493,15 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
           })
           .catch(console.error);
       } */
-
+      
       // 사파리 호환용: ready 대신 getRegistration 사용, 없으면 등록 시도
       const isSafari = functions.isSafari();
-      console.log('isSafari',isSafari)
+      ///console.log('isSafari',isSafari)
       const isSamsungBrowser = functions.isSamsungBrowser()
-      console.log('isSamsungBrowser',isSamsungBrowser)
+      ///console.log('isSamsungBrowser',isSamsungBrowser)
       if ( isSafari || isSamsungBrowser) {
         let registration = await navigator.serviceWorker.getRegistration();
-        console.log('getServiceWorkerRegistration if',registration)
+        ///console.log('getServiceWorkerRegistration if',registration)
         if (!registration) {
           navigator.serviceWorker.getRegistration().then((reg:any) => {
             reg.showNotification('테스트 알림입니다!', {
@@ -476,7 +512,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         }
         return registration;
       }else{
-        console.log('getServiceWorkerRegistration else')
+        ///console.log('getServiceWorkerRegistration else')
         navigator.serviceWorker.ready.then(reg => reg.pushManager.getSubscription())
         .then(sub => {
           if (sub) {
@@ -492,10 +528,30 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       return e;
     }
   };
+
   const requestPermissionAndSubscribe = async () => {
     try{
+      if (typeof window !== 'undefined' && 'standalone' in window.navigator) {
+        const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone === true);
+        if (!isStandalone) {
+          // 홈화면에 추가하라는 안내 UI 띄우기
+          toast({
+            title: 'AIGA',
+            description: '바로가기 또는 PWA앱을 설치해야 알림을 받을 수 있습니다.',
+            position: 'top-right',
+            status: 'warning',
+            containerStyle: {
+              color: '#ffffff',
+            },
+            isClosable: true,
+            duration:1500
+          });
+          setPWAPermission(false);
+          return;
+        }
+      }
       const permission = await Notification.requestPermission();
-      console.log('permission',permission)
+      ///console.log('permission',permission)
       if (permission !== 'granted') {
         toast({
           title: '알림 권한이 차단되어 있어요',
@@ -515,15 +571,15 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       setPWAPermission(true);
   
       const registration =  await getServiceWorkerRegistration();
-      console.log('registration',registration)
+      //console.log('registration',registration)
       const currentSub = await registration.pushManager.getSubscription();
-      console.log('currentSub',currentSub)
+      //console.log('currentSub',currentSub)
       if (!currentSub) {
         const newSub = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: functions.urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY),
         });
-        console.log('newSub',newSub)
+        //console.log('newSub',newSub)
         setSubscription(newSub);
         setIsSubscribed(true);
          // 서버에 구독 정보 전송
@@ -554,7 +610,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         setIsSubscribed(true);
       }
     }catch(e:any) {
-      console.log("permission eeee",e)
+      ///console.log("permission eeee",e)
       toast({
         title: `에러 : ${e}`,
         position: 'top-right',

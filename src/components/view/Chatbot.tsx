@@ -621,7 +621,7 @@ export default function ChatBot() {
                   chat_id: functions.getUUID(),
                   user_question : inputCodeText,
                   answer : null,
-                  msg: mConstants.error_message_500_llm,
+                  msg: mConstants.error_message_506,
                   chat_type : 'system',
                   used_token : 0,
                   isOnlyLive : false
@@ -1314,7 +1314,13 @@ export default function ChatBot() {
                 touchAction: "manipulation",
                 position: 'relative',
                 zIndex:9,
-                pr:'40px'
+                pr:'40px',
+                /* '::placeholder': {
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  display: 'block',
+                }, */
               }}
               maxH={isMobileOnly ? "200px" : "150px"}
               border="1px solid"

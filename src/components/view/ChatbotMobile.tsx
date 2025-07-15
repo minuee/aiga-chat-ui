@@ -827,7 +827,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                   chat_id: functions.getUUID(),
                   user_question : inputCodeText,
                   answer : null,
-                  msg: mConstants.error_message_500_llm,
+                  msg: mConstants.error_message_506,
                   chat_type : 'system',
                   used_token : 0,
                   isOnlyLive : false

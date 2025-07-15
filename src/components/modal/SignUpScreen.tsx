@@ -160,7 +160,7 @@ function LoginModal(props: LoginModalProps) {
       const receiveMessage = async(event: MessageEvent) => {
 
         if ( !mConstants.apiAllowOriginCode.includes(event.origin) ) {
-          console.warn('apidata 허용되지 않은 출처:', event.origin);
+          //console.warn('apidata 허용되지 않은 출처:', event.origin);
           popup?.close();
           window.removeEventListener('message', receiveMessage);
           return;

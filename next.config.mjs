@@ -35,6 +35,19 @@ const nextConfig = {
     // Make ENV
     unoptimized: true,
   },
+  async headers() {
+    return [
+      {
+        source: '/manifest.webmanifest',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/manifest+json',
+          },
+        ],
+      },
+    ];
+  },
 };
 //export default withNextIntl(nextConfig)
 export default withPWA(withNextIntl(nextConfig))

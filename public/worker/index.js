@@ -1,5 +1,5 @@
 self.addEventListener("push", (event) => {
-    console.log("[Service Worker] Push Received.", event.data.text());
+    //console.log("[Service Worker] Push Received.", event.data.text());
     const { title, body, icon, badge } = event.data.json();
     const options = {
       body,
@@ -10,7 +10,7 @@ self.addEventListener("push", (event) => {
   });
   
   self.addEventListener("notificationclick", (event) => {
-    console.log("[Service Worker] notificationclick");
+    //console.log("[Service Worker] notificationclick");
     event.notification.close();
   
     event.waitUntil(

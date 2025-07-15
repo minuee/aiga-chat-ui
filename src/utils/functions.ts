@@ -1,4 +1,7 @@
-import _ from 'lodash';
+//import _ from 'lodash';
+import isNaN from 'lodash/isNaN';
+import isString from 'lodash/isNaN';
+import filter from 'lodash/filter';
 
 const EMAIL_FORMAT =
   /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,}$/i;
@@ -24,6 +27,7 @@ const functions = {
     }
     return outputArray;
   },
+
 
   getKSTUnixTimestamp() {
     // 현재 UTC 시간
@@ -240,40 +244,40 @@ const functions = {
   } ,
 
   numberWithCommas(x:any) {
-    if (x === undefined || x === null || x === "" || _.isNaN(x)) return x;
+    if (x === undefined || x === null || x === "" || isNaN(x)) return x;
     let parts = x.toString().replace(/,/g, "").split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return parts.join(".");
   },
   removeCommas(x:any) {
-    if (x === undefined || x === null || x === "" || _.isNaN(x)) return x;
+    if (x === undefined || x === null || x === "" || isNaN(x)) return x;
     return String(x).replace(/,/g, "");
   },
   parseFloatWtihCommas(x:any) {
-    if (x === undefined || x === null || x === "" || _.isNaN(x)) return 0;
+    if (x === undefined || x === null || x === "" || isNaN(x)) return 0;
     return parseFloat(String(x).replace(/,/g, ""));
   },
   getCeil(x:any, pos = 0) {
-    if (x === undefined || x === null || x === "" || _.isNaN(x)) return 0;
+    if (x === undefined || x === null || x === "" || isNaN(x)) return 0;
     return Math.ceil(parseFloat(x) * Math.pow(10, pos)) / Math.pow(10, pos);
   },
   getFloor(x:any, pos = 0) {
-    if (x === undefined || x === null || x === "" || _.isNaN(x)) return 0;
+    if (x === undefined || x === null || x === "" || isNaN(x)) return 0;
     return Math.floor(parseFloat(x) * Math.pow(10, pos)) / Math.pow(10, pos);
   },
   getRounds(x:any, pos = 0) {
-    if (x === undefined || x === null || x === "" || _.isNaN(x)) return 0;
+    if (x === undefined || x === null || x === "" || isNaN(x)) return 0;
     return Math.round(parseFloat(x) * Math.pow(10, pos)) / Math.pow(10, pos);
   },
   getRoundsFixed(x:any) {
-    if (x === undefined || x === null || x === "" || _.isNaN(x)) return 0;
+    if (x === undefined || x === null || x === "" || isNaN(x)) return 0;
     return (
       Math.round(parseFloat(x) * Math.pow(10, TO_FIXED_POS)) /
       Math.pow(10, TO_FIXED_POS)
     );
   },
   getFloorFixed(x:any) {
-    if (x === undefined || x === null || x === "" || _.isNaN(x)) return 0;
+    if (x === undefined || x === null || x === "" || isNaN(x)) return 0;
     return (
       Math.floor(parseFloat(x) * Math.pow(10, TO_FIXED_POS)) /
       Math.pow(10, TO_FIXED_POS)
@@ -284,11 +288,11 @@ const functions = {
       x === undefined ||
       x === null ||
       x === "" ||
-      _.isNaN(x) ||
+      isNaN(x) ||
       y === undefined ||
       y === null ||
       y === "" ||
-      _.isNaN(y)
+      isNaN(y)
     )
       return 0;
     return (
@@ -302,11 +306,11 @@ const functions = {
       x === undefined ||
       x === null ||
       x === "" ||
-      _.isNaN(x) ||
+      isNaN(x) ||
       y === undefined ||
       y === null ||
       y === "" ||
-      _.isNaN(y)
+      isNaN(y)
     )
       return 0;
     return (
@@ -333,7 +337,7 @@ const functions = {
     return val.toString().replace(/./g, "*");
   },
   moneyFilter(val:any, bCoin:any) {
-    if (val === undefined || val === null || val === "" || _.isNaN(val))
+    if (val === undefined || val === null || val === "" || isNaN(val))
       return "0";
     val = String(val);
     // 코인일 경우(소숫점 세자리까지만 입력 가능)
@@ -381,7 +385,7 @@ const functions = {
     return val;
   },
   numberFilter(val:any, bZeroLength:any) {
-    if (val === undefined || val === null || val === "" || _.isNaN(val)) {
+    if (val === undefined || val === null || val === "" || isNaN(val)) {
       return bZeroLength ? "" : "0";
     }
     val = String(val);
@@ -455,7 +459,7 @@ const functions = {
       val === undefined ||
       val === null ||
       val === "" ||
-      _.isNaN(val) ||
+      isNaN(val) ||
       val == 0
     )
       return "";
@@ -549,13 +553,13 @@ const functions = {
     return text;
   },
   isEmail(email:any) {
-    if (!_.isString(email)) {
+    if (!isString(email)) {
       return false;
     }
     return !!email.match(EMAIL_FORMAT);
   },
   isPassword(password:any) {
-    if (!_.isString(password)) {
+    if (!isString(password)) {
       return false;
     }
     if(!PASSWORD_RULE.test(password)){
@@ -567,7 +571,7 @@ const functions = {
     //return !!password.match(PASSWORD_RULE);
   },
   isMobilePhone(mobile:any) {
-    if (!_.isString(mobile)) {
+    if (!isString(mobile)) {
       return false;
     }
     return !!mobile.match(MOBILE_FORMAT);
@@ -674,12 +678,12 @@ const functions = {
     );
   },
   filterFirstCode(code:any , arr:any, selfArray:any) {
-    let ret = _.filter(arr,function(p) {
+    let ret = filter(arr,function(p) {
       return p.h_code == code;
     })
 
     if ( ret.length == 0) {
-      let ret2 = _.filter(selfArray,function(p) {
+      let ret2 = filter(selfArray,function(p) {
         return p.code == code;
       })
       return ['local',ret2[0].data];
@@ -742,7 +746,7 @@ const functions = {
   },
 
   filterCode(h_code:any , arr:any) {
-    const ret = _.filter(arr,function(p) {
+    const ret = filter(arr,function(p) {
       return p.code == h_code;
     })
     return ret[0]?.data;

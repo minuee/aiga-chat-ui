@@ -58,8 +58,6 @@ function ReviewModal(props: ReviewModalProps) {
   });
 
   React.useEffect(() => {
-    console.log('inputs reviewData',reviewData)
-    console.log('inputs selected_doctor',selected_doctor)
     if( !functions.isEmpty(reviewData?.doctor_id) ){ // 기존거 불러오는거 
       //getReviewData(reviewData?.doctor_id)
       setInputs({
@@ -81,11 +79,9 @@ function ReviewModal(props: ReviewModalProps) {
 
   const setNewReviewForm = async() => {
     const reviewForDoctor = tempReviewData.find(item => item.doctor_id === selected_doctor?.doctor_id);
-    console.log('inputs reviewForDoctor',reviewForDoctor)
     if( !functions.isEmpty(reviewForDoctor) ){
       setOpenAlert2(true)
     }else{
-      console.log('inputs 1111',selected_doctor?.doctor_id)
       setInputs({
         ...inputs,
         doctor_id : selected_doctor?.doctor_id

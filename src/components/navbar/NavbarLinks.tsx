@@ -1,10 +1,7 @@
 'use client';
 // Chakra Imports
 import * as React from 'react';
-import { 
-    Box,Button,Center,Flex,Icon,Link,Menu,MenuButton,MenuItem,MenuList,Text,useColorMode,useColorModeValue,useToast,
-    Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody
-} from '@chakra-ui/react';
+import { Button,Flex,Icon,VisuallyHidden,useColorMode,useColorModeValue,useToast,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody } from '@chakra-ui/react';
 import { SidebarResponsive } from '@/components/sidebar/Sidebar';
 import { IoMdMoon, IoMdSunny } from 'react-icons/io';
 import NoticerModal  from '@/components/modal/NoticeList';
@@ -74,9 +71,10 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
       {
         ( process.env.NODE_ENV == 'development' || userBasicInfo?.email == 'minuee47@gmail.com' || userBasicInfo?.email == 'wjlee2002@naver.com' ) && (
           <Button
-            value={"dark-mode"} aria-label='' aria-labelledby='nonexistent' variant="no-hover" bg="transparent" p="0px"
+            value={"dark-mode"} aria-label='Toggle dark mode' aria-labelledby='nonexistent' variant="no-hover" bg="transparent" p="0px"
             minW="unset" minH="unset" h="18px" w="max-content" onClick={toggleColorMode} id="button_toggle_mode" name="button_toggle_mode"
           >
+            <VisuallyHidden>Toggle dark mode</VisuallyHidden>
             <Icon me="10px" h="18px" w="18px" color={navbarIcon} as={colorMode === 'light' ? IoMdMoon : IoMdSunny} />
           </Button>
         )

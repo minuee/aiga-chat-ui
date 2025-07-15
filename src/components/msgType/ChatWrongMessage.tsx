@@ -15,9 +15,9 @@ const ChatWrongMessage = ({  isMode, msg = "흠..뭔가 잘못된 것 같습니�
   const { colorMode, toggleColorMode } = useColorMode();
 
   const bgSystemStopColor = useColorModeValue('#FFF0F0', 'navy.600');
-  const textSystemStopColor = useColorModeValue('#F94848', 'navy.800');
+  const textSystemStopColor = useColorModeValue('#F94848', 'white');
   const textSystem400Color = useColorModeValue('#0AA464', 'white');
-  const textSystemStopIconColor = useColorModeValue('#5E0018', 'navy.800');
+  const textSystemStopIconColor = useColorModeValue('#5E0018', 'white');
   const textSystem400IconColor = useColorModeValue('#0AA464', 'white');
   
   return (
