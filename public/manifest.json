@@ -13,7 +13,7 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": "/ko/chat",
+  "start_url": "/ko",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000"

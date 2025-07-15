@@ -16,7 +16,7 @@ import * as RequestService from "@/services/request/index";
 import * as MemberService from "@/services/member/index";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 //로그인 전역상태
-import UserStateStore from '@/store/userStore';
+import UserStateStore, { PWATokenStore } from '@/store/userStore';
 import NewChatStateStore from '@/store/newChatStore';
 import ConfigInfoStore from '@/store/configStore';
 import { ModalMypageNoticeStore,ModalMypageRequestStore,ModalMypageEntireStore,ModalMypagePolicyStore,ModalMypageYakwanStore,ModalMypageNoticeDetailStore } from '@/store/modalStore';
@@ -28,8 +28,6 @@ import { DefaultProfile } from '@/components/icons/svgIcons';
 import { MdOutlineClose,MdArrowBack,MdLogout } from 'react-icons/md';
 import { BiDetail,BiInfoCircle,BiGroup,BiEdit,BiChevronRight,BiNotification } from "react-icons/bi";
 import { iconAlertEntire } from "@/components/icons/IconImage";
-
-
 
 export interface ProfileSettingModalProps extends PropsWithChildren {
   isOpen : boolean;
@@ -66,6 +64,8 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   const setIsOpenYakwanModal = ModalMypageYakwanStore((state) => state.setIsOpenYakwanModal);
   const { isOpenNoticeDetailModal } = ModalMypageNoticeDetailStore(state => state);
   const setIsOpenNoticeDetailModal = ModalMypageNoticeDetailStore((state) => state.setIsOpenNoticeDetailModal);
+  const { userPWAPermission,userPWAToken } = PWATokenStore(state => state);
+  const setUserPWATokenInfo = PWATokenStore((state) => state.setUserPWATokenInfo);
   const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
 
   const reviewBtnRef = React.useRef<any>();
@@ -409,25 +409,15 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       //console.log("Notification in window:", 'Notification' in window);
       //console.log("serviceWorker in navigator:", 'serviceWorker' in navigator);
       //console.log("PushManager in window:", 'PushManager' in window);
-      checkPushStatus();
+      if ( !userPWAPermission  && functions.isEmpty(userPWAToken) ) {
+        checkPushStatus();
+      }
+     
     }
   }, []);
 
   const checkPushStatus = async () => {
- /*    if (!isPushAvailable()) {
-      toast({
-        title: 'AIGA',
-        description: '이 기기에서는 푸시 알림이 지원되지 않습니다.',
-        position: 'top-right',
-        status: 'warning',
-        containerStyle: {
-          color: '#ffffff',
-        },
-        isClosable: true,
-        duration:1500
-      });
-      return;
-    } */
+ 
     try{
       const permission = Notification.permission;
       setPWAPermission(permission === 'granted');
@@ -533,6 +523,17 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     try{
       if (typeof window !== 'undefined' && 'standalone' in window.navigator) {
         const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone === true);
+        toast({
+          title: 'isStandalone',
+          description: `isStandalone : ${isStandalone ? '참' : '거짓'}`,
+          position: 'top-right',
+          status: 'warning',
+          containerStyle: {
+            color: '#ffffff',
+          },
+          isClosable: true,
+          duration:3000
+        });
         if (!isStandalone) {
           // 홈화면에 추가하라는 안내 UI 띄우기
           toast({
@@ -551,7 +552,17 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         }
       }
       const permission = await Notification.requestPermission();
-      ///console.log('permission',permission)
+      toast({
+        title: 'permission',
+        description: `permission : ${permission ? '참' : '거짓'}`,
+        position: 'top-right',
+        status: 'warning',
+        containerStyle: {
+          color: '#ffffff',
+        },
+        isClosable: true,
+        duration:3000
+      });
       if (permission !== 'granted') {
         toast({
           title: '알림 권한이 차단되어 있어요',
@@ -584,6 +595,10 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         setIsSubscribed(true);
          // 서버에 구독 정보 전송
         const res:any = await MemberService.regitPWAToken(newSub);
+        setUserPWATokenInfo(
+          true,
+          newSub
+        )
         toast({
           title: '알림 구독 감사합니다.',
           position: 'top-right',
@@ -606,6 +621,11 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
           isClosable: true,
           duration:1500
         });
+        const res:any = await MemberService.regitPWAToken(currentSub);
+        setUserPWATokenInfo(
+          true,
+          currentSub
+        )
         setSubscription(currentSub);
         setIsSubscribed(true);
       }
@@ -633,6 +653,10 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       setIsSubscribed(false);
       // 서버에 구독 해지 알림
       const res:any = await MemberService.removePWAToken(subscriptionJson);
+      setUserPWATokenInfo(
+        true,
+        null
+      )
       toast({
         title: '알림 구독이 해지되었습니다.',
         position: 'top-right',
@@ -782,18 +806,19 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                (
                 <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
                   {
-                    ( isPWAPermission && isSubscribed )
+                    ( userPWAPermission  && !functions.isEmpty(userPWAToken) )
                     ? (
-                      <Box display={'flex'} alignItems={'center'} flex={5} onClick={unsubscribePush} cursor={'pointer'}>
-                        <Icon as={BiNotification} width="20px" height="20px" color={iconColor} />
-                        <CustomTextBold400 fontSize={'17px'} ml={2} color={textColor3}>알림 해지</CustomTextBold400>
-                      </Box>
-                    )
-                    : (
                       <Box display={'flex'} alignItems={'center'} flex={5} onClick={requestPermissionAndSubscribe} cursor={'pointer'} >
                         <Icon as={BiNotification} width="20px" height="20px" color={iconColor} />
                         <CustomTextBold400 fontSize={'17px'} ml={2} color={textColor3}>알림 신청</CustomTextBold400>
                       </Box>
+                    )
+                    : (
+                      <Box display={'flex'} alignItems={'center'} flex={5} onClick={unsubscribePush} cursor={'pointer'}>
+                        <Icon as={BiNotification} width="20px" height="20px" color={iconColor} />
+                        <CustomTextBold400 fontSize={'17px'} ml={2} color={textColor3}>알림 해지</CustomTextBold400>
+                      </Box>
+                      
                     )
                   }
                   {/* <Box>

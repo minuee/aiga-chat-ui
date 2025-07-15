@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { devtools, persist } from 'zustand/middleware'
+import { devtools, persist,createJSONStorage } from 'zustand/middleware'
 import * as Cookies from '@/utils/cookies';
 import { UserData } from "@/types/userData"
 
@@ -39,7 +39,35 @@ const useUserStateStore = create<UserData>()(
         { name: 'UserStateStore' }
       )
     )
-  );
+);
+
+
+interface PWATokenStoreState {
+  userPWAPermission : boolean;
+  userPWAToken: any; // ✅ 추가
+  setUserPWATokenInfo: (userPWAPermission: boolean,userPWAToken :any) => void;
+}
+
+export const PWATokenStore = create<PWATokenStoreState>()(
+  devtools(
+      persist(
+          (set) => ({
+              userPWAPermission: false,
+              setUserPWATokenInfo: (userPWAPermission:boolean,userPWAToken :any ) => {
+                  set({userPWAPermission, userPWAToken});
+              },
+              hasHydrated: false,
+          }),
+          { 
+              name: 'PWATokenStore',
+              storage: createJSONStorage(() => localStorage),
+              onRehydrateStorage: () => (state:any) => {
+                  state?.set({ hasHydrated: true });
+              }
+          }
+      )
+  )
+);
 
 export default useUserStateStore;
 
