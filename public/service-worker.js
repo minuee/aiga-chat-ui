@@ -8,6 +8,14 @@ self.addEventListener("install", function () {
 
   self.addEventListener('push', (event) => {
     let payload = {};
+
+    console.log('푸시 이벤트 수신됨');
+
+    if (event.data) {
+      console.log('푸시 payload:', event.data.text());
+    } else {
+      console.warn('푸시 데이터 없음');
+    }
     try {
       payload = event.data?.json() || {};
     } catch (e) {
@@ -15,9 +23,14 @@ self.addEventListener("install", function () {
       payload = {
         title: '기본 푸시 제목',
         body: '기본 메시지입니다.',
+        icon: '/img/fav/Icon-196.png',
+      badge: '/img/fav/Icon-72.png',
+      data: {
+        url: 'https://aigadev.kormedi.com',
+      },
       };
     }
-  
+    console.log('푸시 payload ',payload);
     const title = payload.title || '알림';
     const options = {
       body: payload.body || '내용 없음',
@@ -29,7 +42,18 @@ self.addEventListener("install", function () {
     };
    
     event.waitUntil(
-      self.registration.showNotification(title, options)
+      (async () => {
+        const allClients = await clients.matchAll({ includeUncontrolled: true });
+        for (const client of allClients) {
+          console.log('푸시 client.postMessage ',payload);
+          client.postMessage(payload); // 포그라운드에 메시지 전달
+        }
+  
+        await self.registration.showNotification(payload.title, {
+          body: payload.body,
+          icon: '/img/fav/Icon-196.png',
+        });
+      })()
     );
   });
   

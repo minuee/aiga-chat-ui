@@ -17,7 +17,7 @@ const withPWA = withPWAInit({
   register: true,
   skipWaiting: true,
   //disable: process.env.NODE_ENV !== "production",
-  runtimeCaching,
+  //runtimeCaching,
   buildExcludes: [/middleware-manifest.json$/,/app-build-manifest.json$/]
 });
 

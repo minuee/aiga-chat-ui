@@ -5,7 +5,7 @@ import { HamburgerIcon } from '@chakra-ui/icons';
 import { useEffect, useState } from 'react';
 import { useTranslations,useLocale} from 'next-intl';
 import { usePathname, useRouter } from "@/i18n/routing";
-import { IconFlagKorea } from '@/components/icons/svgIcons';
+import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
 import Image from "next/image";
 import FlagKorea from "@/assets/icons/flag-korea.png";
@@ -141,7 +141,7 @@ export default function ResponsiveNav() {
               {menuItems.map((item) => (
                 <li key={item.href}>
                   <Link href={item.href} fontWeight="medium" _hover={{ textDecoration: 'underline' }}>
-                    {item.label}
+                    <CustomText color='#000000'>{item.label}</CustomText>
                   </Link>
                 </li>
               ))}

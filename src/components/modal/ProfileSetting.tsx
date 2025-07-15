@@ -405,7 +405,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   };
   
   React.useEffect(() => {
-    if ( process.env.NODE_ENV == 'development' || userBaseInfo?.email == "minuee47@gmail.com") {
+    if ( process.env.NODE_ENV == 'development' || userBaseInfo?.email == "minuee47@gmail.com" || userBaseInfo?.email == "lena47@naver.com") {
       console.log("Notification in window:", 'Notification' in window);
       console.log("serviceWorker in navigator:", 'serviceWorker' in navigator);
       console.log("PushManager in window:", 'PushManager' in window);
@@ -448,23 +448,54 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
 
   
   const getServiceWorkerRegistration = async () => {
-    // 사파리 호환용: ready 대신 getRegistration 사용, 없으면 등록 시도
-    const isSafari = functions.isSafari();
-    const isSamsungBrowser = functions.isSamsungBrowser()
-    if ( isSafari || isSamsungBrowser) {
-      let registration = await navigator.serviceWorker.getRegistration();
-      if (!registration) {
-        registration = await navigator.serviceWorker.register('/service-worker.js');
+    try{
+      /* if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+          .then(() => navigator.serviceWorker.ready)
+          .then((registration) => {
+            console.log('Service Worker Ready:', registration);
+          })
+          .catch(console.error);
+      } */
+
+      // 사파리 호환용: ready 대신 getRegistration 사용, 없으면 등록 시도
+      const isSafari = functions.isSafari();
+      console.log('isSafari',isSafari)
+      const isSamsungBrowser = functions.isSamsungBrowser()
+      console.log('isSamsungBrowser',isSamsungBrowser)
+      if ( isSafari || isSamsungBrowser) {
+        let registration = await navigator.serviceWorker.getRegistration();
+        console.log('getServiceWorkerRegistration if',registration)
+        if (!registration) {
+          navigator.serviceWorker.getRegistration().then((reg:any) => {
+            reg.showNotification('테스트 알림입니다!', {
+              body: 'Service Worker는 살아있어요',
+            });
+          });
+          registration = await navigator.serviceWorker.register('/service-worker.js');
+        }
+        return registration;
+      }else{
+        console.log('getServiceWorkerRegistration else')
+        navigator.serviceWorker.ready.then(reg => reg.pushManager.getSubscription())
+        .then(sub => {
+          if (sub) {
+            console.log('푸시 구독 있음:', sub.endpoint);
+          } else {
+            console.warn('푸시 구독 없음, 다시 구독 필요');
+          }
+        });
+        return await navigator.serviceWorker.ready;
       }
-      return registration;
-    }else{
-      return await navigator.serviceWorker.ready;
+    }catch(e:any){
+      console.log('getServiceWorkerRegistration e',e)
+      return e;
     }
   };
   const requestPermissionAndSubscribe = async () => {
     try{
       const permission = await Notification.requestPermission();
-     
+      console.log('permission',permission)
       if (permission !== 'granted') {
         toast({
           title: '알림 권한이 차단되어 있어요',
@@ -484,13 +515,15 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       setPWAPermission(true);
   
       const registration =  await getServiceWorkerRegistration();
-   
+      console.log('registration',registration)
       const currentSub = await registration.pushManager.getSubscription();
+      console.log('currentSub',currentSub)
       if (!currentSub) {
         const newSub = await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+          applicationServerKey: functions.urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY),
         });
+        console.log('newSub',newSub)
         setSubscription(newSub);
         setIsSubscribed(true);
          // 서버에 구독 정보 전송
@@ -688,7 +721,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                 </Box>
               </Box>
               {
-               ( process.env.NODE_ENV == 'development' || userBaseInfo?.email == "minuee47@gmail.com") 
+               ( process.env.NODE_ENV == 'development' || userBaseInfo?.email == "minuee47@gmail.com" || userBaseInfo?.email == "lena47@naver.com") 
                &&
                (
                 <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
