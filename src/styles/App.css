@@ -22,66 +22,6 @@ html, body {
   position: relative;
 }
 
-/* 모든 플랫폼에서 스크롤바를 자동 숨김 (macOS 스타일) */
-
-* {
-  scrollbar-width: thin; /* Firefox */
-  scrollbar-color: transparent transparent; /* Firefox - thumb, track 투명 처리 */
-}
-
-/* 웹킷 기반 브라우저 (크롬, 사파리, 엣지) */
-*::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-  background-color: transparent; /* 스크롤바 트랙 투명 */
-}
-
-*::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.3); /* 스크롤바 thumb 색, 투명도 조절 */
-  border-radius: 4px;
-  transition: background-color 0.3s;
-  visibility: hidden; /* 초기엔 숨김 */
-}
-
-*::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-/* 스크롤이 움직일 때 thumb 보이도록 */
-* {
-  scrollbar-gutter: stable;
-}
-
-* {
-  overflow: auto;
-}
-
-*::-webkit-scrollbar-thumb {
-  visibility: visible; /* 기본값 visible */
-  opacity: 0;
-  transition: opacity 0.5s;
-}
-
-/* 스크롤 동작 시 visible 처리 */
-*::-webkit-scrollbar:hover,
-*::-webkit-scrollbar:active,
-*::-webkit-scrollbar-thumb:hover {
-  opacity: 1;
-  visibility: visible;
-}
-
-/* 추가: 스크롤 하는 동안 스크롤바 보이게 하는 keyframe 애니메이션 */
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-
 body::-webkit-scrollbar {
   display: none;             /* Chrome, Safari, 최신 Edge */
 }
