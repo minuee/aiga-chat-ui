@@ -248,9 +248,12 @@ export default function ChatBot() {
   /* 토큰 만료를 체크 */
   useEffect(() => {
     const nowTimeStamp = functions.getKSTUnixTimestamp();
+    console.log('nowTimeStamp',nowTimeStamp,in24UsedToken,guestMaxToken,guestRetryLimitSec)
     if ( in24UsedToken > 0 ) { 
       if ( userBasicInfo?.isGuest  ) {//비회원
+        console.log('nowTimeStamp 1')
         if ( in24UsedToken >= guestMaxToken ) {
+          console.log('nowTimeStamp 1 if')
           setChatDisabled({
             ...isChatDisabled,
             isState : false,
@@ -258,6 +261,7 @@ export default function ChatBot() {
             remainTimeStamp : guestRetryLimitSec ?? 57600,
           })
         }else{
+          console.log('nowTimeStamp 1 else')
           setChatDisabled({
             ...isChatDisabled,
             isState : true,
