@@ -266,17 +266,30 @@ export default function Index() {
     getConfigData();
   }
 
-  if (!hasMounted || isLoading) {
-    return (
-      <Flex bg={themeColor} height={"100%"} minHeight={"100vh"} width="100%" justifyContent={'center'} alignItems={'center'}>
-        <SkeletonCircle size='10' />
-      </Flex>
-    )
-  }
+  
 
   if ( isMobileOnly ) {
     return (
       <Box height={`${mobileContainerHeight}px`} overflow={isMobileSafari ? 'auto' : 'hidden'} position={'relative'} ref={mobileScrollRef}>
+        { ( !hasMounted || isLoading ) && ( 
+          <Flex 
+            bg={themeColor} 
+            height={"100%"} 
+            minHeight={"100vh"} 
+            width="100%" 
+            justifyContent={'center'} 
+            alignItems={'center'} 
+            zIndex={999999999}
+            position={'absolute'}
+            left={0}
+            top={0}
+            right={0}
+            bottom={0}
+          >
+            <SkeletonCircle size='10' />
+          </Flex>
+          )
+        }
         <Flex position={'fixed'} top={0} left={0} right={0} height={'60px'} alignItems={'center'} justifyContent={'center'} zIndex={10}>
           <Navbar
             onOpen={onOpen}
@@ -306,7 +319,26 @@ export default function Index() {
   }
 
   return (
-      <Flex  justifyContent={'center'} >
+      <Flex justifyContent={'center'} position="relative">
+        { ( !hasMounted || isLoading ) && ( 
+          <Flex 
+            bg={themeColor} 
+            height={"100%"} 
+            minHeight={"100vh"} 
+            width="100%" 
+            justifyContent={'center'} 
+            alignItems={'center'} 
+            zIndex={999999999}
+            position={'absolute'}
+            left={0}
+            top={0}
+            right={0}
+            bottom={0}
+          >
+            <SkeletonCircle size='10' />
+          </Flex>
+          )
+        }
         <Flex
           minHeight={isMobileOnly ? "100%" : "100vh"}
           height="100%"

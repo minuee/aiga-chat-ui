@@ -1,6 +1,5 @@
 import { extendTheme, HTMLChakraProps, ThemingProps } from '@chakra-ui/react';
 import '@fontsource/noto-sans';
-import '@fontsource/noto-sans/400.css';
 import '@fontsource/noto-sans/700.css';
 import '@fontsource/noto-sans-kr'; // 기본 weight
 import '@fontsource/noto-sans-kr/700.css'; // 굵은 weight
