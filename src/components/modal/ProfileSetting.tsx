@@ -502,9 +502,20 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         }
         return registration;
       }else{
-        ///console.log('getServiceWorkerRegistration else')
+        console.log('getServiceWorkerRegistration else')
         navigator.serviceWorker.ready.then(reg => reg.pushManager.getSubscription())
         .then(sub => {
+          toast({
+            title: 'getServiceWorkerRegistration',
+            description: `getServiceWorkerRegistration sub : ${sub}`,
+            position: 'top-right',
+            status: 'warning',
+            containerStyle: {
+              color: '#ffffff',
+            },
+            isClosable: true,
+            duration:3000
+          });
           if (sub) {
             console.log('푸시 구독 있음:', sub.endpoint);
           } else {
@@ -515,6 +526,17 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       }
     }catch(e:any){
       console.log('getServiceWorkerRegistration e',e)
+      toast({
+        title: 'getServiceWorkerRegistration',
+        description: `getServiceWorkerRegistration e : ${e}`,
+        position: 'top-right',
+        status: 'warning',
+        containerStyle: {
+          color: '#ffffff',
+        },
+        isClosable: true,
+        duration:3000
+      });
       return e;
     }
   };
@@ -554,7 +576,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       const permission = await Notification.requestPermission();
       toast({
         title: 'permission',
-        description: `permission : ${permission ? '참' : '거짓'}`,
+        description: `permission : ${permission}`,
         position: 'top-right',
         status: 'warning',
         containerStyle: {
