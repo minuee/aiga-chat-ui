@@ -808,15 +808,15 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                   {
                     ( userPWAPermission  && !functions.isEmpty(userPWAToken) )
                     ? (
-                      <Box display={'flex'} alignItems={'center'} flex={5} onClick={requestPermissionAndSubscribe} cursor={'pointer'} >
-                        <Icon as={BiNotification} width="20px" height="20px" color={iconColor} />
-                        <CustomTextBold400 fontSize={'17px'} ml={2} color={textColor3}>알림 신청</CustomTextBold400>
-                      </Box>
-                    )
-                    : (
                       <Box display={'flex'} alignItems={'center'} flex={5} onClick={unsubscribePush} cursor={'pointer'}>
                         <Icon as={BiNotification} width="20px" height="20px" color={iconColor} />
                         <CustomTextBold400 fontSize={'17px'} ml={2} color={textColor3}>알림 해지</CustomTextBold400>
+                      </Box>
+                    )
+                    : (
+                      <Box display={'flex'} alignItems={'center'} flex={5} onClick={requestPermissionAndSubscribe} cursor={'pointer'} >
+                        <Icon as={BiNotification} width="20px" height="20px" color={iconColor} />
+                        <CustomTextBold400 fontSize={'17px'} ml={2} color={textColor3}>알림 신청</CustomTextBold400>
                       </Box>
                     )
                   }
