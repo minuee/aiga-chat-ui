@@ -405,6 +405,24 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     })
   }
 
+  const firstClear = () => {
+    setIsOpenReview(false)
+    setIsOpenDoctorDetailModal(false);
+    setOpenHistoryDrawer(false);
+    setIsOpenRequestModal(false);
+    setOpenDoctorListModal(false);
+    setIsOpenSetupModal(false);
+    setIsOpenNoticeListModal(false);
+    setIsOpenDoctorDetailModal(false);
+    setIsOpenMypageRequestModal(false);
+    setIsOpenEntireModal(false);
+    setIsOpenPolicyModal(false);
+    setIsOpenYakwanModal(false);
+    setIsOpenMingamModal(false);
+    setIsOpenSignupModal(false);
+    setIsOpenSignupAgreeModal(false);
+  }
+
   useEffect(() => {
     if (isMobileSafari && ( isKeyboardOpen || isKeyboardOpenSafari )) {
       document.body.style.overflow = 'hidden';
@@ -436,7 +454,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
       if(!functions.isEmpty(outputCode)) {
         setRealOutputCode(outputCode)
       }
-      //firstForceStep();
+      firstClear();
       //getNewSessionID(); // ✅ 여기서만 실행됨
       alreadyInitialized.current = true;
       
@@ -503,7 +521,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
       }
     }
   }, [oldHistoryData]);
-
   /* 토큰 만료를 체크 */
   useEffect(() => {
     if ( in24UsedToken > 0 ) { 
@@ -512,6 +529,8 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
           setChatDisabled({
             ...isChatDisabled,
             isState : false,
+            reTryTimeStamp : guestRetryLimitSec ?? 57600,
+            remainTimeStamp : guestRetryLimitSec ?? 57600,
           })
         }else{
           setChatDisabled({
@@ -524,6 +543,8 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
           setChatDisabled({
             ...isChatDisabled,
             isState : false,
+            reTryTimeStamp : userRetryLimitSec ?? 57600,
+            remainTimeStamp : userRetryLimitSec ?? 57600
           })
         }else{
           setChatDisabled({
@@ -655,7 +676,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
           setChatDisabled({
             ...isChatDisabled,
             reTryTimeStamp : nowTimeStamp,
-            remainTimeStamp : 57600,
+            remainTimeStamp : guestRetryLimitSec ?? 57600,
             isAlertMsg : false,
             isState : false,
           })
@@ -666,7 +687,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
           setChatDisabled({
             ...isChatDisabled,
             reTryTimeStamp : nowTimeStamp,
-            remainTimeStamp : 57600,
+            remainTimeStamp : userRetryLimitSec ||  57600,
             isAlertMsg : false,
             isState : false,
           })
@@ -837,9 +858,13 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
           }else if ( questionResult?.message?.statusCode == '403') {
             const parsedMessage = parseLooselyFormattedJsonString(questionResult?.message?.message);
             if ( !functions.isEmpty(parsedMessage) ) {
+              const parsedTimestamp = parseInt(parsedMessage?.timestamp);
+              const reTrytimeStamp = parsedTimestamp ?? userRetryLimitSec ?? 57600;
+              const parsedRemainingTime = parseInt(parsedMessage?.remainingTime);
+              const remainingTime = parsedRemainingTime ?? userRetryLimitSec ?? 57600;
               setChatDisabled({
-                remainTimeStamp : parseInt(parsedMessage?.remainingTime),
-                reTrytimeStamp : parseInt(parsedMessage?.timestamp),
+                reTrytimeStamp : reTrytimeStamp,
+                remainTimeStamp : remainingTime,
                 isState : false,
                 isAlertMsg : false
               })

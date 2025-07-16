@@ -160,6 +160,24 @@ export default function ChatBot() {
     })
   }
 
+  const firstClear = () => {
+    setIsOpenReview(false)
+    setIsOpenDoctorDetailModal(false);
+    setOpenHistoryDrawer(false);
+    setIsOpenRequestModal(false);
+    setOpenDoctorListModal(false);
+    setIsOpenSetupModal(false);
+    setIsOpenNoticeListModal(false);
+    setIsOpenDoctorDetailModal(false);
+    setIsOpenMypageRequestModal(false);
+    setIsOpenEntireModal(false);
+    setIsOpenPolicyModal(false);
+    setIsOpenYakwanModal(false);
+    setIsOpenMingamModal(false);
+    setIsOpenSignupModal(false);
+    setIsOpenSignupAgreeModal(false);
+  }
+
   useEffect(() => {
     const userBasicInfo = UserStateStore.getState();
     // userBasicInfo.isState가 true에서 false로 또는 false에서 true로 변경될 때 실행되는 코드
@@ -177,7 +195,7 @@ export default function ChatBot() {
       if(!functions.isEmpty(outputCode)) {
         setRealOutputCode(outputCode)
       }
-      //firstForceStep();
+      firstClear();
       //getNewSessionID(); // ✅ 여기서만 실행됨
       alreadyInitialized.current = true;
       
@@ -189,6 +207,10 @@ export default function ChatBot() {
 
   useEffect(() => {
     pathnameRef.current = pathname; // 항상 최신값 유지
+    console.log('pathname',pathname)
+    if (pathname.endsWith('/chat')) {
+      console.log("chat 페이지입니다!");
+    }
   }, [pathname]);
 
   const getNewSessionID =  async() => {
@@ -205,27 +227,6 @@ export default function ChatBot() {
       return null;
     }
   }
-
-  /* useEffect(() => {
-    if ( isNewChat && realOutputCode.length > 0 ) {
-      // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
-      
-      setChatSessionId('')
-      setOutputCode([]);
-      setRealOutputCode([])
-      setChatDisabled({
-        ...isChatDisabled,
-        isState : true,
-        isAlertMsg : false,
-      })
-      setCurrentPathname('')
-      mCookie.setCookie('currentPathname','')
-      firstForceStep();
-      setTimeout(() => {
-        setNewChatOpen(false);
-      }, 60);
-    }
-  }, [isNewChat]); */
 
   useEffect(() => {
     if ( !functions.isEmpty(oldHistoryData) ) {
@@ -252,6 +253,8 @@ export default function ChatBot() {
           setChatDisabled({
             ...isChatDisabled,
             isState : false,
+            reTryTimeStamp : guestRetryLimitSec ?? 57600,
+            remainTimeStamp : guestRetryLimitSec ?? 57600,
           })
         }else{
           setChatDisabled({
@@ -264,6 +267,8 @@ export default function ChatBot() {
           setChatDisabled({
             ...isChatDisabled,
             isState : false,
+            reTryTimeStamp : userRetryLimitSec ?? 57600,
+            remainTimeStamp : userRetryLimitSec ?? 57600
           })
         }else{
           setChatDisabled({
@@ -450,7 +455,7 @@ export default function ChatBot() {
           setChatDisabled({
             ...isChatDisabled,
             reTryTimeStamp : nowTimeStamp,
-            remainTimeStamp : 57600,
+            remainTimeStamp : guestRetryLimitSec ?? 57600,
             isAlertMsg : false,
             isState : false,
           })
@@ -461,7 +466,7 @@ export default function ChatBot() {
           setChatDisabled({
             ...isChatDisabled,
             reTryTimeStamp : nowTimeStamp,
-            remainTimeStamp : 57600,
+            remainTimeStamp : userRetryLimitSec ||  57600,
             isAlertMsg : false,
             isState : false,
           })
@@ -631,9 +636,13 @@ export default function ChatBot() {
           }else if ( questionResult?.message?.statusCode == '403' ) {
             const parsedMessage = parseLooselyFormattedJsonString(questionResult?.message?.message);
             if ( !functions.isEmpty(parsedMessage)) {
+              const parsedTimestamp = parseInt(parsedMessage?.timestamp);
+              const reTrytimeStamp = parsedTimestamp ?? userRetryLimitSec ?? 57600;
+              const parsedRemainingTime = parseInt(parsedMessage?.remainingTime);
+              const remainingTime = parsedRemainingTime ?? userRetryLimitSec ?? 57600;
               setChatDisabled({
-                reTrytimeStamp : parseInt(parsedMessage?.timestamp),
-                remainTimeStamp : parseInt(parsedMessage?.remainingTime),
+                reTrytimeStamp : reTrytimeStamp,
+                remainTimeStamp : remainingTime,
                 isState : false,
                 isAlertMsg : false
               })
@@ -727,34 +736,6 @@ export default function ChatBot() {
 
   const handleChange = (Event: any) => {
     setInputCode(Event.target.value);
-    /* const nowTokens = calculateTokenCount(Event.target.value);
-    const nowTimeStamp = functions.getKSTUnixTimestamp();
-    if ( in24UsedToken > 0 ) { 
-      const realTimeIn24UsedToken = in24UsedToken+nowTokens;
-      if ( userBasicInfo?.isGuest  ) {//비회원
-        if ( realTimeIn24UsedToken >= guestMaxToken ) {
-          setChatDisabled({
-            ...isChatDisabled,
-            reTryTimeStamp : nowTimeStamp,
-            isState : false,
-          })
-        }else{
-          setInputCode(Event.target.value);
-        }
-      }else{
-        if ( realTimeIn24UsedToken >= userMaxToken ) {
-          setChatDisabled({
-            ...isChatDisabled,
-            reTryTimeStamp : nowTimeStamp,
-            isState : false,
-          })
-        }else{
-          setInputCode(Event.target.value);
-        }
-      }
-    }else{
-      setInputCode(Event.target.value);
-    } */
   }
 
   // 토큰 계산 함수

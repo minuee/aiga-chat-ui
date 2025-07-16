@@ -1,5 +1,5 @@
 import createNextIntlPlugin from "next-intl/plugin"
-import runtimeCaching from 'next-pwa/cache.js'; // 이 부분은 이미 수정된 상태입니다.
+//import runtimeCaching from 'next-pwa/cache.js'; // 이 부분은 이미 수정된 상태입니다.
 import withPWAInit from 'next-pwa'; // 수정된 부분
 //import runtimeCaching from "next-pwa/cache";
 
@@ -34,20 +34,7 @@ const nextConfig = {
     ],
     // Make ENV
     unoptimized: true,
-  },
-  async headers() {
-    return [
-      {
-        source: '/manifest.webmanifest',
-        headers: [
-          {
-            key: 'Content-Type',
-            value: 'application/manifest+json',
-          },
-        ],
-      },
-    ];
-  },
+  }
 };
 //export default withNextIntl(nextConfig)
 export default withPWA(withNextIntl(nextConfig))
