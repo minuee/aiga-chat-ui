@@ -582,15 +582,48 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       setPWAPermission(true);
   
       const registration =  await getServiceWorkerRegistration();
-      //console.log('registration',registration)
+      toast({
+        title: 'registration',
+        description: `registration : ${registration}`,
+        position: 'top-right',
+        status: 'warning',
+        containerStyle: {
+          color: '#ffffff',
+        },
+        isClosable: true,
+        duration:3000
+      });
+      console.log('registration',registration)
       const currentSub = await registration.pushManager.getSubscription();
       //console.log('currentSub',currentSub)
+      toast({
+        title: 'currentSub',
+        description: `currentSub : ${currentSub}`,
+        position: 'top-right',
+        status: 'warning',
+        containerStyle: {
+          color: '#ffffff',
+        },
+        isClosable: true,
+        duration:3000
+      });
       if (!currentSub) {
         const newSub = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: functions.urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY),
         });
-        //console.log('newSub',newSub)
+        toast({
+          title: 'newSub',
+          description: `newSub : ${newSub}`,
+          position: 'top-right',
+          status: 'warning',
+          containerStyle: {
+            color: '#ffffff',
+          },
+          isClosable: true,
+          duration:3000
+        });
+        console.log('newSub',newSub)
         setSubscription(newSub);
         setIsSubscribed(true);
          // 서버에 구독 정보 전송
