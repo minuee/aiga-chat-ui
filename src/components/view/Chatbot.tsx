@@ -247,13 +247,14 @@ export default function ChatBot() {
 
   /* 토큰 만료를 체크 */
   useEffect(() => {
+    const nowTimeStamp = functions.getKSTUnixTimestamp();
     if ( in24UsedToken > 0 ) { 
       if ( userBasicInfo?.isGuest  ) {//비회원
         if ( in24UsedToken >= guestMaxToken ) {
           setChatDisabled({
             ...isChatDisabled,
             isState : false,
-            reTryTimeStamp : guestRetryLimitSec ?? 57600,
+            reTryTimeStamp : nowTimeStamp,
             remainTimeStamp : guestRetryLimitSec ?? 57600,
           })
         }else{
@@ -267,7 +268,7 @@ export default function ChatBot() {
           setChatDisabled({
             ...isChatDisabled,
             isState : false,
-            reTryTimeStamp : userRetryLimitSec ?? 57600,
+            reTryTimeStamp : nowTimeStamp,
             remainTimeStamp : userRetryLimitSec ?? 57600
           })
         }else{
@@ -636,8 +637,9 @@ export default function ChatBot() {
           }else if ( questionResult?.message?.statusCode == '403' ) {
             const parsedMessage = parseLooselyFormattedJsonString(questionResult?.message?.message);
             if ( !functions.isEmpty(parsedMessage)) {
+              const nowTimeStamp = functions.getKSTUnixTimestamp();
               const parsedTimestamp = parseInt(parsedMessage?.timestamp);
-              const reTrytimeStamp = parsedTimestamp ?? userRetryLimitSec ?? 57600;
+              const reTrytimeStamp = parsedTimestamp ?? nowTimeStamp;
               const parsedRemainingTime = parseInt(parsedMessage?.remainingTime);
               const remainingTime = parsedRemainingTime ?? userRetryLimitSec ?? 57600;
               setChatDisabled({

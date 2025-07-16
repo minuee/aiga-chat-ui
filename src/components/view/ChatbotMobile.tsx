@@ -524,12 +524,13 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   /* 토큰 만료를 체크 */
   useEffect(() => {
     if ( in24UsedToken > 0 ) { 
+      const nowTimeStamp = functions.getKSTUnixTimestamp();
       if ( userBasicInfo?.isGuest  ) {//비회원
         if ( in24UsedToken >= guestMaxToken ) {
           setChatDisabled({
             ...isChatDisabled,
             isState : false,
-            reTryTimeStamp : guestRetryLimitSec ?? 57600,
+            reTryTimeStamp : nowTimeStamp,
             remainTimeStamp : guestRetryLimitSec ?? 57600,
           })
         }else{
@@ -543,7 +544,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
           setChatDisabled({
             ...isChatDisabled,
             isState : false,
-            reTryTimeStamp : userRetryLimitSec ?? 57600,
+            reTryTimeStamp : nowTimeStamp,
             remainTimeStamp : userRetryLimitSec ?? 57600
           })
         }else{
@@ -858,8 +859,9 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
           }else if ( questionResult?.message?.statusCode == '403') {
             const parsedMessage = parseLooselyFormattedJsonString(questionResult?.message?.message);
             if ( !functions.isEmpty(parsedMessage) ) {
+              const nowTimeStamp = functions.getKSTUnixTimestamp();
               const parsedTimestamp = parseInt(parsedMessage?.timestamp);
-              const reTrytimeStamp = parsedTimestamp ?? userRetryLimitSec ?? 57600;
+              const reTrytimeStamp = parsedTimestamp ?? nowTimeStamp;
               const parsedRemainingTime = parseInt(parsedMessage?.remainingTime);
               const remainingTime = parsedRemainingTime ?? userRetryLimitSec ?? 57600;
               setChatDisabled({
@@ -956,34 +958,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
 
   const handleChange = (Event: any) => {
     setInputCode(Event.target.value);
-    /* const nowTokens = calculateTokenCount(Event.target.value);
-    const nowTimeStamp = functions.getKSTUnixTimestamp();
-    if ( in24UsedToken > 0 ) { 
-      const realTimeIn24UsedToken = in24UsedToken+nowTokens;
-      if ( userBasicInfo?.isGuest  ) {//비회원
-        if ( realTimeIn24UsedToken >= guestMaxToken ) {
-          setChatDisabled({
-            ...isChatDisabled,
-            reTryTimeStamp : nowTimeStamp,
-            isState : false,
-          })
-        }else{
-          setInputCode(Event.target.value);
-        }
-      }else{
-        if ( realTimeIn24UsedToken >= userMaxToken ) {
-          setChatDisabled({
-            ...isChatDisabled,
-            reTryTimeStamp : nowTimeStamp,
-            isState : false,
-          })
-        }else{
-          setInputCode(Event.target.value);
-        }
-      }
-    }else{
-      setInputCode(Event.target.value);
-    } */
   }
 
   // 토큰 계산 함수
