@@ -307,12 +307,12 @@ function SidebarContent(props: SidebarContent) {
               historyData.map(({ date, sessions } : any, index:number) => (
               <Flex key={date} flexDirection={'column'} width={'100%'}>
                 { index > 0 && <HSeparator mt="20px" mb="15px" w="100%"  />}  
-                <Box display={'flex'} width={'100%'} mt={1} py="basePadding" px="25px">
+                <Box display={sessions.length > 0 ? 'flex' : 'none'} width={'100%'} mt={1} py="basePadding" px="25px">
                   <CustomTextBold400 fontSize={'15px'} color={textColor2}>
                     {date? date.toString() : "YYYY-MM-DD"}
                   </CustomTextBold400>
                 </Box>
-                <Flex flexDirection={'column'} justifyContent={'flex-start'} minHeight={'50px'} width="100%"  px="basePadding">
+                <Box display={sessions.length > 0 ? 'flex' : 'none'}  flexDirection={'column'} justifyContent={'flex-start'} minHeight={'50px'} width="100%"  px="basePadding">
                   <Stack>
                     {sessions.map((item:any, index:number) => (
                       <HistoryItem 
@@ -324,7 +324,7 @@ function SidebarContent(props: SidebarContent) {
                       />
                     ))}
                   </Stack>
-                </Flex>
+                </Box>
               </Flex>
               ))
             }

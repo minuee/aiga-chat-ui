@@ -7,7 +7,7 @@ type ChatMeMessageProps = {
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 const ChatMeMessage = ({  question = "대답이 중지되었습니다.", indexKey}: ChatMeMessageProps) => {
 
-  const bgMeColor = useColorModeValue('#2B8FFF', 'navy.600');
+  const bgMeColor = useColorModeValue('#2B8FFF', 'navy.700');
   const textMeColor = useColorModeValue('white', 'white');
   const bgSystemColor = useColorModeValue('#F4F6FA', 'navy.600');
   const textSystemColor = useColorModeValue('#212127', 'white');

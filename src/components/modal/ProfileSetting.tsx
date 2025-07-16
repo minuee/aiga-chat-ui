@@ -64,7 +64,8 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   const setIsOpenYakwanModal = ModalMypageYakwanStore((state) => state.setIsOpenYakwanModal);
   const { isOpenNoticeDetailModal } = ModalMypageNoticeDetailStore(state => state);
   const setIsOpenNoticeDetailModal = ModalMypageNoticeDetailStore((state) => state.setIsOpenNoticeDetailModal);
-  const { userPWAPermission,userPWAToken } = PWATokenStore(state => state);
+  const userPWAPermission = PWATokenStore((state) => state.userPWAPermission);
+  const userPWAToken = PWATokenStore((state) => state.userPWAToken);
   const setUserPWATokenInfo = PWATokenStore((state) => state.setUserPWATokenInfo);
   const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
 
@@ -409,7 +410,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       console.log("Notification in window:", 'Notification' in window);
       console.log("serviceWorker in navigator:", 'serviceWorker' in navigator);
       console.log("PushManager in window:", 'PushManager' in window);
-      if ( !userPWAPermission  && !functions.isEmpty(userPWAToken) ) {
+      if ( !userPWAPermission  && !functions.isSoftEmpty(userPWAToken) ) {
         checkPushStatus();
       }
      
@@ -423,12 +424,9 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       setPWAPermission(permission === 'granted');
     
       const isSafari = functions.isSafari();
-      console.log('isSafari',isSafari)
       const isSamsungBrowser = functions.isSamsungBrowser()
-      console.log('isSamsungBrowser',isSamsungBrowser)
       if ( isSafari || isSamsungBrowser) {
         let registration = await navigator.serviceWorker.getRegistration();
-        console.log('getServiceWorkerRegistration if',registration)
         if (!registration) {
           navigator.serviceWorker.getRegistration().then((reg:any) => {
             reg.showNotification('테스트 알림입니다!', {
@@ -457,32 +455,21 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         }
       }
     }catch(e:any) {
-      //console.log("checkPushStatus eeee",e)
-      toast({
-        title: '에러',
-        description: `eee:${e.toString()}`,
-        position: 'top-right',
-        status: 'warning',
-        containerStyle: {
-          color: '#ffffff',
-        },
-        isClosable: true,
-        duration:3000
-      });
+      console.log("checkPushStatus eeee",e)
     }
   };
 
   
   const getServiceWorkerRegistration = async () => {
     try{
-      /* if ('serviceWorker' in navigator) {
+      if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js')
           .then(() => navigator.serviceWorker.ready)
           .then((registration) => {
             console.log('Service Worker Ready:', registration);
           })
           .catch(console.error);
-      } */
+      }
       
       // 사파리 호환용: ready 대신 getRegistration 사용, 없으면 등록 시도
       const isSafari = functions.isSafari();
@@ -505,17 +492,6 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         console.log('getServiceWorkerRegistration else')
         navigator.serviceWorker.ready.then(reg => reg.pushManager.getSubscription())
         .then(sub => {
-          toast({
-            title: 'getServiceWorkerRegistration',
-            description: `getServiceWorkerRegistration sub : ${sub}`,
-            position: 'top-right',
-            status: 'warning',
-            containerStyle: {
-              color: '#ffffff',
-            },
-            isClosable: true,
-            duration:3000
-          });
           if (sub) {
             console.log('푸시 구독 있음:', sub.endpoint);
           } else {
@@ -526,17 +502,6 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       }
     }catch(e:any){
       console.log('getServiceWorkerRegistration e',e)
-      toast({
-        title: 'getServiceWorkerRegistration',
-        description: `getServiceWorkerRegistration e : ${e}`,
-        position: 'top-right',
-        status: 'warning',
-        containerStyle: {
-          color: '#ffffff',
-        },
-        isClosable: true,
-        duration:3000
-      });
       return e;
     }
   };
@@ -545,17 +510,6 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     try{
       if (typeof window !== 'undefined' && 'standalone' in window.navigator) {
         const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone === true);
-        toast({
-          title: 'isStandalone',
-          description: `isStandalone : ${isStandalone ? '참' : '거짓'}`,
-          position: 'top-right',
-          status: 'warning',
-          containerStyle: {
-            color: '#ffffff',
-          },
-          isClosable: true,
-          duration:3000
-        });
         if (!isStandalone) {
           // 홈화면에 추가하라는 안내 UI 띄우기
           toast({
@@ -567,24 +521,14 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               color: '#ffffff',
             },
             isClosable: true,
-            duration:1500
+            duration:2000
           });
           setPWAPermission(false);
           return;
         }
       }
       const permission = await Notification.requestPermission();
-      toast({
-        title: 'permission',
-        description: `permission : ${permission}`,
-        position: 'top-right',
-        status: 'warning',
-        containerStyle: {
-          color: '#ffffff',
-        },
-        isClosable: true,
-        duration:3000
-      });
+     
       if (permission !== 'granted') {
         toast({
           title: '알림 권한이 차단되어 있어요',
@@ -595,65 +539,33 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
             color: '#ffffff',
           },
           isClosable: true,
-          duration:1500
+          duration:2000
         });
         setPWAPermission(false);
         return;
       }
     
       setPWAPermission(true);
-  
+      
       const registration =  await getServiceWorkerRegistration();
-      toast({
-        title: 'registration',
-        description: `registration : ${registration}`,
-        position: 'top-right',
-        status: 'warning',
-        containerStyle: {
-          color: '#ffffff',
-        },
-        isClosable: true,
-        duration:3000
-      });
+      
       console.log('registration',registration)
       const currentSub = await registration.pushManager.getSubscription();
-      //console.log('currentSub',currentSub)
-      toast({
-        title: 'currentSub',
-        description: `currentSub : ${currentSub}`,
-        position: 'top-right',
-        status: 'warning',
-        containerStyle: {
-          color: '#ffffff',
-        },
-        isClosable: true,
-        duration:3000
-      });
+      console.log('currentSub',currentSub)
       if (!currentSub) {
         const newSub = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: functions.urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY),
         });
-        toast({
-          title: 'newSub',
-          description: `newSub : ${newSub}`,
-          position: 'top-right',
-          status: 'warning',
-          containerStyle: {
-            color: '#ffffff',
-          },
-          isClosable: true,
-          duration:3000
-        });
         console.log('newSub',newSub)
         setSubscription(newSub);
         setIsSubscribed(true);
          // 서버에 구독 정보 전송
-        const res:any = await MemberService.regitPWAToken(newSub);
         setUserPWATokenInfo(
           true,
           newSub
         )
+        const res:any = await MemberService.regitPWAToken(newSub);
         toast({
           title: '알림 구독 감사합니다.',
           position: 'top-right',
@@ -662,12 +574,12 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
             color: '#ffffff',
           },
           isClosable: true,
-          duration:1500
+          duration:2000
         });
-       
       } else {
         toast({
           title: '이미 구독된 상태입니다.',
+          //description : `userPWAPermission : ${functions.isSoftEmpty(userPWAToken) ? '참' : '거짓'}`,
           position: 'top-right',
           status: 'info',
           containerStyle: {
@@ -676,40 +588,31 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
           isClosable: true,
           duration:1500
         });
-        const res:any = await MemberService.regitPWAToken(currentSub);
+        setSubscription(currentSub);
+        setIsSubscribed(true);
         setUserPWATokenInfo(
           true,
           currentSub
         )
-        setSubscription(currentSub);
-        setIsSubscribed(true);
+        const res:any = await MemberService.regitPWAToken(currentSub);
       }
     }catch(e:any) {
-      ///console.log("permission eeee",e)
-      toast({
-        title: `에러 : ${e}`,
-        position: 'top-right',
-        status: 'info',
-        containerStyle: {
-          color: '#ffffff',
-        },
-        isClosable: true,
-        duration:5000
-      });
+      console.log("permission eeee",e)
     }
   };
 
   const unsubscribePush = async () => {
-    if (!subscriptionJson) return;
+
+    if (!subscriptionJson && !userPWAToken) return;
   
-    const success = await subscriptionJson.unsubscribe();
+    const success = await userPWAToken?.unsubscribe();
     if (success) {
       setSubscription(null);
       setIsSubscribed(false);
       // 서버에 구독 해지 알림
-      const res:any = await MemberService.removePWAToken(subscriptionJson);
+      const res:any = await MemberService.removePWAToken(userPWAToken);
       setUserPWATokenInfo(
-        true,
+        false,
         null
       )
       toast({
@@ -720,7 +623,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
           color: '#ffffff',
         },
         isClosable: true,
-        duration:1500
+        duration:2000
       });
     } else {
       toast({
@@ -731,7 +634,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
           color: '#ffffff',
         },
         isClosable: true,
-        duration:1500
+        duration:2000
       });
     }
   };
@@ -861,7 +764,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                (
                 <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
                   {
-                    ( userPWAPermission  && !functions.isEmpty(userPWAToken) )
+                    ( userPWAPermission  && !functions.isSoftEmpty(userPWAToken) )
                     ? (
                       <Box display={'flex'} alignItems={'center'} flex={5} onClick={unsubscribePush} cursor={'pointer'}>
                         <Icon as={BiNotification} width="20px" height="20px" color={iconColor} />
@@ -882,7 +785,13 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                ( process.env.NODE_ENV == 'development' || userBaseInfo?.email == "minuee47@gmail.com" || userBaseInfo?.email == "lena47@naver.com") 
                &&
                (
-                <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
+                <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
+                  <Box width={'100%'}>
+                    <CustomText fontSize={'12px'}>userPWAPermission : {userPWAPermission ? '참' : '거짓'}</CustomText>
+                  </Box>
+                  <Box width={'100%'}>
+                    <CustomText fontSize={'12px'}>userPWAToken : {functions.isSoftEmpty(userPWAToken) ? '참' : '거짓'}</CustomText>
+                  </Box>
                   <Box width={'100%'}>
                     <CustomText fontSize={'12px'}>{JSON.stringify(userPWAToken)}</CustomText>
                   </Box>

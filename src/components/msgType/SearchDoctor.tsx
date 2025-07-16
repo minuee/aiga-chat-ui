@@ -58,12 +58,15 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
   const previousOutputRef = useRef<string | null>(null);
 
   useEffect(() => {
+    //console.log("dddddd SearchDoctor",data, isHistory ,summary,isLiveChat)
     if ( !functions.isEmpty(summary)) previousOutputRef.current =  summary; 
     else previousOutputRef.current = null
   }, [summary]);
 
   const isOutputSame = previousOutputRef.current === summary && previousOutputRef.current !== null;
-
+  /* useEffect(() => {
+    console.log("dddddd SearchDoctor isOutputSame",isLiveChat , isOutputSame)
+  }, [isOutputSame]); */
   const handleScroll = () => {
     if (flexRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = flexRef.current;
@@ -75,7 +78,6 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
       }
     }
   };
-
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -186,7 +188,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
         </Box>
       </Flex>
     )
-  }else if ( doctorList?.length  <  3 ) {
+  }else if ( doctorList?.length  <  4 ) {
     return (
       <Flex w="100%" flexDirection={'column'} mt="10px">
         <Box my="5px">
@@ -205,11 +207,11 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
           zIndex={2}
           justifyContent={'center'}
           flexDirection={'column'}
-          mb="5px"
+          mb="8px"
         > 
           <Box>
           {
-            ( isLiveChat && !functions.isEmpty(summary) && !isLocalTypeDone  )
+            ( isLiveChat && !functions.isEmpty(summary) && !isLocalTypeDone )
             ?
             <TypeAnimation
               msg={ summary.replace(/^"(.*)"$/, '$1')}
@@ -253,13 +255,14 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
               <Flex 
                 key={index} 
                 bg={profileBgColor} 
-                width={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
+                width={ doctorList?.length === 1 ? "100%" : doctorList?.length === 2 ? "calc((100% - 8px) / 2)" : "calc((100% - 16px) / 3)" }
+                minWidth={ doctorList?.length === 1 ? "100%" : doctorList?.length === 2 ? "calc((100% - 8px) / 2)" : "calc((100% - 16px) / 3)" }
                 padding="20px"
                 borderRadius="8px"
                 alignItems={'center'}
                 onClick={() => onSendButton(element,element?.doctor_id)} cursor={'pointer'}
                 flexDirection={{base : "row" , 'sm2' : doctorList?.length == 1 ? 'row' : 'column'}}
-                mr={doctorList?.length == 2 ? index == 0 ? "5px" : doctorList?.length == 3 ?  index < 2 ? '5px' : 0 : 0 : 0}
+                mr={index !== doctorList.length - 1 ? "8px" : "0px"}
               >
                 <Box flex={1} display={'flex'} justifyContent={'center'} alignItems={'center'} maxWidth={"70px"}>
                   <NextImage 
@@ -410,7 +413,8 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
         </Box>
         <Box  
           display={isLocalTypeDone ? 'flex' : 'none'}
-          alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"60px"} maxHeight={"250px"} ref={flexRef} overflowX={'auto'}
+          alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"60px"} maxHeight={"250px"} ref={flexRef} 
+          overflowX={doctorList.length > 3 ? 'auto' : 'hidden'}
         >
           {
             doctorList.slice(0, 9).map((element: any, index: number) => (
@@ -418,12 +422,15 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
                 key={index} 
                 flexDirection="column" 
                 bg={profileBgColor} 
-                minWidth={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
-                width={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
+                //minWidth={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
+                //width={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
+                width={ doctorList?.length === 1 ? "100%" : doctorList?.length === 2 ? "calc((100% - 8px) / 2)" : "calc((100% - 16px) / 3)" }
+                minWidth={ doctorList?.length === 1 ? "100%" : doctorList?.length === 2 ? "calc((100% - 8px) / 2)" : "calc((100% - 16px) / 3)" }
                 maxWidth='300px' 
                 px="10px"
                 borderRadius="8px"
-                mr='5px'
+                //mr='5px'
+                mr={index !== doctorList.length - 1 ? "8px" : "0px"}
                 onClick={() => onSendButton(element,element?.doctor_id)} cursor={'pointer'}
               >
                 <Box display={'flex'} justifyContent={'center'} alignItems={'center'} pt="20px" pb="16px">
@@ -454,7 +461,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
             ))
           }
           {
-            doctorList?.length > 4 && (
+            doctorList?.length > 3 && (
               <Flex 
                 flexDirection="column" 
                 bg={navbarBgColor} 
@@ -479,13 +486,13 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
             )
           }
         </Box>
-        <Box pr={1} justifyContent={'flex-end'} display={doctorList?.length == 0 ? 'none' : isLocalTypeDone ? 'flex' : 'none'}>
+        <Box justifyContent={'flex-end'} display={doctorList?.length == 0 ? 'none' : isLocalTypeDone ? 'flex' : 'none'}>
           <Box 
-            display="flex" justifyContent={'center'} alignItems={'center'} bg={"#DFF5ED"} borderRadius={"4px"} height={"32px"} px="20px" cursor={'pointer'}
+            display="flex" justifyContent={'center'} alignItems={'center'} bg={"#DFF5ED"} borderRadius={"4px"} height={"32px"}  padding="0 8px 0 20px" cursor={'pointer'}
             onClick={() => onSendDoctorListButton(selectChatId)} 
           >
             <CustomTextBold400 fontSize={'15px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"} >
-            {doctorList[0]?.deptname} 전체보기
+            {doctorList[0]?.deptname} 전체 보기
             </CustomTextBold400>
             <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
           </Box>

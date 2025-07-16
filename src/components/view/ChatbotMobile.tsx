@@ -1431,7 +1431,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                                 output={functions.makeLinkify(functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
                                 isHistory={element?.isHistory}
                                 setIsTypingDone={() => onHandleTypeDone()}
-                                isLiveChat={element.isLiveChat}
+                                isLiveChat={element.isLiveChat == undefined ? false : element.isLiveChat }
                               />
                             </Flex>
                           </Box>

@@ -45,8 +45,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
   const setIsOpenDoctorDetailModal = ModalDoctorDetailStore((state) => state.setOpenDoctorDetailModal);
   const modalBtnRef = useRef<HTMLButtonElement>(null);
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.700');
-  const starColor = useColorModeValue('#0000ff', '#ffffff');
-  const skeletonColor = useColorModeValue('white', 'navy.700');
+  const arrowColor = useColorModeValue("#000000",'white')
   const bgSystemColor = useColorModeValue('#F4F6FA', 'navy.600');
   const textSystemColor = useColorModeValue('#212127', 'white');
   const profileBgColor = useColorModeValue("#F4F6FA",'navy.600');
@@ -60,10 +59,16 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
   const previousOutputRef = useRef<string | null>(null);
 
   useEffect(() => {
+    //console.log("dddddd RecommandDoctor",data, isHistory ,summary,isLiveChat)
     if ( !functions.isEmpty(summary)) previousOutputRef.current =  summary; 
     else previousOutputRef.current = null
   }, [summary]);
 
+  const isOutputSame = previousOutputRef.current === summary && previousOutputRef.current !== null;
+  
+  /* useEffect(() => {
+    console.log("dddddd 22isOutputSame",isLiveChat , isOutputSame)
+  }, [isOutputSame]); */
   const handleScroll = () => {
     if (flexRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = flexRef.current;
@@ -95,7 +100,8 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
   useEffect(() => {
     setSelectselectChatId(!functions.isEmpty(data?.chat_id) ? data?.chat_id : !functions.isEmpty(data?.id) ? data?.id : 0)
     if ( !functions.isEmpty( data?.answer?.doctors )) {
-      setDoctorList(data?.answer?.doctors)
+      //setDoctorList(data?.answer?.doctors)
+      setDoctorList(data?.answer?.doctors.slice(0, 4))
     }
   }, [data]);
 
@@ -191,7 +197,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
         minWidth={'100%'} width={'auto'} minHeight={"60px"} position={'relative'}
         sx={{
           '&::after': {
-            content: ( showGradient && doctorList?.length > 4 ) ? '""' : 'none', position: 'absolute', bottom: "40px",right: 0,width: '200px',height: '100%',maxHeight : "205px",
+            content: ( showGradient && doctorList?.length > 3 ) ? '""' : 'none', position: 'absolute', bottom: "40px",right: 0,width: '200px',height: '100%',maxHeight : "200px",
             background:  isDark ? 'linear-gradient(to right, rgba(26, 54, 93, 0) 0%, rgba(26, 54, 93, 1) 100%)' : 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)',
             pointerEvents: 'none', // 클릭 이벤트 방지
           },
@@ -216,7 +222,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
         > 
           <Box>
           {
-              ( isLiveChat && !functions.isEmpty(summary) && !isLocalTypeDone  )
+              ( isLiveChat && !functions.isEmpty(summary) && !isLocalTypeDone)
               ?
               <TypeAnimation
                 msg={ summary.replace(/^"(.*)"$/, '$1')}
@@ -247,23 +253,26 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
         </Box>
         <Box  
           display={isLocalTypeDone ? 'flex' : 'none'}
-          alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"60px"} maxHeight={"250px"} ref={flexRef} overflowX={'auto'}
+          alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"60px"} maxHeight={"250px"} ref={flexRef} 
+          overflowX={doctorList.length > 3 ? 'auto' : 'hidden'}
         >
           {
             doctorList.slice(0, 9).map((element: any, index: number) => (
               <Flex 
                 key={index} 
-                flexDirection="column" 
                 bg={profileBgColor} 
-                minWidth={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
-                width={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
-                maxWidth='300px' 
-                px="10px"
+                //width={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
+                //minWidth={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
+                width={ doctorList?.length === 1 ? "100%" : doctorList?.length === 2 ? "calc((100% - 8px) / 2)" : "calc((100% - 16px) / 3)" }
+                minWidth={ doctorList?.length === 1 ? "100%" : doctorList?.length === 2 ? "calc((100% - 8px) / 2)" : "calc((100% - 16px) / 3)" }
+                padding="20px"
                 borderRadius="8px"
-                mr='5px'
+                alignItems={'center'}
                 onClick={() => onSendButton(element,element?.doctor_id)} cursor={'pointer'}
+                flexDirection={{base : "row" , 'sm2' : doctorList?.length == 1 ? 'row' : 'column'}}
+                mr={index !== doctorList.length - 1 ? "8px" : "0px"}
               >
-                <Box display={'flex'} justifyContent={'center'} alignItems={'center'} pt="20px" pb="16px">
+                <Box flex={1} display={'flex'} justifyContent={'center'} alignItems={'center'} maxWidth={"70px"}>
                   <NextImage 
                     src={DoctorAvatar}
                     alt="프로필이미지"
@@ -272,26 +281,34 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
                     height={60}
                   />
                 </Box>
-                <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'26px'} pb="16px">
-                  <CustomTextBold700 fontSize={'17px'} color={nameTextColor} lineHeight={"150%"} noOfLines={1}>
-                    {element?.name}
-                  </CustomTextBold700>
-                </Box>
-                <Box display={'flex'} justifyContent={'center'} alignItems={'center'} height={'26px'} pb="16px">
-                  <CustomTextBold700 fontSize={'12px'} color='#0AA464' lineHeight={"150%"} noOfLines={1}>
-                    {element?.hospital}
-                  </CustomTextBold700>
-                </Box>
-                <Box display={'flex'} justifyContent={'center'} alignItems={'center'} pb="32px" height={'26px'}>
-                  <CustomTextBold700 fontSize={'12px'} color={partTextColor} lineHeight={"150%"} letterSpacing={'-5%'} noOfLines={1}>
-                    {element?.deptname}
-                  </CustomTextBold700>
+                <Flex flex={4} flexDirection={'column'} justifyContent={'center'} px="20px" mt={doctorList?.length > 1 ? "10px" : 0}>
+                  <Box display={'flex'}  justifyContent={doctorList?.length > 1 ? 'center' : 'flex-start'}  alignItems={'center'} height={'26px'}>
+                    <CustomTextBold700 fontSize={'17px'} color={nameTextColor} lineHeight={"150%"} noOfLines={1}>
+                      {element?.name}
+                    </CustomTextBold700>
+                  </Box>
+                  <Box display={'flex'}  justifyContent={doctorList?.length > 1 ? 'center' : 'flex-start'}  alignItems={'center'} height={'26px'}>
+                    <CustomTextBold700 fontSize={'12px'} color='#0AA464' lineHeight={"150%"} noOfLines={1}>
+                      {element?.hospital}
+                    </CustomTextBold700>
+                  </Box>
+                  <Box display={'flex'} justifyContent={doctorList?.length > 1 ? 'center' : 'flex-start'}  alignItems={'center'}  height={'26px'}>
+                    <CustomTextBold700 fontSize={'12px'} color={partTextColor} lineHeight={"150%"} letterSpacing={'-5%'} noOfLines={1}>
+                      {element?.deptname}
+                    </CustomTextBold700>
+                  </Box>
+                </Flex>
+                <Box
+                  flex={1} display={doctorList?.length > 1 ? 'none' : 'flex'} alignItems={'center'} justifyContent={'flex-end'}
+                  onClick={() => onSendButton(element,element?.doctor_id)} cursor={'pointer'}
+                >
+                  <Icon as={BiChevronRight} width="20px" height="20px" color={arrowColor} />
                 </Box>
               </Flex>
             ))
           }
           {
-            doctorList?.length > 4 && (
+            doctorList?.length > 3 && (
               <Flex flexDirection="column" bg={navbarBgColor} minWidth="100px" height={"100%"} justifyContent={'center'} alignItems={'center'}>
                 <Box
                   display={'flex'}  width="40px" height={"40px"} cursor={'pointer'} justifyContent='center' alignItems={'center'} 
@@ -300,18 +317,18 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
                 >
                 <Icon as={MdOutlineArrowForward} width="25px" height="25px" color={navbarIcon} />
               </Box>
-              <CustomTextBold400 fontSize={'15px'} fontWeight={'bold'} color={navbarIcon} lineHeight={"150%"}>전체 보기</CustomTextBold400>
+              <CustomTextBold400 fontSize={'15px'} fontWeight={'bold'} color={navbarIcon} lineHeight={"150%"}>전체보기</CustomTextBold400>
             </Flex>
             )
           }
         </Box>
-        <Box pr={1} justifyContent={'flex-end'} display={doctorList?.length == 0 ? 'none' : isLocalTypeDone ? "flex" : 'none'}>
+        <Box  justifyContent={'flex-end'} display={doctorList?.length == 0 ? 'none' : isLocalTypeDone ? "flex" : 'none'}>
           <Box 
-            display="flex" justifyContent={'center'} alignItems={'center'} bg={"#DFF5ED"} borderRadius={"4px"} height={"32px"} px="20px" cursor={'pointer'}
+            display="flex" justifyContent={'center'} alignItems={'center'} bg={"#DFF5ED"} borderRadius={"4px"} height={"32px"} padding="0 8px 0 20px" cursor={'pointer'}
             onClick={() => onSendDoctorListButton(selectChatId)} 
           >
             <CustomTextBold400 fontSize={'15px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"} >
-            {data?.answer?.disease} 전체보기
+            {data?.answer?.disease} 전체 보기
             </CustomTextBold400>
             <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
           </Box>

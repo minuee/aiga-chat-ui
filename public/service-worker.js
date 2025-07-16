@@ -22,10 +22,10 @@ self.addEventListener("install", function () {
         title: '기본 푸시 제목',
         body: '기본 메시지입니다.',
         icon: '/img/fav/Icon-196.png',
-      badge: '/img/fav/Icon-72.png',
-      data: {
-        url: 'https://aigadev.kormedi.com',
-      },
+        badge: '/img/fav/Icon-72.png',
+        data: {
+          url: 'https://aigadev.kormedi.com',
+        },
       };
     }
     //console.log('푸시 payload ',payload);
@@ -33,7 +33,7 @@ self.addEventListener("install", function () {
     const options = {
       body: payload.body || '내용 없음',
       icon: '/img/fav/Icon-196.png',
-      //badge: '/img/fav/Icon-72.png',
+      badge: '/img/fav/Icon-72.png',
       data: {
         url: payload.data?.url || '/',
       },
@@ -46,6 +46,7 @@ self.addEventListener("install", function () {
          await self.registration.showNotification(payload.title, {
           body: payload.body,
           icon: '/img/fav/Icon-196.png',
+          badge: '/img/fav/Icon-72.png',
           data: {
             url: payload.data?.url || 'https://aigadev.kormedi.com'
           },

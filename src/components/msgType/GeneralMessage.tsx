@@ -19,7 +19,7 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
 
   const isOutputSame = previousOutputRef.current === output && previousOutputRef.current !== null;
   
-  
+
   return (
    <Flex w="100%" flexDirection={'column'} overflow={'hidden'}>
       <Box mb="5px">
@@ -38,7 +38,7 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
         alignItems={'center'}
       > 
         {
-          isLiveChat
+          ( isLiveChat && !isOutputSame )
           ?
           <TypeAnimation
             msg={ output.replace(/^"(.*)"$/, '$1')}
