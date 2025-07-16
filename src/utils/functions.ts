@@ -143,7 +143,7 @@ const functions = {
     try {
       console.log('formatAvailabilityMessage2',currentTimestamp,remainLimitSec)
       const now = new Date();
-      const baseTime = isNaN(currentTimestamp) || currentTimestamp <= 0 ? now.getTime() : currentTimestamp;
+      const baseTime = ( this.isEmpty(currentTimestamp) || isNaN(currentTimestamp) || currentTimestamp <= 0 )? now.getTime() : currentTimestamp;
       const baseRemainLimitSec = isNaN(remainLimitSec) || remainLimitSec <= 0 ? 57600 : remainLimitSec;
       // 제한 해제 시각 = 제한 시작 시간 + 남은 제한 시간
       const unlockTime = new Date(baseTime + baseRemainLimitSec * 1000);
