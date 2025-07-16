@@ -36,7 +36,7 @@ const DoctorList = ({ data, onSendDoctorButton,inputs }:DoctorListProps) => {
                             !functions.isEmpty(data.specialties) && (
                                 data.specialties.split(",").map((subItem:any, subIndex:number) => (
                                 <Box display={'flex'} padding="2px 4px" bg="#EFF2F7" borderRadius={"4px"} mr="1" mt="1" key={subIndex}>
-                                    <CustomText fontSize={'13px'} color="#5C5E69">{subItem.toString()}</CustomText>
+                                    <CustomText fontSize={'13px'} color="#5C5E69">{functions.cleanEscapeAsterrisk(subItem.toString())}</CustomText>
                                 </Box>
                                 )
                             ))

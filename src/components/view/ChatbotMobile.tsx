@@ -405,7 +405,8 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     })
   }
 
-  const firstClear = () => {
+  const firstClear = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenReview(false)
     setIsOpenDoctorDetailModal(false);
     setOpenHistoryDrawer(false);
@@ -421,6 +422,8 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     setIsOpenMingamModal(false);
     setIsOpenSignupModal(false);
     setIsOpenSignupAgreeModal(false);
+    history.push(`/${locale}/chat`);
+    mCookie.setCookie('currentPathname','') 
   }
 
   useEffect(() => {
@@ -751,7 +754,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         if (requestRef.current !== newRequestId) return;
         if ( mConstants.apiSuccessCode.includes(questionResult?.statusCode) ) {
           const answerMessage = questionResult?.data;
-          setIn24UsedToken(answerMessage?.in24_used_token);
+          setIn24UsedToken(functions.isEmpty(answerMessage?.in24_used_token) ? 0 : answerMessage?.in24_used_token);
           if ( answerMessage?.chat_type !== 'general' ) {
             setIsLoading(false);
             setReceiving(false);
@@ -870,7 +873,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                 isState : false,
                 isAlertMsg : false
               })
-              setIn24UsedToken(parsedMessage?.in24_used_token)
+              setIn24UsedToken(functions.isEmpty(parsedMessage?.in24_used_token) ? 0 :  parsedMessage?.in24_used_token)
               setIsLoading(false);
               setReceiving(false);
               setIsFocus(false)

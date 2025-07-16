@@ -37,7 +37,7 @@ export const ChatDisable = ({ isChatDisabled,userBasicInfo,setChatDisabled }: Ch
         borderTopRightRadius={"20px"}
         borderTop="1px solid"
         borderColor={borderColor}
-        zIndex={10}
+        zIndex={9999}
         boxShadow={'0px -4px 12px 0px #00000014'}
         overflowX={'hidden'}
         overflowY={'hidden'}
@@ -96,7 +96,7 @@ export const ChatDisable = ({ isChatDisabled,userBasicInfo,setChatDisabled }: Ch
       borderTopRightRadius={"20px"}
       borderTop="1px solid"
       borderColor={borderColor}
-      zIndex={10}
+      zIndex={9999}
       boxShadow={'0px -4px 12px 0px #00000014'}
       overflowX={'hidden'}
     >

@@ -406,10 +406,10 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   
   React.useEffect(() => {
     if ( process.env.NODE_ENV == 'development' || userBaseInfo?.email == "minuee47@gmail.com" || userBaseInfo?.email == "lena47@naver.com") {
-      //console.log("Notification in window:", 'Notification' in window);
-      //console.log("serviceWorker in navigator:", 'serviceWorker' in navigator);
-      //console.log("PushManager in window:", 'PushManager' in window);
-      if ( !userPWAPermission  && functions.isEmpty(userPWAToken) ) {
+      console.log("Notification in window:", 'Notification' in window);
+      console.log("serviceWorker in navigator:", 'serviceWorker' in navigator);
+      console.log("PushManager in window:", 'PushManager' in window);
+      if ( !userPWAPermission  && !functions.isEmpty(userPWAToken) ) {
         checkPushStatus();
       }
      
@@ -423,12 +423,12 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
       setPWAPermission(permission === 'granted');
     
       const isSafari = functions.isSafari();
-      //console.log('isSafari',isSafari)
+      console.log('isSafari',isSafari)
       const isSamsungBrowser = functions.isSamsungBrowser()
-      ///console.log('isSamsungBrowser',isSamsungBrowser)
+      console.log('isSamsungBrowser',isSamsungBrowser)
       if ( isSafari || isSamsungBrowser) {
         let registration = await navigator.serviceWorker.getRegistration();
-        ///console.log('getServiceWorkerRegistration if',registration)
+        console.log('getServiceWorkerRegistration if',registration)
         if (!registration) {
           navigator.serviceWorker.getRegistration().then((reg:any) => {
             reg.showNotification('테스트 알림입니다!', {
@@ -818,12 +818,19 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
                         <Icon as={BiNotification} width="20px" height="20px" color={iconColor} />
                         <CustomTextBold400 fontSize={'17px'} ml={2} color={textColor3}>알림 해지</CustomTextBold400>
                       </Box>
-                      
                     )
                   }
-                  {/* <Box>
-                  <CustomText fontSize={'12px'}>{JSON.stringify(subscriptionJson)}</CustomText>
-                  </Box> */}
+                </Box>
+               )
+              }
+              {
+               ( process.env.NODE_ENV == 'development' || userBaseInfo?.email == "minuee47@gmail.com" || userBaseInfo?.email == "lena47@naver.com") 
+               &&
+               (
+                <Box display={'flex'} justifyContent={'center'} width={'100%'} px="20px" mt={5}>
+                  <Box width={'100%'}>
+                    <CustomText fontSize={'12px'}>{JSON.stringify(userPWAToken)}</CustomText>
+                  </Box>
                 </Box>
                )
               }

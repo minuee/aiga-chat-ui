@@ -160,7 +160,8 @@ export default function ChatBot() {
     })
   }
 
-  const firstClear = () => {
+  const firstClear = async() => {
+    const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenReview(false)
     setIsOpenDoctorDetailModal(false);
     setOpenHistoryDrawer(false);
@@ -176,6 +177,9 @@ export default function ChatBot() {
     setIsOpenMingamModal(false);
     setIsOpenSignupModal(false);
     setIsOpenSignupAgreeModal(false);
+    
+    history.push(`/${locale}/chat`);
+    mCookie.setCookie('currentPathname','') 
   }
 
   useEffect(() => {
@@ -533,7 +537,7 @@ export default function ChatBot() {
         if (requestRef.current !== newRequestId) return;
         if ( mConstants.apiSuccessCode.includes(questionResult?.statusCode) ) {
           const answerMessage = questionResult?.data;
-          setIn24UsedToken(answerMessage?.in24_used_token);
+          setIn24UsedToken(functions.isEmpty(answerMessage?.in24_used_token) ? 0 : answerMessage?.in24_used_token);
           if ( answerMessage?.chat_type !== 'general' ) {
             setIsLoading(false);
             setReceiving(false);
@@ -652,7 +656,7 @@ export default function ChatBot() {
                 isState : false,
                 isAlertMsg : false
               })
-              setIn24UsedToken(parsedMessage?.in24_used_token)
+              setIn24UsedToken(functions.isEmpty(parsedMessage?.in24_used_token) ? 0 :  parsedMessage?.in24_used_token)
               setIsLoading(false);
               setReceiving(false);
               setIsFocus(false)

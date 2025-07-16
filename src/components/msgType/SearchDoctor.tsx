@@ -249,7 +249,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
           ref={flexRef} 
         >
           {
-            doctorList.map((element: any, index: number) => (
+            doctorList.slice(0, 9).map((element: any, index: number) => (
               <Flex 
                 key={index} 
                 bg={profileBgColor} 
@@ -413,7 +413,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
           alignItems={"center"} justifyContent={'flex-start'} minWidth={'100%'} width={'auto'} minHeight={"60px"} maxHeight={"250px"} ref={flexRef} overflowX={'auto'}
         >
           {
-            doctorList.map((element: any, index: number) => (
+            doctorList.slice(0, 9).map((element: any, index: number) => (
               <Flex 
                 key={index} 
                 flexDirection="column" 
