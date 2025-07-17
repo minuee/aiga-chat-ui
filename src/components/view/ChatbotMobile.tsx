@@ -1322,16 +1322,19 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         overflowY={'auto'} 
         width={'100%'} 
         height={isMobileSafari ? `${mobileViewPortHeight}px` : `${mobileContentScrollHeight}px`} 
-        maxHeight={`${mobileViewPortHeight}px`}
+        maxHeight={isMobileSafari ? `${mobileViewPortHeight}px` :  `${mobileContentScrollHeight}px`} 
         bg={themeColor}
+        paddingLeft={{base : 0 , md : "calc((100vw - 640px) / 2)"}} // ✅ 수동 중앙 정렬
       >
         <Box 
-          height={isMobileSafari ? `${mobileViewPortHeight}px` : realOutputCode?.length == 0  ? `${mobileViewPortHeight*0.6}px` : `${mobileViewPortHeight}px`} 
+          height={isMobileSafari ? `${mobileViewPortHeight}px` : ( isKeyboardOpen || isKeyboardOpenSafari ) ? `${mobileViewPortHeight*0.6}px` : `${mobileViewPortHeight}px`} 
           //height={`${mobileViewPortHeight}px`}
           //maxHeight={`${mobileViewPortHeight}px`}
-          maxHeight={isMobileSafari ? `cacl ( 100vh 120px )` :  realOutputCode?.length == 0  ? `${mobileViewPortHeight*0.6}px` :`${mobileViewPortHeight}px`}
+          maxHeight={isMobileSafari ? `calc( 100vh - 120px )` :  ( isKeyboardOpen || isKeyboardOpenSafari ) ? `${mobileViewPortHeight*0.6}px` :`${mobileViewPortHeight}px`}
           transition="height 0.3s ease-in-out"
           overflow={'hidden'}
+          width={'100%'} 
+          maxWidth={`${mConstants.desktopMinWidth}px`}
         >
           <Box 
             height={'100%'} 
@@ -1493,10 +1496,12 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         position={isMobileSafari ? 'fixed' : 'absolute'}
         bottom={isMobileSafari ? isZooming ? 0 : `${mobileKeyboardOffset}px` : 0} 
         //bottom={0}
-        left={0} right={0} minHeight="60px" height={'auto'} alignItems={'center'} zIndex={10}
+        left={{base : 0, md : "calc((100vw - 640px) / 2)"}} // ✅ 수동 중앙 정렬 
+        right={0} minHeight="60px" height={'auto'} alignItems={'center'} zIndex={10}
         transition={'bottom 0.25s ease-in-out'}
         padding="10px"  borderTop={`1px solid  ${borderTopColor}`}
         bg={themeColor}
+        maxWidth={`${mConstants.desktopMinWidth}px`}
       >
         <Box 
           position={'absolute'}

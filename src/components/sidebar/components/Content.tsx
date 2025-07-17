@@ -126,6 +126,12 @@ function SidebarContent(props: SidebarContent) {
             color: '#ffffff',
           }
         });
+        if ( chatSessionId == session_id ) {
+          setTimeout(() => {
+            onHandleNewChat(false)
+
+          },300)
+        }
       }          
     }catch(e:any){
       setIsReceiving(false)
@@ -133,9 +139,11 @@ function SidebarContent(props: SidebarContent) {
     }
   }
 
-  const onHandleNewChat = () => {
-    onClose();
-    onParentClose()
+  const onHandleNewChat = ( isClose:boolean = true) => {
+    if ( isClose ) {
+      onClose();
+      onParentClose();
+    }
     setNewChatOpen(false);
     setTimeout(() => {
       setNewChatOpen(true);

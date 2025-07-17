@@ -1,10 +1,10 @@
 'use client';
 
-import React, { Children } from 'react';
-import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile, isMobileSafari} from "react-device-detect";
+import React from 'react';
+import { isMobileOnly,isMobileSafari} from "react-device-detect";
 import SubPage from '@/components/view/Chatbot';
 import SubMobilePage from '@/components/view/ChatbotMobile';
-import { Flex,Box,Text, SkeletonCircle, useDisclosure,useColorModeValue,useToast } from '@chakra-ui/react';
+import { Flex,Box, SkeletonCircle, useDisclosure,useColorModeValue,useToast } from '@chakra-ui/react';
 import { usePathname } from 'next/navigation';
 import routes from '@/routes';
 import { getActiveRoute, getActiveNavbar } from '@/utils/navigation';
@@ -93,82 +93,7 @@ export default function Index() {
     }
   }, []);
 
-  /* React.useEffect(() => {
-    const updateOffset = () => {
-      const screenHeight = isMobileSafari ? window.visualViewport?.height || window.innerHeight :  window.screen.height;
-      const innerHeight = window.innerHeight;
-      const keyboardHeight = screenHeight - innerHeight;
-      const isKeyboardVisible = keyboardHeight > 100;
-      // 키보드가 열렸고, 최소 높이 기준 이상일 경우만 적용
-      if (isKeyboardOpen || isKeyboardVisible) {
-        //const height =  window.innerHeight - mobileKeyboardOffset;
-        const offset = keyboardHeight > 0 ? keyboardHeight : mobileKeyboardOffset;
-        const height = screenHeight - offset;
-        setMobileViewPortHeight(height);
-       // setMobileKeyboardOffset(keyboardHeight);
-      } else {
-        setMobileViewPortHeight(window.innerHeight);
-        //setMobileKeyboardOffset(0);
-      }
-    };
-    if ( isMobileOnly ) {
-      window.addEventListener('resize', updateOffset);
-      window.visualViewport?.addEventListener('resize', updateOffset); // ⬅ 추가
-      updateOffset();
-
-      return () => {
-        window.removeEventListener('resize', updateOffset);
-        window.visualViewport?.removeEventListener('resize', updateOffset); // ⬅ 추가
-      };
-    }
-  }, []);
-
-  React.useEffect(() => {
   
-    const handleVisualViewportResize = () => {
-
-      const currentHeight = window.visualViewport?.height || window.innerHeight;
-
-      if (!initialViewportHeight.current) {
-        initialViewportHeight.current = currentHeight;
-      }
-
-      const vpHeight = window.visualViewport?.height || window.innerHeight;
-      const fullHeight = window.innerHeight;
-
-      const keyboardHeight = (initialViewportHeight.current ?? currentHeight) - currentHeight;//fullHeight - vpHeight;
-      const isKeyboardVisible = keyboardHeight > 100;
-      const contentHeight = vpHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
-      if ( isKeyboardVisible ) {
-        toast({
-          title:`vpHeight ${vpHeight},fullHeight ${fullHeight}`,
-          position: 'top-right',
-          status: 'error',
-          containerStyle: {
-            color: '#ffffff',
-          },
-          isClosable: true,
-          duration:10000
-        });
-      }
-      setMobileKeyboardOffset( ( isKeyboardOpen || isKeyboardVisible ) ? keyboardHeight : 0);
-      setMobileViewPortHeight(currentHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT);
-      setMobileContainerHeight(currentHeight);
-    };
-
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener("resize", handleVisualViewportResize);
-      handleVisualViewportResize(); // 최초 실행
-    }
-
-    return () => {
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener("resize", handleVisualViewportResize);
-      }
-    };
-
-  }, []) */
-
   React.useEffect(() => {
     if (!isMobileSafari) return; // iOS Safari에서만 적용
   
@@ -266,8 +191,6 @@ export default function Index() {
     getConfigData();
   }
 
-  
-
   if ( isMobileOnly ) {
     return (
       <Box height={`${mobileContainerHeight}px`} overflow={isMobileSafari ? 'auto' : 'hidden'} position={'relative'} ref={mobileScrollRef}>
@@ -302,11 +225,11 @@ export default function Index() {
           ( process.env.NODE_ENV == 'development' || isGlobalState )
           ?
           <SubMobilePage 
-            mobileContentScrollHeight={mobileContentScrollHeight}
-            mobileViewPortHeight={mobileViewPortHeight}
-            mobileKeyboardOffset={mobileKeyboardOffset}
-            isKeyboardOpenSafari={isKeyboardOpenSafari}
-          />
+              mobileContentScrollHeight={mobileContentScrollHeight}
+              mobileViewPortHeight={mobileViewPortHeight}
+              mobileKeyboardOffset={mobileKeyboardOffset}
+              isKeyboardOpenSafari={isKeyboardOpenSafari}
+            />
           :
           <Flex alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
             <GlobalDisable

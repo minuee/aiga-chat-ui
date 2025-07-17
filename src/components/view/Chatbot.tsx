@@ -1328,7 +1328,7 @@ export default function ChatBot() {
               color={inputColor}
               _placeholder={placeholderColor}
               value={inputCode}
-              placeholder="건강 관련 질문이나 증상을 알려주세요"
+              placeholder="건강 관련 질문이나 증상을 알려주세요."
               onChange={handleChange}
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}

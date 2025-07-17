@@ -15,7 +15,7 @@ import { globalStyles } from './styles';
 
 const breakpoints = {
   base: '0em',
-  //'mobile': '30em',
+  'xsm': '300px',
   sm: '350px',
   sm2 : '530px',
   md: '640px',
