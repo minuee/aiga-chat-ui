@@ -114,7 +114,7 @@ function getClientEnvInfo() {
 
 export function getChatMessage(session_id: string, msg: string): any {
     try{
-        const res:any =  api.post(`/chat/${session_id}`,{question : msg},{ timeout : 10000})
+        const res:any =  api.post(`/chat/${session_id}`,{question : msg},{ timeout : 20000})
             .then((response) => {
                 if ( process.env.NODE_ENV == 'development') {
                     const { email,userId,isGuest} = UserStateStore.getState();
@@ -155,7 +155,7 @@ export function getChatMessage(session_id: string, msg: string): any {
                         error: true,
                         status: 408,
                         statusCode : 408,
-                        message: '요청 시간이 초과되었습니다. (10초 제한)',
+                        message: '요청 시간이 초과되었습니다. (20초 제한)',
                     };
                 }else{
                     return {

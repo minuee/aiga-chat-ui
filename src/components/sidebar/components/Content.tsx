@@ -88,7 +88,7 @@ function SidebarContent(props: SidebarContent) {
 
   const onDeleteHistory = async(session_id: any) => {
 
-    if ( chatSessionId == session_id ) {
+    /* if ( chatSessionId == session_id ) {
       toast({
         title: "현재 사용중인 세션은 삭제가 불가합니다.",
         position: 'top-right',
@@ -100,7 +100,7 @@ function SidebarContent(props: SidebarContent) {
         }
       });
       return;
-    }
+    } */
 
     try{
       setIsReceiving(true)
@@ -435,7 +435,7 @@ function SidebarContent(props: SidebarContent) {
             bodyContent='새로운 대화로 이동하시겠습니까? 이전 데이터는 히스토리를 통해 열람하실 수 있습니다.'
             isOpen={isOpen}
             onClose={onClose}
-            onConfirm={() => onHandleNewChat()}
+            onConfirm={() => onHandleNewChat(true)}
             closeText='취소'
             confirmText='열기'
           />
