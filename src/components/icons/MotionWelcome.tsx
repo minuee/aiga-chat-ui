@@ -1,8 +1,6 @@
+import React from 'react';
 import { useColorModeValue, Flex, useColorMode} from '@chakra-ui/react';
 import { motion } from "framer-motion";
-import WelcomeLogoImage from "@/assets/images/welcom-logo.png";
-import LogoImage from "@/assets/images/logo.png";
-import Image from "next/image";
 import {IconAiga} from '@/components/icons/svgIcons';
 
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
@@ -49,37 +47,32 @@ type MotionWelcomeImageProps = {
   isMobile : boolean;
 };
 
-export const MotionWelcomeImage = ({ 
+export const MotionWelcomeImage = React.memo(({ 
   pt="0px",
   isMobile = false
 }: MotionWelcomeImageProps) => {
 
 const textColor = useColorModeValue('navy.700', 'white')
 
-return (
-  <Flex flexDirection={'column'} pt={pt}>
-    {
-      isMobile
-      ?
-      <IconAiga boxSize={'70px'} />
-      :
-      <div className="opening_wrap">
-        <motion.div
-          className={'opening_wrap'}
-          animate={{ scale: [1, 1.5, 1.1] }}
-          transition={{ duration: 3, times: [0, 0.2, 1] }}
-        >
-        {/* <Image 
-            src={WelcomeLogoImage}
-            alt="Aiga Logo"
-            style={{width:'70px',objectFit: 'contain'}}
-          /> */}
-          <IconAiga boxSize={'70px'} />
-        </motion.div>
-      </div>
-    }
-  </Flex>
-);
-};
+  return (
+    <Flex flexDirection={'column'} pt={pt}>
+      {
+        isMobile
+        ?
+        <IconAiga boxSize={'70px'} />
+        :
+        <div className="opening_wrap">
+          <motion.div
+            className={'opening_wrap'}
+            animate={{ scale: [1, 1.5, 1.1] }}
+            transition={{ duration: 3, times: [0, 0.2, 1] }}
+          >
+            <IconAiga boxSize={'70px'} />
+          </motion.div>
+        </div>
+      }
+    </Flex>
+  );
+});
 
-export default MotionWelcome;
+export default React.memo(MotionWelcome);

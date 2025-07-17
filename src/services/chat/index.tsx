@@ -130,11 +130,9 @@ export function getChatMessage(session_id: string, msg: string): any {
                     };
 
                     logApi.post('/log', errorPayload).catch(() => {});
-                    }
+                }
                 return response?.data;
             }).catch((error) => {
-
-               
                 const { email,userId,isGuest} = UserStateStore.getState();
                 const userAgent = getClientEnvInfo()
                 const errorPayload = {

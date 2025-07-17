@@ -1,8 +1,7 @@
-import Image from "next/image";
+import React from 'react';
 import { Box,Flex,useColorMode,useColorModeValue ,Icon} from '@chakra-ui/react';
 import { AiOutlineMeh } from "react-icons/ai";
-import LogoImage from "@/assets/images/logo.png";
-import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import CustomText from "@/components/text/CustomText";
 import { IconChatAiga,DefaultHeaderLogo} from '@/components/icons/svgIcons';
 type ForceStopProps = {
     msg: string;
@@ -11,11 +10,8 @@ type ForceStopProps = {
 
 const ForceStop = ({  msg = "대답이 중지되었습니다.", indexKey}: ForceStopProps) => {
 
+  console.log("ForceStop 렌더링"); // ← 디버깅용
   const { colorMode, toggleColorMode } = useColorMode();
-  const bgMeColor = useColorModeValue('#2B8FFF', 'white');
-  const textMeColor = useColorModeValue('white', 'navy.800');
-  const bgSystemColor = useColorModeValue('#F4F6FA', 'navy.600');
-  const textSystemColor = useColorModeValue('#212127', 'white');
   const bgSystemStopColor = useColorModeValue('#FFF0F0', 'white');
   const textSystemStopColor = useColorModeValue('#F94848', 'navy.800');
   const textSystemStopIconColor = useColorModeValue('#5E0018', 'navy.800');
@@ -46,4 +42,4 @@ const ForceStop = ({  msg = "대답이 중지되었습니다.", indexKey}: Force
   )
 };
   
-export default ForceStop;
+export default React.memo(ForceStop);

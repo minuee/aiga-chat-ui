@@ -97,6 +97,7 @@ function DoctorModal(props: DoctorModalProps) {
       ...doctorBasicData,
       ...selected_doctor
     });
+    
     if ( process.env.NODE_ENV == 'development') {
       //getDoctorBasicData()
     }

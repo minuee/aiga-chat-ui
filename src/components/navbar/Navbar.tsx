@@ -2,7 +2,7 @@
 
 // Chakra Imports
 import { Box,Flex,useColorMode,useColorModeValue,Spacer } from '@chakra-ui/react';
-import { useState, useEffect,useRef } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import NavbarLinks from './NavbarLinks';
 import { isWindowAvailable } from '@/utils/navigation';
 
@@ -10,12 +10,15 @@ import mConstants from '@/utils/constants';
 //새창열기 전역상태
 import NewChatStateStore from '@/store/newChatStore';
 import { DefaultHeaderLogo,IconChatAiga } from '@/components/icons/svgIcons';
-export default function AdminNavbar(props: {
+
+function AdminNavbar(props: {
   secondary: boolean;
   brandText: string;
   logoText: string;
   onOpen: (...args: any[]) => any;
 }) {
+
+  console.log("AdminNavbar 렌더링"); // ← 디버깅용
   const [scrolled, setScrolled] = useState(false);
   const { colorMode, toggleColorMode } = useColorMode();
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
@@ -72,3 +75,6 @@ export default function AdminNavbar(props: {
     </Box>
   );
 }
+
+
+export default React.memo(AdminNavbar);

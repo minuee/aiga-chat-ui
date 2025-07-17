@@ -1,7 +1,7 @@
-import Image from "next/image";
+import React from 'react';
 import { Box,Flex,useColorMode,useColorModeValue ,Icon} from '@chakra-ui/react';
 import { AiOutlineMeh } from "react-icons/ai";
-import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import CustomText from "@/components/text/CustomText";
 import { IconChatAiga,DefaultHeaderLogo} from '@/components/icons/svgIcons';
 
 type ChatWrongMessageProps = {
@@ -12,8 +12,8 @@ type ChatWrongMessageProps = {
 
 const ChatWrongMessage = ({  isMode, msg = "흠..뭔가 잘못된 것 같습니다.", indexKey}: ChatWrongMessageProps) => {
 
+  console.log("ChatWrongMessage 렌더링"); // ← 디버깅용
   const { colorMode, toggleColorMode } = useColorMode();
-
   const bgSystemStopColor = useColorModeValue('#FFF0F0', 'navy.600');
   const textSystemStopColor = useColorModeValue('#F94848', 'white');
   const textSystem400Color = useColorModeValue('#0AA464', 'white');
@@ -46,4 +46,4 @@ const ChatWrongMessage = ({  isMode, msg = "흠..뭔가 잘못된 것 같습니�
   )
 };
   
-export default ChatWrongMessage;
+export default React.memo(ChatWrongMessage);

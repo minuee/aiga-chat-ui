@@ -1,11 +1,11 @@
 import React from 'react';
 import { Text, TextProps } from '@chakra-ui/react';
 
-type CustomDefaultTextProps = TextProps & {
+type CustomTextProps = TextProps & {
     children: React.ReactNode;
 };
-//import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
-const CustomDefaultText = ({ children, ...rest }: CustomDefaultTextProps) => {
+
+const CustomDefaultText = ({ children, ...rest }: CustomTextProps) => {
     return (
         <Text 
             fontSize={'17px'}
@@ -18,11 +18,7 @@ const CustomDefaultText = ({ children, ...rest }: CustomDefaultTextProps) => {
     );
 };
 
-type CustomTextBold700Props = TextProps & {
-    children: React.ReactNode;
-};
-  
-export const CustomTextBold700 = ({ children, ...rest }: CustomTextBold700Props) => {
+export const CustomTextBold700 = React.memo(({ children, ...rest }: CustomTextProps) => {
     return (
         <Text 
             fontWeight={'body_medium_700'}
@@ -32,13 +28,10 @@ export const CustomTextBold700 = ({ children, ...rest }: CustomTextBold700Props)
             {children}
         </Text>
     );
-};
+});
 
-type CustomTextBold400Props = TextProps & {
-    children: React.ReactNode;
-};
-  
-export const CustomTextBold400 = ({ children, ...rest }: CustomTextBold400Props) => {
+
+export const CustomTextBold400 = React.memo(({ children, ...rest }: CustomTextProps) => {
     return (
         <Text 
             fontWeight={'body_medium_400'}
@@ -48,6 +41,6 @@ export const CustomTextBold400 = ({ children, ...rest }: CustomTextBold400Props)
             {children}
         </Text>
     );
-};
+});
 
 export default React.memo(CustomDefaultText);

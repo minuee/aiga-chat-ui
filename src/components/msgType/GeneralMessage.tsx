@@ -1,14 +1,12 @@
+'use client'
+
 import React from 'react';
-import dynamic from 'next/dynamic';
-const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: false });
 import { useColorModeValue,useColorMode,Flex,Box } from '@chakra-ui/react'
-import functions from '@/utils/functions';
 import TypeAnimation  from'@/components/text/TypeAnimation2';
-import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import { IconChatAiga,DefaultHeaderLogo} from '@/components/icons/svgIcons';
 
 const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,setIsTypingDone,isLiveChat }: { output: any,isLiveChat:boolean ,isHistory:boolean,setIsTypingDone: () => void;}) {
-  
+  console.log("GeneralMessage 렌더링"); // ← 디버깅용
   const { colorMode, toggleColorMode } = useColorMode();
   const bgSystemColor = useColorModeValue('#F4F6FA', 'navy.600');
   const previousOutputRef = React.useRef<string | null>(null); // 이전 output 값을 저장

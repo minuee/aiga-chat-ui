@@ -1,3 +1,4 @@
+'use client'
 import React from 'react';
 import dynamic from 'next/dynamic';
 const ReactMarkdown = dynamic(() => import('react-markdown'), { ssr: false });
@@ -8,17 +9,11 @@ import LogoImage from "@/assets/images/logo.png";
 import Image from "next/image";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import { IconChatAiga,DefaultHeaderLogo} from '@/components/icons/svgIcons';
+
 const MessageBox = React.memo(function MessageBox({ output }: { output: any }) {
   
   const { colorMode, toggleColorMode } = useColorMode();
-  const textColor = useColorModeValue('navy.700', 'white');
-  const bgMeColor = useColorModeValue('#2B8FFF', 'white');
-  const textMeColor = useColorModeValue('white', 'navy.800');
   const bgSystemColor = useColorModeValue('#F4F6FA', 'navy.600');
-  const textSystemColor = useColorModeValue('#212127', 'white');
-  const bgSystemStopColor = useColorModeValue('#FFF0F0', 'white');
-  const textSystemStopColor = useColorModeValue('#F94848', 'navy.800');
-  const textSystemStopIconColor = useColorModeValue('#5E0018', 'navy.800');
   const previousOutputRef = React.useRef<string | null>(null); // 이전 output 값을 저장
 
   React.useEffect(() => {
@@ -74,39 +69,3 @@ const MessageBox = React.memo(function MessageBox({ output }: { output: any }) {
 }, (prevProps, nextProps) => prevProps.output === nextProps.output);
 
 export default MessageBox;
-/*
-export default function MessageBox(props: { output: any }) {
-  const { output } = props
-  const textColor = useColorModeValue('navy.700', 'white')
-
-  return (
-    <Card
-      display={output ? 'flex' : 'none'}
-      px="22px !important"
-      pl="22px !important"
-      color={textColor}
-      minH="50px"
-      height={'auto'}
-      fontSize={{ base: 'sm', md: 'md' }}
-      lineHeight={{ base: '24px', md: '26px' }}
-      fontWeight="500"
-    >
-      <ReactMarkdown
-        components={{
-          p: ({ children }) => <Text whiteSpace="pre-line">{children}</Text>
-        }}
-      >
-        {output ? output : ''}
-      </ReactMarkdown>
-      <ReactMarkdown
-        components={{
-          p: ({ children }) => <TypeAnimation msg={String(children)} />
-        }}
-      >
-        {output ? output : ''}
-      </ReactMarkdown>
-      
-    </Card>
-  )
-}
-  */

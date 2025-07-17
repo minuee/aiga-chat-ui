@@ -4,8 +4,6 @@ import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/te
 // chakra imports
 import { Box,Flex,Text,Drawer,DrawerBody,Icon,useColorModeValue,DrawerOverlay,DrawerContent,DrawerCloseButton } from '@chakra-ui/react';
 import Content from '@/components/sidebar/components/Content';
-import { renderThumb,renderTrack,renderView } from '@/components/scrollbar/Scrollbar';
-import { Scrollbars } from 'react-custom-scrollbars-2';
 import mConstants from '@/utils/constants';
 import { IRoute } from '@/types/navigation';
 import { isWindowAvailable } from '@/utils/navigation';
@@ -29,7 +27,7 @@ function Sidebar(props: SidebarProps) {
   let shadow = useColorModeValue( '14px 17px 40px 4px rgba(112, 144, 176, 0.08)','unset' );
   // Chakra Color Mode
   let sidebarBg = useColorModeValue('white', 'navy.800');
- 
+  console.log("Sidebar 렌더링"); // ← 디버깅용
 
   let sidebarRadius = '14px';
   let sidebarMargins = '0px';
@@ -40,15 +38,7 @@ function Sidebar(props: SidebarProps) {
         bg={sidebarBg} transition={variantChange} w="100%" maxW={`${mConstants.modalMaxWidth}px`} ms={{ sm: '16px' }} my={{ sm: '16px' }} h="calc(100vh - 32px)"
         m={sidebarMargins} borderRadius={sidebarRadius} minH="100%" overflowX="hidden" boxShadow={shadow}
       >
-        <Scrollbars
-          universal={true}
-          autoHide
-          renderTrackVertical={renderTrack}
-          renderThumbVertical={renderThumb}
-          renderView={renderView}
-        >
-          <Content setApiKey={setApiKey} routes={routes} />
-        </Scrollbars>
+        <Content setApiKey={setApiKey} routes={routes} />
       </Box>
     </Box>
   );
@@ -243,5 +233,4 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
     </Flex>
   );
 }
-
-export default Sidebar;
+export default React.memo(Sidebar);

@@ -1,6 +1,5 @@
-import { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import NextImage from 'next/legacy/image';
-import Image from 'next/image';
 import { Box,Flex,Stack,useColorModeValue,useColorMode,Icon, Modal,ModalOverlay,ModalContent,ModalHeader,SimpleGrid,ModalBody } from '@chakra-ui/react';
 import mConstants from "@/utils/constants";
 import * as history from '@/utils/history';

@@ -251,13 +251,23 @@ export default function ChatBot() {
 
   /* 토큰 만료를 체크 */
   useEffect(() => {
-    const nowTimeStamp = functions.getKSTUnixTimestamp();
-    console.log('nowTimeStamp',nowTimeStamp,in24UsedToken,guestMaxToken,guestRetryLimitSec)
+   
+    
     if ( in24UsedToken > 0 ) { 
+      const nowTimeStamp = functions.getKSTUnixTimestamp();
+      if ( isNewChat && realOutputCode.length > 0 ) {
+        setChatSessionId('')
+        setOutputCode([]);
+        setRealOutputCode([])
+        setCurrentPathname('')
+        mCookie.setCookie('currentPathname','')
+        firstForceStep();
+        setTimeout(() => {
+          setNewChatOpen(false);
+        }, 60);
+      }
       if ( userBasicInfo?.isGuest  ) {//비회원
-        console.log('nowTimeStamp 1')
         if ( in24UsedToken >= guestMaxToken ) {
-          console.log('nowTimeStamp 1 if')
           setChatDisabled({
             ...isChatDisabled,
             isState : false,
@@ -265,7 +275,6 @@ export default function ChatBot() {
             remainTimeStamp : guestRetryLimitSec ?? 57600,
           })
         }else{
-          console.log('nowTimeStamp 1 else')
           setChatDisabled({
             ...isChatDisabled,
             isState : true,
@@ -286,6 +295,7 @@ export default function ChatBot() {
           })
         }
       }
+      
     }else{
       if ( isNewChat && realOutputCode.length > 0 ) {
         // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
@@ -603,6 +613,9 @@ export default function ChatBot() {
             }, 100)
             
             setTimeout(() => {
+              if (  questionResult?.message?.statusCode == '404' && questionResult?.message?.message == '세션이 존재하지 않습니다.') {
+                setChatSessionId('');
+              }
               addMessage(
                 {
                   ismode : 'system_400',
@@ -610,7 +623,7 @@ export default function ChatBot() {
                   chat_id: functions.getUUID(),
                   user_question : inputCodeText,
                   answer : null,
-                  msg: questionResult?.message?.message,
+                  msg: mConstants.error_message_default,
                   chat_type : 'system',
                   used_token : 0,
                   isOnlyLive : false

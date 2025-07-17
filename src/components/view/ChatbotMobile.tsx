@@ -488,27 +488,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   }
 
   useEffect(() => {
-    if ( isNewChat && realOutputCode.length > 0 ) {
-      // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
-      
-      setChatSessionId('')
-      setOutputCode([]);
-      setRealOutputCode([])
-      setChatDisabled({
-        ...isChatDisabled,
-        isState : true,
-        isAlertMsg : false,
-      })
-      setCurrentPathname('')
-      mCookie.setCookie('currentPathname','')
-      firstForceStep();
-      setTimeout(() => {
-        setNewChatOpen(false);
-      }, 60);
-    }
-  }, [isNewChat]);
-
-  useEffect(() => {
     if ( !functions.isEmpty(oldHistoryData) ) {
       if ( !functions.isEmpty(oldHistoryData?.session_id) ) {
         setChatSessionId(oldHistoryData?.session_id)
@@ -527,6 +506,17 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   /* 토큰 만료를 체크 */
   useEffect(() => {
     if ( in24UsedToken > 0 ) { 
+      if ( isNewChat && realOutputCode.length > 0 ) {
+        setChatSessionId('')
+        setOutputCode([]);
+        setRealOutputCode([])
+        setCurrentPathname('')
+        mCookie.setCookie('currentPathname','')
+        firstForceStep();
+        setTimeout(() => {
+          setNewChatOpen(false);
+        }, 60);
+      }
       const nowTimeStamp = functions.getKSTUnixTimestamp();
       if ( userBasicInfo?.isGuest  ) {//비회원
         if ( in24UsedToken >= guestMaxToken ) {
@@ -818,7 +808,9 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                 textareaRef?.current?.focus()
               }
             }, 100)
-            
+            if (  questionResult?.message?.statusCode == '404' && questionResult?.message?.message == '세션이 존재하지 않습니다.') {
+              setChatSessionId('');
+            }
             setTimeout(() => {
               addMessage(
                 {
@@ -827,7 +819,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                   chat_id: functions.getUUID(),
                   user_question : inputCodeText,
                   answer : null,
-                  msg: questionResult?.message?.message,
+                  msg: mConstants.error_message_default,
                   chat_type : 'system',
                   used_token : 0,
                   isOnlyLive : false

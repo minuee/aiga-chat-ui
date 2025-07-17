@@ -1,10 +1,11 @@
 
+import React from 'react';
 import { Box,Flex,Text,useColorModeValue ,Icon, UnorderedList,ListItem } from '@chakra-ui/react';
 import mConstants from '@/utils/constants';
 import {  MdInfoOutline, MdPerson,MdOutlineMoodBad,MdOutlineClose } from 'react-icons/md';
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import functions from '@/utils/functions';
-import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
+import { isMobileOnly } from "react-device-detect";
 
 
 type ChatDisableProps = {
@@ -13,9 +14,9 @@ type ChatDisableProps = {
   setChatDisabled: (data: any) => void; 
 };
 
-export const ChatDisable = ({ isChatDisabled,userBasicInfo,setChatDisabled }: ChatDisableProps) => {
-  const isDark = useColorModeValue(false, true);
-
+export const ChatDisable = React.memo(({ isChatDisabled,userBasicInfo,setChatDisabled }: ChatDisableProps) => {
+  
+  console.log("ChatDisable 렌더링"); // ← 디버깅용
   const closeColor = useColorModeValue('#000000', 'white');
   const oopsColor = useColorModeValue('#1D73DC', 'white');
   const bgColor = useColorModeValue('#EAF4FF', 'navy.600');
@@ -129,10 +130,10 @@ export const ChatDisable = ({ isChatDisabled,userBasicInfo,setChatDisabled }: Ch
         </Flex>
     </Flex>
   )
-};
+});
 
-export const ChatWarningInfo = () => {
-
+export const ChatWarningInfo = React.memo(() => {
+  console.log("ChatWarningInfo 렌더링"); // ← 디버깅용
   const bgColor = useColorModeValue('#ffffff', 'navy.800');
   const infoIcon = useColorModeValue('#f94848', '#ffffff');
   const textColor = useColorModeValue('#7F879B', '#ffffff');
@@ -159,4 +160,4 @@ export const ChatWarningInfo = () => {
       </Box>
     </Flex>
   )
-};
+});

@@ -5,7 +5,6 @@ import { Icon,Flex,Text,Box,Drawer,DrawerBody,useColorModeValue,DrawerOverlay,Dr
 import * as mCookie from "@/utils/cookies";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import { renderThumb,renderTrack,renderView } from '@/components/scrollbar/Scrollbar';
-import { Scrollbars } from 'react-custom-scrollbars-2';
 import * as history from '@/utils/history';
 import HeadTitle from './Title';
 import LoginScreen from '@/components/signup/LoginScreen';
@@ -123,7 +122,6 @@ function LoginModal(props: LoginModalProps) {
     window.addEventListener('message', receiveMessage);
   };
 
-
   const setClcikClose = (str:string) => {
     if(str === 'kakao' || str === 'naver' || str === 'aiga') {
       setLoginForm({socialType : ""});
@@ -160,35 +158,26 @@ function LoginModal(props: LoginModalProps) {
             _hover={{ boxShadow: 'none' }}
           />
           <DrawerBody maxW={`${mConstants.modalMaxWidth}px`} px="0rem" pb="10" height="100%" backgroundColor="white">
-            
-            <Scrollbars
-              universal={true}
-              autoHide
-              renderTrackVertical={renderTrack}
-              renderThumbVertical={renderThumb}
-              renderView={renderView}
-            >
-              <Box width='calc( 100% - 20px)' padding='10px' height='100%'>
-                {
-                  (  ['aiga'].includes(loginForm.socialType) ) 
-                  ?
-                  (
-                    <JoinScreen
-                      socialType={loginForm.socialType}
-                      onClickJoin={onClickJoin}
-                    />
-                  )
-                  : 
-                  (
-                    <LoginScreen
-                      onClickJoin={onClickJoin}
-                      onClcikClose={setClcikClose}
-                      isProduction={false}
-                    />
-                  )
-                }
-              </Box>
-            </Scrollbars>
+            <Box width='calc( 100% - 20px)' padding='10px' height='100%'>
+              {
+                (  ['aiga'].includes(loginForm.socialType) ) 
+                ?
+                (
+                  <JoinScreen
+                    socialType={loginForm.socialType}
+                    onClickJoin={onClickJoin}
+                  />
+                )
+                : 
+                (
+                  <LoginScreen
+                    onClickJoin={onClickJoin}
+                    onClcikClose={setClcikClose}
+                    isProduction={false}
+                  />
+                )
+              }
+            </Box>
           </DrawerBody>
         </DrawerContent>
       </Drawer>

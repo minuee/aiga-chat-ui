@@ -1,8 +1,6 @@
+import React  from 'react';
 import { useColorModeValue, Flex, useColorMode} from '@chakra-ui/react';
 import { motion } from "framer-motion";
-import WelcomeLogoImage from "@/assets/images/welcom-logo.png";
-import LogoImage from "@/assets/images/logo.png";
-import Image from "next/image";
 import {IconAiga} from '@/components/icons/svgIcons';
 
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
@@ -19,8 +17,9 @@ const MotionWelcome = ({
     classNames="opening_wrap",
     isMobile = false
   }: MotionWelcomeProps) => {
-
+  console.log("MotionWelcome 렌더링"); // ← 디버깅용
   const textColor = useColorModeValue('navy.700', 'white')
+  
   return (
     <Flex flexDirection={'column'} pt={pt}>
       {
@@ -41,7 +40,6 @@ const MotionWelcome = ({
     </Flex>
   );
 };
-  
 
 type MotionWelcomeImageProps = {
   pt : string;
@@ -53,7 +51,7 @@ export const MotionWelcomeImage = ({
   isMobile = false
 }: MotionWelcomeImageProps) => {
 
-const textColor = useColorModeValue('navy.700', 'white')
+console.log("MotionWelcomeImage 렌더링"); // ← 디버깅용
 
 return (
   <Flex flexDirection={'column'} pt={pt}>
@@ -75,5 +73,4 @@ return (
   </Flex>
 );
 };
-
-export default MotionWelcome;
+export default React.memo(MotionWelcome);
