@@ -1,21 +1,18 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Icon,Flex,Text,Box,Drawer,DrawerBody,useColorModeValue,DrawerOverlay,DrawerContent,DrawerCloseButton,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody } from '@chakra-ui/react';
+import { Icon,Flex,Box,Drawer,DrawerBody,useColorModeValue,DrawerOverlay,DrawerContent,DrawerCloseButton,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody } from '@chakra-ui/react';
 import * as mCookie from "@/utils/cookies";
-import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
-import { renderThumb,renderTrack,renderView } from '@/components/scrollbar/Scrollbar';
+import CustomText from "@/components/text/CustomText";
 import * as history from '@/utils/history';
 import HeadTitle from './Title';
 import LoginScreen from '@/components/signup/LoginScreen';
 import JoinScreen from '@/components/signup/JoinScreen';
 import SignupAgree from "@/components/modal/SignupAgree";
-import functions from '@/utils/functions';
 import mConstants from '@/utils/constants';
 import { usePathname, useRouter } from 'next/navigation';
-import * as AuthService from "@/services/member/index";
 import { ModalSignupAgreeStoreStore } from '@/store/modalStore';
-import { MdOutlineSettings,MdArrowBack,MdOutlineClose } from 'react-icons/md';
+import { MdArrowBack,MdOutlineClose } from 'react-icons/md';
 export interface LoginModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
@@ -32,9 +29,6 @@ function LoginModal(props: LoginModalProps) {
     socialType : ''
   });
 
-  const [isModalOpen, setModalOpen] = React.useState(false);
-  const [loginUrl, setLoginUrl] = React.useState('');
-  const [userInfo, setUserInfo] = React.useState(null);
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);

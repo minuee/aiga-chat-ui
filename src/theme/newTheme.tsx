@@ -1,4 +1,4 @@
-//'use client'; // 가장 중요!
+'use client'; // 가장 중요!
 import { extendTheme, HTMLChakraProps, ThemingProps } from '@chakra-ui/react';
 //import '@fontsource/noto-sans';
 //import '@fontsource/noto-sans/700.css';

@@ -6,9 +6,9 @@ import MessageBoxChat from '@/components/MessageBox';
 import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
-import { Box,Flex,Icon,Textarea,Text,useColorModeValue,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,useToast,useColorMode } from '@chakra-ui/react';
+import { Box,Flex,Icon,Textarea,useColorModeValue,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,useToast,useColorMode } from '@chakra-ui/react';
 import ResizeTextarea from "react-textarea-autosize";
-import { useEffect, useState,useRef,useCallback } from 'react';
+import { useEffect, useState,useRef,useCallback,useMemo } from 'react';
 import Image from "next/image";
 import { MdOutlineArrowDownward, MdFitbit ,MdOutlineClose,MdArrowBack } from 'react-icons/md';
 import DoctorDetail  from '@/components/modal/Doctor';
@@ -23,7 +23,7 @@ import { ChatDisable,ChatWarningInfo }  from '@/components/msgType/ChatOptionVie
 import MotionWelcome,{MotionWelcomeImage}  from '@/components/msgType/MotionWelcome';
 import Processing  from '@/components/msgType/Processing';
 import SkeletonDefaultText from "@/components/fields/LoadingBar";
-import CustomText, { CustomTextBold700 } from "@/components/text/CustomText";
+import { CustomTextBold700 } from "@/components/text/CustomText";
 import debounce from 'lodash/debounce'
 
 import { useTranslations } from 'next-intl';
@@ -38,7 +38,9 @@ import {
   ModalDoctorDetailStore,ModalDoctorReviewStore,ModalDoctorRequestStore,ModalDoctorListStore,DrawerHistoryStore,ModalMypageStore,ModalMypageNoticeStore,ModalMypageNoticeDetailStore,
   ModalMypageRequestStore,ModalMypageEntireStore,ModalMypagePolicyStore,ModalMypageYakwanStore,ModalMypageMingamStore,ModalSignupStoreStore,ModalSignupAgreeStoreStore,DoctorFromListStore,ReviewAlertStore
 } from '@/store/modalStore';
- import UserStateStore from '@/store/userStore';
+import { decryptToken } from "@/utils/secureToken";
+import { defaultUserInfo } from "@/types/userData"
+import UserStateStore, { UserBasicInfoStore } from '@/store/userStore';
 import * as ChatService from "@/services/chat/index";
 import { SendButtonOff,SendButtonOn } from '@/components/icons/svgIcons';
 
@@ -76,10 +78,14 @@ export default function ChatBot() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollBottomRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
-
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
-  const navbarIcon = useColorModeValue('#000000', 'navy.800');
-  const { nickName, ...userBasicInfo } = UserStateStore(state => state);
+  
+  const userStoreInfo = UserBasicInfoStore(state => state.userStoreInfo);
+  const userBaseInfo = useMemo(() => {
+    const deCryptInfo = decryptToken(userStoreInfo)
+    const ret = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ?  JSON.parse(deCryptInfo) : userStoreInfo;
+    return ret;
+  }, [userStoreInfo]);
   /* chat에 관련된 상태관리 */
   const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
   const [in24UsedToken, setIn24UsedToken] = useState(0);
@@ -110,8 +116,9 @@ export default function ChatBot() {
   const setIsOpenSignupAgreeModal = ModalSignupAgreeStoreStore((state) => state.setIsOpenSignupAgreeModal)
   const { isOpenAlert } = ReviewAlertStore(state => state);
   const setOpenAlert = ReviewAlertStore((state) => state.setIsOpenReviewLoginAlert);
-  
   const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
+
+  const navbarIcon = useColorModeValue('#000000', 'navy.800');
   const borderColor = useColorModeValue('gray.200', 'gray');
   const inputColor = useColorModeValue('navy.700', 'white');
   const sidebarBackgroundColor = useColorModeValue('white', 'navy.800');
@@ -179,20 +186,14 @@ export default function ChatBot() {
     setIsOpenSignupAgreeModal(false);
     
     history.push(`/${locale}/chat`);
-    mCookie.setCookie('currentPathname','') 
+    mCookie.setCookie('currentPathname','');
+    scrollToBottom()
   }
 
   useEffect(() => {
-    const userBasicInfo = UserStateStore.getState();
-    // userBasicInfo.isState가 true에서 false로 또는 false에서 true로 변경될 때 실행되는 코드
-    if (userBasicInfo?.isState) {
-      setIn24UsedToken(0)
-    } else {
-      setIn24UsedToken(0)
-    }
-  }, [UserStateStore.getState().isState]);
+    setIn24UsedToken(0)
+  }, [userBaseInfo.isState]);
 
-  
   useEffect(() => {
     if (!alreadyInitialized.current) {
       console.log('🔥 최초 1회만 실행');
@@ -209,13 +210,6 @@ export default function ChatBot() {
     }
   }, []);
 
-  useEffect(() => {
-    pathnameRef.current = pathname; // 항상 최신값 유지
-    console.log('pathname',pathname)
-    if (pathname.endsWith('/chat')) {
-      console.log("chat 페이지입니다!");
-    }
-  }, [pathname]);
 
   const getNewSessionID =  async() => {
     try{
@@ -266,7 +260,7 @@ export default function ChatBot() {
           setNewChatOpen(false);
         }, 60);
       }
-      if ( userBasicInfo?.isGuest  ) {//비회원
+      if ( userBaseInfo?.isGuest  ) {//비회원
         if ( in24UsedToken >= guestMaxToken ) {
           setChatDisabled({
             ...isChatDisabled,
@@ -469,7 +463,7 @@ export default function ChatBot() {
 
     if ( in24UsedToken > 0 ) { 
       const realTimeIn24UsedToken = in24UsedToken+nowTokens;
-      if ( userBasicInfo?.isGuest  ) {//비회원
+      if ( userBaseInfo?.isGuest  ) {//비회원
         if ( realTimeIn24UsedToken >= guestMaxToken ) {
           setChatDisabled({
             ...isChatDisabled,
@@ -1279,7 +1273,7 @@ export default function ChatBot() {
                 <ChatDisable
                   isChatDisabled={isChatDisabled}
                   setChatDisabled={setChatDisabled}
-                  userBasicInfo={userBasicInfo}
+                  userBasicInfo={userBaseInfo}
                 />
               )
             }

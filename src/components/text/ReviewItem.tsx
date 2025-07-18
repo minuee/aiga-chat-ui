@@ -1,20 +1,21 @@
 'use client';
 import React from 'react';
 // chakra imports
-import { Box,Flex, useColorModeValue,SimpleGrid,Text,Textarea,Icon,Divider,Popover,PopoverTrigger,PopoverContent,PopoverArrow,PopoverBody,Button } from '@chakra-ui/react';
+import { Box,Flex, useColorModeValue,SimpleGrid,Textarea,Icon,Divider,Popover,PopoverTrigger,PopoverContent,PopoverBody,Button } from '@chakra-ui/react';
 import ProgressBar from '@/components/fields/ProgressBar';
-import mConstants from '@/utils/constants';
-import { MdOutlineStarPurple500,MdMoreHoriz,MdOutlineEdit,MdOutlineDelete } from 'react-icons/md';
+import { MdOutlineStarPurple500 } from 'react-icons/md';
 import Alert from '@/components/alert/CustomAlert';
 import NextImage from 'next/legacy/image';
 import { format } from 'date-fns';
 import ResizeTextarea from "react-textarea-autosize";
-import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
-import { MdKeyboardDoubleArrowDown,MdKeyboardDoubleArrowUp } from 'react-icons/md';
+import CustomText, { CustomTextBold700 } from "@/components/text/CustomText";
 import { iconAlertWarning } from "@/components/icons/IconImage"
 import functions from '@/utils/functions';
 import { BiTrash,BiEdit,BiDotsHorizontalRounded } from "react-icons/bi";
-import UserStateStore from '@/store/userStore';
+
+import { decryptToken } from "@/utils/secureToken";
+import { defaultUserInfo } from "@/types/userData"
+import { UserBasicInfoStore } from '@/store/userStore';
 import { FiChevronDown,FiChevronUp } from "react-icons/fi";
 type ReivewItemProps = {
     data: any;
@@ -28,7 +29,12 @@ const ReviewItem = ({ data, onHandleDetail,onHandleDoctorRequestRegist }:ReivewI
     const [isExpanded, setIsExpanded] = React.useState(false);
     const [shouldShowExpand, setShouldShowExpand] = React.useState(false)
     const textareaRef = React.useRef<HTMLTextAreaElement>(null)
-    const { ...userBaseInfo } = UserStateStore(state => state);
+    const userStoreInfo = UserBasicInfoStore(state => state.userStoreInfo);
+    const userBaseInfo = React.useMemo(() => {
+        const deCryptInfo = decryptToken(userStoreInfo)
+        const ret = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ?  JSON.parse(deCryptInfo) : userStoreInfo;
+        return ret;
+      }, [userStoreInfo]);
 
     const bgColor = useColorModeValue('white', 'navy.700');
     const borderColor = useColorModeValue('#7F879B', 'navy.900');

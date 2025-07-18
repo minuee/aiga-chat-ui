@@ -10,7 +10,9 @@ import routes from '@/routes';
 import { getActiveRoute, getActiveNavbar } from '@/utils/navigation';
 import Navbar from '@/components/navbar/Navbar';
 import mConstants from '@/utils/constants';
-import UserStateStore from '@/store/userStore';
+import { decryptToken } from "@/utils/secureToken";
+import { defaultUserInfo } from "@/types/userData"
+import { UserBasicInfoStore } from '@/store/userStore';
 import ConfigInfoStore,{ GlobalStateStore } from '@/store/configStore';
 import GlobalDisable from "@/components/view/GlobalDisable";
 
@@ -24,7 +26,13 @@ export default function Index() {
   
   const pathname = usePathname();
   const toast = useToast();
-  const { userId, ...userInfo } = UserStateStore(state => state);
+  const userStoreInfo = UserBasicInfoStore(state => state.userStoreInfo);
+  const userBaseInfo = React.useMemo(() => {
+    const deCryptInfo = decryptToken(userStoreInfo)
+    const ret = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ?  JSON.parse(deCryptInfo) : userStoreInfo;
+    return ret;
+  }, [userStoreInfo]);
+  const userId = userBaseInfo?.userBaseInfo
   const alreadyInitialized = React.useRef(false);
   const setConfigInfoStore = ConfigInfoStore((state) => state.setConfigInfoStore);
   const { isGlobalState } = GlobalStateStore(state => state);
@@ -174,7 +182,7 @@ export default function Index() {
         setGlobalState(false)
         setConfigInfoStore(0,0,0,0)
       }
-    },[userId,userInfo?.userMaxToken,userInfo?.userRetryLimitSec]
+    },[userId,userBaseInfo?.userMaxToken,userBaseInfo?.userRetryLimitSec]
   );
 
   React.useEffect(() => {

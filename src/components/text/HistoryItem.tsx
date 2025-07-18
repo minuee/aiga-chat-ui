@@ -1,10 +1,9 @@
 import React from 'react';
-import { Box,Heading,Text,Popover,PopoverTrigger,PopoverContent,PopoverArrow,PopoverBody,Flex,Button,Icon,useColorModeValue,FormControl,Input,useDisclosure,useToast } from '@chakra-ui/react';
-import { MdOutlineMoreVert,MdMoreHoriz,MdOutlineEdit,MdOutlineDelete } from 'react-icons/md';
+import { Box,Popover,PopoverTrigger,PopoverContent,PopoverBody,Flex,Button,Icon,useColorModeValue,FormControl,Input,useDisclosure,useToast } from '@chakra-ui/react';
 import Alert from '@/components/alert/Alert';
 import mConstants from '@/utils/constants';
 import functions from '@/utils/functions';
-import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import CustomText from "@/components/text/CustomText";
 import { ChatSesseionIdStore } from '@/store/newChatStore';
 import { BiTrash,BiEdit,BiDotsHorizontalRounded } from "react-icons/bi";
 
@@ -27,7 +26,7 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
         shareLink : `https://aiga.kormedi.com/share/minuee/${data.session_id}`
     });
     const chatSessionId = ChatSesseionIdStore(state => state.chatSessionId);
-    const textColor = useColorModeValue('navy.700', 'white');
+    const textColor = useColorModeValue('navy.700', 'navy.800');
     const historyColor = useColorModeValue('#212127', 'white');
     const bgColor = useColorModeValue('#FAFBFD', 'navy.700');
     const borderColor = useColorModeValue('#7F879B', 'navy.900');
@@ -70,7 +69,7 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
             px="10px"
             maxWidth={`${mConstants.modalMaxWidth}px`}
             bg={( editMode || chatSessionId == data?.session_id ) ? bgCurrentColor : bgDefaultColor}
-            borderRadius={editMode ? '8px' : 0}
+            borderRadius={editMode ? '8px' : '8px'}
             _hover={{
                 bg: editMode ? bgCurrentBorderColor: bgDefaultBorderColor,
                 borderRadius:'8px',
@@ -86,6 +85,7 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
                     value={functions.isEmpty(inputs?.title) ? "무제" : inputs?.title}
                     onChange={(e) => setInputs({...inputs, title: e.target.value})}
                     color={textColor}
+                    bg={editMode ? '#ffffff' : 'transparent'}
                     id="input_title"
                 />
                 <Flex flexDirection={'row'} justifyContent={'flex-end'} gap={2} mt={2}>
@@ -132,15 +132,15 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
         }
         {
             isOpen &&  (
-            <Alert 
-                AppName='AIGA'
-                bodyContent={`정말로 삭제하시겠습니까?\n 삭제하면 복구할 수 없습니다.`}
-                isOpen={isOpen}
-                onClose={onClose}
-                onConfirm={() => {onHandleDeleteHistory();onClose()}}
-                closeText='취소'
-                confirmText='삭제'
-            />
+                <Alert 
+                    AppName='AIGA'
+                    bodyContent={`정말로 삭제하시겠습니까?\n 삭제하면 복구할 수 없습니다.`}
+                    isOpen={isOpen}
+                    onClose={onClose}
+                    onConfirm={() => {onHandleDeleteHistory();onClose()}}
+                    closeText='취소'
+                    confirmText='삭제'
+                />
             )
         }
         {

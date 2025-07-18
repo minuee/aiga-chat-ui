@@ -1,27 +1,25 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Flex,useColorModeValue ,useToast,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,Box,Icon,Text} from '@chakra-ui/react';
+import { Flex,useColorModeValue ,useToast,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,Box,Icon } from '@chakra-ui/react';
 import * as mCookie from "@/utils/cookies";
-import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
+import { isMobileOnly } from "react-device-detect";
 import * as history from '@/utils/history';
 import LoginScreen from '@/components/signup/LoginScreen';
-import JoinScreen from '@/components/signup/JoinScreen';
 import SignupAgree from "@/components/modal/SignupAgree";
-import functions from '@/utils/functions';
 import mConstants from '@/utils/constants';
 import { usePathname, useRouter } from 'next/navigation';
-import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import CustomText from "@/components/text/CustomText";
 import { encryptToken } from "@/utils/secureToken";
-import UserStateStore from '@/store/userStore';
+import { UserBasicInfoStore } from '@/store/userStore';
 import ConfigInfoStore from '@/store/configStore';
-import NewChatStateStore,{ ChatSesseionIdStore,CallHistoryDataStore,CurrentDialogStore } from '@/store/newChatStore';
+import NewChatStateStore,{ ChatSesseionIdStore,CallHistoryDataStore } from '@/store/newChatStore';
 import historyStore from '@/store/historyStore';
 import { 
   ModalDoctorDetailStore,ModalDoctorReviewStore,ModalDoctorRequestStore,ModalDoctorListStore,DrawerHistoryStore,ModalMypageStore,ModalMypageNoticeStore,ModalMypageNoticeDetailStore,
   ModalMypageRequestStore,ModalMypageEntireStore,ModalMypagePolicyStore,ModalMypageYakwanStore,ModalMypageMingamStore,ModalSignupStoreStore,ModalSignupAgreeStoreStore,DoctorFromListStore,ReviewAlertStore
  } from '@/store/modalStore';
-import { MdOutlineSettings,MdArrowBack,MdOutlineClose } from 'react-icons/md';
+import { MdArrowBack,MdOutlineClose } from 'react-icons/md';
 export interface LoginModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
@@ -45,8 +43,8 @@ function LoginModal(props: LoginModalProps) {
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
   const signupAgreeBtnRef = React.useRef<HTMLButtonElement>(null);
-  const setLoginUserInfo = UserStateStore((state) => state.setUserState);
-  const { nickName, ...userInfo } = UserStateStore(state => state);
+  const setLoginUserInfo = UserBasicInfoStore((state) => state.setUserBasicInfo);
+ 
 
   const { isOpenSignupAgreeModal } = ModalSignupAgreeStoreStore(state => state);
   const setIsOpenSignupAgreeModal = ModalSignupAgreeStoreStore((state) => state.setIsOpenSignupAgreeModal);
@@ -171,27 +169,30 @@ function LoginModal(props: LoginModalProps) {
 
        // console.log('apidata event.data.type',event?.data?.type);
         if (event?.data?.type === 'kakao-auth') {
-          //console.log('apidata ✅ 카카오 로그인 성공:', event.data.code?.data?.user);
+          console.log('apidata ✅ 카카오 로그인 성공:', event.data.code?.data?.user);
           const loginUserInfo = event?.data?.code?.data?.user;
           const accessToken = event?.data?.code?.data?.access_token;
           if ( loginUserInfo?.agreement ) { // 회원인상태
             mCookie.setCookie(mConstants.apiTokenName, encryptToken(accessToken), { path: '/' , expires : expireDate })
-            setLoginUserInfo({
-              isState : loginUserInfo?.agreement, //isState
-              sns_id : loginUserInfo?.sns_id, //sns_id
-              email : loginUserInfo?.email, //email
-              profileImage : loginUserInfo?.profile_img, //profileImage
-              agreement : loginUserInfo?.agreement, //agreement
-              registDate : loginUserInfo?.regist_date, //registDate
-              updatedDate : loginUserInfo?.updatedAt,//updatedDate
-              unregistDate : loginUserInfo?.unregist_date,//unregistDate
-              userId : loginUserInfo?.user_id,//userId
-              isGuest : false, //isGuest
-              joinType : loginUserInfo?.sns_type,//joinType
-              nickName : loginUserInfo?.nickname,//nickName
-              userMaxToken : userMaxToken,//userMaxToken
-              userRetryLimitSec :userRetryLimitSec//userRetryLimitSec
-            });
+            const userSaveData = {
+              isState : loginUserInfo?.agreement, 
+              sns_id : loginUserInfo?.sns_id,
+              email : loginUserInfo?.email,
+              profileImage : loginUserInfo?.profile_img, 
+              agreement : loginUserInfo?.agreement,
+              registDate : loginUserInfo?.regist_date,
+              updatedDate : loginUserInfo?.updatedAt,
+              unregistDate : loginUserInfo?.unregist_date,
+              userId : loginUserInfo?.user_id,
+              isGuest : false, 
+              joinType : loginUserInfo?.sns_type,
+              nickName : loginUserInfo?.nickname,
+              userMaxToken : userMaxToken,
+              userRetryLimitSec :userRetryLimitSec
+            }
+            const userSaveDataEncrypt = await encryptToken(JSON.stringify(userSaveData))
+            setLoginUserInfo(userSaveDataEncrypt);
+           
             setNewChatOpen(false);
             setTimeout(() => {
               setNewChatOpen(true);
@@ -199,71 +200,75 @@ function LoginModal(props: LoginModalProps) {
             setClose();
           }else{ // 동의안한상태
             mCookie.setCookie(mConstants.apiTokenName, encryptToken(accessToken), { path: '/' , expires : expireDate })
-            setLoginUserInfo({
-              isState : loginUserInfo?.agreement, //isState
-              sns_id : loginUserInfo?.sns_id, //sns_id
-              email : loginUserInfo?.email, //email
-              profileImage : loginUserInfo?.profile_img, //profileImage
-              agreement : loginUserInfo?.agreement, //agreement
-              registDate : loginUserInfo?.regist_date, //registDate
-              updatedDate : loginUserInfo?.updatedAt,//updatedDate
-              unregistDate : loginUserInfo?.unregist_date,//unregistDate
-              userId : loginUserInfo?.user_id,//userId
-              isGuest : true, //isGuest
-              joinType : loginUserInfo?.sns_type,//joinType
-              nickName : loginUserInfo?.nickname,//nickName
-              userMaxToken : guestMaxToken,//userMaxToken
-              userRetryLimitSec : guestRetryLimitSec //userRetryLimitSec
-            });
+            const userSaveData = {
+              isState : loginUserInfo?.agreement,
+              sns_id : loginUserInfo?.sns_id,
+              email : loginUserInfo?.email,
+              profileImage : loginUserInfo?.profile_img,
+              agreement : loginUserInfo?.agreement,
+              registDate : loginUserInfo?.regist_date,
+              updatedDate : loginUserInfo?.updatedAt,
+              unregistDate : loginUserInfo?.unregist_date,
+              userId : loginUserInfo?.user_id,
+              isGuest : true,
+              joinType : loginUserInfo?.sns_type,
+              nickName : loginUserInfo?.nickname,
+              userMaxToken : guestMaxToken,
+              userRetryLimitSec : guestRetryLimitSec
+            }
+            const userSaveDataEncrypt = await encryptToken(JSON.stringify(userSaveData))
+            setLoginUserInfo(userSaveDataEncrypt);
             onSendSignupAgreeButton();
           }
           popup?.close();
           window.removeEventListener('message', receiveMessage);
         }else if (event?.data?.type === 'naver-auth') {
-          //console.log('apidata ✅ 네이버 로그인 성공:', event.data.code?.data?.user);
           const loginUserInfo = event?.data?.code?.data?.user;
           const accessToken = event?.data?.code?.data?.access_token;
-          if ( loginUserInfo?.agreement ) { // 회원인상태
+          if ( loginUserInfo?.agreement ) { 
             mCookie.setCookie(mConstants.apiTokenName, encryptToken(accessToken), { path: '/' , expires : expireDate })
-            setLoginUserInfo({
-              isState : loginUserInfo?.agreement, //isState
-              sns_id : loginUserInfo?.sns_id, //sns_id
-              email : loginUserInfo?.email, //email
-              profileImage : loginUserInfo?.profile_img, //profileImage
-              agreement : loginUserInfo?.agreement, //agreement
-              registDate : loginUserInfo?.regist_date, //registDate
-              updatedDate : loginUserInfo?.updatedAt,//updatedDate
-              unregistDate : loginUserInfo?.unregist_date,//unregistDate
-              userId : loginUserInfo?.user_id,//userId
-              isGuest : false, //isGuest
-              joinType : loginUserInfo?.sns_type,//joinType
-              nickName : loginUserInfo?.nickname,//nickName
-              userMaxToken : userMaxToken,//userMaxToken
-              userRetryLimitSec :userRetryLimitSec//userRetryLimitSec
-            });
-            setNewChatOpen(false);
+            const userSaveData = {
+              isState : loginUserInfo?.agreement,
+              sns_id : loginUserInfo?.sns_id,
+              email : loginUserInfo?.email,
+              profileImage : loginUserInfo?.profile_img, 
+              agreement : loginUserInfo?.agreement,
+              registDate : loginUserInfo?.regist_date,
+              updatedDate : loginUserInfo?.updatedAt,
+              unregistDate : loginUserInfo?.unregist_date,
+              userId : loginUserInfo?.user_id,
+              isGuest : false, 
+              joinType : loginUserInfo?.sns_type,
+              nickName : loginUserInfo?.nickname,
+              userMaxToken : userMaxToken,
+              userRetryLimitSec :userRetryLimitSec
+            }
+            const userSaveDataEncrypt = await encryptToken(JSON.stringify(userSaveData))
+            setLoginUserInfo(userSaveDataEncrypt);
             setTimeout(() => {
               setNewChatOpen(true);
             }, 100);
             setClose();
           }else{ // 동의안한상태
             mCookie.setCookie(mConstants.apiTokenName, encryptToken(accessToken), { path: '/' , expires : expireDate })
-            setLoginUserInfo({
-              isState : loginUserInfo?.agreement, //isState
-              sns_id : loginUserInfo?.sns_id, //sns_id
-              email : loginUserInfo?.email, //email
-              profileImage : loginUserInfo?.profile_img, //profileImage
-              agreement : loginUserInfo?.agreement, //agreement
-              registDate : loginUserInfo?.regist_date, //registDate
-              updatedDate : loginUserInfo?.updatedAt,//updatedDate
-              unregistDate : loginUserInfo?.unregist_date,//unregistDate
-              userId : loginUserInfo?.user_id,//userId
-              isGuest : true, //isGuest
-              joinType : loginUserInfo?.sns_type,//joinType
-              nickName : loginUserInfo?.nickname,//nickName
-              userMaxToken : guestMaxToken,//userMaxToken
-              userRetryLimitSec : guestRetryLimitSec //userRetryLimitSec
-            });
+            const userSaveData = {
+              isState : loginUserInfo?.agreement,
+              sns_id : loginUserInfo?.sns_id,
+              email : loginUserInfo?.email,
+              profileImage : loginUserInfo?.profile_img,
+              agreement : loginUserInfo?.agreement,
+              registDate : loginUserInfo?.regist_date,
+              updatedDate : loginUserInfo?.updatedAt,
+              unregistDate : loginUserInfo?.unregist_date,
+              userId : loginUserInfo?.user_id,
+              isGuest : true, 
+              joinType : loginUserInfo?.sns_type,
+              nickName : loginUserInfo?.nickname,
+              userMaxToken : guestMaxToken,
+              userRetryLimitSec : guestRetryLimitSec
+            }
+            const userSaveDataEncrypt = await encryptToken(JSON.stringify(userSaveData))
+            setLoginUserInfo(userSaveDataEncrypt);
             onSendSignupAgreeButton();
           }
           popup?.close();
@@ -272,7 +277,6 @@ function LoginModal(props: LoginModalProps) {
       };
       window.addEventListener('message', receiveMessage);
       }catch(e:any){
-        //console.log(`apidata ✅ 회원가입 실패 errrrr :`, e);
         toast({
           title: 'AIGA',
           position: 'top-right',

@@ -1,13 +1,13 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Textarea,Checkbox,Card,useColorModeValue,CardBody,Stack,StackDivider,Heading,FormControl,FormLabel,Input} from '@chakra-ui/react';
+import { Box,Flex,Button,SkeletonCircle,SkeletonText,Textarea,useColorModeValue } from '@chakra-ui/react';
 import functions from '@/utils/functions';
-import Link from '@/components/link/Link';
 import Alert from '@/components/alert/Alert';
 import NextImage from 'next/legacy/image';
-import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import CustomText, { CustomTextBold700 } from "@/components/text/CustomText";
 import ProcessingBar from "@/assets/icons/processing2x.gif";
+
 export interface RequestModalProps extends PropsWithChildren {
   isReceiving : boolean;
   isOpen : boolean;

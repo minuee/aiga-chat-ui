@@ -10,18 +10,25 @@ import routes from '@/routes';
 import ProfileSetting from '@/components/modal/ProfileSetting';
 import mConstants from '@/utils/constants';
 import Alert from '@/components/alert/Alert';
-import UserStateStore from '@/store/userStore';
-import ConfigInfoStore from '@/store/configStore';
+
+import { decryptToken } from "@/utils/secureToken";
+import { defaultUserInfo } from "@/types/userData"
+import { UserBasicInfoStore } from '@/store/userStore';
 import NewChatStateStore from '@/store/newChatStore';
-import functions from '@/utils/functions';
 
 export default function HeaderLinks(props: {secondary: boolean;}) {
 
   const { secondary } = props;
   const { colorMode, toggleColorMode } = useColorMode();
-  const { userId, ...userBasicInfo } = UserStateStore(state => state);
-  const setLoginUserInfo = UserStateStore((state) => state.setUserState);
-  const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
+
+  const resetUserBasicInfo = UserBasicInfoStore((state) => state.resetUserBasicInfo);
+  const userStoreInfo = UserBasicInfoStore(state => state.userStoreInfo);
+  const userBaseInfo = React.useMemo(() => {
+    const deCryptInfo = decryptToken(userStoreInfo)
+    const ret = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ?  JSON.parse(deCryptInfo) : userStoreInfo;
+    return ret;
+  }, [userStoreInfo]);
+
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
   const toast = useToast();
   // Loading state
@@ -33,32 +40,13 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
   const [myToken, setMyToken] = React.useState<PushSubscription | null>(null);
   // Chakra Color Mode
   const navbarIcon = useColorModeValue('white', 'navy.800');
-  let menuBg = useColorModeValue('white', 'navy.800');
-  const textColor = useColorModeValue('navy.700', 'white');
-  const borderColor = useColorModeValue('#E6ECFA', 'rgba(135, 140, 189, 0.3)');
-  const shadow = useColorModeValue('14px 17px 40px 4px rgba(112, 144, 176, 0.18)', '0px 41px 75px #081132');
 
   const sidebarBackgroundColor = useColorModeValue('white', 'gray.700');
   const reviewBtnRef = React.useRef<HTMLButtonElement>(null);
   
   
   const onHandleLogout = () => {
-    setLoginUserInfo({
-      isState : false, //isState
-      sns_id: '', //sns_id
-      email : '', //email
-      profileImage : '', //profileImage
-      agreement : false, //agreement
-      registDate : '', //registDate
-      unregistDate : '',//unregistDate
-      updatedDate : '',//updatedDate
-      userId :  "Guest",//userId
-      isGuest : true, //isGuest
-      joinType : '',//joinType
-      nickName : '',//nickName
-      userMaxToken :guestMaxToken,//userMaxToken
-      userRetryLimitSec : guestRetryLimitSec//userRetryLimitSec
-    });
+    resetUserBasicInfo();
     setNewChatOpen(false);
     setTimeout(() => {
       setNewChatOpen(true);
@@ -69,7 +57,7 @@ export default function HeaderLinks(props: {secondary: boolean;}) {
   return (
     <Flex zIndex="100" w={'auto'} alignItems="center" justifyContent={'flex-end'} flexDirection="row" flexWrap={secondary ? { base: 'wrap', md: 'nowrap' } : 'unset'} p="10px">
       {
-        ( process.env.NODE_ENV == 'development' || userBasicInfo?.email == 'minuee47@gmail.com' || userBasicInfo?.email == 'wjlee2002@naver.com' ) && (
+        ( process.env.NODE_ENV == 'development' || userBaseInfo?.email == 'minuee47@gmail.com' || userBaseInfo?.email == 'wjlee2002@naver.com' ) && (
           <Button
             value={"dark-mode"} aria-label='Toggle dark mode' aria-labelledby='nonexistent' variant="no-hover" bg="transparent" p="0px"
             minW="unset" minH="unset" h="18px" w="max-content" onClick={toggleColorMode} id="button_toggle_mode" name="button_toggle_mode"

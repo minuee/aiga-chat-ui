@@ -1,12 +1,15 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
-import { BrowserView,isMobileOnly,isBrowser,isDesktop,isMobile} from "react-device-detect";
+import { isMobileOnly } from "react-device-detect";
 // chakra imports
 import { Box,Flex,Button,useColorModeValue,useToast,SkeletonCircle,SkeletonText,Divider,Icon,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,Portal} from '@chakra-ui/react';
 
 import NextImage from 'next/legacy/image';
 import Alert from '@/components/alert/CustomAlert';
-import UserStateStore from '@/store/userStore';import * as history from '@/utils/history';
+import { decryptToken } from "@/utils/secureToken";
+import { defaultUserInfo } from "@/types/userData"
+import { UserBasicInfoStore } from '@/store/userStore';
+import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
 import Image from 'next/image';
@@ -24,7 +27,7 @@ import mConstants from '@/utils/constants';
 import ReviewDetail from '@/components/modal/ReviewDetail';
 import RequestDoctor from '@/components/modal/RequestDoctor';
 
-import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import CustomText, { CustomTextBold700 } from "@/components/text/CustomText";
 import { ModalDoctorReviewStore,ModalDoctorRequestStore,DoctorFromListStore,ModalSignupStoreStore,ReviewAlertStore } from '@/store/modalStore';
 
 export interface DoctorModalProps extends PropsWithChildren {
@@ -74,7 +77,13 @@ function DoctorModal(props: DoctorModalProps) {
 
   const [reviewData, setReviewData] = React.useState<any>(null);
   const formBtnRef = React.useRef<HTMLButtonElement>(null);
-  const { ...userBaseInfo } = UserStateStore(state => state);
+  const userStoreInfo = UserBasicInfoStore(state => state.userStoreInfo);
+  const userBaseInfo = React.useMemo(() => {
+    const deCryptInfo = decryptToken(userStoreInfo)
+    const ret = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ?  JSON.parse(deCryptInfo) : userStoreInfo;
+    return ret;
+  }, [userStoreInfo]);
+
   const { isOpenReview } = ModalDoctorReviewStore(state => state);
   const setIsOpenReview = ModalDoctorReviewStore((state) => state.setModalState);
   const { isOpenRequestModal } = ModalDoctorRequestStore(state => state);
@@ -154,6 +163,7 @@ function DoctorModal(props: DoctorModalProps) {
   }
 
   const onSendDoctorReviewButton = async( gubun = "") => {
+
     if ( functions.isEmpty(userBaseInfo?.email) ) {
       setOpenAlert(true);
       return;

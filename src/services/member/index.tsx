@@ -8,6 +8,11 @@ const logApi = axios.create({
     timeout: 5000,
 });
 
+const rawAxios = axios.create({
+    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+    withCredentials: true,
+});
+
 import UserStateStore from '@/store/userStore';
 
 interface MemberAuthProps {
@@ -127,9 +132,9 @@ export function setSignupAgree(): any {
     }
  }
 
- export function setMemberLogout(): any {
+ export async function setMemberLogout(): Promise<any> {
     try{
-        const res:any =  api.get(`/auth/logout`,{withCredentials:true})
+        const res:any =  await rawAxios.get(`/auth/logout`)
         .then((response) => {
              return response?.data;
         }).catch((error) => {
@@ -139,6 +144,7 @@ export function setSignupAgree(): any {
                 message: error?.response?.data || 'Unknown error',
             };
         });
+        console.log('newState.isState res',res)
         return res;
     }catch(error){
         console.log("eeeee",error)

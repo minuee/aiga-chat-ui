@@ -4,9 +4,7 @@ import { Box,Button,Flex,Icon,Menu,MenuButton,Stack,Text,useColorModeValue,useDi
 import Image from "next/image";
 import { HSeparator } from '@/components/separator/Separator';
 //   Custom components
-//import defaultProfile from '@/assets/images/avatar0.png';
 import { DefaultProfile } from '@/components/icons/svgIcons';
-import { NextAvatar } from '@/components/image/Avatar';
 import NextImage from 'next/legacy/image';
 import Alert from '@/components/alert/Alert';
 import ProfileSetting from '@/components/modal/ProfileSetting';
@@ -24,7 +22,9 @@ import * as mCookie from "@/utils/cookies";
 import groupSessionsByDateSorted from "./GroupSort";
 import LoadingBar from "@/assets/icons/loading.gif";
 //새창열기 전역상태
-import UserStateStore from '@/store/userStore';
+import { decryptToken } from "@/utils/secureToken";
+import { defaultUserInfo } from "@/types/userData"
+import { UserBasicInfoStore } from '@/store/userStore';
 import NewChatStateStore,{ ChatSesseionIdStore,CallHistoryDataStore } from '@/store/newChatStore';
 import { ModalMypageStore,DrawerHistoryStore } from '@/store/modalStore';
 import HistoryItem from '@/components/text/HistoryItem';
@@ -48,7 +48,12 @@ function SidebarContent(props: SidebarContent) {
   const pathnameRef = React.useRef(pathname);
   const [historyData, setHistoryData] = React.useState<any>([]);
   const toast = useToast();
-  const { ...userBaseInfo } = UserStateStore(state => state);
+  const userStoreInfo = UserBasicInfoStore(state => state.userStoreInfo);
+  const userBaseInfo = React.useMemo(() => {
+    const deCryptInfo = decryptToken(userStoreInfo)
+    const ret = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ?  JSON.parse(deCryptInfo) : userStoreInfo;
+    return ret;
+  }, [userStoreInfo]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const textColor = useColorModeValue('navy.700', 'white');
   const borderColor = useColorModeValue('gray.200', 'whiteAlpha.300');
@@ -69,7 +74,6 @@ function SidebarContent(props: SidebarContent) {
   const setOpenHistoryDrawer = DrawerHistoryStore((state) => state.setOpenHistoryDrawer);
   
   React.useEffect(() => {
-    setIsLoading(false)
     getMyHistoryData();
   }, []);
 
@@ -82,6 +86,7 @@ function SidebarContent(props: SidebarContent) {
         setIsLoading(false)
       }
     }catch(e:any){
+      setIsLoading(false)
       console.log("error of getNewSessionID",e)
     }
   }
@@ -284,9 +289,11 @@ function SidebarContent(props: SidebarContent) {
         isLoading
         ?
         <Stack direction="column" mb="auto"  width={'100%'}  overflowY={'auto'} minHeight={'calc(100vh - 140px'}>
-          <Box padding='6' boxShadow='lg' bg={skeletonColor}>
-            <SkeletonText mt='3' noOfLines={4} spacing='4' skeletonHeight='5' />
-          </Box>
+          <Flex flexDirection={'column'} alignItems={'center'}  width={'100%'} pb="100px" overflowY={'auto'}>
+            <Box padding='6' boxShadow='lg' bg={skeletonColor}>
+              <SkeletonText mt='3' noOfLines={4} spacing='4' skeletonHeight='5' />
+            </Box>
+          </Flex>
         </Stack>
         :
         <Stack direction="column" mb="auto"  width={'100%'}  overflowY={'auto'} minHeight={'calc(100vh - 140px'}>

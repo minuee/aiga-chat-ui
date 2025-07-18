@@ -2,7 +2,51 @@ import { create } from "zustand";
 import { devtools, persist,createJSONStorage } from 'zustand/middleware'
 import * as Cookies from '@/utils/cookies';
 import { UserData } from "@/types/userData"
+import { encryptToken } from "@/utils/secureToken";
+//import encryptedStorage from './encryptedStorage';
+interface UserInfoState {
+  userStoreInfo : any;
+  setUserBasicInfo: (data: any) => void;
+  resetUserBasicInfo: () => void; // 👈 추가
+}
 
+export const UserBasicInfoStore = create<UserInfoState>()(
+  devtools(
+      persist(
+          (set) => ({
+            userStoreInfo: null,
+            setUserBasicInfo: async(userBasicInfo: any) => {
+              set({ userStoreInfo: userBasicInfo }); // ✅ 문자열을 상태의 특정 필드에 저장
+            },
+            resetUserBasicInfo: async() => {
+              const resetData = {
+                isState: false,
+                sns_id: '',
+                email: '',
+                profileImage: '',
+                agreement: false,
+                registDate: '',
+                unregistDate: '',
+                updatedDate: '',
+                userId: 'Guest',
+                isGuest: true,
+                joinType: '',
+                nickName: '',
+                userMaxToken: 0,
+                userRetryLimitSec: 0,
+              };
+    
+              const encrypted = await encryptToken(JSON.stringify(resetData));
+              set({ userStoreInfo: encrypted }); // ✅ 암호화된 문자열을 상태에 저장
+            },
+          }),
+          { 
+              name: 'UserBasicInfoStore',
+              storage: createJSONStorage(() => localStorage)
+          }
+      )
+  )
+);
 
 const useUserStateStore = create<UserData>()(
     devtools(
@@ -22,21 +66,44 @@ const useUserStateStore = create<UserData>()(
           nickName: '',
           userMaxToken: 0,
           userRetryLimitSec: 0,
-  
           // ✅ 개선된 setUserState
           setUserState: (data) => {
             set((state) => {
               const newState = { ...state, ...data };
+              const expireDate = new Date();  
+              expireDate.setDate(expireDate.getDate() + 365); // 365일 후 만료
               if (newState.isState) {
-                Cookies.setCookie('LoginUser', JSON.stringify(newState));
-              } else {
-                Cookies.removeCookie('LoginUser');
+                Cookies.setCookie('LoginUser', encryptToken(JSON.stringify(newState)), { path: '/' , expires : expireDate }  , );
               }
               return newState;
             });
           },
+          // 👇 로그아웃용 초기화 함수
+          resetUserState: () => {
+            set(() => {
+              Cookies.removeCookie('LoginUser');
+              return {
+                isState: false,
+                sns_id: '',
+                email: '',
+                profileImage: '',
+                agreement: false,
+                registDate: '',
+                unregistDate: '',
+                updatedDate: '',
+                userId: 'Guest',
+                isGuest: true,
+                joinType: '',
+                nickName: '',
+                userMaxToken: 0,
+                userRetryLimitSec: 0,
+              };
+            });
+          }
         }),
-        { name: 'UserStateStore' }
+        { 
+          name: 'UserStateStore',
+        }
       )
     )
 );
@@ -71,73 +138,3 @@ export const PWATokenStore = create<PWATokenStoreState>()(
 );
 
 export default useUserStateStore;
-
-/*
-
-interface UserData {
-    isState : boolean;
-    sns_id: string,
-    email: string,
-    profileImage: string,
-    agreement: false,
-    registDate: any,
-    unregistDate: any,
-    updatedDate: any
-    userId: string;
-    isGuest:boolean;
-    joinType:string;
-    nickName : string;
-    userMaxToken : number;
-    userRetryLimitSec : number;
-    setUserState: (
-        isState : boolean,
-        sns_id: string,
-        email: string,
-        profileImage: string,
-        agreement: false,
-        registDate: any,
-        unregistDate: any,
-        updatedDate: any,
-        userId: string,
-        isGuest:boolean,
-        joinType:string,
-        nickName : string,
-        userMaxToken : number,
-        userRetryLimitSec : number
-    ) => void;
-}
-
-const UserStateStore = create<UserData>()(
-    devtools(
-        persist(
-            (set) => ({
-                isState : false,
-                sns_id: '',
-                email: '',
-                profileImage: '',
-                agreement: false,
-                registDate: '',
-                unregistDate: '',
-                updatedDate: '',
-                userId: '',
-                isGuest:true,
-                joinType:'',
-                nickName : '',
-                userMaxToken : 0,
-                userRetryLimitSec : 0,
-                setUserState: (isState,sns_id,email,profileImage,agreement,registDate,unregistDate,updatedDate, userId,isGuest,joinType,nickName,userMaxToken,userRetryLimitSec) => {
-                    set((state) => ({isState,sns_id,email,profileImage,agreement,registDate,unregistDate,updatedDate, userId,isGuest,joinType,nickName,userMaxToken,userRetryLimitSec }));
-                    if ( isState ) {
-                        Cookies.setCookie('LoginUser',JSON.stringify({isState,sns_id,email,profileImage,agreement,registDate,unregistDate,updatedDate, userId,isGuest,joinType,nickName,userMaxToken,userRetryLimitSec}));
-                    }else{
-                        Cookies.removeCookie('LoginUser');
-                    }
-                },
-            }),
-            { name: 'UserStateStore' }
-        )
-    )
-);
-
-export default UserStateStore;
-*/

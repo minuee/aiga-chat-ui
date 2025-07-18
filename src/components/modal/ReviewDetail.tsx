@@ -47,6 +47,7 @@ function ReviewModal(props: ReviewModalProps) {
   const titleColor = useColorModeValue('#17191D','white');
   const subTitleColor = useColorModeValue('#7F879B','white')
   const iconColor = useColorModeValue('#AFB5C3','white');
+  const textColor = useColorModeValue('#212127', "white")
 
   const [inputs, setInputs] = React.useState<any>({
     doctor_id: null,
@@ -339,7 +340,6 @@ function ReviewModal(props: ReviewModalProps) {
                 허위 또는 과장된 내용은 법적으로 문제가 될 수 있습니다. 정확하고 사실에 근거한 리뷰를 작성해 주시기 바랍니다.
             </CustomTextBold400>
             </Box>
-           
           </Box>
           <Box>
             <Textarea 
@@ -396,9 +396,7 @@ function ReviewModal(props: ReviewModalProps) {
               isShowAppname={false}
               AppName='AIGA'
               bodyContent={
-                <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} py="20px" width="100%"           // 여기 조절 가능
-                maxW="480px"           // 예시로 최대 너비 제한
-                mx="auto" >
+                <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} py="20px" width="100%" maxW="480px" mx="auto" >
                   <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"120px"}>
                     <NextImage
                       width="106"
@@ -408,13 +406,13 @@ function ReviewModal(props: ReviewModalProps) {
                     />
                   </Box>
                   <Box width={"100%"}  display={functions.isEmpty(inputs.review_id) ? 'flex' : 'none'} justifyContent={'center'} alignItems={'center'} minHeight={"50px"}>
-                    <CustomTextBold700 fontSize={'18px'} color="#212127">소중한 리뷰 감사합니다!</CustomTextBold700>
+                    <CustomTextBold700 fontSize={'18px'} color={textColor}>소중한 리뷰 감사합니다!</CustomTextBold700>
                   </Box>
                   <Box width={"100%"}  display={functions.isEmpty(inputs.review_id) ? 'flex' : 'none'} justifyContent={'center'} alignItems={'center'} minHeight={"60px"}>
-                    <CustomText fontSize={'17px'} color="#212127">작성해주신 리뷰는 다른 분들에게 큰 도움이 되며 더 나은 서비스를 제공하는 데 활용됩니다.</CustomText>
+                    <CustomText fontSize={'17px'} color={textColor}>작성해주신 리뷰는 다른 분들에게 큰 도움이 되며 더 나은 서비스를 제공하는 데 활용됩니다.</CustomText>
                   </Box>
                   <Box width={"100%"}  display={!functions.isEmpty(inputs.review_id) ? 'flex' : 'none'} justifyContent={'center'} alignItems={'center'} minHeight={"60px"}>
-                    <CustomText fontSize={'17px'} color="#212127">리뷰 수정이 완료되었습니다.</CustomText>
+                    <CustomText fontSize={'17px'} color={textColor}>리뷰 수정이 완료되었습니다.</CustomText>
                   </Box>
                 </Flex>
               }

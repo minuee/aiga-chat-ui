@@ -3,7 +3,8 @@ import * as mCookie from "@/utils/cookies";
 import mConstants from '@/utils/constants';
 import { decryptToken } from "@/utils/secureToken";
 import functions from '@/utils/functions';
-import UserStateStore from '@/store/userStore';
+import { UserBasicInfoStore } from '@/store/userStore';
+import { defaultUserInfo } from "@/types/userData"
 
 export type ApiResponse<T> = Promise<AxiosResponse<T>>;
 type State = 'true' | 'false';
@@ -30,14 +31,19 @@ axios.interceptors.request.use(
 
 axios.interceptors.request.use((config) => {
   try{
-    const { email,userId,isGuest} = UserStateStore.getState();
-    const accessTmpToken =  mCookie.getCookie(mConstants.apiTokenName);//'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidWlkX2ViZjE4YzE5LWE1N2UtNDlhMC1hY2JkLTMwZGQ2MzU4NDRhNSIsInNuc190eXBlIjoia2FrYW8iLCJzbnNfaWQiOiI0MjkxODg1MjIzIiwiaWF0IjoxNzUwMTE5MjE3LCJleHAiOjE3NTAyMDU2MTd9.3Qjc-inX5H79FMzTLI-uJMnb2o2w0D53EP6DUc9DP8c';
+    const { userStoreInfo } = UserBasicInfoStore.getState();
+    const deCryptInfo = decryptToken(userStoreInfo)
+    const decryptedUser = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ?  JSON.parse(deCryptInfo) : userStoreInfo;
+    const { email  } = decryptedUser;
+
+    const accessTmpToken =  mCookie.getCookie(mConstants.apiTokenName);
     if ( !functions.isEmpty(accessTmpToken) && !functions.isEmpty(email)) { 
       const accessToken =  decryptToken(accessTmpToken)
       config.headers['Authorization'] = `Bearer ${accessToken}` 
     }
     return config
-  }catch{
+  }catch(e:any){
+    console.log("accessTmpTokeneee",e)
     return config
   }
 })
@@ -60,9 +66,14 @@ axios.interceptors.response.use(
   async function (error) {
     const originalRequest = error.config as any;
 
+    // ✅ 로그아웃 요청은 refresh 시도하지 않음
+    if (originalRequest?.url?.includes('/auth/logout')) {
+      return Promise.reject(error);
+    }
+
     if (
       error.response?.status === 401 &&
-      !originalRequest._retry // 사용자 정의 속성
+      !originalRequest._retry
     ) {
       if (isRefreshing) {
         return new Promise((resolve) => {
@@ -78,11 +89,11 @@ axios.interceptors.response.use(
 
       try {
         const refreshToken = localStorage.getItem('refresh_token');
-        if ( !functions.isEmpty(refreshToken)) {
+        if (!functions.isEmpty(refreshToken)) {
           const res = await axios.post('/auth/refresh', { refreshToken });
 
           const newAccessToken = res.data.accessToken;
-          mCookie.setCookie(mConstants.apiTokenName,newAccessToken)
+          mCookie.setCookie(mConstants.apiTokenName, newAccessToken);
           onRefreshed(newAccessToken);
           isRefreshing = false;
 
@@ -90,7 +101,7 @@ axios.interceptors.response.use(
           return axios(originalRequest);
         }
       } catch (refreshError) {
-        mCookie.removeCookie(mConstants.apiTokenName)
+        mCookie.removeCookie(mConstants.apiTokenName);
         return Promise.reject(refreshError);
       }
     }
@@ -98,7 +109,6 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
 
 /* 
 axios.interceptors.response.use(

@@ -1,8 +1,8 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
-import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import CustomText from "@/components/text/CustomText";
 // chakra imports
-import { Box,Flex,Text,Drawer,DrawerBody,Icon,useColorModeValue,DrawerOverlay,DrawerContent,DrawerCloseButton } from '@chakra-ui/react';
+import { Box,Flex,Drawer,DrawerBody,Icon,useColorModeValue,DrawerOverlay,DrawerContent,DrawerCloseButton } from '@chakra-ui/react';
 import Content from '@/components/sidebar/components/Content';
 import mConstants from '@/utils/constants';
 import { IRoute } from '@/types/navigation';
@@ -14,7 +14,10 @@ import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
 import { DrawerHistoryStore,ModalSignupStoreStore,DoctorFromListStore,ModalMypageStore } from '@/store/modalStore';
 import LoginModal  from '@/components/modal/SignUpScreen';
-import UserStateStore from '@/store/userStore';
+
+import { decryptToken } from "@/utils/secureToken";
+import { defaultUserInfo } from "@/types/userData"
+import { UserBasicInfoStore } from '@/store/userStore';
 
 export interface SidebarProps extends PropsWithChildren {
   routes: IRoute[];
@@ -68,11 +71,12 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
   const navbarIcon = useColorModeValue('#2b8fff', 'navy.800');
   const iconColor = useColorModeValue('white', 'navy.800');
 
-  const setLoginUserInfo = UserStateStore((state) => state.setUserState);
-  const { ...userBasicInfo } = UserStateStore(state => state);
-
-
-
+  const userStoreInfo = UserBasicInfoStore(state => state.userStoreInfo);
+  const userBaseInfo = React.useMemo(() => {
+    const deCryptInfo = decryptToken(userStoreInfo)
+    const ret = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ?  JSON.parse(deCryptInfo) : userStoreInfo;
+    return ret;
+  }, [userStoreInfo]);
 
   const onSendHistoryButton = async() => {
     setOpenHistoryDrawer(false);
@@ -132,7 +136,7 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
     <Flex alignItems="center">
       <Flex w="max-content" h="max-content"  alignItems={'center'}>
         {
-          ( userBasicInfo?.isState && !functions.isEmpty(userBasicInfo?.userId) ) 
+          ( userBaseInfo?.isState && !functions.isEmpty(userBaseInfo?.userId) ) 
           ?
           <Box onClick={() => onSendHistoryButton()} alignItems={'center'} display={'flex'} cursor={'pointer'}>
             <Icon as={MdOutlineMenu} width="24px" height="24px" color={iconColor} />
@@ -146,50 +150,55 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
         </Box>
         }
       </Flex>
-      <Drawer
-        isOpen={isOpenHistoryDrawer}
-        onClose={()=>fn_close_drawer_history()}
-        placement={
-          isWindowAvailable() && document.documentElement.dir === 'rtl'
-            ? 'right'
-            : 'left'
-        }
-      >
-        <DrawerOverlay bg={ isOpenSetupModal ?  "transparent" :  "rgba(0,0,0,0.6)"   }/>
-        <DrawerContent
-          w="100%"
-          maxW={`${mConstants.modalMaxWidth}px`} 
-          bg={sidebarBackgroundColor}
+      { 
+        isOpenHistoryDrawer && (
+        <Drawer
+          isOpen={isOpenHistoryDrawer}
+          onClose={()=>fn_close_drawer_history()}
+          placement={
+            isWindowAvailable() && document.documentElement.dir === 'rtl'
+              ? 'right'
+              : 'left'
+          }
         >
-          <DrawerCloseButton
-            zIndex="3"
-            onClick={()=>fn_close_drawer_history()}
-            _focus={{ boxShadow: 'none' }}
-            _hover={{ boxShadow: 'none' }}
-          />
-          <DrawerBody 
+          <DrawerOverlay bg={ isOpenSetupModal ?  "transparent" :  "rgba(0,0,0,0.6)"   }/>
+          <DrawerContent
             w="100%"
             maxW={`${mConstants.modalMaxWidth}px`} 
-            px="0rem" 
-            pt="20px"
+            bg={sidebarBackgroundColor}
           >
-            {/* <Scrollbars
-              universal={true}
-              autoHide
-              renderTrackVertical={renderTrack}
-              renderThumbVertical={renderThumb}
-              renderView={renderView}
-            > */}
-              <Content 
-                routes={routes} 
-                onParentClose={()=>fn_close_drawer_history()}
-              />
-            {/* </Scrollbars> */}
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
+            <DrawerCloseButton
+              zIndex="3"
+              onClick={()=>fn_close_drawer_history()}
+              _focus={{ boxShadow: 'none' }}
+              _hover={{ boxShadow: 'none' }}
+            />
+            <DrawerBody 
+              w="100%"
+              maxW={`${mConstants.modalMaxWidth}px`} 
+              px="0rem" 
+              pt="20px"
+            >
+              {/* <Scrollbars
+                universal={true}
+                autoHide
+                renderTrackVertical={renderTrack}
+                renderThumbVertical={renderThumb}
+                renderView={renderView}
+              > */}
+                <Content 
+                  routes={routes} 
+                  onParentClose={()=>fn_close_drawer_history()}
+                />
+              {/* </Scrollbars> */}
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
+        )
+      }
 
       {
+        isOpenLoginModal && (
         <Drawer
           isOpen={isOpenLoginModal}
           onClose={ () => fn_close_modal_user_login()}
@@ -229,7 +238,8 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
             </DrawerBody>
             </DrawerContent>
           </Drawer>
-        }
+        )
+      }
     </Flex>
   );
 }

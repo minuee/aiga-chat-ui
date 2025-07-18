@@ -1,13 +1,9 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Box,Flex,Button,useColorModeValue,Text,SkeletonCircle,SkeletonText,Divider,Icon,Popover,PopoverTrigger,PopoverContent,useToast,PopoverArrow,PopoverBody,SimpleGrid,Stack } from '@chakra-ui/react';
+import { Box,Flex,useColorModeValue,SkeletonCircle,SkeletonText,Divider,Icon,Popover,PopoverTrigger,PopoverContent,useToast,PopoverArrow,PopoverBody,SimpleGrid,Stack } from '@chakra-ui/react';
 
 import * as DoctorService from "@/services/doctor/index";
-import * as history from '@/utils/history';
-import { usePathname, useRouter } from 'next/navigation';
-import * as mCookie from "@/utils/cookies";
-import Image from 'next/image';
 import { MdInfoOutline } from 'react-icons/md';
 import ProgressBar from '@/components/fields/ProgressBar';
 import NewRating from "@/components/icons/newStar"
@@ -17,7 +13,6 @@ import { IconNotice } from '@/components/icons/svgIcons';
 import mConstants from '@/utils/constants';
 import ReviewItem from "@/components/text/ReviewItem";
 import CustomText, { CustomTextBold700 } from "@/components/text/CustomText";
-import { ModalDoctorReviewStore,ModalDoctorRequestStore,DoctorFromListStore } from '@/store/modalStore';
 
 export interface DoctorModalProps extends PropsWithChildren {
   doctorID : any;
@@ -28,13 +23,9 @@ export interface DoctorModalProps extends PropsWithChildren {
 function DoctorReview( props: DoctorModalProps ) {
 
   const { doctorID,doctorBasicData } = props;
-  const pathname = usePathname();
-  const router = useRouter();
-  const pathnameRef = React.useRef(pathname);
   const toast = useToast();
   const [isLoading, setIsLoading] = React.useState(true);
   const [reviewListData, setReviewListData] = React.useState<any>(null);
-  const [reviewData, setReviewData] = React.useState<any>(null);
   const [aigaReviewAverage, setAigaReviewAverage] = React.useState<any>({
     kindness_avg: 0,
     explaination_avg:  0,
@@ -48,9 +39,7 @@ function DoctorReview( props: DoctorModalProps ) {
     satisfaction_avg:  0,
     recommand_avg:  0,
   });
-  const setIsOpenReview = ModalDoctorReviewStore((state) => state.setModalState);
-  const { isFromDoctorDepth2 } = DoctorFromListStore(state => state);
-  const setFromDoctorDepth2 = DoctorFromListStore((state) => state.setFromDoctorDepth2);
+
   const skeletonColor = useColorModeValue('white', 'navy.700');
   const textColor2 = useColorModeValue('#7F879B', 'white');
   const bgColor = useColorModeValue("#FAFBFD",'navy.700');
@@ -220,21 +209,6 @@ function DoctorReview( props: DoctorModalProps ) {
 
   const onSendDoctorReviewButton = async( data:any) => {
     props.openParentReviewData(data)
-    /* try{
-      props.openParentReviewData(data)
-    }catch{
-      if ( !functions.isEmpty(data)) setReviewData(data)
-      if ( isFromDoctorDepth2 ) {//true이면 list > detail
-        history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_3_2}`);
-        mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_3_2}`)   
-        setIsOpenReview(true);
-      }else{ //fasle detail
-        history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_3}`);
-        mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_3}`)   
-        setIsOpenReview(true);
-      }
-    } */
-   
   }
 
   if ( isLoading ) {

@@ -5,14 +5,15 @@ import { Box,Flex,Button,Icon,SkeletonCircle,SkeletonText,Checkbox,Modal,ModalOv
 import mConstants from '@/utils/constants';
 import Image from 'next/image';
 import ImageJoinComplete from "@/assets/images/img-joinComplete.png";
-import functions from "@/utils/functions";
 import * as MemberService from "@/services/member/index";
 import YakwanContent from '@/components/modal/YakwanContent';
 import PolicyContent from '@/components/modal/PolicyContent'
 import MingamContent from '@/components/modal/MingamContent'
 
 import { ModalSignupFinishStoreStore,ModalMypagePolicyStore,ModalMypageYakwanStore,ModalMypageMingamStore } from '@/store/modalStore';
-import UserStateStore from '@/store/userStore';
+import { encryptToken } from "@/utils/secureToken";
+import { defaultUserInfo } from "@/types/userData"
+import { UserBasicInfoStore } from '@/store/userStore';
 import NewChatStateStore from '@/store/newChatStore';
 import ConfigInfoStore from '@/store/configStore';
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
@@ -21,7 +22,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
 import NextImage from 'next/legacy/image';
 import ProcessingBar from "@/assets/icons/processing2x.gif";
-import { MdOutlineClose,MdArrowBack,MdLogout } from 'react-icons/md';
+import { MdOutlineClose,MdArrowBack } from 'react-icons/md';
 
 export interface SignupAgreeeModalProps extends PropsWithChildren {
   userInfo : any;
@@ -51,8 +52,10 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
   const { isOpenMingamModal } = ModalMypageMingamStore(state => state);
   const setIsOpenMingamModal = ModalMypageMingamStore((state) => state.setIsOpenMingamModal);
 
-  const setLoginUserInfo = UserStateStore((state) => state.setUserState);
-  const { nickName, ...userBasicInfo } = UserStateStore(state => state);
+  const setLoginUserInfo = UserBasicInfoStore((state) => state.setUserBasicInfo);
+  const userStoreInfo = UserBasicInfoStore(state => state.userStoreInfo);
+  const userBaseInfo = userStoreInfo ?? defaultUserInfo;
+  const nickName = userBaseInfo?.nickName;
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
   const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
 
@@ -86,13 +89,15 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
       if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
         setIsOpenSignupFinishModal(true);
         setReceiving(false);
-        setLoginUserInfo({
-          ...userBasicInfo,
+        const userSaveData = {
+          ...userBaseInfo,
           isState : true, //isState
           isGuest : false,
           agreement : res.data?.user.agreement,
           updatedDate : res.data?.user.updateAt,
-        });
+        }
+        const userSaveDataEncrypt = await encryptToken(JSON.stringify(userSaveData))
+        setLoginUserInfo(userSaveDataEncrypt);
       }          
     }catch(e:any){
       setReceiving(false)
@@ -103,13 +108,15 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
   const onHandleComplete = async() => {
     setIsOpenSignupFinishModal(false);
     onHandleNextFinish();
-    setLoginUserInfo({
-      ...userBasicInfo,
+    const userSaveData = {
+      ...userBaseInfo,
       isState : true, //isState
       isGuest : false,
       userMaxToken : userMaxToken,//userMaxToken
       userRetryLimitSec :userRetryLimitSec//userRetryLimitSec
-    });
+    }
+    const userSaveDataEncrypt = await encryptToken(JSON.stringify(userSaveData))
+    setLoginUserInfo(userSaveDataEncrypt);
     setNewChatOpen(false);
     setTimeout(() => {
       setNewChatOpen(true);

@@ -1,8 +1,7 @@
 import React from 'react';
-import { Flex,Text,Divider,Box,List,ListItem,Icon,Button,useColorModeValue } from '@chakra-ui/react';
-import { MdKeyboardDoubleArrowDown,MdKeyboardDoubleArrowUp } from 'react-icons/md';
+import { Flex,Box,List,ListItem,Icon,Button,useColorModeValue } from '@chakra-ui/react';
 import functions from '@/utils/functions';
-import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import CustomText, { CustomTextBold700 } from "@/components/text/CustomText";
 import { FiChevronDown,FiChevronUp } from "react-icons/fi";
 
 type ListItemScreenProps = {
@@ -80,7 +79,6 @@ const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 ,is
                     </Box>
                 )
             }
-            
         </Flex>
     )
 };

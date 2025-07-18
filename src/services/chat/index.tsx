@@ -1,7 +1,8 @@
 import { api, ApiResponse } from '@/services/api';
 import axios from 'axios';
-import UserStateStore from '@/store/userStore';
-
+import { UserBasicInfoStore } from '@/store/userStore';
+import { decryptToken } from "@/utils/secureToken";
+import { defaultUserInfo } from "@/types/userData"
 
 const logApi = axios.create({
     baseURL: process.env.NEXT_PUBLIC_ADMIN_API_BASE_URL, // 실제 로그 서버 주소로 변경
@@ -117,7 +118,10 @@ export function getChatMessage(session_id: string, msg: string): any {
         const res:any =  api.post(`/chat/${session_id}`,{question : msg},{ timeout : 20000})
             .then((response) => {
                 if ( process.env.NODE_ENV == 'development') {
-                    const { email,userId,isGuest} = UserStateStore.getState();
+                    const { userStoreInfo } = UserBasicInfoStore.getState();
+                    const deCryptInfo = decryptToken(userStoreInfo)
+                    const decryptedUser = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ?  JSON.parse(deCryptInfo) : userStoreInfo;
+                    const { email,userId,isGuest } = decryptedUser || {};
                     const userAgent = getClientEnvInfo()
                     const errorPayload = {
                         session_id,
@@ -133,7 +137,10 @@ export function getChatMessage(session_id: string, msg: string): any {
                 }
                 return response?.data;
             }).catch((error) => {
-                const { email,userId,isGuest} = UserStateStore.getState();
+                const { userStoreInfo } = UserBasicInfoStore.getState();
+                const deCryptInfo = decryptToken(userStoreInfo)
+                const decryptedUser = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ?  JSON.parse(deCryptInfo) : userStoreInfo;
+                const { email,userId,isGuest } = decryptedUser || {};
                 const userAgent = getClientEnvInfo()
                 const errorPayload = {
                     session_id,
@@ -172,7 +179,10 @@ export function getChatMessage(session_id: string, msg: string): any {
 
 export function saveErrorLog(session_id: string, msg: string,fromMessage:string): any {
     try{
-        const { email,userId,isGuest} = UserStateStore.getState();
+        const { userStoreInfo } = UserBasicInfoStore.getState();
+        const deCryptInfo = decryptToken(userStoreInfo)
+        const decryptedUser = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ?  JSON.parse(deCryptInfo) : userStoreInfo;
+        const { email,userId,isGuest } = decryptedUser || {};
         const userAgent = getClientEnvInfo()
         const errorPayload = {
             session_id,

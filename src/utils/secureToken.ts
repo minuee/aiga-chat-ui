@@ -17,6 +17,7 @@ function xor(data: Uint8Array, key: Uint8Array): Uint8Array {
 }
 
 export function encryptToken(token: string,): string {
+    if ( typeof token !==  'string' ) return token;
     const SECRET_KEY = process.env.NEXT_PUBLIC_AUTH_SECRET ?  process.env.NEXT_PUBLIC_AUTH_SECRET : "";
     const key = deriveKey(SECRET_KEY);
     const data = utf8ToBytes(token);
@@ -25,6 +26,7 @@ export function encryptToken(token: string,): string {
 }
 
 export function decryptToken(token: string): string {
+    if ( typeof token !==  'string' ) return token;
     const SECRET_KEY = process.env.NEXT_PUBLIC_AUTH_SECRET ?  process.env.NEXT_PUBLIC_AUTH_SECRET : "";
     const key = deriveKey(SECRET_KEY);
     const data = xor(hexToBytes(token), key);

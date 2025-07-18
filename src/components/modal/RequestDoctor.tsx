@@ -1,7 +1,7 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Textarea,useColorModeValue,useToast } from '@chakra-ui/react';
+import { Box,Flex,Button,SkeletonCircle,SkeletonText,Textarea,useColorModeValue,useToast } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import functions from '@/utils/functions';
 import mConstants from '@/utils/constants';
@@ -28,7 +28,8 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
   const toast = useToast();
 
   const skeletonColor = useColorModeValue('white', 'gray.700');
-  const textColor = useColorModeValue("#7F879B",'white')
+  const textColor = useColorModeValue("#7F879B",'white');
+  const textColor2 = useColorModeValue("#212127","white")
   const [inputs, setInputs] = React.useState<any>({
     doctor_id: '',
     relation: null,
@@ -186,10 +187,10 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
               <CustomTextBold700 fontSize={'13px'} color={textColor} >안내 사항</CustomTextBold700>
             </Box>
             <Box flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} padding={'0 10px'}>
-              <CustomTextBold400 fontSize={'13px'} color="#7F879B" >• 산업안전보건법에 따라 고객 응대 근로자 보호조치를 시행하고 있으며 모든 문의는 기록으로 남습니다.</CustomTextBold400>
+              <CustomTextBold400 fontSize={'13px'} color={textColor} >• 산업안전보건법에 따라 고객 응대 근로자 보호조치를 시행하고 있으며 모든 문의는 기록으로 남습니다.</CustomTextBold400>
             </Box>
             <Box flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} padding={'0 10px'}>
-              <CustomTextBold400 fontSize={'13px'} color="#7F879B" >• 본 요청은 비회원도 개인정보 제공 없이 제출하실 수 있으므로 이름, 연락처, 주민등록 번호 등 개인을 식별 할 수 있는 정보는 입력하지 마십시오.</CustomTextBold400>
+              <CustomTextBold400 fontSize={'13px'} color={textColor} >• 본 요청은 비회원도 개인정보 제공 없이 제출하실 수 있으므로 이름, 연락처, 주민등록 번호 등 개인을 식별 할 수 있는 정보는 입력하지 마십시오.</CustomTextBold400>
             </Box>
           </Flex>
         </Flex>
@@ -202,18 +203,13 @@ function DoctorRequestModal(props: DoctorRequestModalProps) {
               bodyContent={
                 <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} py="20px">
                   <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"120px"}>
-                    <NextImage
-                      width="106"
-                      height="90"
-                      src={iconAlertModify}
-                      alt={'doctor1'}
-                    />
+                    <NextImage width="106" height="90" src={iconAlertModify} alt={'doctor1'} />
                   </Box>
                   <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"50px"}>
-                    <CustomTextBold700 fontSize={'18px'} color="#212127">소중한 의견 감사합니다!</CustomTextBold700>
+                    <CustomTextBold700 fontSize={'18px'} color={textColor2}>소중한 의견 감사합니다!</CustomTextBold700>
                   </Box>
                   <Box width={"100%"}  display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={"60px"}>
-                    <CustomText fontSize={'17px'} color="#212127">의사 정보 수정 요청이 성공적으로 제출되었습니다. 검토 후 반영될 예정입니다.</CustomText>
+                    <CustomText fontSize={'17px'} color={textColor2}>의사 정보 수정 요청이 성공적으로 제출되었습니다. 검토 후 반영될 예정입니다.</CustomText>
                   </Box>
                 </Flex>
               }

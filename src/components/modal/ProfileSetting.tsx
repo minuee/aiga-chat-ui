@@ -1,7 +1,7 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Icon,Box,Flex,Button,Text,FormControl,FormLabel,Input,useToast,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,useColorModeValue } from '@chakra-ui/react';
+import { Icon,Box,Flex,Button,FormControl,FormLabel,Input,useToast,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,useColorModeValue } from '@chakra-ui/react';
 import mConstants from '@/utils/constants';
 import RequestForm from '@/components/modal/RequestForm';
 import EntireForm from '@/components/modal/EntireForm';
@@ -16,7 +16,9 @@ import * as RequestService from "@/services/request/index";
 import * as MemberService from "@/services/member/index";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 //로그인 전역상태
-import UserStateStore, { PWATokenStore } from '@/store/userStore';
+import { decryptToken,encryptToken } from "@/utils/secureToken";
+import { defaultUserInfo } from "@/types/userData"
+import { PWATokenStore,UserBasicInfoStore } from '@/store/userStore';
 import NewChatStateStore from '@/store/newChatStore';
 import ConfigInfoStore from '@/store/configStore';
 import { ModalMypageNoticeStore,ModalMypageRequestStore,ModalMypageEntireStore,ModalMypagePolicyStore,ModalMypageYakwanStore,ModalMypageNoticeDetailStore } from '@/store/modalStore';
@@ -41,8 +43,14 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
-  const setLoginUserInfo = UserStateStore((state) => state.setUserState);
-  const { ...userBaseInfo } = UserStateStore(state => state);
+  const setLoginUserInfo = UserBasicInfoStore((state) => state.setUserBasicInfo);
+  const resetUserState = UserBasicInfoStore((state) => state.resetUserBasicInfo);
+  const userStoreInfo = UserBasicInfoStore(state => state.userStoreInfo);
+  const userBaseInfo = React.useMemo(() => {
+    const deCryptInfo = decryptToken(userStoreInfo)
+    const ret = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ?  JSON.parse(deCryptInfo) : userStoreInfo;
+    return ret;
+  }, [userStoreInfo]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isReceiving, setReceiving] = React.useState(false);
   const [isPWAPermission, setPWAPermission] = React.useState(false); // 알림 권한 여부
@@ -67,7 +75,6 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   const userPWAPermission = PWATokenStore((state) => state.userPWAPermission);
   const userPWAToken = PWATokenStore((state) => state.userPWAToken);
   const setUserPWATokenInfo = PWATokenStore((state) => state.setUserPWATokenInfo);
-  const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
 
   const reviewBtnRef = React.useRef<any>();
   const entireBtnRef = React.useRef<any>();
@@ -109,6 +116,21 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
 
   const onHandleSave = async() => {
     try{
+
+      if ( userBaseInfo?.nickName ==  inputs?.nickName ) {
+        toast({
+          title: "닉네임이 동일합니다.",
+          position: 'top-right',
+          status: 'success',
+          containerStyle: {
+            color: '#ffffff',
+          },
+          isClosable: true,
+          duration:1500
+        });
+        return;
+      }
+
       const regex = mConstants.nickNameAbleString;
       if (!regex.test(inputs.nickName)) {
         toast({
@@ -128,10 +150,12 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
         const res:any = await MemberService.setNickname(inputs.nickName);
         if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
           setIsOpenMypageRequestModal(false);
-          setLoginUserInfo({
+          const userSaveData = {
             ...userBaseInfo,
             nickName : inputs.nickName
-          })
+          }
+          const userSaveDataEncrypt = await encryptToken(JSON.stringify(userSaveData))
+          setLoginUserInfo(userSaveDataEncrypt)
           setReceiving(false);
           toast({
             title: res?.message || "정상적으로 변경 되었습니다.",
@@ -210,14 +234,18 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
   }
 
   const onHandleLogout = async() => {
-    if ( process.env.NODE_ENV == 'development') {
-      onHandleLogoutAction(); 
+    /* if ( process.env.NODE_ENV == 'development') {
+      const LoginUserToken =  mCookie.getCookie('LoginUser');
+      const accessToken =  decryptToken(LoginUserToken)
+      console.log("accessToken",JSON.parse(accessToken))
+      //onHandleLogoutAction(); 
       return;
-    }
+    } */
     try{
       if ( !functions.isEmpty(userBaseInfo?.userId) ) {
         setReceiving(true)
         const res:any = await MemberService.setMemberLogout();
+        
         if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
           onHandleLogoutAction(); 
         }else{
@@ -225,16 +253,8 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
             setReceiving(false);
             onHandleLogoutAction(); 
           }else{
-            toast({
-              title: res?.message || "처리중 오류가 발생하였습니다.",
-              position: 'top-right',
-              status: 'error',
-              containerStyle: {
-                color: '#ffffff',
-              },
-              isClosable: true,
-              duration:1500
-            });
+            setReceiving(false);
+            onHandleLogoutAction(); 
           }
         }        
       }
@@ -250,22 +270,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     1. 세션제거
     2. Global State null 처리
     */
-    setLoginUserInfo({
-      isState : false, //isState
-      sns_id: '', //sns_id
-      email : '', //email
-      profileImage : '', //profileImage
-      agreement : false, //agreement
-      registDate : '', //registDate
-      unregistDate : '',//unregistDate
-      updatedDate : '',//updatedDate
-      userId :  "Guest",//userId
-      isGuest : true, //isGuest
-      joinType : '',//joinType
-      nickName : '',//nickName
-      userMaxToken :guestMaxToken,//userMaxToken
-      userRetryLimitSec : guestRetryLimitSec//userRetryLimitSec
-    });
+    resetUserState(); // ✅ 전체 상태 초기화
     mCookie.removeCookie(mConstants.apiTokenName)
     setIsOpenLogoutModal(false)
     setLogout();

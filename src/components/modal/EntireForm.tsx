@@ -1,11 +1,11 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import { Box,Flex,Button,Text,SkeletonCircle,SkeletonText,Checkbox,useColorModeValue} from '@chakra-ui/react';
+import { Box,Flex,Button,SkeletonCircle,Checkbox,useColorModeValue} from '@chakra-ui/react';
 import mConstants from '@/utils/constants';
 import Image from 'next/image';
 import ImageEntire from "@/assets/images/img-entire.png";
-import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import CustomText, { CustomTextBold700 } from "@/components/text/CustomText";
 
 export interface EntireModalProps extends PropsWithChildren {
   isOpen : boolean;
@@ -36,7 +36,6 @@ function EntireModal(props: EntireModalProps) {
     return (
       <Box padding='6' boxShadow='lg' bg={skeletonColor}>
         <SkeletonCircle size='10' />
-        <SkeletonText mt='4' noOfLines={4} spacing='4' skeletonHeight='2' />
       </Box>
     )
   }else{

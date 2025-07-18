@@ -1,18 +1,16 @@
 'use client';
 import React, { PropsWithChildren } from 'react';
 // chakra imports
-import {Flex,Box,useColorModeValue,SkeletonText,SkeletonCircle,Text } from '@chakra-ui/react';
+import {Flex,Box,useColorModeValue,SkeletonText } from '@chakra-ui/react';
 import * as history from '@/utils/history';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import * as CommonService from "@/services/common/index";
 import mConstants from '@/utils/constants';
 import * as mCookie from "@/utils/cookies";
 import { ModalMypageNoticeDetailStore } from '@/store/modalStore';
-import Image from 'next/image';
 import { IconNotice } from '@/components/icons/svgIcons';
-//import IconNotice from "@/assets/icons/img-notice.png";
 import NoticeDetail from "@/components/modal/NoticeDetail";
-import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import CustomText, { CustomTextBold700 } from "@/components/text/CustomText";
 
 export interface NoticeListModalProps extends PropsWithChildren {
   isOpen : boolean;
@@ -23,10 +21,8 @@ function NoticeListModal(props: NoticeListModalProps) {
   
   const { isOpen, setClose } = props;
   const pathname = usePathname();
-  const router = useRouter();
   const pathnameRef = React.useRef(pathname);
   const [isLoading, setIsLoading] = React.useState(true);
-  const [isViewDetailMode, setIsViewDetailMode] = React.useState(false);
   const [noticeList, setNoticeList] = React.useState<any>([]);
   const [selectNoticeId, setSelectNoticeId] = React.useState(null);
 
@@ -57,7 +53,6 @@ function NoticeListModal(props: NoticeListModalProps) {
       }      
       setIsLoading(false)
     }catch(e:any){
-      console.log("error of getNewSessionID",e)
       setIsLoading(false)
     }
   }

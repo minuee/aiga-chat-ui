@@ -3,14 +3,10 @@ import React, { PropsWithChildren } from 'react';
 import Image from "next/image";
 // chakra imports
 import { Box,Flex,Stack,useColorModeValue,useToast } from '@chakra-ui/react';
-import UserStateStore from '@/store/userStore';
-import ConfigInfoStore from '@/store/configStore';
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 
 import BaseImage from "@/assets/images/img-login.png";
 import { IconKakao,IconNaver } from '@/components/icons/svgIcons';
-import functions from '@/utils/functions';
-import * as mCookie from "@/utils/cookies";
 
 export interface LoginScreenProps extends PropsWithChildren {
   onClickJoin  : (str:string) => void;
@@ -24,8 +20,6 @@ function LoginScreen(props: LoginScreenProps) {
   const [showPassword, setShowPassword] = React.useState(false);
   const toast = useToast();
 
-  const setLoginUserInfo = UserStateStore((state) => state.setUserState);
-  const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
   const fontColor = useColorModeValue('#17191D', 'white');
   const fontColor2 = useColorModeValue('#7F879B', 'white');
   const handleShowClick = () => setShowPassword(!showPassword);

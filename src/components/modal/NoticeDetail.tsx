@@ -2,14 +2,14 @@
 import React, { PropsWithChildren } from 'react';
 
 // chakra imports
-import { Box,Text,Flex,Stack,useColorModeValue,} from '@chakra-ui/react';
+import { Box,Flex,Stack,useColorModeValue,} from '@chakra-ui/react';
 import { SkeletonText } from '@chakra-ui/react'
-import mConstants from '@/utils/constants';
-import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import CustomText, { CustomTextBold700 } from "@/components/text/CustomText";
 
 export interface NoticerDetailModalProps extends PropsWithChildren {
   noticeID : any;
 }
+
 function NoticerDetailModal(props: NoticerDetailModalProps) {
   const { noticeID  } = props;
   const [ isLoading, setLoading] = React.useState(true);
