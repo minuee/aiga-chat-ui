@@ -288,9 +288,9 @@ function SidebarContent(props: SidebarContent) {
       {
         isLoading
         ?
-        <Stack direction="column" mb="auto"  width={'100%'}  overflowY={'auto'} minHeight={'calc(100vh - 140px'}>
-          <Flex flexDirection={'column'} alignItems={'center'}  width={'100%'} pb="100px" overflowY={'auto'}>
-            <Box padding='6' boxShadow='lg' bg={skeletonColor}>
+        <Stack direction="column" mb="auto"  width={'100%'} minHeight={'calc(100vh - 140px'}>
+          <Flex flexDirection={'column'} alignItems={'center'}  width={'100%'} justifyContent={'center'}>
+            <Box padding='6' boxShadow='lg' bg={skeletonColor} width={'96%'}>
               <SkeletonText mt='3' noOfLines={4} spacing='4' skeletonHeight='5' />
             </Box>
           </Flex>
