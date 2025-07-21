@@ -324,7 +324,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
             }
           </Box>
         </Stack>
-        <Box  justifyContent={'flex-end'} display={doctorList?.length == 0 ? 'none' : isLocalTypeDone ? "flex" : 'none'} mt={'10px'}>
+        <Box  justifyContent={'flex-end'} display={doctorList?.length < 4  ? 'none' : isLocalTypeDone ? "flex" : 'none'} mt={'10px'}>
           <Box 
             display="flex" justifyContent={'center'} alignItems={'center'} bg={"#DFF5ED"} borderRadius={"4px"} height={"32px"} padding="0 8px 0 20px" cursor={'pointer'}
             onClick={() => onSendDoctorListButton(selectChatId)} 

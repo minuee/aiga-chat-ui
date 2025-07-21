@@ -22,15 +22,15 @@ export default function TokenGuard() {
 
     const onHandleLogoutAction = () => {
         toast({
-            title: "비정상적인 로그인 상태입니다. 로그아웃되었습니다.",
-            position: 'top-right',
-            status: 'error',
-            containerStyle: {
-              color: '#ffffff',
-            },
-            isClosable: true,
-            duration:1500
-          });
+          title: "비정상적인 로그인 상태입니다. 로그아웃되었습니다.",
+          position: 'top-right',
+          status: 'error',
+          containerStyle: {
+            color: '#ffffff',
+          },
+          isClosable: true,
+          duration:1500
+        });
         /* 여기서 전체 로그아웃을 처리한다 
         1. 세션제거
         2. Global State null 처리

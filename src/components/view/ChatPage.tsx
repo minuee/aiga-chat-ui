@@ -15,7 +15,7 @@ import { defaultUserInfo } from "@/types/userData"
 import { UserBasicInfoStore } from '@/store/userStore';
 import ConfigInfoStore,{ GlobalStateStore } from '@/store/configStore';
 import GlobalDisable from "@/components/view/GlobalDisable";
-
+import TokenGuard from '@/components/apiModal/TokenGuard';
 import * as CommonService from "@/services/common/index";
 import functions from '@/utils/functions';
 import useDetectKeyboardOpen from "use-detect-keyboard-open";
@@ -202,6 +202,12 @@ export default function Index() {
   if ( isMobileOnly ) {
     return (
       <Box height={`${mobileContainerHeight}px`} overflow={isMobileSafari ? 'auto' : 'hidden'} position={'relative'} ref={mobileScrollRef}>
+        {
+          !functions.isEmpty(userBaseInfo?.email) && (
+            <TokenGuard />
+          )
+        }
+       
         { ( !hasMounted || isLoading ) && ( 
           <Flex 
             bg={themeColor} 

@@ -80,6 +80,7 @@ export default function ChatBot() {
   const [isLoading, setIsLoading] = useState(true);
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
   
+  const resetUserBasicInfo = UserBasicInfoStore((state) => state.resetUserBasicInfo);
   const userStoreInfo = UserBasicInfoStore(state => state.userStoreInfo);
   const userBaseInfo = useMemo(() => {
     const deCryptInfo = decryptToken(userStoreInfo)
@@ -194,22 +195,17 @@ export default function ChatBot() {
     setIn24UsedToken(0)
   }, [userBaseInfo.isState]);
 
+ 
   useEffect(() => {
     if (!alreadyInitialized.current) {
-      console.log('🔥 최초 1회만 실행');
-      if(!functions.isEmpty(outputCode)) {
-        setRealOutputCode(outputCode)
-      }
+      const loadData =  CurrentDialogStore.getState().messageData;
+      console.log('🔥 최초 1회만 실행',loadData?.length);
+      setRealOutputCode(loadData)
       firstClear();
-      //getNewSessionID(); // ✅ 여기서만 실행됨
       alreadyInitialized.current = true;
-      
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 60);
+      setIsLoading(false);
     }
   }, []);
-
 
   const getNewSessionID =  async() => {
     try{
@@ -246,7 +242,6 @@ export default function ChatBot() {
   /* 토큰 만료를 체크 */
   useEffect(() => {
    
-    
     if ( in24UsedToken > 0 ) { 
       const nowTimeStamp = functions.getKSTUnixTimestamp();
       if ( isNewChat && realOutputCode.length > 0 ) {
@@ -676,6 +671,21 @@ export default function ChatBot() {
             }else{
               call_fn_error_message(inputCodeText,chat_sessinn_id,"토큰 만료 체크 오류");
             }
+          }else if ( questionResult?.message?.statusCode == '401' && !functions.isEmpty(userBaseInfo?.email)) { // 권한없음
+            const fromMessage = "비정상적인 로그인 상태입니다. 로그아웃되었습니다."
+            toast({
+              title: fromMessage,
+              position: 'top-right',
+              status: 'error',
+              containerStyle: {
+                color: '#ffffff',
+              },
+              isClosable: true,
+              duration:1500
+            });
+            call_fn_error_message(inputCodeText,chat_sessinn_id,fromMessage)
+            firstForceStep();
+            resetUserBasicInfo();
           }else{
             call_fn_error_message(inputCodeText,chat_sessinn_id,"not")
           }

@@ -24,7 +24,7 @@ import MotionWelcome,{MotionWelcomeImage}  from '@/components/msgType/MotionWelc
 import Processing  from '@/components/msgType/Processing';
 import SkeletonDefaultText from "@/components/fields/LoadingBar";
 import CustomText, { CustomTextBold700 } from "@/components/text/CustomText";
-import debounce from 'lodash/debounce'
+import debounce from 'lodash/debounce';
 
 import { useTranslations } from 'next-intl';
 import LoadingBar from "@/assets/icons/loading.gif";
@@ -44,6 +44,7 @@ import { UserBasicInfoStore } from '@/store/userStore';
 import * as ChatService from "@/services/chat/index";
 import { SendButtonOff,SendButtonOn } from '@/components/icons/svgIcons';
 import useDetectKeyboardOpen from "use-detect-keyboard-open";
+import { isEmpty } from "lodash";
 
 type ChatBotMobileProps = {
   mobileContentScrollHeight: number;
@@ -91,6 +92,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   const [isLoading, setIsLoading] = useState(true);
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
   
+  const resetUserBasicInfo = UserBasicInfoStore((state) => state.resetUserBasicInfo);
   const userStoreInfo = UserBasicInfoStore(state => state.userStoreInfo);
   const userBaseInfo = useMemo(() => {
     const deCryptInfo = decryptToken(userStoreInfo)
@@ -453,17 +455,12 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
 
   useEffect(() => {
     if (!alreadyInitialized.current) {
-      console.log('🔥 최초 1회만 실행');
-      if(!functions.isEmpty(outputCode)) {
-        setRealOutputCode(outputCode)
-      }
+      const loadData =  CurrentDialogStore.getState().messageData;
+      console.log('🔥 최초 1회만 실행',loadData?.length);
+      setRealOutputCode(loadData)
       firstClear();
-      //getNewSessionID(); // ✅ 여기서만 실행됨
       alreadyInitialized.current = true;
-      
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 60);
+      setIsLoading(false);
     }
   }, []);
 
@@ -877,6 +874,22 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
             }else{
                call_fn_error_message(inputCodeText,chat_sessinn_id,"토큰 만료 체크 오류");
             }
+          }else if ( questionResult?.message?.statusCode == '401' && !functions.isEmpty(userBaseInfo?.email)) { // 권한없음
+            const fromMessage = "비정상적인 로그인 상태입니다. 로그아웃되었습니다."
+            toast({
+              title: fromMessage,
+              position: 'top-right',
+              status: 'error',
+              containerStyle: {
+                color: '#ffffff',
+              },
+              isClosable: true,
+              duration:1500
+            });
+            call_fn_error_message(inputCodeText,chat_sessinn_id,fromMessage)
+            firstForceStep();
+            resetUserBasicInfo();
+            
           }else{
             call_fn_error_message(inputCodeText,chat_sessinn_id,"not")
           }
