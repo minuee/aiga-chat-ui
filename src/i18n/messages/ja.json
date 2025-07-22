@@ -6,7 +6,7 @@
     "Messages": {
         "welcome": "안녕하세요",
         "welcome_msg": "ようこそ. {app_name}でございます.どなたがお悩みですか?",
-        "notfound_msg" : "恐れ入れますがページを見つかりません",
+        "notfound_msg" : "恐れ入りますがページを見つかりません",
         "gotohome" : "ホームへ戻る"
     },
     "BrandPage" : {

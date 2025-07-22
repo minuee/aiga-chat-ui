@@ -120,7 +120,7 @@ function DoctorModal(props: DoctorModalProps) {
     if ( !functions.isEmpty(selected_doctor?.paper)) {
       setPaperList(selected_doctor?.paper)
     }
-  
+    setIsLoading(false);
     setTimeout(() => {
       setIsLoading(false);
     }, 60);

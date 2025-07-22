@@ -134,7 +134,6 @@ function SidebarContent(props: SidebarContent) {
         if ( chatSessionId == session_id ) {
           setTimeout(() => {
             onHandleNewChat(false)
-
           },300)
         }
       }          
@@ -179,7 +178,6 @@ function SidebarContent(props: SidebarContent) {
           })
         }
       })
-
       setOldHistoryData({
         session_id : data?.session_id,
         session_title : data?.title,

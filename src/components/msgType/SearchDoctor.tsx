@@ -245,7 +245,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
           minWidth={'100%'} width={'auto'} minHeight={"60px"} position={'relative'}
           sx={{
             '&::after': {
-              content: ( showGradient && doctorList?.length > 4 ) ? '""' : 'none', position: 'absolute', top:0,right: 0,width: '200px',height: '100%',maxHeight : "250px",
+              content: ( isLocalTypeDone && showGradient && doctorList?.length > 4 ) ? '""' : 'none', position: 'absolute', top:0,right: 0,width: '200px',height: '100%',maxHeight : "250px",
               background:  isDark ? 'linear-gradient(to right, rgba(26, 54, 93, 0) 0%, rgba(26, 54, 93, 1) 100%)' : 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)',
               pointerEvents: 'none', // 클릭 이벤트 방지
             },

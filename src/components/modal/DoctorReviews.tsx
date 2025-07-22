@@ -213,7 +213,7 @@ function DoctorReview( props: DoctorModalProps ) {
 
   if ( isLoading ) {
     return (
-      <Box padding='6' boxShadow='lg' bg={skeletonColor}>
+      <Box padding='0' boxShadow='lg' bg={skeletonColor}>
         <SkeletonCircle size='10' />
         <SkeletonText mt='4' noOfLines={4} spacing='4' skeletonHeight='2' />
       </Box>
@@ -222,7 +222,7 @@ function DoctorReview( props: DoctorModalProps ) {
 
     return (
       <>
-        <Flex display={'flex'} flexDirection={'column'} bg={bgColor} minHeight={'100px'} padding={'0 10px'} mt={5}>
+        <Flex display={'flex'} flexDirection={'column'} bg={bgColor} minHeight={'100px'} padding={'0 10px'}>
           <Box display={'flex'} flexDirection={'row'} alignItems={'center'} pt="10px">
             <CustomTextBold700 fontSize={"17px"} color={'#0AA464'}>AI 소셜리뷰</CustomTextBold700>
             <Box display={'flex'} alignItems={'center'} ml={2} cursor={'pointer'}>
@@ -359,7 +359,7 @@ function DoctorReview( props: DoctorModalProps ) {
               </Box>
             </Box>
           </Box>
-          <Stack spacing='2'>
+          <Stack>
             {
             reviewListData?.length == 0 
             ?
