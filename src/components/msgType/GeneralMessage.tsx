@@ -5,18 +5,100 @@ import { useColorModeValue,useColorMode,Flex,Box } from '@chakra-ui/react'
 import TypeAnimation  from'@/components/text/TypeAnimation2';
 import { IconChatAiga,DefaultHeaderLogo} from '@/components/icons/svgIcons';
 
-const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,setIsTypingDone,isLiveChat }: { output: any,isLiveChat:boolean ,isHistory:boolean,setIsTypingDone: () => void;}) {
+function convertLinksAndImagesToHTML(text: string): string {
+  const markdownImageRegex = /!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g;
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const imageRegex = /\.(jpeg|jpg|png|gif|bmp|webp)(\?.*)?$/i;
+
+  const imageUrls: string[] = [];
+
+  // 1. Markdown 이미지 처리
+  let convertedText = text.replace(markdownImageRegex, (_, alt, url) => {
+    const cleanUrl = url.trim();
+    imageUrls.push(cleanUrl);
+    return `<img src="${cleanUrl}" alt="${alt}" style="width:100px; max-height:100px; object-fit:contain; margin: 10px 0; border-radius: 8px; display:block;" cursor:pointer; data-url="${cleanUrl}" />`;
+  });
+
+  // 2. 일반 URL 처리 (단, HTML 태그 내부는 제외)
+  const urls = convertedText.match(urlRegex);
+  const uniqueUrls = Array.from(new Set(urls ?? []));
+
+  convertedText = convertedText.replace(urlRegex, function (rawUrl, _1, offset, fullText) {
+    const cleanUrl = rawUrl.trim();
+  
+    // HTML 태그 내부에 있으면 무시
+    const before = fullText.lastIndexOf('<', offset);
+    const after = fullText.indexOf('>', offset);
+    const isInsideTag = before !== -1 && after !== -1 && before < offset && offset < after;
+  
+    if (isInsideTag) return rawUrl;
+  
+    if (imageUrls.includes(cleanUrl)) return rawUrl;
+  
+    if (imageRegex.test(cleanUrl)) {
+      return `<img src="${cleanUrl}" alt="이미지" style="width:100px; max-height:100px; object-fit:contain; margin: 10px 0; border-radius: 8px; display:block;cursor:pointer;"  data-url="${cleanUrl}" />`;
+    } else {
+      return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer" style="color: #1e90ff;">${cleanUrl}</a>`;
+    }
+  });
+
+  // 3. 사이트 바로가기 링크 (이미지가 하나도 없을 경우에만)
+  const hasImage = imageUrls.length > 0;
+
+  const firstTextLink = uniqueUrls.find((url) => {
+    const cleanUrl = url.trim();
+    return !imageRegex.test(cleanUrl) && !imageUrls.includes(cleanUrl);
+  });
+
+  const shortcut = !hasImage && firstTextLink
+    ? `<br><a href="${firstTextLink.trim()}" target="_blank" rel="noopener noreferrer" style="color: #1e90ff;">☞ 사이트 바로가기</a>`
+    : '';
+
+  return convertedText + shortcut;
+}
+
+
+const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,setIsTypingDone,isLiveChat
+}: { 
+  output: any,isLiveChat:boolean ,isHistory:boolean,setIsTypingDone: () => void;
+}) {
+  const [isLocalTypeDone, setLocalTypeDone] = React.useState(false)
   console.log("GeneralMessage 렌더링"); // ← 디버깅용
   const { colorMode, toggleColorMode } = useColorMode();
   const bgSystemColor = useColorModeValue('#F4F6FA', 'navy.600');
   const previousOutputRef = React.useRef<string | null>(null); // 이전 output 값을 저장
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+
 
   React.useEffect(() => {
     previousOutputRef.current =  output; // output이 변경될 때마다 이전 값을 업데이트
+    if ( previousOutputRef.current == null) {
+      setLocalTypeDone(false)
+    }
+    console.log("dddd",output,convertLinksAndImagesToHTML(output))
   }, [output]);
 
   const isOutputSame = previousOutputRef.current === output && previousOutputRef.current !== null;
   
+  React.useEffect(() => {
+    function onClick(e:any) {
+      const target = e.target;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      // 모바일은 거의 전체화면, 데스크탑은 600x600 고정
+      const popupWidth = width < 500 ? width : 500;
+      const popupHeight = height < 600 ? height : 600;
+      if (target.tagName === 'IMG' && target.dataset.url) {
+        window.open(target.dataset.url, '_blank', `width=${popupWidth},height=${popupHeight},resizable=yes,scrollbars=yes`);
+      }
+    }
+    const el = containerRef?.current;
+    el?.addEventListener('click', onClick);
+    return () => {
+      el?.removeEventListener('click', onClick);
+    };
+  }, []);
 
   return (
    <Flex w="100%" flexDirection={'column'} overflow={'hidden'}>
@@ -38,19 +120,40 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
         {
           ( isLiveChat && !isOutputSame )
           ?
-          <TypeAnimation
-            msg={ output.replace(/^"(.*)"$/, '$1')}
-            speed={30}
-            onComplete={() => setIsTypingDone()}
-          />
+          (
+            isLocalTypeDone
+            ?
+            <div
+              ref={containerRef}
+              style={{ fontSize: '17px', whiteSpace: 'pre-line',fontFamily:'Noto Sans' }}
+              dangerouslySetInnerHTML={{
+                __html: convertLinksAndImagesToHTML(output
+                  .replace(/<br\s*\/?>/gi, '\n')
+                  .replace(/\\n/g, '\n')
+                  .replace(/^"(.*)"$/, '$1'))
+              }}
+            />
+            :
+            (
+            <TypeAnimation
+              msg={ output.replace(/^"(.*)"$/, '$1')}
+              speed={30}
+              onComplete={() => {setIsTypingDone();setLocalTypeDone(true)}}
+            />
+            )
+          )
+         
           :
           <div
+            ref={containerRef}
             style={{ fontSize: '17px', whiteSpace: 'pre-line',fontFamily:'Noto Sans' }}
             dangerouslySetInnerHTML={{
-              __html: output
-                .replace(/<br\s*\/?>/gi, '\n')
-                .replace(/\\n/g, '\n')
-                .replace(/^"(.*)"$/, '$1'),
+              __html: convertLinksAndImagesToHTML(
+                output
+                  .replace(/<br\s*\/?>/gi, '\n')
+                  .replace(/\\n/g, '\n')
+                  .replace(/^"(.*)"$/, '$1')
+              ),
             }}
           />
         }

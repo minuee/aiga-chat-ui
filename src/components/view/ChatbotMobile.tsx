@@ -1436,7 +1436,8 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                           <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
                             <Flex w="100%" key={index}>
                               <GeneralMessage 
-                                output={functions.makeLinkify(functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
+                                //output={functions.makeLinkify(functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
+                                output={functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))} 
                                 isHistory={element?.isHistory}
                                 setIsTypingDone={() => onHandleTypeDone()}
                                 isLiveChat={element.isLiveChat == undefined ? false : element.isLiveChat }

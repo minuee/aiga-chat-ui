@@ -224,6 +224,7 @@ export default function ChatBot() {
 
   useEffect(() => {
     if ( !functions.isEmpty(oldHistoryData) ) {
+      console.log("oldHistoryData",oldHistoryData)
       if ( !functions.isEmpty(oldHistoryData?.session_id) ) {
         setChatSessionId(oldHistoryData?.session_id)
         setOutputCode(oldHistoryData?.chattings);
@@ -1220,7 +1221,8 @@ export default function ChatBot() {
                     <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
                       <Flex w="100%" key={index}>
                         <GeneralMessage 
-                          output={functions.makeLinkify(functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
+                          //output={functions.makeLinkify(functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
+                          output={functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))} 
                           isHistory={element?.isHistory}
                           setIsTypingDone={() => onHandleTypeDone()}
                           isLiveChat={element.isLiveChat == undefined ? false : element.isLiveChat }
