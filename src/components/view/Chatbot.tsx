@@ -1180,7 +1180,7 @@ export default function ChatBot() {
                     <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
                       <RecommandDoctor 
                         data={element}
-                        summary={!functions.isEmpty(element?.summary) ? functions.makeLinkify(functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))) : ""}
+                        summary={!functions.isEmpty(element?.summary) ? functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')) : ""}
                         isHistory={element?.isHistory}
                         onSendButton={onSendDoctorButton}
                         isLiveChat={element.isLiveChat}
@@ -1193,7 +1193,7 @@ export default function ChatBot() {
                     <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
                       <SearchDoctor 
                         data={element}
-                        summary={!functions.isEmpty(element?.summary) ? functions.makeLinkify(functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))) : ""}
+                        summary={!functions.isEmpty(element?.summary) ? functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')) : ""}
                         isHistory={element?.isHistory}
                         onSendButton={onSendDoctorButton}
                         isLiveChat={element.isLiveChat}
@@ -1211,7 +1211,7 @@ export default function ChatBot() {
                           msg={element.answer} 
                           isLiveChat={element.isLiveChat}
                           setIsTypingDone={() => onHandleTypeDone()}
-                          summary={!functions.isEmpty(element?.summary) ? functions.makeLinkify(functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))) : ""} 
+                          summary={!functions.isEmpty(element?.summary) ? functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')) : ""} 
                         />
                       </Flex>
                     </Box>

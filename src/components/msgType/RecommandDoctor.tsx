@@ -16,6 +16,73 @@ import DoctorAvatar from "@/assets/images/doctor_default_white.png";
 import { MdOutlineArrowForward } from 'react-icons/md';
 import TypeAnimation  from'@/components/text/TypeAnimation2';
 
+function convertLinksAndImagesToHTML(text: string): string {
+  const markdownImageRegex = /!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g;
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const imageRegex = /\.(jpeg|jpg|png|gif|bmp|webp)(\?.*)?$/i;
+
+  const imageUrls: string[] = [];
+
+  // 1. Markdown 이미지 처리
+  let convertedText = text.replace(markdownImageRegex, (_, alt, url) => {
+    const cleanUrl = url.trim();
+    imageUrls.push(cleanUrl);
+    return `
+      <img
+        src="${cleanUrl}"
+        alt="이미지"
+        data-url="${cleanUrl}"
+        style="max-width: 100%; height: auto; max-height: 100px; min-width: 100px; object-fit: contain; border-radius: 8px; display: block; cursor: pointer;"
+      />
+    `;
+  });
+
+  // 2. 일반 URL 처리 (단, HTML 태그 내부는 제외)
+  const urls = convertedText.match(urlRegex);
+  const uniqueUrls = Array.from(new Set(urls ?? []));
+
+  convertedText = convertedText.replace(urlRegex, function (rawUrl, _1, offset, fullText) {
+    const cleanUrl = rawUrl.trim();
+  
+    // HTML 태그 내부에 있으면 무시
+    const before = fullText.lastIndexOf('<', offset);
+    const after = fullText.indexOf('>', offset);
+    const isInsideTag = before !== -1 && after !== -1 && before < offset && offset < after;
+  
+    if (isInsideTag) return rawUrl;
+  
+    if (imageUrls.includes(cleanUrl)) return rawUrl;
+  
+    if (imageRegex.test(cleanUrl)) {
+      return `
+        <img
+          src="${cleanUrl}"
+          alt="이미지"
+          data-url="${cleanUrl}"
+          style="max-width: 100%; height: auto; max-height: 100px; min-width: 100px; object-fit: contain;border-radius: 8px; display: block; cursor: pointer;"
+        />
+      `;
+    } else {
+      return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer" style="color: #1e90ff;">${cleanUrl}</a>`;
+    }
+  });
+
+  // 3. 사이트 바로가기 링크 (이미지가 하나도 없을 경우에만)
+  const hasImage = imageUrls.length > 0;
+
+  const firstTextLink = uniqueUrls.find((url) => {
+    const cleanUrl = url.trim();
+    return !imageRegex.test(cleanUrl) && !imageUrls.includes(cleanUrl);
+  });
+
+  const shortcut = !hasImage && firstTextLink
+    ? `<br><a href="${firstTextLink.trim()}" target="_blank" rel="noopener noreferrer" style="color: #1e90ff;">☞ 사이트 바로가기</a>`
+    : '';
+
+  return convertedText + shortcut;
+}
+
+
 type RecommandDoctorProps = {
     data : any;
     summary : any;
@@ -56,6 +123,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
 
   const previousOutputRef = useRef<string | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     //console.log("dddddd RecommandDoctor",data, isHistory ,summary,isLiveChat)
@@ -64,6 +132,43 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
   }, [summary]);
 
   const isOutputSame = previousOutputRef.current === summary && previousOutputRef.current !== null;
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'IMG' && target.dataset.url) {
+        const url = target.dataset.url;
+        const width = window.innerWidth < 500 ? window.innerWidth : 600;
+        const height = window.innerHeight < 600 ? window.innerHeight : 600;
+  
+        const popup = window.open('', '_blank', `width=${width},height=${height},resizable=yes,scrollbars=yes`);
+        if (popup) {
+          popup.document.write(`
+            <html>
+              <head>
+                <title>이미지 보기</title>
+                <style>
+                  body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; }
+                  img { max-width: 100%; max-height: 100%; }
+                </style>
+              </head>
+              <body>
+                <img src="${url}" alt="이미지" />
+              </body>
+            </html>
+          `);
+          popup.document.close();
+        }
+      }
+    };
+  
+    // 전역 등록
+    document.addEventListener('click', onClick);
+  
+    return () => {
+      document.removeEventListener('click', onClick);
+    };
+  }, []);
   
   /* useEffect(() => {
     console.log("dddddd 22isOutputSame",isLiveChat , isOutputSame)
@@ -183,8 +288,9 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
           flexDirection={'column'}
         > 
           <div
+            ref={containerRef}
             style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
-            dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
+            dangerouslySetInnerHTML={{__html: convertLinksAndImagesToHTML(summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1'))}}
           />
         </Box>
       </Flex>
@@ -224,20 +330,23 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
               ( !isLiveChat && !functions.isEmpty(summary) )
               ?
               <div
+                ref={containerRef}
                 style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
-                dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
+                dangerouslySetInnerHTML={{__html: convertLinksAndImagesToHTML(summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1'))}}
               />
               :
               ( !functions.isEmpty(summary) )
               ?
               <div
+                ref={containerRef}
                 style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
-                dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
+                dangerouslySetInnerHTML={{__html: convertLinksAndImagesToHTML(summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1'))}}
               />
               :
               <div
+                ref={containerRef}
                 style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
-                dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
+                dangerouslySetInnerHTML={{__html: convertLinksAndImagesToHTML(summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1'))}}
               />
             }
           </Box>

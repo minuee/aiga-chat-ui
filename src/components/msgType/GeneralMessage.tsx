@@ -89,60 +89,44 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
     if ( previousOutputRef.current == null) {
       setLocalTypeDone(false)
     }
-    console.log("dddd",output,convertLinksAndImagesToHTML(output))
   }, [output]);
 
   const isOutputSame = previousOutputRef.current === output && previousOutputRef.current !== null;
   
   React.useEffect(() => {
-    function onClick(e:any) {
-      const target = e.target;
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-
-      // 모바일은 거의 전체화면, 데스크탑은 600x600 고정
-      const popupWidth = width < 500 ? width : 500;
-      const popupHeight = height < 600 ? height : 600;
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
       if (target.tagName === 'IMG' && target.dataset.url) {
-        const popup = window.open(
-          '',
-          '_blank',
-          `width=${popupWidth},height=${popupHeight},resizable=yes,scrollbars=yes`
-        );
-      
+        const url = target.dataset.url;
+        const width = window.innerWidth < 500 ? window.innerWidth : 600;
+        const height = window.innerHeight < 600 ? window.innerHeight : 600;
+  
+        const popup = window.open('', '_blank', `width=${width},height=${height},resizable=yes,scrollbars=yes`);
         if (popup) {
           popup.document.write(`
             <html>
               <head>
                 <title>이미지 보기</title>
                 <style>
-                  body {
-                    margin: 0;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    height: 100vh;
-                    background: #000;
-                  }
-                  img {
-                    max-width: 100%;
-                    max-height: 100%;
-                  }
+                  body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; }
+                  img { max-width: 100%; max-height: 100%; }
                 </style>
               </head>
               <body>
-                <img src="${target.dataset.url}" alt="이미지" />
+                <img src="${url}" alt="이미지" />
               </body>
             </html>
           `);
           popup.document.close();
         }
       }
-    }
-    const el = containerRef?.current;
-    el?.addEventListener('click', onClick);
+    };
+  
+    // 전역 등록
+    document.addEventListener('click', onClick);
+  
     return () => {
-      el?.removeEventListener('click', onClick);
+      document.removeEventListener('click', onClick);
     };
   }, []);
 
@@ -173,10 +157,7 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
               ref={containerRef}
               style={{ fontSize: '17px', whiteSpace: 'pre-line',fontFamily:'Noto Sans' }}
               dangerouslySetInnerHTML={{
-                __html: convertLinksAndImagesToHTML(output
-                  .replace(/<br\s*\/?>/gi, '\n')
-                  .replace(/\\n/g, '\n')
-                  .replace(/^"(.*)"$/, '$1'))
+                __html: convertLinksAndImagesToHTML(output.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1'))
               }}
             />
             :
@@ -194,12 +175,7 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
             ref={containerRef}
             style={{ fontSize: '17px', whiteSpace: 'pre-line',fontFamily:'Noto Sans' }}
             dangerouslySetInnerHTML={{
-              __html: convertLinksAndImagesToHTML(
-                output
-                  .replace(/<br\s*\/?>/gi, '\n')
-                  .replace(/\\n/g, '\n')
-                  .replace(/^"(.*)"$/, '$1')
-              ),
+              __html: convertLinksAndImagesToHTML(output.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')),
             }}
           />
         }
