@@ -16,7 +16,14 @@ function convertLinksAndImagesToHTML(text: string): string {
   let convertedText = text.replace(markdownImageRegex, (_, alt, url) => {
     const cleanUrl = url.trim();
     imageUrls.push(cleanUrl);
-    return `<img src="${cleanUrl}" alt="${alt}" style="width:100px; max-height:100px; object-fit:contain; margin: 10px 0; border-radius: 8px; display:block;" cursor:pointer; data-url="${cleanUrl}" />`;
+    return `
+      <img
+        src="${cleanUrl}"
+        alt="이미지"
+        data-url="${cleanUrl}"
+        style="max-width: 100%; height: auto; max-height: 100px; min-width: 100px; object-fit: contain; margin: 10px 0; border-radius: 8px; display: block; cursor: pointer;"
+      />
+    `;
   });
 
   // 2. 일반 URL 처리 (단, HTML 태그 내부는 제외)
@@ -36,7 +43,14 @@ function convertLinksAndImagesToHTML(text: string): string {
     if (imageUrls.includes(cleanUrl)) return rawUrl;
   
     if (imageRegex.test(cleanUrl)) {
-      return `<img src="${cleanUrl}" alt="이미지" style="width:100px; max-height:100px; object-fit:contain; margin: 10px 0; border-radius: 8px; display:block;cursor:pointer;"  data-url="${cleanUrl}" />`;
+      return `
+        <img
+          src="${cleanUrl}"
+          alt="이미지"
+          data-url="${cleanUrl}"
+          style="max-width: 100%; height: auto; max-height: 100px; min-width: 100px; object-fit: contain; margin: 10px 0; border-radius: 8px; display: block; cursor: pointer;"
+        />
+      `;
     } else {
       return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer" style="color: #1e90ff;">${cleanUrl}</a>`;
     }
@@ -90,7 +104,39 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
       const popupWidth = width < 500 ? width : 500;
       const popupHeight = height < 600 ? height : 600;
       if (target.tagName === 'IMG' && target.dataset.url) {
-        window.open(target.dataset.url, '_blank', `width=${popupWidth},height=${popupHeight},resizable=yes,scrollbars=yes`);
+        const popup = window.open(
+          '',
+          '_blank',
+          `width=${popupWidth},height=${popupHeight},resizable=yes,scrollbars=yes`
+        );
+      
+        if (popup) {
+          popup.document.write(`
+            <html>
+              <head>
+                <title>이미지 보기</title>
+                <style>
+                  body {
+                    margin: 0;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    background: #000;
+                  }
+                  img {
+                    max-width: 100%;
+                    max-height: 100%;
+                  }
+                </style>
+              </head>
+              <body>
+                <img src="${target.dataset.url}" alt="이미지" />
+              </body>
+            </html>
+          `);
+          popup.document.close();
+        }
       }
     }
     const el = containerRef?.current;
