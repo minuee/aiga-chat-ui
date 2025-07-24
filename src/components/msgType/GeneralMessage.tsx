@@ -106,10 +106,23 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
           popup.document.write(`
             <html>
               <head>
-                <title>이미지 보기</title>
+                <title>AIGA PupUP 이미지 보기</title>
                 <style>
-                  body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; }
-                  img { max-width: 100%; max-height: 100%; }
+                  body {
+                    margin: 0;
+                    background: #000;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                  }
+                  img {
+                    max-width: 100vw;
+                    max-height: 100vh;
+                    width: auto;
+                    height: auto;
+                    object-fit: contain;
+                  }
                 </style>
               </head>
               <body>
