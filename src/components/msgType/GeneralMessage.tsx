@@ -123,9 +123,25 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
                     height: auto;
                     object-fit: contain;
                   }
+                    button {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    padding: 10px 15px;
+                    background: rgba(255,255,255,0.2);
+                    color: #fff;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 16px;
+                  }
+                  button:hover {
+                    background: rgba(255,255,255,0.4);
+                  }
                 </style>
               </head>
               <body>
+                <button onclick="window.close()">닫기 ✕</button>
                 <img src="${url}" alt="이미지" />
               </body>
             </html>
