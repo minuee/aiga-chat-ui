@@ -163,25 +163,30 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
                     height: auto;
                     object-fit: contain;
                   }
-                  button {
-                    position: absolute;
-                    top: 10px;
-                    right: 10px;
-                    padding: 10px 15px;
+                  .close-btn {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    width: 48px;
+                    height: 48px;
                     background: rgba(255,255,255,0.2);
                     color: #fff;
                     border: none;
-                    border-radius: 5px;
+                    border-radius: 24px;
+                    font-size: 24px;
                     cursor: pointer;
-                    font-size: 16px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 9999;
                   }
-                  button:hover {
+                  .close-btn:hover {
                     background: rgba(255,255,255,0.4);
                   }
                 </style>
               </head>
               <body>
-                <button onclick="window.close()">닫기 ✕</button>
+                <button class="close-btn" onclick="window.close()">✕</button>
                 <img src="${url}" alt="이미지" />
               </body>
             </html>
