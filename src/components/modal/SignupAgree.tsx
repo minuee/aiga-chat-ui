@@ -11,7 +11,7 @@ import PolicyContent from '@/components/modal/PolicyContent'
 import MingamContent from '@/components/modal/MingamContent'
 
 import { ModalSignupFinishStoreStore,ModalMypagePolicyStore,ModalMypageYakwanStore,ModalMypageMingamStore } from '@/store/modalStore';
-import { encryptToken } from "@/utils/secureToken";
+import { decryptToken,encryptToken } from "@/utils/secureToken";
 import { defaultUserInfo } from "@/types/userData"
 import { UserBasicInfoStore } from '@/store/userStore';
 import NewChatStateStore from '@/store/newChatStore';
@@ -23,6 +23,7 @@ import * as mCookie from "@/utils/cookies";
 import NextImage from 'next/legacy/image';
 import ProcessingBar from "@/assets/icons/processing2x.gif";
 import { MdOutlineClose,MdArrowBack } from 'react-icons/md';
+
 
 export interface SignupAgreeeModalProps extends PropsWithChildren {
   userInfo : any;
@@ -54,8 +55,13 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
 
   const setLoginUserInfo = UserBasicInfoStore((state) => state.setUserBasicInfo);
   const userStoreInfo = UserBasicInfoStore(state => state.userStoreInfo);
-  const userBaseInfo = userStoreInfo ?? defaultUserInfo;
-  const nickName = userBaseInfo?.nickName;
+  const userBaseInfo = React.useMemo(() => {
+    const deCryptInfo = decryptToken(userStoreInfo)
+    const ret = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ?  JSON.parse(deCryptInfo) : userStoreInfo;
+    return ret;
+  }, [userStoreInfo]);
+
+  const nickName = userBaseInfo?.nickName ?? "유저";
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
   const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
 
@@ -84,7 +90,7 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
 
   const onHandleAgreeSave = async() => {
     try{
-      setReceiving(true)
+      setReceiving(true);
       const res:any = await MemberService.setSignupAgree();
       if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
         setIsOpenSignupFinishModal(true);
@@ -108,15 +114,6 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
   const onHandleComplete = async() => {
     setIsOpenSignupFinishModal(false);
     onHandleNextFinish();
-    const userSaveData = {
-      ...userBaseInfo,
-      isState : true, //isState
-      isGuest : false,
-      userMaxToken : userMaxToken,//userMaxToken
-      userRetryLimitSec :userRetryLimitSec//userRetryLimitSec
-    }
-    const userSaveDataEncrypt = await encryptToken(JSON.stringify(userSaveData))
-    setLoginUserInfo(userSaveDataEncrypt);
     setNewChatOpen(false);
     setTimeout(() => {
       setNewChatOpen(true);

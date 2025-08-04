@@ -157,32 +157,50 @@ function SidebarContent(props: SidebarContent) {
   const onHandReplaceHistory = async( data:any ) => {
     try{
       let newData = [] as any;
-      data?.chattings.forEach((conversations:any) => {
-        if ( mConstants.chatAnswerType.includes(conversations?.chat_type) ) {
-          newData.push({
-            ...conversations,
-            ismode : 'me',
-            isHistory : true,
-            id: conversations?.chat_id,
-            question : conversations?.question
-          })
-          newData.push({
-            ...conversations,
-            ismode : 'server',
-            isHistory : true,
-            id: conversations?.chat_id,
-            user_question : conversations?.question,
-            answer : !functions.isEmpty(conversations?.answer) ?  functions.parseMaybeJson(conversations?.answer) : [],
-            chat_type: conversations?.chat_type,
-            used_token : conversations?.used_token
-          })
-        }
-      })
-      setOldHistoryData({
-        session_id : data?.session_id,
-        session_title : data?.title,
-        chattings: newData
-      });
+
+      setIsReceiving(true)
+      const res:any = await ChatService.getChatHistory(data?.session_id);
+      if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
+        setIsReceiving(false)
+
+        res?.data.forEach((conversations:any) => {
+          if ( mConstants.chatAnswerType.includes(conversations?.chat_type) ) {
+            newData.push({
+              ...conversations,
+              ismode : 'me',
+              isHistory : true,
+              id: conversations?.chat_id,
+              question : conversations?.question
+            })
+            newData.push({
+              ...conversations,
+              ismode : 'server',
+              isHistory : true,
+              id: conversations?.chat_id,
+              user_question : conversations?.question,
+              answer : !functions.isEmpty(conversations?.answer) ?  functions.parseMaybeJson(conversations?.answer) : [],
+              chat_type: conversations?.chat_type,
+              used_token : conversations?.used_token
+            })
+          }
+        })
+        setOldHistoryData({
+          session_id : data?.session_id,
+          session_title : data?.title,
+          chattings: newData
+        });
+      }else{
+        toast({
+          title: "일시적 장애가 발생하였습니다. 잠시후 다시 시도해 주십시요.",
+          position: 'top-left',
+          isClosable: true,
+          duration:2000,
+          status: 'info',
+          containerStyle: {
+            color: '#ffffff',
+          }
+        });
+      }
     }catch(e){
       console.log("newData e",e)
     }

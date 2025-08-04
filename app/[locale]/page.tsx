@@ -2,8 +2,8 @@
 import React, { Children } from 'react';
 import { useParams } from 'next/navigation'
 import PageLayout from '@/components/layout/PageLayout';
-//import MainPage from '@/components/view/Main';
-import MainPage from '@/components/view/NewMain';
+import MainPage from '@/components/view/Waiting';
+//import MainPage from '@/components/view/NewMain';
 import * as mCookie from "@/utils/cookies";
 import functions from '@/utils/functions';
 import {routing} from '@/i18n/routing';

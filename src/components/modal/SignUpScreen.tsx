@@ -158,7 +158,7 @@ function LoginModal(props: LoginModalProps) {
       const receiveMessage = async(event: MessageEvent) => {
 
         if ( !mConstants.apiAllowOriginCode.includes(event.origin) ) {
-          //console.warn('apidata 허용되지 않은 출처:', event.origin);
+          console.warn('apidata 허용되지 않은 출처:', event.origin);
           popup?.close();
           window.removeEventListener('message', receiveMessage);
           return;
@@ -167,7 +167,7 @@ function LoginModal(props: LoginModalProps) {
         const expireDate = new Date();  
         expireDate.setDate(expireDate.getDate() + 7); // 7일 후 만료
 
-       // console.log('apidata event.data.type',event?.data?.type);
+        console.log('apidata event.data.type',event?.data?.type);
         if (event?.data?.type === 'kakao-auth') {
           console.log('apidata ✅ 카카오 로그인 성공:', event.data.code?.data?.user);
           const loginUserInfo = event?.data?.code?.data?.user;

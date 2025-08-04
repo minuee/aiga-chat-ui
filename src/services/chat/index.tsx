@@ -60,11 +60,11 @@ export function getChatHistoryList(): any {
 }
 
 
-interface RemoveHistoryProps {
+interface sessionHistoryProps {
     session_id: any;
 }
 
-export function removeChatHistory(session_id: RemoveHistoryProps): any {
+export function removeChatHistory(session_id: sessionHistoryProps): any {
     try{
         const res:any =  api.delete(`/history/${session_id}`)
         .then((response) => {
@@ -80,6 +80,22 @@ export function removeChatHistory(session_id: RemoveHistoryProps): any {
    }
 }
 
+
+export function getChatHistory(session_id: sessionHistoryProps): any {
+    try{
+        const res:any =  api.get(`/history/${session_id}`)
+        .then((response) => {
+            return response?.data;
+        }).catch((error) => {
+            console.log("eeeee",error)
+            return null;
+        });
+        return res;
+   }catch(error){
+        console.log("eeeee",error)
+        return null;   
+   }
+}
 
 export function updateChatHistoryTitle(session_id: string, title: string): any {
     try{
@@ -115,7 +131,7 @@ function getClientEnvInfo() {
 
 export function getChatMessage(session_id: string, msg: string): any {
     try{
-        const res:any =  api.post(`/chat/${session_id}`,{question : msg},{ timeout : 20000})
+        const res:any =  api.post(`/chat/${session_id}`,{question : msg},{ timeout : 50000})
             .then((response) => {
                 if ( process.env.NODE_ENV == 'development') {
                     const { userStoreInfo } = UserBasicInfoStore.getState();
