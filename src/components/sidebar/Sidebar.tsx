@@ -78,6 +78,11 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
     return ret;
   }, [userStoreInfo]);
 
+
+  React.useEffect(() => {
+    console.log("userBaseInfo",userBaseInfo)
+  }, [userBaseInfo]);
+
   const onSendHistoryButton = async() => {
     setOpenHistoryDrawer(false);
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_20}`);
