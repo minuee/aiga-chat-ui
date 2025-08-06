@@ -117,7 +117,7 @@ function SignupAgreeeModal(props: SignupAgreeeModalProps) {
     setNewChatOpen(false);
     setTimeout(() => {
       setNewChatOpen(true);
-    }, 60);
+    }, 300);
   }
 
   const onSendMypagePolicyButton = async(  ) => {
