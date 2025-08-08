@@ -218,7 +218,7 @@ function SidebarContent(props: SidebarContent) {
         const newHistoryData = await historyData.map((item:any) => {
           const newSessions = item.sessions.map((subItem: any) => {
             if (subItem.session_id === inputs.session_id) {
-              return { ...subItem, title: inputs.title };
+              return { ...subItem, title: inputs.title, updateAt :  new Date() };
             }
             return subItem;
           });

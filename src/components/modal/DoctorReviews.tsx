@@ -59,10 +59,10 @@ function DoctorReview( props: DoctorModalProps ) {
   const calSNSAverage = ( reviewAvg:any) => {
 
     if ( !functions.isEmpty(reviewAvg) && !functions.isEmpty(doctorBasicData?.ai_score)) {
-      const kindness_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.kindness) ?  (reviewAvg?.kindness_avg + doctorBasicData?.ai_score?.kindness)/2 :  reviewAvg?.kindness_avg;
-      const explaination_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.explaination) ?  (reviewAvg?.explaination_avg + doctorBasicData?.ai_score?.kindness)/2 :  reviewAvg?.explaination_avg;
-      const satisfaction_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.satisfaction) ?  (reviewAvg?.satisfaction_avg + doctorBasicData?.ai_score?.satisfaction)/2 :  reviewAvg?.satisfaction_avg;
-      const recommand_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.recommand) ?  (reviewAvg?.recommand_avg + doctorBasicData?.ai_score?.recommand)/2 :  reviewAvg?.recommand_avg;
+      const kindness_avg_tmp = (!functions.isEmpty(doctorBasicData?.ai_score?.kindness) && doctorBasicData?.ai_score?.kindness > 0 ) ?  (reviewAvg?.kindness_avg + doctorBasicData?.ai_score?.kindness)/2 :  reviewAvg?.kindness_avg;
+      const explaination_avg_tmp = (!functions.isEmpty(doctorBasicData?.ai_score?.explaination) && doctorBasicData?.ai_score?.explaination > 0) ?  (reviewAvg?.explaination_avg + doctorBasicData?.ai_score?.kindness)/2 :  reviewAvg?.explaination_avg;
+      const satisfaction_avg_tmp = (!functions.isEmpty(doctorBasicData?.ai_score?.satisfaction) && doctorBasicData?.ai_score?.satisfaction > 0 )?  (reviewAvg?.satisfaction_avg + doctorBasicData?.ai_score?.satisfaction)/2 :  reviewAvg?.satisfaction_avg;
+      const recommand_avg_tmp = (!functions.isEmpty(doctorBasicData?.ai_score?.recommand) && doctorBasicData?.ai_score?.recommand > 0 ) ?  (reviewAvg?.recommand_avg + doctorBasicData?.ai_score?.recommand)/2 :  reviewAvg?.recommand_avg;
       setTotalAigaReviewAverage({
         kindness_avg: kindness_avg_tmp,
         explaination_avg:  explaination_avg_tmp,

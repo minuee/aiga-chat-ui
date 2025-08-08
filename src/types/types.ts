@@ -12,6 +12,7 @@ export type SessionType = {
   session_id: string;
   title: string | null;
   session_time: string;
+  updateAt: string;
   chattings: any[];
 };
 

@@ -1,11 +1,12 @@
 import { SessionType,GroupedSessionsType } from "@/types/types";
-  
+import functions from "@/utils/functions";
+
 export default function groupSessionsByDateSorted(sessions: SessionType[]): GroupedSessionsType {
     const groupedMap: { [date: string]: SessionType[] } = {};
   
     // 그룹핑
     sessions.forEach((session) => {
-        const date = session.session_time.split('T')[0]; // 'YYYY-MM-DD'
+        const date = !functions.isEmpty(session.updateAt) ? session.updateAt.split('T')[0] :  session.session_time.split('T')[0]; // 'YYYY-MM-DD'
         if (!groupedMap[date]) {
             groupedMap[date] = [];
         }

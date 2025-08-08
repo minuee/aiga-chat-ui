@@ -653,12 +653,7 @@ export default function ChatBot() {
               const reTrytimeStamp = parsedTimestamp ?? nowTimeStamp;
               const parsedRemainingTime = parseInt(parsedMessage?.remainingTime);
               const remainingTime = parsedRemainingTime ?? userRetryLimitSec ?? 57600;
-              setChatDisabled({
-                reTrytimeStamp : reTrytimeStamp,
-                remainTimeStamp : remainingTime,
-                isState : false,
-                isAlertMsg : false
-              })
+             
               setIn24UsedToken(functions.isEmpty(parsedMessage?.in24_used_token) ? 0 :  parsedMessage?.in24_used_token)
               setIsLoading(false);
               setReceiving(false);
@@ -668,6 +663,15 @@ export default function ChatBot() {
                   textareaRef?.current?.focus()
                 }
               }, 100)
+
+              setTimeout(() => {
+                setChatDisabled({
+                  reTrytimeStamp : reTrytimeStamp,
+                  remainTimeStamp : remainingTime,
+                  isState : false,
+                  isAlertMsg : false
+                })
+              }, 2000)
               
             }else{
               call_fn_error_message(inputCodeText,chat_sessinn_id,"토큰 만료 체크 오류");
