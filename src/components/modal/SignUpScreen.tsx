@@ -363,10 +363,7 @@ function LoginModal(props: LoginModalProps) {
                     display={{base :'none', md:'flex'}} 
                     justifyContent={'flex-end'} 
                     alignItems={'center'}  
-                    onClick={() => fn_close_modal_signup_agree()}  cursor={'pointer'}
-                    >
-                    <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
-                  </Box>
+                  />
                 </Flex>
               </ModalHeader>
               <ModalBody overflowY="auto" maxH="100vh" padding="basePadding" margin="0">

@@ -144,7 +144,6 @@ export function setSignupAgree(): any {
                 message: error?.response?.data || 'Unknown error',
             };
         });
-        console.log('newState.isState res',res)
         return res;
     }catch(error){
         console.log("eeeee",error)

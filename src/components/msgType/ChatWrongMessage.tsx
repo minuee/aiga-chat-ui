@@ -12,7 +12,6 @@ type ChatWrongMessageProps = {
 
 const ChatWrongMessage = ({  isMode, msg = "흠..뭔가 잘못된 것 같습니다.", indexKey}: ChatWrongMessageProps) => {
 
-  console.log("ChatWrongMessage 렌더링"); // ← 디버깅용
   const { colorMode, toggleColorMode } = useColorMode();
   const bgSystemStopColor = useColorModeValue('#FFF0F0', 'navy.600');
   const textSystemStopColor = useColorModeValue('#F94848', 'white');

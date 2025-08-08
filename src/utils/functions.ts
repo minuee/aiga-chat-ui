@@ -145,7 +145,6 @@ const functions = {
 
   formatAvailabilityMessage2(currentTimestamp: number, remainLimitSec: number): string {
     try {
-      console.log('formatAvailabilityMessage2',currentTimestamp,remainLimitSec)
       const now = new Date();
       const baseTime = ( this.isEmpty(currentTimestamp) || isNaN(currentTimestamp) || currentTimestamp <= 0 ) ? now.getTime() : currentTimestamp;
       const baseRemainLimitSec = isNaN(remainLimitSec) || remainLimitSec <= 0 ? 57600 : remainLimitSec;

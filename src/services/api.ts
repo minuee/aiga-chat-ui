@@ -37,14 +37,12 @@ axios.interceptors.request.use((config) => {
     const { email  } = decryptedUser;
 
     const accessTmpToken =  mCookie.getCookie(mConstants.apiTokenName);
-    console.log("accessTmpToken",email,accessTmpToken)
     if ( !functions.isEmpty(accessTmpToken) && !functions.isEmpty(email)) { 
       const accessToken =  decryptToken(accessTmpToken)
       config.headers['Authorization'] = functions.isEmpty(accessToken) ? null : `Bearer ${accessToken}` 
     }
     return config
   }catch(e:any){
-    console.log("accessTmpTokeneee",e)
     return config
   }
 })

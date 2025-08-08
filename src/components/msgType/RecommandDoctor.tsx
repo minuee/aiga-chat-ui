@@ -126,7 +126,6 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    //console.log("dddddd RecommandDoctor",data, isHistory ,summary,isLiveChat)
     if ( !functions.isEmpty(summary)) previousOutputRef.current =  summary; 
     else previousOutputRef.current = null
   }, [summary]);
@@ -204,9 +203,6 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
     };
   }, []);
   
-  /* useEffect(() => {
-    console.log("dddddd 22isOutputSame",isLiveChat , isOutputSame)
-  }, [isOutputSame]); */
   const handleScroll = () => {
     if (flexRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = flexRef.current;

@@ -76,13 +76,12 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
 }: { 
   output: any,isLiveChat:boolean ,isHistory:boolean,setIsTypingDone: () => void;
 }) {
+
   const [isLocalTypeDone, setLocalTypeDone] = React.useState(false)
-  console.log("GeneralMessage 렌더링"); // ← 디버깅용
   const { colorMode, toggleColorMode } = useColorMode();
   const bgSystemColor = useColorModeValue('#F4F6FA', 'navy.600');
   const previousOutputRef = React.useRef<string | null>(null); // 이전 output 값을 저장
   const containerRef = React.useRef<HTMLDivElement | null>(null);
-
 
   React.useEffect(() => {
     previousOutputRef.current =  output; // output이 변경될 때마다 이전 값을 업데이트

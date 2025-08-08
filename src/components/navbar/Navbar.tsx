@@ -18,7 +18,6 @@ function AdminNavbar(props: {
   onOpen: (...args: any[]) => any;
 }) {
 
-  console.log("AdminNavbar 렌더링"); // ← 디버깅용
   const [scrolled, setScrolled] = useState(false);
   const { colorMode, toggleColorMode } = useColorMode();
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);

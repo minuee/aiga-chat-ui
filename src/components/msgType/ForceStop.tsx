@@ -10,7 +10,6 @@ type ForceStopProps = {
 
 const ForceStop = ({  msg = "대답이 중지되었습니다.", indexKey}: ForceStopProps) => {
 
-  console.log("ForceStop 렌더링"); // ← 디버깅용
   const { colorMode, toggleColorMode } = useColorMode();
   const bgSystemStopColor = useColorModeValue('#FFF0F0', 'white');
   const textSystemStopColor = useColorModeValue('#F94848', 'navy.800');

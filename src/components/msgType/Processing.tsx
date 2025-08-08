@@ -9,7 +9,7 @@ import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/te
 const Processing = ({ msg = "분석 중"}: ProcessingProps) => {
 
   const textColor = useColorModeValue('#7F879B', 'white')
-  console.log("Processing 렌더링"); // ← 디버깅용
+
   return (
     <Flex w="100%" mt="10px" alignItems={'center'}>
       <Box ml={2} pt={2}>

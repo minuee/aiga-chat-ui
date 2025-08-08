@@ -16,7 +16,6 @@ type ChatDisableProps = {
 
 export const ChatDisable = React.memo(({ isChatDisabled,userBasicInfo,setChatDisabled }: ChatDisableProps) => {
   
-  console.log("ChatDisable 렌더링"); // ← 디버깅용
   const closeColor = useColorModeValue('#000000', 'white');
   const oopsColor = useColorModeValue('#1D73DC', 'white');
   const bgColor = useColorModeValue('#EAF4FF', 'navy.600');
@@ -133,7 +132,7 @@ export const ChatDisable = React.memo(({ isChatDisabled,userBasicInfo,setChatDis
 });
 
 export const ChatWarningInfo = React.memo(() => {
-  console.log("ChatWarningInfo 렌더링"); // ← 디버깅용
+
   const bgColor = useColorModeValue('#ffffff', 'navy.800');
   const infoIcon = useColorModeValue('#f94848', '#ffffff');
   const textColor = useColorModeValue('#7F879B', '#ffffff');

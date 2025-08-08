@@ -74,7 +74,9 @@ function SidebarContent(props: SidebarContent) {
   const setOpenHistoryDrawer = DrawerHistoryStore((state) => state.setOpenHistoryDrawer);
   
   React.useEffect(() => {
-    getMyHistoryData();
+    setTimeout(() => {
+      getMyHistoryData();
+    }, 300)
   }, []);
 
   const getMyHistoryData = async() => {

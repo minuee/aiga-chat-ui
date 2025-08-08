@@ -46,12 +46,8 @@ export function SidebarLinks(props: SidebarLinksProps) {
                   alignItems="center"
                   mb="4px"
                   justifyContent="center"
-                  _hover={{
-                    bg: 'unset',
-                  }}
-                  _focus={{
-                    boxShadow: 'none',
-                  }}
+                  _hover={{ bg: 'unset'}}
+                  _focus={{ boxShadow: 'none' }}
                   borderRadius="8px"
                   w="100%"
                   py="0px"
@@ -62,13 +58,7 @@ export function SidebarLinks(props: SidebarLinksProps) {
                       <HStack spacing={activeRoute(route.path.toLowerCase()) ? '22px' : '26px'}>
                         <Flex w="100%" alignItems="center" justifyContent="center">
                           <Box
-                            color={
-                              route.disabled
-                              ? gray
-                              : activeRoute(route.path.toLowerCase())
-                              ? activeIcon
-                              : inactiveColor
-                            }
+                            color={ route.disabled ? gray : activeRoute(route.path.toLowerCase()) ? activeIcon : inactiveColor }
                             me="12px"
                             mt="6px"
                           >
@@ -77,13 +67,7 @@ export function SidebarLinks(props: SidebarLinksProps) {
                           <Text
                             cursor="not-allowed"
                             me="auto"
-                            color={
-                              route.disabled
-                              ? gray
-                              : activeRoute(route.path.toLowerCase())
-                              ? activeColor
-                              : 'gray.500'
-                            } 
+                            color={ route.disabled ? gray : activeRoute(route.path.toLowerCase()) ? activeColor : 'gray.500' } 
                             fontWeight="500"
                             letterSpacing="0px"
                             fontSize="sm"
@@ -95,14 +79,7 @@ export function SidebarLinks(props: SidebarLinksProps) {
                     </Flex>
                   ) : (
                     <Flex pt="0px" pb="10px" alignItems="center" w="100%">
-                      <HStack
-                        spacing={
-                          activeRoute(route.path.toLowerCase())
-                            ? '22px'
-                            : '26px'
-                        }
-                        ps="32px"
-                      >
+                      <HStack spacing={ activeRoute(route.path.toLowerCase()) ? '22px' : '26px'} ps="32px">
                         <Text cursor="not-allowed" me="auto" fontWeight="500" letterSpacing="0px" fontSize="sm">
                           {route.name}
                         </Text>
@@ -136,28 +113,12 @@ export function SidebarLinks(props: SidebarLinksProps) {
                   {route.name === 'AIGA' ? (
                     <NavLink href={route.layout ? route.layout + route.path : route.path} key={key} styles={{ width: '100%' }}>
                       <Flex w="100%" alignItems="center" justifyContent="center">
-                        <Box
-                          color={
-                            route.disabled
-                            ? gray
-                            : activeRoute(route.path.toLowerCase())
-                            ? activeIcon
-                            : inactiveColor
-                          }
-                          me="12px"
-                          mt="6px"
-                        >
+                        <Box color={ route.disabled ? gray : activeRoute(route.path.toLowerCase()) ? activeIcon : inactiveColor } me="12px" mt="6px">
                           {route.icon}
                         </Box>
                         <Text
                           me="auto"
-                          color={
-                            route.disabled
-                            ? gray
-                            : activeRoute(route.path.toLowerCase())
-                            ? activeColor
-                            : 'gray.500'
-                          }
+                          color={ route.disabled ? gray : activeRoute(route.path.toLowerCase()) ? activeColor : 'gray.500' }
                           fontWeight="500"
                           letterSpacing="0px"
                           fontSize="sm"
@@ -170,13 +131,7 @@ export function SidebarLinks(props: SidebarLinksProps) {
                     <Flex w="100%" alignItems="center" justifyContent="center" cursor="not-allowed">
                       <Box
                         opacity="0.4"
-                        color={
-                          route.disabled
-                          ? gray
-                          : activeRoute(route.path.toLowerCase())
-                          ? activeIcon
-                          : inactiveColor
-                        }
+                        color={ route.disabled ? gray : activeRoute(route.path.toLowerCase()) ? activeIcon : inactiveColor }
                         me="12px"
                         mt="6px"
                       >
@@ -185,13 +140,7 @@ export function SidebarLinks(props: SidebarLinksProps) {
                       <Text
                         opacity="0.4"
                         me="auto"
-                        color={
-                          route.disabled
-                          ? gray
-                          : activeRoute(route.path.toLowerCase())
-                          ? activeColor
-                          : 'gray.500'
-                        }
+                        color={ route.disabled ? gray : activeRoute(route.path.toLowerCase()) ? activeColor : 'gray.500' }
                         fontWeight="500"
                         letterSpacing="0px"
                         fontSize="sm"
@@ -207,13 +156,7 @@ export function SidebarLinks(props: SidebarLinksProps) {
               <ListItem ms={0} cursor="not-allowed" opacity={'0.4'}>
                 <Flex ps="32px" alignItems="center" mb="8px">
                   <Text
-                    color={
-                      route.disabled
-                      ? gray
-                      : activeRoute(route.path.toLowerCase())
-                      ? activeColor
-                      : inactiveColor
-                    }
+                    color={ route.disabled ? gray : activeRoute(route.path.toLowerCase()) ? activeColor : inactiveColor }
                     fontWeight="500"
                     fontSize="xs"
                   >
@@ -234,16 +177,8 @@ export function SidebarLinks(props: SidebarLinksProps) {
         <ListItem ms="28px" display="flex" alignItems="center" mb="10px" key={key} cursor="not-allowed">
           <Icon w="6px" h="6px" me="8px" as={FaCircle} color={route.disabled ? gray : activeIcon} />
           <Text
-            color={
-              route.disabled
-              ? gray
-              : activeRoute(route.path.toLowerCase())
-              ? activeColor
-              : inactiveColor
-            }
-            fontWeight={
-              activeRoute(route.path.toLowerCase()) ? 'bold' : 'normal'
-            }
+            color={ route.disabled ? gray : activeRoute(route.path.toLowerCase()) ? activeColor : inactiveColor }
+            fontWeight={ activeRoute(route.path.toLowerCase()) ? 'bold' : 'normal' }
             fontSize="sm"
           >
             {route.name}

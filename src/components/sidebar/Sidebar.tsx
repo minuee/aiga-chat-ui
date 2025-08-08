@@ -30,7 +30,6 @@ function Sidebar(props: SidebarProps) {
   let shadow = useColorModeValue( '14px 17px 40px 4px rgba(112, 144, 176, 0.08)','unset' );
   // Chakra Color Mode
   let sidebarBg = useColorModeValue('white', 'navy.800');
-  console.log("Sidebar 렌더링"); // ← 디버깅용
 
   let sidebarRadius = '14px';
   let sidebarMargins = '0px';
@@ -78,18 +77,12 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
     return ret;
   }, [userStoreInfo]);
 
-
-  React.useEffect(() => {
-    console.log("userBaseInfo",userBaseInfo)
-  }, [userBaseInfo]);
-
-  const onSendHistoryButton = async() => {
-    setOpenHistoryDrawer(false);
+  const onSendHistoryButton = () => {
+    if ( isOpenHistoryDrawer ) setOpenHistoryDrawer(false);
+    setOpenHistoryDrawer(true);
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_20}`);
     mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_20}`)   
-    setTimeout(() => {
-      setOpenHistoryDrawer(true);
-    }, 60);
+    
   }
 
   const fn_close_drawer_history = async() => {
@@ -155,53 +148,38 @@ export function SidebarResponsive(props: { routes: IRoute[] }) {
         </Box>
         }
       </Flex>
-      { 
-        isOpenHistoryDrawer && (
-        <Drawer
-          isOpen={isOpenHistoryDrawer}
-          onClose={()=>fn_close_drawer_history()}
-          placement={
-            isWindowAvailable() && document.documentElement.dir === 'rtl'
-              ? 'right'
-              : 'left'
-          }
+      
+      <Drawer
+        isOpen={isOpenHistoryDrawer}
+        onClose={()=>fn_close_drawer_history()}
+        placement={'left'}
+      >
+        <DrawerOverlay bg={ isOpenSetupModal ?  "transparent" :  "rgba(0,0,0,0.6)"   }/>
+        <DrawerContent
+          w="100%"
+          maxW={`${mConstants.modalMaxWidth}px`} 
+          bg={sidebarBackgroundColor}
         >
-          <DrawerOverlay bg={ isOpenSetupModal ?  "transparent" :  "rgba(0,0,0,0.6)"   }/>
-          <DrawerContent
+          <DrawerCloseButton
+            zIndex="3"
+            onClick={()=>fn_close_drawer_history()}
+            _focus={{ boxShadow: 'none' }}
+            _hover={{ boxShadow: 'none' }}
+          />
+          <DrawerBody 
             w="100%"
             maxW={`${mConstants.modalMaxWidth}px`} 
-            bg={sidebarBackgroundColor}
+            px="0rem" 
+            pt="20px"
           >
-            <DrawerCloseButton
-              zIndex="3"
-              onClick={()=>fn_close_drawer_history()}
-              _focus={{ boxShadow: 'none' }}
-              _hover={{ boxShadow: 'none' }}
+            <Content 
+              routes={routes} 
+              onParentClose={()=>fn_close_drawer_history()}
             />
-            <DrawerBody 
-              w="100%"
-              maxW={`${mConstants.modalMaxWidth}px`} 
-              px="0rem" 
-              pt="20px"
-            >
-              {/* <Scrollbars
-                universal={true}
-                autoHide
-                renderTrackVertical={renderTrack}
-                renderThumbVertical={renderThumb}
-                renderView={renderView}
-              > */}
-                <Content 
-                  routes={routes} 
-                  onParentClose={()=>fn_close_drawer_history()}
-                />
-              {/* </Scrollbars> */}
-            </DrawerBody>
-          </DrawerContent>
-        </Drawer>
-        )
-      }
-
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+   
       {
         isOpenLoginModal && (
         <Drawer

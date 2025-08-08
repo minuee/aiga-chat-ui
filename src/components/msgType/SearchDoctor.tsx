@@ -128,7 +128,6 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    //console.log("dddddd SearchDoctor",data, isHistory ,summary,isLiveChat)
     if ( !functions.isEmpty(summary)) previousOutputRef.current =  summary; 
     else previousOutputRef.current = null
   }, [summary]);
@@ -204,12 +203,8 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
     };
   }, []);
   
-  
-
   const isOutputSame = previousOutputRef.current === summary && previousOutputRef.current !== null;
-  /* useEffect(() => {
-    console.log("dddddd SearchDoctor isOutputSame",isLiveChat , isOutputSame)
-  }, [isOutputSame]); */
+
   const handleScroll = () => {
     if (flexRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = flexRef.current;

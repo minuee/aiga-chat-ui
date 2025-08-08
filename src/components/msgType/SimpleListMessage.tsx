@@ -37,17 +37,14 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false, summary, is
 
   const isOutputSame = previousOutputRef.current === summary && previousOutputRef.current !== null;
   
-
   React.useEffect(() => {
-
     if ( functions.isEmpty(msg?.hospitals) ) {
-      const reData = functions.parseMaybeJson(msg?.hospitals)
+      const reData = functions.parseMaybeJson(msg?.hospitals);
       setHospitalsList(reData);
     }else{
       setHospitalsList(msg?.hospitals);
     }
-
-  }, [indexKey]);
+  }, [msg]);
 
   React.useEffect(() => {
     if ( ( isLiveChat && !functions.isEmpty(summary)  )  ) {
@@ -65,6 +62,56 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false, summary, is
   }
 
   if ( hospitalsList?.length == 0 ) {
+    if ( !functions.isEmpty(summary)) {
+      return (
+        <Flex w="100%" flexDirection={'column'}  px="5px">
+          <Box my="5px">
+            { colorMode == 'dark' ? <DefaultHeaderLogo width={'46px'} height={'12px'} /> : <IconChatAiga width={'46px'} height={'12px'} /> }
+        </Box>
+        <Flex 
+          padding="12px 20px" 
+          border={`1px solid ${bgSystemColor}`} 
+          bgColor={bgSystemColor} 
+          borderTopLeftRadius="2px" 
+          borderTopRightRadius="20px" 
+          borderBottomLeftRadius="20px"
+          borderBottomRightRadius="20px" 
+          w="auto" 
+          zIndex={2}
+          justifyContent={'center'}
+          flexDirection={'column'}
+        > 
+          <Box>
+          {
+            ( isLiveChat && !functions.isEmpty(summary) && !isLocalTypeDone  )
+            ?
+            <TypeAnimation
+              msg={ summary.replace(/^"(.*)"$/, '$1')}
+              speed={30}
+              onComplete={() => setTypingCompleteDone()}
+            />
+            :
+            ( !isLiveChat && !functions.isEmpty(summary) )
+            ?
+            <div
+              style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
+              dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
+            />
+            :
+            !functions.isEmpty(summary)
+            ?
+            <div
+              style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
+              dangerouslySetInnerHTML={{__html: summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1')}}
+            />
+            :
+            null
+          }
+          </Box>
+        </Flex>
+      </Flex>
+      )
+    }
     return (
       <Flex w="100%" flexDirection={'column'}>
         <Box>

@@ -1,5 +1,5 @@
 import React  from 'react';
-import { useColorModeValue, Flex, useColorMode} from '@chakra-ui/react';
+import { Flex} from '@chakra-ui/react';
 import { motion } from "framer-motion";
 import {IconAiga} from '@/components/icons/svgIcons';
 
@@ -11,14 +11,7 @@ type MotionWelcomeProps = {
     isMobile : boolean;
 };
 
-const MotionWelcome = ({ 
-    msg = "AIGA",
-    pt="0px",
-    classNames="opening_wrap",
-    isMobile = false
-  }: MotionWelcomeProps) => {
-  console.log("MotionWelcome 렌더링"); // ← 디버깅용
-  const textColor = useColorModeValue('navy.700', 'white')
+const MotionWelcome = ({ msg = "AIGA",pt="0px",classNames="opening_wrap",isMobile = false }: MotionWelcomeProps) => {
   
   return (
     <Flex flexDirection={'column'} pt={pt}>
@@ -46,31 +39,27 @@ type MotionWelcomeImageProps = {
   isMobile : boolean;
 };
 
-export const MotionWelcomeImage = ({ 
-  pt="0px",
-  isMobile = false
-}: MotionWelcomeImageProps) => {
+export const MotionWelcomeImage = ({ pt="0px",isMobile = false }: MotionWelcomeImageProps) => {
 
-console.log("MotionWelcomeImage 렌더링"); // ← 디버깅용
-
-return (
-  <Flex flexDirection={'column'} pt={pt}>
-    {
-      isMobile
-      ?
-      <IconAiga boxSize={'70px'} />
-      :
-      <div className="opening_wrap">
-        <motion.div
-          className={'opening_wrap'}
-          animate={{ scale: [1, 1.5, 1.1] }}
-          transition={{ duration: 3, times: [0, 0.2, 1] }}
-        >
-          <IconAiga boxSize={'70px'} />
-        </motion.div>
-      </div>
-      }
-  </Flex>
-);
+  return (
+    <Flex flexDirection={'column'} pt={pt}>
+      {
+        isMobile
+        ?
+        <IconAiga boxSize={'70px'} />
+        :
+        <div className="opening_wrap">
+          <motion.div
+            className={'opening_wrap'}
+            animate={{ scale: [1, 1.5, 1.1] }}
+            transition={{ duration: 3, times: [0, 0.2, 1] }}
+          >
+            <IconAiga boxSize={'70px'} />
+          </motion.div>
+        </div>
+        }
+    </Flex>
+  );
 };
+
 export default React.memo(MotionWelcome);
