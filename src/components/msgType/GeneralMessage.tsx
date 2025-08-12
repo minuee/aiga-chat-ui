@@ -202,7 +202,6 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
             />
             )
           )
-         
           :
           <div
             ref={containerRef}

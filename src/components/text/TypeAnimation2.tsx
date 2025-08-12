@@ -7,29 +7,30 @@ type TypeAnimationProps = {
   onComplete?: () => void;
 };
 
-const TypeAnimationScreen = ({ msg, onComplete , speed = 50}: TypeAnimationProps) => {
+const TypeAnimationScreen = ({ msg, onComplete , speed = 30}: TypeAnimationProps) => {
   const [displayHtml, setDisplayHtml] = React.useState('');
 
   React.useEffect(() => {
     let i = 0;
-    const interval = setInterval(() => {
+    const intervalId = setInterval(() => {
       i++;
-      const partial = msg.slice(0, i);//.replaceAll(/\n/g, '<br />').replaceAll(/\\n/g, '\n\n').replace(/^"(.*)"$/, '$1'); // 줄바꿈을 HTML 줄바꿈으로
-      //const plainText = partial?.replace(/\\n/g, '\n\n')?? '';
-      setDisplayHtml(partial);
-
+      setDisplayHtml(msg.slice(0, i));
+  
       if (i >= msg.length) {
-        clearInterval(interval);
-        onComplete?.();
+        clearInterval(intervalId);
+        if (onComplete) {
+          setTimeout(() => onComplete(), 0); // 마지막 렌더 후 호출 보장
+        }
       }
-    }, speed); // 🔸 타이핑 속도 더 빠르게 설정 (원하시면 조절 가능)
-    return () => clearInterval(interval);
-  }, [msg, onComplete]);
+    }, speed ?? 30);
+  
+    return () => clearInterval(intervalId);
+  }, [msg, speed]); // onComplete는 제거
 
   return (
     <Text
       style={{ whiteSpace: 'pre-line' }}
-      whiteSpace="normal" // <br />가 HTML에서 줄바꿈 역할을 하도록
+      whiteSpace="normal"
       dangerouslySetInnerHTML={{ __html: displayHtml }}
     />
   );
