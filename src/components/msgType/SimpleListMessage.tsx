@@ -1,8 +1,8 @@
 'use client';
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 import { Box,Flex,useColorMode ,useColorModeValue ,UnorderedList,ListItem} from '@chakra-ui/react';
 import functions from "@/utils/functions";
-import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
+import CustomText from "@/components/text/CustomText";
 import TypeAnimation  from'@/components/text/TypeAnimation2';
 import { IconChatAiga, DefaultHeaderLogo } from '@/components/icons/svgIcons';
 type SimpleListMessageProps = {
@@ -26,7 +26,6 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false, summary, is
   const textSystemStopIconColor = useColorModeValue('#5E0018', 'navy.800');
   const [hospitalsList, setHospitalsList] = React.useState([]);
   const [isLocalTypeDone, setLocalTypeDone] = React.useState(true)
-
 
   const previousOutputRef = React.useRef<string | null>(null);
 
