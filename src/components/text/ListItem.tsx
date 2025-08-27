@@ -24,6 +24,58 @@ const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 ,is
     const visibleItems = isExpanded ? content : content.slice(0, limintView);
     const handleToggle = () => setIsExpanded((prev) => !prev);
 
+    if ( isType == 'paper') {
+        return (
+            <Flex  flexDirection={'column'} justifyContent={'center'} mt={marginTop} minWidth={0}>
+                <CustomTextBold700 fontSize={'15px'} color={nameText}>{title}</CustomTextBold700>
+                <Box 
+                    mt={3}
+                >
+                    <List spacing={2}>
+                        {visibleItems.map((item:any, index:number) => (
+                            <ListItem key={index}>
+                                <CustomText fontSize={'15px'}  color={textColor} letterSpacing={"-5%"}>
+                                {
+                                   
+                                    ( item?.isFirstAuthor == 1 && !functions.isEmpty(item?.firstAuthors) ) 
+                                    ?
+                                    <span className='fontWeightBold'>
+                                        {`[${item?.firstAuthors}-${item?.doctorName}]`}
+                                    </span>
+                                    :
+                                    ''
+                                }
+                                {
+                                    item.title
+                                }
+                                </CustomText>
+                            </ListItem>
+                        ))}
+                    </List>
+                </Box>
+                {
+                    content.length > limintView && 
+                    (
+                        <Box display={'flex'} width="100%" alignItems={'center'} my="10px">
+                            <Button
+                                size="sm"
+                                backgroundColor={iconBgColor}
+                                borderRadius={0}
+                                py={"3px"}
+                                variant="link"
+                                colorScheme="slate"
+                                onClick={handleToggle}
+                                id="button_toggle"
+                            >
+                                {isExpanded ? <Icon as={FiChevronUp} color={iconColor} /> : <Icon as={FiChevronDown} color={iconColor} />}
+                            </Button>
+                        </Box>
+                    )
+                }
+            </Flex>
+        )
+    };  
+    
     return (
         <Flex  flexDirection={'column'} justifyContent={'center'} mt={marginTop} minWidth={0}>
             <CustomTextBold700 fontSize={'15px'} color={nameText}>{title}</CustomTextBold700>

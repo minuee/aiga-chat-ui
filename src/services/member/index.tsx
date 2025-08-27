@@ -118,7 +118,7 @@ export function setSignupAgree(): any {
 
  export function setMemberEntire(): any {
     try{
-        const res:any =  api.get(`/users/unregist`)
+        const res:any =  api.get(`/users/unregister`)
         .then((response) => {
              return response?.data;
         }).catch((error) => {

@@ -659,7 +659,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   const handleTranslate = async( isText:any = '') => {
     const nowTokens = calculateTokenCount(inputCode);
     const nowTimeStamp = functions.getKSTUnixTimestamp();
-
+    if(isNewChat) setNewChatOpen(false);
     if ( in24UsedToken > 0 ) { 
       const realTimeIn24UsedToken = in24UsedToken+nowTokens;
       if ( userBaseInfo?.isGuest  ) {//비회원

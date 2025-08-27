@@ -441,7 +441,7 @@ export default function ChatBot() {
     
     setTimeout(() => {
       if (textareaRef.current && !isMobileOnly) {
-        textareaRef?.current?.focus()
+        textareaRef?.current?.focus();
       }
     }, 100)
   }
@@ -456,7 +456,8 @@ export default function ChatBot() {
   const handleTranslate = async( isText:any = '') => {
     const nowTokens = calculateTokenCount(inputCode);
     const nowTimeStamp = functions.getKSTUnixTimestamp();
-
+    if(isNewChat) setNewChatOpen(false);
+    setInputCode('')
     if ( in24UsedToken > 0 ) { 
       const realTimeIn24UsedToken = in24UsedToken+nowTokens;
       if ( userBaseInfo?.isGuest  ) {//비회원
@@ -532,7 +533,7 @@ export default function ChatBot() {
       }
      
       try{
-        setInputCode('')
+        
         const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText.trim());
         if (requestRef.current !== newRequestId) return;
         if ( mConstants.apiSuccessCode.includes(questionResult?.statusCode) ) {
@@ -1364,7 +1365,7 @@ export default function ChatBot() {
                     handleSendMessage();
                     setIsFocus(false);
                     handleForceBlur();
-                    setInputCode('')
+                    //setInputCode('')
 
                     setTimeout(() => {
                       setHasSent(false);
