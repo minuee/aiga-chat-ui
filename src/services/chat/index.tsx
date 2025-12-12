@@ -4,11 +4,6 @@ import { UserBasicInfoStore } from '@/store/userStore';
 import { decryptToken } from "@/utils/secureToken";
 import { defaultUserInfo } from "@/types/userData"
 
-const logApi = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_ADMIN_API_BASE_URL, // 실제 로그 서버 주소로 변경
-    timeout: 5000,
-});
-
 export function getChatNewSession(): any {
     try{
         const res:any =  api.post(`/new_session`)
@@ -149,7 +144,7 @@ export function getChatMessage(session_id: string, msg: string): any {
                         error_code: response?.status || 500,
                     };
 
-                    logApi.post('/log', errorPayload).catch(() => {});
+                    api.post('/log', errorPayload).catch(() => {});
                 }
                 return response?.data;
             }).catch((error) => {
@@ -168,7 +163,7 @@ export function getChatMessage(session_id: string, msg: string): any {
                     error_code: error?.response?.status || 500,
                 };
 
-                logApi.post('/log', errorPayload).catch(() => {});
+                api.post('/log', errorPayload).catch(() => {});
                 // 상황에 따라 에러를 더 명확하게 넘겨줄 수도 있어요
                 if ( error.code == 'ECONNABORTED'){
                     // 타임아웃 에러 처리
@@ -210,7 +205,7 @@ export function saveErrorLog(session_id: string, msg: string,fromMessage:string)
             error_code: 500,
         };
 
-        logApi.post('/log', errorPayload).catch(() => {});
+        api.post('/log', errorPayload).catch(() => {});
    }catch(error){
         console.log("eeeee",error)
         return null;   

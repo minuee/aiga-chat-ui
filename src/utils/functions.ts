@@ -32,6 +32,9 @@ const functions = {
     return outputArray;
   },
 
+  cleanJSON(str:any) {
+    return str.replace(/[\u0000-\u001F]+/g, "");
+  },
 
   getKSTUnixTimestamp() {
     // 현재 UTC 시간

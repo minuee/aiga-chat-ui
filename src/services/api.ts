@@ -1,7 +1,7 @@
 import axios, { AxiosResponse,AxiosRequestConfig } from 'axios';
 import * as mCookie from "@/utils/cookies";
 import mConstants from '@/utils/constants';
-import { decryptToken } from "@/utils/secureToken";
+import { decryptToken, encryptToken } from "@/utils/secureToken";
 import functions from '@/utils/functions';
 import { UserBasicInfoStore } from '@/store/userStore';
 import { defaultUserInfo } from "@/types/userData"
@@ -87,20 +87,27 @@ axios.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = localStorage.getItem('refresh_token');
-        if (!functions.isEmpty(refreshToken)) {
-          const res = await axios.post('/auth/refresh', { refreshToken });
+        // The refresh token is in an HttpOnly cookie, so we don't need to read it from localStorage.
+        // We just need to make the request, and the browser will send the cookie automatically.
+        const res = await axios.get('/auth/refresh');
 
-          const newAccessToken = res.data.accessToken;
-          mCookie.setCookie(mConstants.apiTokenName, newAccessToken);
-          onRefreshed(newAccessToken);
-          isRefreshing = false;
+        const newAccessToken = res.data.access_token;
 
-          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-          return axios(originalRequest);
-        }
+        // SignUpScreen.tsx와 동일하게 만료 기간 설정
+        const expireDate = new Date();
+        expireDate.setDate(expireDate.getDate() + 7); // 7일 후 만료 (일관성 유지)
+
+        mCookie.setCookie(mConstants.apiTokenName, encryptToken(newAccessToken), { path: '/' , expires : expireDate });
+        onRefreshed(newAccessToken);
+        isRefreshing = false;
+
+        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+        return axios(originalRequest);
+        
       } catch (refreshError) {
         mCookie.removeCookie(mConstants.apiTokenName);
+        // Important: Propagate the error to properly log the user out.
+        isRefreshing = false;
         return Promise.reject(refreshError);
       }
     }

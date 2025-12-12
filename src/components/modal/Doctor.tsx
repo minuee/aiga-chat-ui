@@ -112,10 +112,12 @@ function DoctorModal(props: DoctorModalProps) {
     }
     setSelectedDoctorId(selected_doctor?.doctor_id);
     if ( !functions.isEmpty(selected_doctor?.education)) {
-      setEducationList(JSON.parse(selected_doctor?.education))
+      const cleaned = functions.cleanJSON(selected_doctor?.education || "");
+      setEducationList(JSON.parse(cleaned))
     }
     if ( !functions.isEmpty(selected_doctor?.career)) {
-      setCareerList(JSON.parse(selected_doctor?.career))
+      const cleaned = functions.cleanJSON(selected_doctor?.career || "");
+      setCareerList(JSON.parse(cleaned))
     }
     if ( !functions.isEmpty(selected_doctor?.paper)) {
       setPaperList(selected_doctor?.paper)
