@@ -235,10 +235,24 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
   }, []);
 
   useEffect(() => {
-    setSelectselectChatId(!functions.isEmpty(data?.chat_id) ? data?.chat_id : !functions.isEmpty(data?.id) ? data?.id : 0)
-    if ( !functions.isEmpty( data?.answer?.doctors )) {
-      setDoctorList(data?.answer?.doctors)
-      //setDoctorList(data?.answer?.doctors.slice(0, 2))
+    setSelectselectChatId(!functions.isEmpty(data?.chat_id) ? data?.chat_id : !functions.isEmpty(data?.id) ? data?.id : 0);
+
+    let parsedAnswer = null;
+    if (typeof data?.answer === 'string') {
+      try {
+        parsedAnswer = JSON.parse(data.answer);
+      } catch (e) {
+        console.error("SearchDoctor: Failed to parse answer JSON:", e);
+        parsedAnswer = null;
+      }
+    } else if (typeof data?.answer === 'object' && data?.answer !== null) {
+      parsedAnswer = data.answer;
+    }
+
+    if (Array.isArray(parsedAnswer?.doctors)) {
+      setDoctorList(parsedAnswer.doctors);
+    } else {
+      setDoctorList([]);
     }
   }, [data]);
 

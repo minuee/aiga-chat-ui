@@ -56,6 +56,7 @@ export default function ChatBot() {
   const [inputCode, setInputCode] = useState<string>('');
   const [isShowScroll, setShowScroll] = useState(false);
   const [isReceiving, setReceiving] = useState(false);
+  const [isThinkingDeeply, setIsThinkingDeeply] = useState<boolean>(false);
   const [hasSent, setHasSent] = useState(false); // 메시지 중복 방지용
   const toast = useToast();
   // Response message
@@ -77,6 +78,7 @@ export default function ChatBot() {
   
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollBottomRef = useRef<HTMLDivElement>(null);
+  const thinkingTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
   
@@ -306,6 +308,26 @@ export default function ChatBot() {
       }
     }
   }, [in24UsedToken,isNewChat]);
+
+  useEffect(() => {
+    if (isReceiving) {
+      thinkingTimerRef.current = setTimeout(() => {
+        setIsThinkingDeeply(true);
+      }, 10000); // 10 seconds
+    } else {
+      if (thinkingTimerRef.current) {
+        clearTimeout(thinkingTimerRef.current);
+        thinkingTimerRef.current = null;
+      }
+      setIsThinkingDeeply(false);
+    }
+
+    return () => {
+      if (thinkingTimerRef.current) {
+        clearTimeout(thinkingTimerRef.current);
+      }
+    };
+  }, [isReceiving]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -1280,7 +1302,13 @@ export default function ChatBot() {
               }
             })
           }
-          { isReceiving && ( <Box><Processing  msg="분석중" /></Box> ) }
+          { isReceiving && (
+          isThinkingDeeply ?
+          ( <Box><Processing  msg="🤔 깊게 생각 중… 조금만 기다려 주세요" /></Box> ) 
+          :
+          ( <Box><Processing  msg="분석중" /></Box> ) 
+          )
+          }
           <Box ref={scrollBottomRef} h="1px" pb={"120px"} visibility="hidden" />
         </Flex>
         <Flex position="fixed" bottom={0} left="0" w="100%"  bg={themeColor} zIndex="100" display={'flex'} justifyContent='center'>

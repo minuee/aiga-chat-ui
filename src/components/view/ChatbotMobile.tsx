@@ -65,6 +65,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   const [inputCode, setInputCode] = useState<string>('');
   const [isShowScroll, setShowScroll] = useState(false);
   const [isReceiving, setReceiving] = useState(false);
+  const [isThinkingDeeply, setIsThinkingDeeply] = useState<boolean>(false);
   const [hasSent, setHasSent] = useState(false); // 메시지 중복 방지용
   const toast = useToast();
   // Response message
@@ -89,6 +90,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   const scrollLockRef = useRef(false); // 컴포넌트 맨 위에 선언
   const lastScrollStateRef = useRef<'up' | 'down' | null>(null);
   const lastToastTimeRef = useRef(0)
+  const thinkingTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
   
@@ -564,6 +566,26 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
       }
     }
   }, [in24UsedToken,isNewChat]);
+
+  useEffect(() => {
+    if (isReceiving) {
+      thinkingTimerRef.current = setTimeout(() => {
+        setIsThinkingDeeply(true);
+      }, 10000); // 10 seconds
+    } else {
+      if (thinkingTimerRef.current) {
+        clearTimeout(thinkingTimerRef.current);
+        thinkingTimerRef.current = null;
+      }
+      setIsThinkingDeeply(false);
+    }
+
+    return () => {
+      if (thinkingTimerRef.current) {
+        clearTimeout(thinkingTimerRef.current);
+      }
+    };
+  }, [isReceiving]);
 
   
 
@@ -1493,7 +1515,13 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                     }
                   })
                 }
-                { isReceiving && ( <Box><Processing  msg="분석중" /></Box> ) }
+                { isReceiving && (
+                  isThinkingDeeply ?
+                  ( <Box><Processing  msg="🤔 깊게 생각 중… 조금만 기다려 주세요" /></Box> ) 
+                  :
+                  ( <Box><Processing  msg="분석중" /></Box> ) 
+                  )
+                }
                 <Box ref={scrollBottomRef}  height={isMobileSafari ? "10px" : "50px"} pb={isMobileSafari ? "10px" : "50px"} visibility="hidden" bg={themeColor}/>
               </Flex>
             </Flex>

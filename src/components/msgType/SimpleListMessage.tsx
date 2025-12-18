@@ -24,7 +24,7 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false, summary, is
   const bgSystemStopColor = useColorModeValue('#FFF0F0', 'white');
   const textSystemStopColor = useColorModeValue('#F94848', 'navy.800');
   const textSystemStopIconColor = useColorModeValue('#5E0018', 'navy.800');
-  const [hospitalsList, setHospitalsList] = React.useState([]);
+  const [hospitalsList, setHospitalsList] = React.useState<any[]>([]);
   const [isLocalTypeDone, setLocalTypeDone] = React.useState(true)
 
   const previousOutputRef = React.useRef<string | null>(null);
@@ -37,11 +37,22 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false, summary, is
   const isOutputSame = previousOutputRef.current === summary && previousOutputRef.current !== null;
   
   React.useEffect(() => {
-    if ( functions.isEmpty(msg?.hospitals) ) {
-      const reData = functions.parseMaybeJson(msg?.hospitals);
-      setHospitalsList(reData);
-    }else{
-      setHospitalsList(msg?.hospitals);
+    let parsedHospitals = null;
+    if (typeof msg?.hospitals === 'string') {
+      try {
+        parsedHospitals = JSON.parse(msg.hospitals);
+      } catch (e) {
+        console.error("SimpleListMessage: Failed to parse hospitals JSON:", e);
+        parsedHospitals = null;
+      }
+    } else if (Array.isArray(msg?.hospitals)) {
+      parsedHospitals = msg.hospitals;
+    }
+  
+    if (Array.isArray(parsedHospitals)) {
+      setHospitalsList(parsedHospitals);
+    } else {
+      setHospitalsList([]);
     }
   }, [msg]);
 
