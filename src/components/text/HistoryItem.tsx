@@ -82,7 +82,7 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
                 <Input 
                     type="text" 
                     placeholder='제목을 입력해주세요(필수)' 
-                    value={functions.isEmpty(inputs?.title) ? "무제" : inputs?.title}
+                    value={functions.isEmpty(inputs?.title) ? "" : inputs?.title}
                     onChange={(e) => setInputs({...inputs, title: e.target.value})}
                     color={textColor}
                     bg={editMode ? '#ffffff' : 'transparent'}
@@ -100,7 +100,7 @@ const HistoryItem = ({ data, onDeleteHistory, onHandleUpdateTitle,onHandCallHist
             :
             <Box onClick={() => onHandCallHistory(data)} bg='transparent' minWidth={"90%"} zIndex={2} cursor={'pointer'}>
                 <CustomText fontSize='17px' noOfLines={1} pr='20px' color={historyColor}>
-                    {functions.isEmpty(title) ? "무제" :title }
+                    {functions.isEmpty(title) ? "" :title }
                 </CustomText>
             </Box>
         }
