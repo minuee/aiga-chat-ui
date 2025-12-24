@@ -111,16 +111,51 @@ function DoctorModal(props: DoctorModalProps) {
       //getDoctorBasicData()
     }
     setSelectedDoctorId(selected_doctor?.doctor_id);
+    
+    // Safely parse education
     if ( !functions.isEmpty(selected_doctor?.education)) {
-      const cleaned = functions.cleanJSON(selected_doctor?.education || "");
-      setEducationList(JSON.parse(cleaned))
+      const eduData = selected_doctor.education;
+      if (typeof eduData === 'string' && eduData.trim().startsWith('[')) {
+        try {
+          const cleaned = functions.cleanJSON(eduData);
+          setEducationList(JSON.parse(cleaned));
+        } catch (e) {
+          console.error("Doctor.tsx: Failed to parse education JSON:", e);
+          setEducationList([]); // Default to empty list on error
+        }
+      } else if (Array.isArray(eduData)) {
+        setEducationList(eduData);
+      } else {
+        setEducationList([]);
+      }
+    } else {
+      setEducationList([]);
     }
+
+    // Safely parse career
     if ( !functions.isEmpty(selected_doctor?.career)) {
-      const cleaned = functions.cleanJSON(selected_doctor?.career || "");
-      setCareerList(JSON.parse(cleaned))
+      const careerData = selected_doctor.career;
+      if (typeof careerData === 'string' && careerData.trim().startsWith('[')) {
+        try {
+          const cleaned = functions.cleanJSON(careerData);
+          setCareerList(JSON.parse(cleaned));
+        } catch (e) {
+          console.error("Doctor.tsx: Failed to parse career JSON:", e);
+          setCareerList([]); // Default to empty list on error
+        }
+      } else if (Array.isArray(careerData)) {
+        setCareerList(careerData);
+      } else {
+        setCareerList([]);
+      }
+    } else {
+      setCareerList([]);
     }
+
     if ( !functions.isEmpty(selected_doctor?.paper)) {
       setPaperList(selected_doctor?.paper)
+    } else {
+      setPaperList([]);
     }
     setIsLoading(false);
     setTimeout(() => {
