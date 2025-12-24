@@ -239,13 +239,21 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
 
     let parsedAnswer = null;
     if (typeof data?.answer === 'string') {
-      try {
-        parsedAnswer = JSON.parse(data.answer);
-      } catch (e) {
-        console.error("SearchDoctor: Failed to parse answer JSON:", e);
+      // It's a string. Check if it looks like a JSON object before trying to parse.
+      if (data.answer.trim().startsWith('{')) {
+        try {
+          parsedAnswer = JSON.parse(data.answer);
+        } catch (e) {
+          console.error("SearchDoctor: Failed to parse malformed answer JSON:", e);
+          parsedAnswer = null; // Set to null if parsing fails
+        }
+      } else {
+        // It's a plain string, not JSON. Do not attempt to parse.
+        // This prevents errors for non-JSON string responses.
         parsedAnswer = null;
       }
     } else if (typeof data?.answer === 'object' && data?.answer !== null) {
+      // It's already an object, use it directly.
       parsedAnswer = data.answer;
     }
 
