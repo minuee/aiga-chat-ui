@@ -68,9 +68,9 @@ function DoctorModal(props: DoctorModalProps) {
     review: []
   });
   const [selectedDoctorId, setSelectedDoctorId] = React.useState(selected_doctor);
-  const [educationList, setEducationList] = React.useState([]);
-  const [careerList, setCareerList] = React.useState([]);
-  const [paperList, setPaperList] = React.useState([]);
+  const [educationList, setEducationList] = React.useState<any[]>([]);
+  const [careerList, setCareerList] = React.useState<any[]>([]);
+  const [paperList, setPaperList] = React.useState<any[]>([]);
 
   const { isOpenAlert } = ReviewAlertStore(state => state);
   const setOpenAlert = ReviewAlertStore((state) => state.setIsOpenReviewLoginAlert);
