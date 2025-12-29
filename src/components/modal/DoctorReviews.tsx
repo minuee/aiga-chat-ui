@@ -62,7 +62,7 @@ function DoctorReview( props: DoctorModalProps ) {
       const kindness_avg_tmp = (!functions.isEmpty(doctorBasicData?.ai_score?.kindness) && doctorBasicData?.ai_score?.kindness > 0 ) ?  (reviewAvg?.kindness_avg + doctorBasicData?.ai_score?.kindness)/2 :  reviewAvg?.kindness_avg;
       const explaination_avg_tmp = (!functions.isEmpty(doctorBasicData?.ai_score?.explaination) && doctorBasicData?.ai_score?.explaination > 0) ?  (reviewAvg?.explaination_avg + doctorBasicData?.ai_score?.explaination)/2 :  reviewAvg?.explaination_avg;
       const satisfaction_avg_tmp = (!functions.isEmpty(doctorBasicData?.ai_score?.satisfaction) && doctorBasicData?.ai_score?.satisfaction > 0 )?  (reviewAvg?.satisfaction_avg + doctorBasicData?.ai_score?.satisfaction)/2 :  reviewAvg?.satisfaction_avg;
-      const recommand_avg_tmp = (!functions.isEmpty(doctorBasicData?.ai_score?.recommand) && doctorBasicData?.ai_score?.recommand > 0 ) ?  (reviewAvg?.recommand_avg + doctorBasicData?.ai_score?.recommand)/2 :  reviewAvg?.recommand_avg;
+      const recommand_avg_tmp = (!functions.isEmpty(doctorBasicData?.ai_score?.recommendation) && doctorBasicData?.ai_score?.recommendation > 0 ) ?  (reviewAvg?.recommand_avg + doctorBasicData?.ai_score?.recommendation)/2 :  reviewAvg?.recommand_avg;
       setTotalAigaReviewAverage({
         kindness_avg: kindness_avg_tmp,
         explaination_avg:  explaination_avg_tmp,
@@ -80,7 +80,7 @@ function DoctorReview( props: DoctorModalProps ) {
       const kindness_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.kindness) ?  doctorBasicData?.ai_score?.kindness : 0;
       const explaination_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.explaination) ?  doctorBasicData?.ai_score?.explaination :  0;
       const satisfaction_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.satisfaction) ?  doctorBasicData?.ai_score?.satisfaction : 0;
-      const recommand_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.recommand) ? doctorBasicData?.ai_score?.recommand : 0;
+      const recommand_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.recommendation) ? doctorBasicData?.ai_score?.recommendation : 0;
       
       setTotalAigaReviewAverage({
         kindness_avg: kindness_avg_tmp,
@@ -256,7 +256,7 @@ function DoctorReview( props: DoctorModalProps ) {
               </Box>
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} pb="10px">
                 <CustomText fontSize={'13px'} color={voteTextColor} lineHeight={"150%"}>치료 만족</CustomText>
-                <CustomTextBold700 fontSize={'15px'} color={votePointColor} lineHeight={"150%"}>{totalAigaReviewAverage?.explaination_avg?.toFixed(1)}</CustomTextBold700>
+                <CustomTextBold700 fontSize={'15px'} color={votePointColor} lineHeight={"150%"}>{totalAigaReviewAverage?.satisfaction_avg?.toFixed(1)}</CustomTextBold700>
               </Box>
             </Box>
             <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
@@ -265,7 +265,7 @@ function DoctorReview( props: DoctorModalProps ) {
               </Box>
               <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} pb="10px">
                 <CustomText fontSize={'13px'} color={voteTextColor} lineHeight={"150%"}>쉬운 설명</CustomText>
-                <CustomTextBold700 fontSize={'15px'} color={votePointColor} lineHeight={"150%"}>{totalAigaReviewAverage?.satisfaction_avg?.toFixed(1)}</CustomTextBold700>
+                <CustomTextBold700 fontSize={'15px'} color={votePointColor} lineHeight={"150%"}>{totalAigaReviewAverage?.explaination_avg?.toFixed(1)}</CustomTextBold700>
               </Box>
             </Box>
             <Box display={'flex'} flexDirection='column' flex={1} justifyContent={'center'} alignItems={'center'}>
@@ -329,10 +329,10 @@ function DoctorReview( props: DoctorModalProps ) {
                   <CustomText fontSize={'13px'} color={voteTextColor}>치료 만족</CustomText>
                 </Box>
                 <Box flex={2} mr={2}>
-                  <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={(aigaReviewAverage?.explaination_avg*20)} borderRadius={'1rem'} bg={'#EFF2F7'} />
+                  <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={(aigaReviewAverage?.satisfaction_avg*20)} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box flex={1} padding={'0 5px'}>
-                  <CustomText fontSize={'13px'} color={voteTextColor2}>{aigaReviewAverage?.explaination_avg?.toFixed(1)}</CustomText>
+                  <CustomText fontSize={'13px'} color={voteTextColor2}>{aigaReviewAverage?.satisfaction_avg?.toFixed(1)}</CustomText>
                 </Box>
               </Box>
               <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'} height={'25px'}>
@@ -340,10 +340,10 @@ function DoctorReview( props: DoctorModalProps ) {
                   <CustomText fontSize={'13px'} color={voteTextColor}>쉬운 설명</CustomText>
                 </Box>
                 <Box flex={2} mr={2}>
-                  <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={(aigaReviewAverage?.satisfaction_avg*20)} borderRadius={'1rem'} bg={'#EFF2F7'} />
+                  <ProgressBar colorScheme='blue' height='8px' width={'100%'} value={(aigaReviewAverage?.explaination_avg*20)} borderRadius={'1rem'} bg={'#EFF2F7'} />
                 </Box>
                 <Box flex={1} padding={'0 5px'}>
-                  <CustomText fontSize={'13px'} color={voteTextColor2}>{aigaReviewAverage?.satisfaction_avg?.toFixed(1)}</CustomText>
+                  <CustomText fontSize={'13px'} color={voteTextColor2}>{aigaReviewAverage?.explaination_avg?.toFixed(1)}</CustomText>
                 </Box>
               </Box>
               <Box display={'flex'} flexDirection={'row'}   alignItems={'center'} justifyContent={'flex-end'} width={'100%'} height={'25px'}>
