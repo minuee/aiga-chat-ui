@@ -60,7 +60,7 @@ function DoctorReview( props: DoctorModalProps ) {
 
     if ( !functions.isEmpty(reviewAvg) && !functions.isEmpty(doctorBasicData?.ai_score)) {
       const kindness_avg_tmp = (!functions.isEmpty(doctorBasicData?.ai_score?.kindness) && doctorBasicData?.ai_score?.kindness > 0 ) ?  (reviewAvg?.kindness_avg + doctorBasicData?.ai_score?.kindness)/2 :  reviewAvg?.kindness_avg;
-      const explaination_avg_tmp = (!functions.isEmpty(doctorBasicData?.ai_score?.explaination) && doctorBasicData?.ai_score?.explaination > 0) ?  (reviewAvg?.explaination_avg + doctorBasicData?.ai_score?.kindness)/2 :  reviewAvg?.explaination_avg;
+      const explaination_avg_tmp = (!functions.isEmpty(doctorBasicData?.ai_score?.explaination) && doctorBasicData?.ai_score?.explaination > 0) ?  (reviewAvg?.explaination_avg + doctorBasicData?.ai_score?.explaination)/2 :  reviewAvg?.explaination_avg;
       const satisfaction_avg_tmp = (!functions.isEmpty(doctorBasicData?.ai_score?.satisfaction) && doctorBasicData?.ai_score?.satisfaction > 0 )?  (reviewAvg?.satisfaction_avg + doctorBasicData?.ai_score?.satisfaction)/2 :  reviewAvg?.satisfaction_avg;
       const recommand_avg_tmp = (!functions.isEmpty(doctorBasicData?.ai_score?.recommand) && doctorBasicData?.ai_score?.recommand > 0 ) ?  (reviewAvg?.recommand_avg + doctorBasicData?.ai_score?.recommand)/2 :  reviewAvg?.recommand_avg;
       setTotalAigaReviewAverage({
@@ -78,7 +78,7 @@ function DoctorReview( props: DoctorModalProps ) {
       })
     }else if ( functions.isEmpty(reviewAvg) && !functions.isEmpty(doctorBasicData?.ai_score)) {
       const kindness_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.kindness) ?  doctorBasicData?.ai_score?.kindness : 0;
-      const explaination_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.explaination) ?  doctorBasicData?.ai_score?.kindness :  0;
+      const explaination_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.explaination) ?  doctorBasicData?.ai_score?.explaination :  0;
       const satisfaction_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.satisfaction) ?  doctorBasicData?.ai_score?.satisfaction : 0;
       const recommand_avg_tmp = !functions.isEmpty(doctorBasicData?.ai_score?.recommand) ? doctorBasicData?.ai_score?.recommand : 0;
       
