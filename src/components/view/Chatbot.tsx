@@ -41,6 +41,7 @@ import {
 import { decryptToken } from "@/utils/secureToken";
 import { defaultUserInfo } from "@/types/userData"
 import UserStateStore, { UserBasicInfoStore } from '@/store/userStore';
+import { useLocationStore } from '@/store/locationStore';
 import * as ChatService from "@/services/chat/index";
 import { SendButtonOff,SendButtonOn } from '@/components/icons/svgIcons';
 
@@ -84,6 +85,7 @@ export default function ChatBot() {
   
   const resetUserBasicInfo = UserBasicInfoStore((state) => state.resetUserBasicInfo);
   const userStoreInfo = UserBasicInfoStore(state => state.userStoreInfo);
+  const { latitude, longitude } = useLocationStore();
   const userBaseInfo = useMemo(() => {
     const deCryptInfo = decryptToken(userStoreInfo)
     const ret = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ?  JSON.parse(deCryptInfo) : userStoreInfo;
@@ -556,7 +558,7 @@ export default function ChatBot() {
      
       try{
         
-        const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText.trim());
+        const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText.trim(), latitude, longitude);
         if (requestRef.current !== newRequestId) return;
         if ( mConstants.apiSuccessCode.includes(questionResult?.statusCode) ) {
           const answerMessage = questionResult?.data;

@@ -17,6 +17,7 @@ import { useGeoLocation } from '@/hooks/useGeoLocation';
 import mConstants from '@/utils/constants';
 import DoctorDetail  from '@/components/modal/Doctor';
 import { ModalDoctorDetailStore,DoctorFromListStore } from '@/store/modalStore';
+import { useLocationStore } from '@/store/locationStore';
 import { decryptToken,encryptToken } from "@/utils/secureToken";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import { MdArrowBack,MdInsertEmoticon,MdOutlineClose } from 'react-icons/md';
@@ -66,6 +67,7 @@ function DoctorListModal(props: DoctorListModalProps) {
   const [showGradient, setShowGradient] = React.useState(true);
   const isDark = useColorModeValue(false, true);
   const { location, error } = useGeoLocation(geolocationOptions)
+  const { setLocation } = useLocationStore();
   const skeletonColor = useColorModeValue('white', 'gray.700');
   const textColor = useColorModeValue('white', 'white')
   const tabSelectedBgColor = useColorModeValue('blue.100', 'green')
@@ -100,15 +102,17 @@ function DoctorListModal(props: DoctorListModalProps) {
   }, [isOpen,originDoctorData]);
 
   React.useEffect(() => {
-    console.log('latitude:',location?.latitude, 'longitude:',location?.longitude);
-    if (location?.latitude != undefined && location?.longitude != undefined ) { // 0,0이 아닐 때만 업데이트
+    if (location?.latitude !== undefined && location?.longitude !== undefined) {
+      // Update global store
+      setLocation(location.latitude, location.longitude);
+      // Update local state
       setInputs((prevInputs) => ({
         ...prevInputs,
         latitude: location.latitude,
         longitude: location.longitude,
       }));
     }
-  }, [location]);
+  }, [location, setLocation]);
 
   const makeBgColor = (sortType: string = 'all') => {
     if (Array.isArray(inputs.sortType) && (inputs.sortType as string[]).includes(sortType)) {
@@ -183,13 +187,13 @@ function DoctorListModal(props: DoctorListModalProps) {
       if ( !functions.isEmpty(data?.paper_score)){
         return data?.paper_score;
       }else {
-        0
+        return 0;
       }
     }else{
       if ( !functions.isEmpty(data?.patient_score)){
         return data?.patient_score;
       }else {
-        0
+        return 0;
       }
     }
   }
@@ -207,15 +211,18 @@ function DoctorListModal(props: DoctorListModalProps) {
       return;
     }
     
-    const userLat = inputs?.latitude;
-    const userLng = inputs?.longitude;
+    const userLat = inputs.latitude;
+    const userLng = inputs.longitude;
 
     setIsReLoading(true);
     //console.log(`sorted userLat:${userLat}, userLng:${userLng},updatedSortTypeList:${updatedSortTypeList}`);
     //console.log('sorted origin:',originDoctorData);
-    const sorted = await sortDoctors(originDoctorData,userLat,userLng,updatedSortTypeList);
-    //console.log('sorted after:',sorted);
-    setDoctors(sorted);
+    if(userLat && userLng) {
+      const sorted = await sortDoctors(originDoctorData,userLat,userLng,updatedSortTypeList);
+      //console.log('sorted after:',sorted);
+      setDoctors(sorted);
+    }
+    
     setInputs((prev:any) => ({
       ...prev,
       sortType: updatedSortTypeList
@@ -237,11 +244,6 @@ function DoctorListModal(props: DoctorListModalProps) {
       }
     };
   }, []);
-
-
-  React.useEffect(() => {
-    console.log('inputs:',inputs);
-  }, [inputs]);
 
   const fn_close_modal_doctor_detail = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
@@ -318,7 +320,7 @@ function DoctorListModal(props: DoctorListModalProps) {
                 </TagLabel>
               </Tag>
               {
-                ( !functions.isEmpty(inputs.latitude) && !functions.isEmpty(inputs.longitude) && inputs?.latitude != 0 && inputs?.longitude != 0 ) ? 
+                ( !functions.isEmpty(inputs.latitude) && !functions.isEmpty(inputs.longitude) && inputs.latitude != 0 && inputs.longitude != 0 ) ? 
                 (
                   <Tag size={'lg'} borderRadius='full' px={5} ml={2} variant='solid' bg={makeBgColor('distance')} onClick={() => onHandleSortChange('distance')} cursor={'pointer'} flexShrink="0">
                     <TagLeftIcon boxSize='16px' as={BsGeoAlt} color={makeTextColor('distance')} />
@@ -380,17 +382,6 @@ function DoctorListModal(props: DoctorListModalProps) {
             </Box>
           </Flex>
           )
-        }
-        { ( process.env.NODE_ENV == 'development' || userBaseInfo?.email == "minuee47@gmail.com" || userBaseInfo?.email == "lena47@naver.com" || userBaseInfo?.email == "wjlee2002@naver.com") 
-        ?
-        <Flex display={'flex'} flexDirection={'column'} minHeight={'40px'}  pt={10}>
-          <Box display={process.env.NODE_ENV == 'production' ? 'none' : 'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
-            <CustomText color='#000000'>{`위도 : ${location?.latitude}`}</CustomText>
-            <CustomText color='#000000'>{`경도 : ${location?.longitude}`}</CustomText>
-          </Box>
-        </Flex>
-        :
-        <></>
         }
         <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'}  pt={10} overflowY={'auto'}>
           {
