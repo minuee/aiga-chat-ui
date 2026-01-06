@@ -231,7 +231,7 @@ export const useChatCore = () => {
         addMessage({ chat_id: functions.getUUID(), ismode: "me", question: isText, isOnlyLive: false });
 
         try {
-            const questionResult: any = await ChatService.getChatMessage(chat_sessinn_id, isText.trim());
+            const questionResult: any = await ChatService.getChatMessage(chat_sessinn_id, isText.trim(), null,null);
             if (requestRef.current !== newRequestId) return;
 
             if (mConstants.apiSuccessCode.includes(questionResult?.statusCode)) {
