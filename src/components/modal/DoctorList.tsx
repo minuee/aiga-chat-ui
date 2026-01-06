@@ -5,6 +5,8 @@ import {
   Box,Flex,Text,SkeletonCircle,SkeletonText,Tag,TagLabel, useColorModeValue,Stack,Modal,ModalOverlay,ModalContent,ModalHeader,ModalBody,Icon,
   Popover,PopoverTrigger,PopoverContent,PopoverHeader,PopoverArrow,PopoverBody,TagLeftIcon,
 } from '@chakra-ui/react';
+
+import { PWATokenStore,UserBasicInfoStore } from '@/store/userStore';
 import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
 import * as mCookie from "@/utils/cookies";
@@ -15,12 +17,12 @@ import { useGeoLocation } from '@/hooks/useGeoLocation';
 import mConstants from '@/utils/constants';
 import DoctorDetail  from '@/components/modal/Doctor';
 import { ModalDoctorDetailStore,DoctorFromListStore } from '@/store/modalStore';
-
+import { decryptToken,encryptToken } from "@/utils/secureToken";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import { MdArrowBack,MdInsertEmoticon,MdOutlineClose } from 'react-icons/md';
 import { TbBook2 } from "react-icons/tb";
 import { BsGeoAlt } from "react-icons/bs";
-
+import { defaultUserInfo } from "@/types/userData"
 import { IconSearch } from '@/components/icons/svgIcons';
 const geolocationOptions = {
   enableHighAccuracy: true,
@@ -42,6 +44,12 @@ function DoctorListModal(props: DoctorListModalProps) {
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
 
+  const userStoreInfo = UserBasicInfoStore(state => state.userStoreInfo);
+  const userBaseInfo = React.useMemo(() => {
+    const deCryptInfo = decryptToken(userStoreInfo)
+    const ret = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ?  JSON.parse(deCryptInfo) : userStoreInfo;
+    return ret;
+  }, [userStoreInfo]);
   const { isOpenDoctorModal } = ModalDoctorDetailStore(state => state);
   const setIsOpenDoctorModal = ModalDoctorDetailStore((state) => state.setOpenDoctorDetailModal);
   const { isFromDoctorDepth2 } = DoctorFromListStore(state => state);
@@ -92,7 +100,8 @@ function DoctorListModal(props: DoctorListModalProps) {
   }, [isOpen,originDoctorData]);
 
   React.useEffect(() => {
-    if (location?.latitude && location?.longitude) {
+    console.log('latitude:',location?.latitude, 'longitude:',location?.longitude);
+    if (location?.latitude != undefined && location?.longitude != undefined ) { // 0,0이 아닐 때만 업데이트
       setInputs((prevInputs) => ({
         ...prevInputs,
         latitude: location.latitude,
@@ -202,7 +211,10 @@ function DoctorListModal(props: DoctorListModalProps) {
     const userLng = inputs?.longitude;
 
     setIsReLoading(true);
+    //console.log(`sorted userLat:${userLat}, userLng:${userLng},updatedSortTypeList:${updatedSortTypeList}`);
+    //console.log('sorted origin:',originDoctorData);
     const sorted = await sortDoctors(originDoctorData,userLat,userLng,updatedSortTypeList);
+    //console.log('sorted after:',sorted);
     setDoctors(sorted);
     setInputs((prev:any) => ({
       ...prev,
@@ -225,6 +237,11 @@ function DoctorListModal(props: DoctorListModalProps) {
       }
     };
   }, []);
+
+
+  React.useEffect(() => {
+    console.log('inputs:',inputs);
+  }, [inputs]);
 
   const fn_close_modal_doctor_detail = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
@@ -301,7 +318,7 @@ function DoctorListModal(props: DoctorListModalProps) {
                 </TagLabel>
               </Tag>
               {
-                ( !functions.isEmpty(inputs.latitude) && !functions.isEmpty(inputs.longitude) ) ? 
+                ( !functions.isEmpty(inputs.latitude) && !functions.isEmpty(inputs.longitude) && inputs?.latitude != 0 && inputs?.longitude != 0 ) ? 
                 (
                   <Tag size={'lg'} borderRadius='full' px={5} ml={2} variant='solid' bg={makeBgColor('distance')} onClick={() => onHandleSortChange('distance')} cursor={'pointer'} flexShrink="0">
                     <TagLeftIcon boxSize='16px' as={BsGeoAlt} color={makeTextColor('distance')} />
@@ -364,12 +381,17 @@ function DoctorListModal(props: DoctorListModalProps) {
           </Flex>
           )
         }
-       {/*  <Flex display={'flex'} flexDirection={'column'} minHeight={'40px'}  pt={10}>
+        { ( process.env.NODE_ENV == 'development' || userBaseInfo?.email == "minuee47@gmail.com" || userBaseInfo?.email == "lena47@naver.com" || userBaseInfo?.email == "wjlee2002@naver.com") 
+        ?
+        <Flex display={'flex'} flexDirection={'column'} minHeight={'40px'}  pt={10}>
           <Box display={process.env.NODE_ENV == 'production' ? 'none' : 'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
             <CustomText color='#000000'>{`위도 : ${location?.latitude}`}</CustomText>
             <CustomText color='#000000'>{`경도 : ${location?.longitude}`}</CustomText>
           </Box>
-        </Flex> */}
+        </Flex>
+        :
+        <></>
+        }
         <Flex display={'flex'} flexDirection={'column'} minHeight={'100px'}  pt={10} overflowY={'auto'}>
           {
             doctors?.map((item:any,index:number) => {

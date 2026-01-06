@@ -2,7 +2,7 @@
 
 import React from 'react';
 import PageLayout from '@/components/layout/PageLayout';
-import CahtPageView from "@/components/view/ChatPage"
+import CahtPageView from "@/components/view/ChatPageV0"
 //import CahtPageView from '@/components/view/Waiting';
 export default function Index() {
 

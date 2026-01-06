@@ -6,14 +6,20 @@ import TypeAnimation  from'@/components/text/TypeAnimation2';
 import { IconChatAiga,DefaultHeaderLogo} from '@/components/icons/svgIcons';
 
 function convertLinksAndImagesToHTML(text: string): string {
-  const markdownImageRegex = /!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g;
+  // 0. Pre-process to encode spaces in image URLs
+  const imageWithSpaceRegex = /(https?:\/\/.+?\.(?:jpeg|jpg|png|gif|bmp|webp))/gi;
+  const textWithEncodedSpaces = text.replace(imageWithSpaceRegex, (url) => {
+    return url.replace(/ /g, '%20');
+  });
+
+  const markdownImageRegex = /!\[([^\]]*)\]\((https?:\/\/[^)]+)\)/g;
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   const imageRegex = /\.(jpeg|jpg|png|gif|bmp|webp)(\?.*)?$/i;
 
   const imageUrls: string[] = [];
 
-  // 1. Markdown 이미지 처리
-  let convertedText = text.replace(markdownImageRegex, (_, alt, url) => {
+  // 1. Markdown 이미지 처리 (on the pre-processed text)
+  let convertedText = textWithEncodedSpaces.replace(markdownImageRegex, (_, alt, url) => {
     const cleanUrl = url.trim();
     imageUrls.push(cleanUrl);
     return `

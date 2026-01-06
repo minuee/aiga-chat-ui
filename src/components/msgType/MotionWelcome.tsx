@@ -35,7 +35,7 @@ const MotionWelcome = ({ msg = "AIGA",pt="0px",classNames="opening_wrap",isMobil
 };
 
 type MotionWelcomeImageProps = {
-  pt : string;
+  pt?: string;
   isMobile : boolean;
 };
 

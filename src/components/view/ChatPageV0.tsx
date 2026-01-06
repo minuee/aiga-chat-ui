@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-const [isMobileOnly, setIsMobileOnly] = React.useState(false);
-const isMobileSafari = typeof window !== 'undefined' && /iPhone/.test(window.navigator.userAgent) && !/Chrome/.test(window.navigator.userAgent);
+import { isMobileOnly,isMobileSafari} from "react-device-detect";
+import SubPage from '@/components/view/Chatbot';
+import SubMobilePage from '@/components/view/ChatbotMobile';
 import { Flex,Box, SkeletonCircle, useDisclosure,useColorModeValue,useToast } from '@chakra-ui/react';
-import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import routes from '@/routes';
 import { getActiveRoute, getActiveNavbar } from '@/utils/navigation';
@@ -19,32 +19,13 @@ import TokenGuard from '@/components/apiModal/TokenGuard';
 import * as CommonService from "@/services/common/index";
 import functions from '@/utils/functions';
 import useDetectKeyboardOpen from "use-detect-keyboard-open";
-
-const ChatView = dynamic(() => import('@/components/view/ChatView'), {
-    ssr: false,
-    loading: () => (
-      <Flex height={"100%"} minHeight={"100vh"} width="100%" justifyContent={'center'} alignItems={'center'}>
-        <SkeletonCircle size='10' />
-      </Flex>
-    ),
-});
-
 const MOBILE_HEADER_HEIGHT = 60;
 const MOBILE_INPUT_HEIGHT = 60;
 
 export default function Index() {
-  console.log('[ChatPage] Rendering. isMobileOnly =', isMobileOnly);
+  
   const pathname = usePathname();
-
-  React.useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobileOnly(window.innerWidth < (mConstants.desktopMinWidth || 768));
-    };
-
-    checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
-    return () => window.removeEventListener('resize', checkIsMobile);
-  }, []);
+  const toast = useToast();
   const userStoreInfo = UserBasicInfoStore(state => state.userStoreInfo);
   const userBaseInfo = React.useMemo(() => {
     const deCryptInfo = decryptToken(userStoreInfo)
@@ -54,86 +35,78 @@ export default function Index() {
   const userId = userBaseInfo?.userBaseInfo
   const alreadyInitialized = React.useRef(false);
   const setConfigInfoStore = ConfigInfoStore((state) => state.setConfigInfoStore);
-  const { isGlobalState, setGlobalState } = GlobalStateStore(state => state);
+  const { isGlobalState } = GlobalStateStore(state => state);
+  const setGlobalState = GlobalStateStore((state) => state.setGlobalState);
+  const [isClient, setIsClient] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(true);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [hasMounted, setHasMounted] = React.useState(false);
 
   const themeColor = useColorModeValue('white', 'navy.800');
 
-  // Mobile layout states and effects, moved from ChatView
   const isKeyboardOpen = useDetectKeyboardOpen();
-  const [mobileContentScrollHeight, setMobileContentScrollHeight] = React.useState(0);
-  const [mobileViewportHeight, setMobileViewportHeight] = React.useState<number | string>('100vh');
-  const [mobileKeyboardOffset, setMobileKeyboardOffset] = React.useState(0);
   const [isKeyboardOpenSafari, setIsKeyboardOpenSafari] = React.useState(false);
-  const initialViewportHeight = React.useRef<number | null>(null); // For Safari zoom
+  const [mobileKeyboardOffset, setMobileKeyboardOffset] = React.useState(0);
+  
+  const [mobileViewPortHeight, setMobileViewPortHeight] = React.useState(0);
+  const [mobileContainerHeight, setMobileContainerHeight] = React.useState(0);
+  const [mobileContentScrollHeight, setMobileContentScrollHeight] = React.useState(0);
+
+  const mobileScrollRef = React.useRef<HTMLDivElement>(null);
+  const initialViewportHeight = React.useRef<number | null>(null);
 
   React.useEffect(() => {
     setHasMounted(true);
   }, []);
 
   React.useEffect(() => {
-    // This effect only runs when the mobile view is active.
-    if (!isMobileOnly) return;
-
-    const originalBodyPosition = document.body.style.position;
-    const originalBodyOverflow = document.body.style.overflow;
-    const originalHtmlOverflow = document.documentElement.style.overflow;
-
-    // Apply app-mode styles to override global CSS
-    document.body.style.position = 'static'; // Override 'relative'
-    document.body.style.overflow = 'hidden'; // Override 'auto'
-    document.documentElement.style.overflow = 'hidden'; // Prevent html element from scrolling
-
-    // Cleanup function to restore original styles when component unmounts
-    return () => {
-        document.body.style.position = originalBodyPosition;
-        document.body.style.overflow = originalBodyOverflow;
-        document.documentElement.style.overflow = originalHtmlOverflow;
-    };
-  }, [isMobileOnly]); // Run only when mobile view is activated/deactivated
-
-  // Calculate mobile layout dimensions based on visual viewport
+    if ( isMobileOnly ) {
+      const vpHeight = window.visualViewport?.height || window.innerHeight;
+      const fullHeight = window.innerHeight;
+      const keyboardHeight = fullHeight - vpHeight;
+      const isKeyboardVisible = keyboardHeight > 100;
+      if (isKeyboardOpen || isKeyboardVisible) {
+        const vpHeight = window.visualViewport?.height || window.innerHeight;
+        const maxContentHeight = vpHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
+        setMobileContentScrollHeight(maxContentHeight);
+      } else {
+        const fullHeight = window.innerHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
+        setMobileContentScrollHeight(fullHeight);
+      }
+    }
+  }, [isKeyboardOpen, mobileKeyboardOffset]);
+  
   React.useEffect(() => {
-    if (isMobileOnly) {
+    if ( isMobileOnly ) {
       const handleResize = () => {
-        const visualHeight = window.visualViewport?.height ?? window.innerHeight;
-        setMobileViewportHeight(visualHeight);
-        const isKeyboardVisible = (window.innerHeight - visualHeight) > 100;
-        
-        let contentHeight = visualHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
-        if (!isKeyboardVisible) {
-            contentHeight = window.innerHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
-        }
-        setMobileContentScrollHeight(contentHeight);
-
-        let keyboardOffset = window.innerHeight - visualHeight;
-        if (keyboardOffset < 0) keyboardOffset = 0; // Ensure offset is not negative
-        setMobileKeyboardOffset(keyboardOffset);
-
-        setIsKeyboardOpenSafari(isKeyboardVisible);
+        const height = window.visualViewport?.height || window.innerHeight;
+        setMobileContainerHeight(height);
       };
 
-      window.visualViewport?.addEventListener('resize', handleResize);
-      window.addEventListener('resize', handleResize);
-      handleResize(); // Initial calculation
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', handleResize);
+        handleResize(); // 최초 호출
+      } else {
+        window.addEventListener('resize', handleResize);
+        handleResize();
+      }
 
       return () => {
-        window.visualViewport?.removeEventListener('resize', handleResize);
-        window.removeEventListener('resize', handleResize);
+        if (window.visualViewport) {
+          window.visualViewport.removeEventListener('resize', handleResize);
+        } else {
+          window.removeEventListener('resize', handleResize);
+        }
       };
     }
-  }, [isMobileOnly]); // Rerun only if mobile status changes
+  }, []);
 
-
-  // Safari specific zoom handling
+  
   React.useEffect(() => {
-    if (!isMobileSafari) return;
+    if (!isMobileSafari) return; // iOS Safari에서만 적용
   
     const handleResize = () => {
       const visualHeight = window.visualViewport?.height ?? window.innerHeight;
-      setMobileViewportHeight(visualHeight);
       
       if (!initialViewportHeight.current) {
         initialViewportHeight.current = visualHeight;
@@ -146,29 +119,53 @@ export default function Index() {
       const contentHeight = visualHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
       setIsKeyboardOpenSafari(isKeyboardVisible)
       setMobileKeyboardOffset(safeKeyboardHeight);
-      setMobileContentScrollHeight(contentHeight); // Update content height here too
+      setMobileViewPortHeight(contentHeight);
+      setMobileContainerHeight(visualHeight);
     };
   
     window.visualViewport?.addEventListener('resize', handleResize);
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('touchend', handleResize);
+    window.addEventListener('touchend', handleResize); // iOS Safari 딜레이 대응
   
-    handleResize(); 
+    handleResize(); // 초기 실행
   
     return () => {
-      window.visualViewport?.removeEventListener("resize", handleResize);
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener("touchend", handleResize);
+      window.visualViewport?.removeEventListener('resize', handleResize);
+      window.removeEventListener('touchend', handleResize);
     };
-  }, [isMobileSafari]);
+  }, []);
 
-
+  React.useEffect(() => {
+    if (!isMobileOnly || isMobileSafari) return; // 사파리는 제외
+  
+    const updateOffset = () => {
+      const isNaverInApp = /NAVER\(inapp/.test(navigator.userAgent);
+      const screenHeight = window.screen.height;
+      const innerHeight = window.innerHeight;
+      const keyboardHeight = screenHeight - innerHeight;
+      const isKeyboardVisible = keyboardHeight > 100;
+      const safeKeyboardHeight = isKeyboardVisible ? keyboardHeight : 0;
+      const height = isKeyboardVisible ? innerHeight - keyboardHeight : innerHeight;
+  
+      setMobileViewPortHeight(isNaverInApp ? height+safeKeyboardHeight : height);
+      setMobileKeyboardOffset(isKeyboardVisible ? keyboardHeight : 0);
+    };
+  
+    window.addEventListener('resize', updateOffset);
+    updateOffset(); // 초기 실행
+  
+    return () => {
+      window.removeEventListener('resize', updateOffset);
+    };
+  }, []);
+  
   const getConfigData = React.useCallback(
     async() => {
       try{
+        alreadyInitialized.current = true;
         const res:any = await CommonService.getCommonConfig();
         if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
-          setGlobalState(true);
+          setGlobalState(true)
+          setIsLoading(false)
           setConfigInfoStore(
             functions.isEmpty(res?.data?.config?.user_max_token) ? 0 : parseInt(res?.data?.config?.user_max_token),
             functions.isEmpty(res?.data?.config?.user_retry_limit_sec) ? 0 : parseInt(res?.data?.config?.user_retry_limit_sec),
@@ -176,44 +173,56 @@ export default function Index() {
             functions.isEmpty(res?.data?.config?.guest_retry_limit_sec) ? 0 : parseInt(res?.data?.config?.guest_retry_limit_sec)
           )
         }else{
+          setIsLoading(false)
           setGlobalState(false)
           setConfigInfoStore(0,0,0,0)
         }          
       }catch(e:any){
+        setIsLoading(false)
         setGlobalState(false)
         setConfigInfoStore(0,0,0,0)
-      } finally {
-        setIsLoading(false);
       }
-    },[ setGlobalState, setConfigInfoStore]
+    },[userId,userBaseInfo?.userMaxToken,userBaseInfo?.userRetryLimitSec]
   );
 
   React.useEffect(() => {
     if (!alreadyInitialized.current) {
-        alreadyInitialized.current = true;
-        getConfigData()
+      getConfigData()
     }
   }, [getConfigData]);
 
-  const onHandleRetry  = () => {
-    setIsLoading(true);
-    getConfigData();
-  }
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
 
-  if (!hasMounted) {
-    return (
-        <Flex bg={themeColor} height="100vh" width="100%" justifyContent='center' alignItems='center'>
-            <SkeletonCircle size='10' />
-        </Flex>
-    )
+  const onHandleRetry  = () => {
+    getConfigData();
   }
 
   if ( isMobileOnly ) {
     return (
-      <Box height={mobileViewportHeight} overflow="hidden" position="relative"> {/* Use 100vh for fixed full height for containing fixed children */}
-        { !functions.isEmpty(userBaseInfo?.email) && <TokenGuard /> }
-        { isLoading && ( 
-          <Flex bg={themeColor} height={"100%"} minHeight={"100vh"} width="100%" justifyContent={'center'} alignItems={'center'} zIndex={999999999} position={'absolute'} left={0} top={0} right={0} bottom={0}>
+      <Box height={`${mobileContainerHeight}px`} overflow={isMobileSafari ? 'auto' : 'hidden'} position={'relative'} ref={mobileScrollRef}>
+        {
+          !functions.isEmpty(userBaseInfo?.email) && (
+            <TokenGuard />
+          )
+        }
+       
+        { ( !hasMounted || isLoading ) && ( 
+          <Flex 
+            bg={themeColor} 
+            height={"100%"} 
+            minHeight={"100vh"} 
+            width="100%" 
+            justifyContent={'center'} 
+            alignItems={'center'} 
+            zIndex={999999999}
+            position={'absolute'}
+            left={0}
+            top={0}
+            right={0}
+            bottom={0}
+          >
             <SkeletonCircle size='10' />
           </Flex>
           )
@@ -226,15 +235,20 @@ export default function Index() {
             secondary={getActiveNavbar(routes, pathname)}
           />
         </Flex>
-        { ( process.env.NODE_ENV === 'development' || isGlobalState ) ?
-          <ChatView 
+        {
+          ( process.env.NODE_ENV == 'development' || isGlobalState )
+          ?
+          <SubMobilePage 
               mobileContentScrollHeight={mobileContentScrollHeight}
+              mobileViewPortHeight={mobileViewPortHeight}
               mobileKeyboardOffset={mobileKeyboardOffset}
               isKeyboardOpenSafari={isKeyboardOpenSafari}
-              isKeyboardOpen={isKeyboardOpen}
-            /> :
+            />
+          :
           <Flex alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
-            <GlobalDisable setRetry={onHandleRetry} />
+            <GlobalDisable
+              setRetry={() => onHandleRetry() }
+            />
           </Flex>
         }
       </Box>
@@ -243,23 +257,42 @@ export default function Index() {
 
   return (
       <Flex justifyContent={'center'} position="relative">
-        { isLoading && ( 
-          <Flex bg={themeColor} height={"100%"} minHeight={"100vh"} width="100%" justifyContent={'center'} alignItems={'center'} zIndex={999999999} position={'absolute'} left={0} top={0} right={0} bottom={0}>
+        { ( !hasMounted || isLoading ) && ( 
+          <Flex 
+            bg={themeColor} 
+            height={"100%"} 
+            minHeight={"100vh"} 
+            width="100%" 
+            justifyContent={'center'} 
+            alignItems={'center'} 
+            zIndex={999999999}
+            position={'absolute'}
+            left={0}
+            top={0}
+            right={0}
+            bottom={0}
+          >
             <SkeletonCircle size='10' />
           </Flex>
           )
         }
         <Flex
-          minHeight={"100vh"}
+          minHeight={isMobileOnly ? "100%" : "100vh"}
           height="100%"
-          overflow="hidden"
+          overflow="hidden" /* 여기가 중요 */
           position="relative"
           maxHeight="100%"
           w={{ base: '100%', md : `${mConstants.desktopMinWidth}px`  }}
           maxW={`${mConstants.desktopMinWidth}px` }
+          
+          //borderBottomLeftRadius={ isDesktop ? '15px' : 0}
+          //borderBottomRightRadius={ isDesktop ? '15px' : 0} 
+          
+          //bg='green'뒤에 쉐도우 주는거 
           borderRadius="sm"
           boxShadow="0 4px 30px rgba(0, 0, 0, 0.1)"
           backdropFilter="blur(10px)"
+          //border="1px solid rgba(255, 255, 255, 0.3)"
         >
           <Box 
             position={'fixed'}
@@ -279,22 +312,28 @@ export default function Index() {
               secondary={getActiveNavbar(routes, pathname)}
             />
           </Box>
-          { ( process.env.NODE_ENV === 'development' || isGlobalState ) ?
+          {
+            ( process.env.NODE_ENV == 'development' || isGlobalState )
+            ?
             <Flex 
               mt="58px"
               alignItems={'center'} 
               width="100%" 
               maxWidth={`${mConstants.desktopMinWidth}px`} 
-              height="calc(100vh - 58px)"
+              overflow={'hidden'}
               bg={themeColor}
             >
-              <ChatView />
-            </Flex> :
+              <SubPage />
+            </Flex>
+            :
             <Flex alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
-              <GlobalDisable setRetry={onHandleRetry} />
+              <GlobalDisable
+                setRetry={() => onHandleRetry() }
+              />
             </Flex>
           }
         </Flex>
       </Flex>
+
   )
 }

@@ -54,7 +54,7 @@ export const ChatDisable = React.memo(({ isChatDisabled,userBasicInfo,setChatDis
               오늘의 질문 제한에 도달했습니다. {functions.formatAvailabilityMessage2(isChatDisabled?.reTrytimeStamp, isChatDisabled?.remainTimeStamp)} 이후에 다시 시도해 주세요.
             </CustomTextBold400>
             <CustomTextBold400 fontSize={isMobileOnly ? '13px' :{base:'13px', sm :'15px'}} color={oopsColor} lineHeight={isMobileOnly ? '130%' : {base:'130%', sm :'150%'}}  letterSpacing={isMobileOnly ? "-10%" : "-5%"}>
-              회원가입 하시면 다음과 같은 서비스를 제공받으실수 있습니다.
+              회원가입 하시면 다음과 같은 서비스를 제공받으실 수 있습니다.
             </CustomTextBold400>
             <UnorderedList px="10px">
               <ListItem color={oopsColor}><CustomTextBold400 fontSize={isMobileOnly ? '13px' : {base:'13px', sm :'15px'}} color={oopsColor} lineHeight={isMobileOnly ? '130%' : {base:'130%', sm :'150%'}} letterSpacing={"-5%"}>질문횟수증가</CustomTextBold400></ListItem>
@@ -140,7 +140,7 @@ export const ChatWarningInfo = React.memo(() => {
   return (
     <Flex 
       position={'absolute'}
-      top={{base :isMobileOnly ?  "-31px": "-37px", sm2:isMobileOnly ?'-18px' :  '-22px'}}
+      top={{base :isMobileOnly ?  "-38px": "-37px", sm2:isMobileOnly ?'-18px' :  '-22px'}}
       left={'0'}
       w={{ base: '100%', md: `${mConstants.desktopMinWidth}px` }}
       minHeight={{base :isMobileOnly ? '38px' : '40px',sm2: isMobileOnly ? '21px' : '25px'}}
