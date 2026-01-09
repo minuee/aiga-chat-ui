@@ -17,6 +17,8 @@ import DoctorList from "@/components/modal/DoctorList";
 import { MdOutlineArrowForward } from 'react-icons/md';
 import TypeAnimation  from'@/components/text/TypeAnimation2';
 
+import DoctorRecommandItem from "./DoctorRecommandItem";
+
 function convertLinksAndImagesToHTML(text: string): string {
   // Pre-process to encode spaces in image URLs
   const imageWithSpaceRegex = /(https?:\/\/.+?\.(?:jpeg|jpg|png|gif|bmp|webp))/gi;
@@ -103,6 +105,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
   const { colorMode, toggleColorMode } = useColorMode();
   const flexRef = useRef<HTMLDivElement>(null);
   const [selectChatId, setSelectselectChatId] = useState(0);
+  const [proposalKeyword, setProposalKeyword] = useState(null);
   const [showGradient, setShowGradient] = useState(true);
   const [doctorList, setDoctorList] = useState<any>([]);
   const isDark = useColorModeValue(false, true);
@@ -238,7 +241,8 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
 
   useEffect(() => {
     setSelectselectChatId(!functions.isEmpty(data?.chat_id) ? data?.chat_id : !functions.isEmpty(data?.id) ? data?.id : 0);
-
+    //console.log("data?.answer?.proposal",data?.answer?.proposal)
+    setProposalKeyword(!functions.isEmpty(data?.answer?.proposal) ? data?.answer?.proposal : null);
     let parsedAnswer = null;
     if (typeof data?.answer === 'string') {
       // It's a string. Check if it looks like a JSON object before trying to parse.
@@ -423,53 +427,17 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
           >
             {
               doctorList.slice(0, 9).map((element: any, index: number) => (
-                <Flex 
-                  key={index} 
-                  bg={profileBgColor} 
-                  //width={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
-                  //minWidth={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
-                  width={ doctorList?.length === 1 ? "100%" : doctorList?.length === 2 ? "calc((100% - 8px) / 2)" : "calc((100% - 16px) / 3)" }
-                  minWidth={{ base : "150px" , sm2 : doctorList?.length === 1 ? "100%" : doctorList?.length === 2 ? "calc((100% - 8px) / 2)" : "calc((100% - 16px) / 3)" }}
-                  padding="20px"
-                  borderRadius="8px"
-                  alignItems={'center'}
-                  onClick={() => onSendButton(element,element?.doctor_id)} cursor={'pointer'}
-                  flexDirection={{base : doctorList?.length === 1 ? 'row' : "column" , 'sm2' : doctorList?.length > 2 ? 'column' : 'row'}}
-                  mr={index !== doctorList.length - 1 ? "8px" : "0px"}
-                >
-                  <Box flex={1} display={'flex'} justifyContent={'center'} alignItems={'center'} maxWidth={"70px"}>
-                    <NextImage 
-                      src={DoctorAvatar}
-                      alt="프로필이미지"
-                      style={{ borderRadius: '50%', objectFit: 'cover' }} 
-                      width={60} 
-                      height={60}
-                    />
-                  </Box>
-                  <Flex flex={4} flexDirection={'column'} justifyContent={'center'} px="20px" mt={doctorList?.length > 1 ? "10px" : 0}>
-                    <Box display={'flex'}  justifyContent={doctorList?.length > 1 ? 'center' : 'flex-start'}  alignItems={'center'} height={'26px'}>
-                      <CustomTextBold700 fontSize={'17px'} color={nameTextColor} lineHeight={"150%"} noOfLines={1}>
-                        {element?.name}
-                      </CustomTextBold700>
-                    </Box>
-                    <Box display={'flex'}  justifyContent={doctorList?.length > 1 ? 'center' : 'flex-start'}  alignItems={'center'} height={'26px'}>
-                      <CustomTextBold700 fontSize={'12px'} color='#0AA464' lineHeight={"150%"} noOfLines={1}>
-                        {element?.hospital}
-                      </CustomTextBold700>
-                    </Box>
-                    <Box display={'flex'} justifyContent={doctorList?.length > 1 ? 'center' : 'flex-start'}  alignItems={'center'}  height={'26px'}>
-                      <CustomTextBold700 fontSize={'12px'} color={partTextColor} lineHeight={"150%"} letterSpacing={'-5%'} noOfLines={1}>
-                        {element?.deptname}
-                      </CustomTextBold700>
-                    </Box>
-                  </Flex>
-                  <Box
-                    flex={1} display={doctorList?.length > 1 ? 'none' : 'flex'} alignItems={'center'} justifyContent={'flex-end'}
-                    onClick={() => onSendButton(element,element?.doctor_id)} cursor={'pointer'}
-                  >
-                    <Icon as={BiChevronRight} width="20px" height="20px" color={arrowColor} />
-                  </Box>
-                </Flex>
+                <DoctorRecommandItem
+                  key={element.doctor_id || index} // doctor_id가 없을 경우 index를 대체 키로 사용
+                  element={element}
+                  index={index}
+                  onSendButton={onSendButton}
+                  profileBgColor={profileBgColor}
+                  nameTextColor={nameTextColor}
+                  partTextColor={partTextColor}
+                  arrowColor={arrowColor}
+                  doctorListLength={doctorList.length}
+                />
               ))
             }
             {
@@ -505,7 +473,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
             onClick={() => onSendDoctorListButton(selectChatId)} 
           >
             <CustomTextBold400 fontSize={'15px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"} >
-            {doctorList[0]?.deptname} 전체 보기
+            {proposalKeyword ? proposalKeyword : doctorList[0]?.deptname ? doctorList[0]?.deptname : "" } 전체 보기
             </CustomTextBold400>
             <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
           </Box>

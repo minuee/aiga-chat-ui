@@ -4,7 +4,7 @@ import React from 'react';
 import { isMobileOnly,isMobileSafari} from "react-device-detect";
 import SubPage from '@/components/view/Chatbot';
 import SubMobilePage from '@/components/view/ChatbotMobile';
-import { Flex,Box, SkeletonCircle, useDisclosure,useColorModeValue,useToast } from '@chakra-ui/react';
+import { Flex,Box, SkeletonCircle, useDisclosure,useColorModeValue,useToast, Button, Checkbox, Text } from '@chakra-ui/react';
 import { usePathname } from 'next/navigation';
 import routes from '@/routes';
 import { getActiveRoute, getActiveNavbar } from '@/utils/navigation';
@@ -13,12 +13,15 @@ import mConstants from '@/utils/constants';
 import { decryptToken } from "@/utils/secureToken";
 import { defaultUserInfo } from "@/types/userData"
 import { UserBasicInfoStore } from '@/store/userStore';
-import ConfigInfoStore,{ GlobalStateStore } from '@/store/configStore';
+import ConfigInfoStore,{ GlobalStateStore, GlobalLocationStore } from '@/store/configStore';
 import GlobalDisable from "@/components/view/GlobalDisable";
 import TokenGuard from '@/components/apiModal/TokenGuard';
 import * as CommonService from "@/services/common/index";
 import functions from '@/utils/functions';
 import useDetectKeyboardOpen from "use-detect-keyboard-open";
+import CustomAlert from '@/components/alert/CustomAlert';
+import { useLocationStore } from '@/store/locationStore';
+
 const MOBILE_HEADER_HEIGHT = 60;
 const MOBILE_INPUT_HEIGHT = 60;
 
@@ -54,6 +57,83 @@ export default function Index() {
 
   const mobileScrollRef = React.useRef<HTMLDivElement>(null);
   const initialViewportHeight = React.useRef<number | null>(null);
+
+  const [isLocationAlertOpen, setLocationAlertOpen] = React.useState(false);
+  const [dontAskAgain, setDontAskAgain] = React.useState(false);
+  const { latitude, longitude, setLocation } = useLocationStore();
+  const { locationPermissionState, setLocationPermissionState, hasHydrated: hasLocationStoreHydrated } = GlobalLocationStore();
+  
+  const handleRequestLocation = () => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude: newLat, longitude: newLon } = position.coords;
+        setLocation(newLat, newLon);
+        setLocationPermissionState('granted');
+        toast({
+          title: "위치 정보가 허용되었습니다.",
+          position: 'top-right',
+          status: 'success',
+          duration: 2000,
+          isClosable: true,
+        });
+      },
+      (error) => {
+        let message = "위치 정보를 가져올 수 없습니다.";
+        if (error.code === error.PERMISSION_DENIED) {
+          message = "위치 정보 접근이 차단되었습니다. 브라우저 설정을 확인해주세요.";
+        }
+        setLocationPermissionState('denied');
+        toast({
+          title: message,
+          position: 'top-right',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
+
+  const handleConfirmLocation = () => {
+    handleRequestLocation();
+    setLocationAlertOpen(false);
+  };
+
+  const handleCloseLocationAlert = React.useCallback(() => {
+    if (dontAskAgain) {
+      setLocationPermissionState('dont_ask');
+    }
+    setLocationAlertOpen(false);
+  }, [dontAskAgain, setLocationPermissionState, setLocationAlertOpen]);
+
+  React.useEffect(() => {
+    if (!hasLocationStoreHydrated) {
+      return;
+    }
+    
+    if (locationPermissionState === 'dont_ask') {
+      return;
+    }
+    
+    if ( functions.isEmpty(latitude) || functions.isEmpty(longitude) || (latitude === 0 && longitude === 0)) { // Check if location is not set in useLocationStore
+      if (typeof navigator !== 'undefined' && navigator.permissions && navigator.permissions.query) {
+        navigator.permissions.query({ name: 'geolocation' }).then((permissionStatus) => {
+          if (permissionStatus.state === 'prompt' || permissionStatus.state === 'denied') {
+            setLocationAlertOpen(true);
+          } else if (permissionStatus.state === 'granted') {
+             navigator.geolocation.getCurrentPosition((position) => {
+                 const { latitude: newLat, longitude: newLon } = position.coords;
+                 setLocation(newLat, newLon);
+                 setLocationPermissionState('granted');
+             });
+          } else if (permissionStatus.state === 'denied') {
+              setLocationPermissionState('denied');
+          }
+        });
+      }
+    }
+  }, [hasLocationStoreHydrated, locationPermissionState, latitude, longitude, setLocation, setLocationPermissionState]);
 
   React.useEffect(() => {
     setHasMounted(true);
@@ -199,132 +279,52 @@ export default function Index() {
     getConfigData();
   }
 
-  if ( isMobileOnly ) {
-    return (
-      <Box height={`${mobileContainerHeight}px`} overflow={isMobileSafari ? 'auto' : 'hidden'} position={'relative'} ref={mobileScrollRef}>
-        {
-          !functions.isEmpty(userBaseInfo?.email) && (
-            <TokenGuard />
-          )
-        }
-       
-        { ( !hasMounted || isLoading ) && ( 
-          <Flex 
-            bg={themeColor} 
-            height={"100%"} 
-            minHeight={"100vh"} 
-            width="100%" 
-            justifyContent={'center'} 
-            alignItems={'center'} 
-            zIndex={999999999}
-            position={'absolute'}
-            left={0}
-            top={0}
-            right={0}
-            bottom={0}
-          >
-            <SkeletonCircle size='10' />
-          </Flex>
-          )
-        }
-        <Flex position={'fixed'} top={0} left={0} right={0} height={'60px'} alignItems={'center'} justifyContent={'center'} zIndex={10}>
-          <Navbar
-            onOpen={onOpen}
-            logoText={'AIGA Alpha'}
-            brandText={getActiveRoute(routes, pathname)}
-            secondary={getActiveNavbar(routes, pathname)}
-          />
-        </Flex>
-        {
-          ( process.env.NODE_ENV == 'development' || isGlobalState )
-          ?
-          <SubMobilePage 
-              mobileContentScrollHeight={mobileContentScrollHeight}
-              mobileViewPortHeight={mobileViewPortHeight}
-              mobileKeyboardOffset={mobileKeyboardOffset}
-              isKeyboardOpenSafari={isKeyboardOpenSafari}
-            />
-          :
-          <Flex alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
-            <GlobalDisable
-              setRetry={() => onHandleRetry() }
-            />
-          </Flex>
-        }
-      </Box>
-    )
-  }
-
   return (
-      <Flex justifyContent={'center'} position="relative">
-        { ( !hasMounted || isLoading ) && ( 
-          <Flex 
-            bg={themeColor} 
-            height={"100%"} 
-            minHeight={"100vh"} 
-            width="100%" 
-            justifyContent={'center'} 
-            alignItems={'center'} 
-            zIndex={999999999}
-            position={'absolute'}
-            left={0}
-            top={0}
-            right={0}
-            bottom={0}
-          >
-            <SkeletonCircle size='10' />
-          </Flex>
-          )
-        }
-        <Flex
-          minHeight={isMobileOnly ? "100%" : "100vh"}
-          height="100%"
-          overflow="hidden" /* 여기가 중요 */
-          position="relative"
-          maxHeight="100%"
-          w={{ base: '100%', md : `${mConstants.desktopMinWidth}px`  }}
-          maxW={`${mConstants.desktopMinWidth}px` }
-          
-          //borderBottomLeftRadius={ isDesktop ? '15px' : 0}
-          //borderBottomRightRadius={ isDesktop ? '15px' : 0} 
-          
-          //bg='green'뒤에 쉐도우 주는거 
-          borderRadius="sm"
-          boxShadow="0 4px 30px rgba(0, 0, 0, 0.1)"
-          backdropFilter="blur(10px)"
-          //border="1px solid rgba(255, 255, 255, 0.3)"
-        >
-          <Box 
-            position={'fixed'}
-            top={0}
-            left={0}
-            right={0}
-            height={'60px'}
-            width="100%" 
-            maxWidth={`${mConstants.desktopMinWidth}px`}
-            display={'flex'}
-            justifyContent={'center'}
-          >
+    <>
+      {isMobileOnly ? (
+        <Box height={`${mobileContainerHeight}px`} overflow={isMobileSafari ? 'auto' : 'hidden'} position={'relative'} ref={mobileScrollRef}>
+          {
+            !functions.isEmpty(userBaseInfo?.email) && (
+              <TokenGuard />
+            )
+          }
+        
+          { ( !hasMounted || isLoading ) && ( 
+            <Flex 
+              bg={themeColor} 
+              height={"100%"} 
+              minHeight={"100vh"} 
+              width="100%" 
+              justifyContent={'center'} 
+              alignItems={'center'} 
+              zIndex={999999999}
+              position={'absolute'}
+              left={0}
+              top={0}
+              right={0}
+              bottom={0}
+            >
+              <SkeletonCircle size='10' />
+            </Flex>
+            )
+          }
+          <Flex position={'fixed'} top={0} left={0} right={0} height={'60px'} alignItems={'center'} justifyContent={'center'} zIndex={10}>
             <Navbar
               onOpen={onOpen}
-              logoText={'AIGA Beta'}
+              logoText={'AIGA Alpha'}
               brandText={getActiveRoute(routes, pathname)}
               secondary={getActiveNavbar(routes, pathname)}
             />
-          </Box>
+          </Flex>
           {
             ( process.env.NODE_ENV == 'development' || isGlobalState )
             ?
-            <Flex 
-              mt="58px"
-              alignItems={'center'} 
-              width="100%" 
-              maxWidth={`${mConstants.desktopMinWidth}px`} 
-              overflow={'hidden'}
-              bg={themeColor}
-            >
-              <SubPage />
-            </Flex>
+            <SubMobilePage 
+                mobileContentScrollHeight={mobileContentScrollHeight}
+                mobileViewPortHeight={mobileViewPortHeight}
+                mobileKeyboardOffset={mobileKeyboardOffset}
+                isKeyboardOpenSafari={isKeyboardOpenSafari}
+              />
             :
             <Flex alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
               <GlobalDisable
@@ -332,8 +332,121 @@ export default function Index() {
               />
             </Flex>
           }
+        </Box>
+      ) : (
+        <Flex justifyContent={'center'} position="relative">
+          { ( !hasMounted || isLoading ) && ( 
+            <Flex 
+              bg={themeColor} 
+              height={"100%"} 
+              minHeight={"100vh"} 
+              width="100%" 
+              justifyContent={'center'} 
+              alignItems={'center'} 
+              zIndex={999999999}
+              position={'absolute'}
+              left={0}
+              top={0}
+              right={0}
+              bottom={0}
+            >
+              <SkeletonCircle size='10' />
+            </Flex>
+            )
+          }
+          <Flex
+            minHeight={isMobileOnly ? "100%" : "100vh"}
+            height="100%"
+            overflow="hidden" /* 여기가 중요 */
+            position="relative"
+            maxHeight="100%"
+            w={{ base: '100%', md : `${mConstants.desktopMinWidth}px`  }}
+            maxW={`${mConstants.desktopMinWidth}px` }
+            
+            //borderBottomLeftRadius={ isDesktop ? '15px' : 0}
+            //borderBottomRightRadius={ isDesktop ? '15px' : 0} 
+            
+            //bg='green'뒤에 쉐도우 주는거 
+            borderRadius="sm"
+            boxShadow="0 4px 30px rgba(0, 0, 0, 0.1)"
+            backdropFilter="blur(10px)"
+            //border="1px solid rgba(255, 255, 255, 0.3)"
+          >
+            <Box 
+              position={'fixed'}
+              top={0}
+              left={0}
+              right={0}
+              height={'60px'}
+              width="100%" 
+              maxWidth={`${mConstants.desktopMinWidth}px`}
+              display={'flex'}
+              justifyContent={'center'}
+            >
+              <Navbar
+                onOpen={onOpen}
+                logoText={'AIGA Beta'}
+                brandText={getActiveRoute(routes, pathname)}
+                secondary={getActiveNavbar(routes, pathname)}
+              />
+            </Box>
+            {
+              ( process.env.NODE_ENV == 'development' || isGlobalState )
+              ?
+              <Flex 
+                mt="58px"
+                alignItems={'center'} 
+                width="100%" 
+                maxWidth={`${mConstants.desktopMinWidth}px`} 
+                overflow={'hidden'}
+                bg={themeColor}
+              >
+                <SubPage />
+              </Flex>
+              :
+              <Flex alignItems={'center'} px='basePadding' width="100%" maxWidth={`${mConstants.desktopMinWidth}px`} overflow={'hidden'} bg={themeColor}>
+                <GlobalDisable
+                  setRetry={() => onHandleRetry() }
+                />
+              </Flex>
+            }
+          </Flex>
         </Flex>
-      </Flex>
+      )}
 
-  )
+      <CustomAlert
+        AppName="위치 정보 동의"
+        isShowAppname={true}
+        isOpen={isLocationAlertOpen}
+        onClose={handleCloseLocationAlert}
+        onConfirm={handleConfirmLocation}
+        closeText="아니요"
+        confirmText="예"
+        isCentered={true}
+        bodyContent={
+          <Box>
+            <Text>
+              더 나은 의사 추천을 위해 현재 위치 정보가 필요합니다.
+              위치 정보 사용에 동의하시겠습니까?
+            </Text>
+            <Checkbox
+              mt={4}
+              isChecked={dontAskAgain}
+              onChange={(e) => setDontAskAgain(e.target.checked)}
+            >
+              다시 묻지 않기
+            </Checkbox>
+          </Box>
+        }
+        footerContent={
+          <>
+            <Button onClick={handleCloseLocationAlert}>아니요</Button>
+            <Button colorScheme="blue" onClick={handleConfirmLocation} ml={3}>
+              예
+            </Button>
+          </>
+        }
+      />
+    </>
+  );
 }

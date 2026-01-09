@@ -13,7 +13,7 @@ import React, { useRef } from 'react';
 import { PropsWithChildren } from 'react';
 import { IRoute } from '@/types/navigation';
 import * as ChatService from "@/services/chat/index";
-import { MdOutlineSettings,MdArrowBack,MdOutlineClose } from 'react-icons/md';
+import { MdOutlineSettings,MdArrowBack,MdOutlineClose, MdKeyboardArrowUp, MdKeyboardArrowDown } from 'react-icons/md';
 import mConstants from '@/utils/constants';
 import * as history from '@/utils/history';
 import functions from "@/utils/functions";
@@ -54,6 +54,17 @@ function SidebarContent(props: SidebarContent) {
     const ret = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ?  JSON.parse(deCryptInfo) : userStoreInfo;
     return ret;
   }, [userStoreInfo]);
+
+  const [openIndexes, setOpenIndexes] = React.useState<number[]>([0]);
+
+  const handleToggle = (index: number) => {
+    setOpenIndexes(prevIndexes =>
+      prevIndexes.includes(index)
+        ? prevIndexes.filter(i => i !== index)
+        : [...prevIndexes, index]
+    );
+  };
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const textColor = useColorModeValue('navy.700', 'white');
   const borderColor = useColorModeValue('gray.200', 'whiteAlpha.300');
@@ -338,27 +349,47 @@ function SidebarContent(props: SidebarContent) {
               </Flex>
               :
               historyData.map(({ date, sessions } : any, index:number) => (
-              <Flex key={date} flexDirection={'column'} width={'100%'}>
-                { index > 0 && <HSeparator mt="20px" mb="15px" w="100%"  />}  
-                <Box display={sessions.length > 0 ? 'flex' : 'none'} width={'100%'} mt={1} py="basePadding" px="25px">
-                  <CustomTextBold400 fontSize={'15px'} color={textColor2}>
-                    {date? date.toString() : "YYYY-MM-DD"}
-                  </CustomTextBold400>
-                </Box>
-                <Box display={sessions.length > 0 ? 'flex' : 'none'}  flexDirection={'column'} justifyContent={'flex-start'} minHeight={'50px'} width="100%"  px="basePadding">
-                  <Stack>
-                    {sessions.map((item:any, index:number) => (
-                      <HistoryItem 
-                        key={index} 
-                        data={item} 
-                        onDeleteHistory={onDeleteHistory} 
-                        onHandleUpdateTitle={onHandleUpdateTitle}
-                        onHandCallHistory={(data:any) => onHandReplaceHistory(data)}
-                      />
-                    ))}
-                  </Stack>
-                </Box>
-              </Flex>
+                <Flex key={date} flexDirection={'column'} width={'100%'}>
+                  { index > 0 && <HSeparator mt="20px" mb="15px" w="100%"  />}
+                  <Flex 
+                    display={sessions.length > 0 ? 'flex' : 'none'} 
+                    width={'100%'} 
+                    mt={1} 
+                    py="basePadding" 
+                    px="25px" 
+                    onClick={() => handleToggle(index)}
+                    cursor="pointer"
+                    justifyContent={'space-between'}
+                    alignItems="center"
+                  >
+                    <Flex alignItems="center">
+                      <CustomTextBold400 fontSize={'15px'} color={textColor2}>
+                        {date? date.toString() : "YYYY-MM-DD"}
+                      </CustomTextBold400>
+                      {!openIndexes.includes(index) && (
+                        <CustomTextBold400 fontSize={'15px'} color={textColor2} ml="2">
+                          {`(${sessions.length} rows)`}
+                        </CustomTextBold400>
+                      )}
+                    </Flex>
+                    <Icon as={openIndexes.includes(index) ? MdKeyboardArrowUp : MdKeyboardArrowDown} color={textColor2} />
+                  </Flex>
+                  {openIndexes.includes(index) && (
+                    <Box display={sessions.length > 0 ? 'flex' : 'none'}  flexDirection={'column'} justifyContent={'flex-start'} minHeight={'50px'} width="100%"  px="basePadding">
+                      <Stack>
+                        {sessions.map((item:any) => (
+                          <HistoryItem 
+                            key={item.session_id} 
+                            data={item} 
+                            onDeleteHistory={onDeleteHistory} 
+                            onHandleUpdateTitle={onHandleUpdateTitle}
+                            onHandCallHistory={(data:any) => onHandReplaceHistory(data)}
+                          />
+                        ))}
+                      </Stack>
+                    </Box>
+                  )}
+                </Flex>
               ))
             }
             {historyData?.length > 0 && <HSeparator mt="20px" mb="20px" w="calc( 100% - 40px )" px="20px" />}

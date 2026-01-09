@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import NextImage from 'next/legacy/image';
+
 import { Box,Flex,Stack,useColorModeValue,useColorMode,Icon, Modal,ModalOverlay,ModalContent,ModalHeader,SimpleGrid,ModalBody } from '@chakra-ui/react';
 import mConstants from "@/utils/constants";
 import * as history from '@/utils/history';
@@ -12,9 +12,10 @@ import { MdArrowBack,MdOutlineClose } from 'react-icons/md';
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
 import { BiChevronRight } from "react-icons/bi";
 import { IconChatAiga,DefaultHeaderLogo } from '@/components/icons/svgIcons';
-import DoctorAvatar from "@/assets/images/doctor_default_white.png";
 import { MdOutlineArrowForward } from 'react-icons/md';
 import TypeAnimation  from'@/components/text/TypeAnimation2';
+
+import DoctorRecommandItem from "./DoctorRecommandItem";
 
 function convertLinksAndImagesToHTML(text: string): string {
   // 0. Pre-process to encode spaces in image URLs
@@ -426,53 +427,17 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
           >
             {
               doctorList.slice(0, 9).map((element: any, index: number) => (
-                <Flex 
-                  key={index} 
-                  bg={profileBgColor} 
-                  //width={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
-                  //minWidth={ doctorList?.length >= 3 ? "calc(100% / 3)" : doctorList?.length == 2 ?  "calc(100% / 2)" :  "100%" }
-                  width={ doctorList?.length === 1 ? "100%" : doctorList?.length === 2 ? "calc((100% - 8px) / 2)" : "calc((100% - 16px) / 3)" }
-                  minWidth={{ base : "150px" , sm2 : doctorList?.length === 1 ? "100%" : doctorList?.length === 2 ? "calc((100% - 8px) / 2)" : "calc((100% - 16px) / 3)" }}
-                  padding="20px"
-                  borderRadius="8px"
-                  alignItems={'center'}
-                  onClick={() => onSendButton(element,element?.doctor_id)} cursor={'pointer'}
-                  flexDirection={{base : doctorList?.length === 1 ? 'row' : "column" , 'sm2' : doctorList?.length > 2 ? 'column' : 'row'}}
-                  mr={index !== doctorList.length - 1 ? "8px" : "0px"}
-                >
-                  <Box flex={1} display={'flex'} justifyContent={'center'} alignItems={'center'} maxWidth={"70px"}>
-                    <NextImage 
-                      src={DoctorAvatar}
-                      alt="프로필이미지"
-                      style={{ borderRadius: '50%', objectFit: 'cover' }} 
-                      width={60} 
-                      height={60}
-                    />
-                  </Box>
-                  <Flex flex={4} flexDirection={'column'} justifyContent={'center'} px="20px" mt={doctorList?.length > 1 ? "10px" : 0}>
-                    <Box display={'flex'}  justifyContent={doctorList?.length > 1 ? 'center' : 'flex-start'}  alignItems={'center'} height={'26px'}>
-                      <CustomTextBold700 fontSize={'17px'} color={nameTextColor} lineHeight={"150%"} noOfLines={1}>
-                        {element?.name}
-                      </CustomTextBold700>
-                    </Box>
-                    <Box display={'flex'}  justifyContent={doctorList?.length > 1 ? 'center' : 'flex-start'}  alignItems={'center'} height={'26px'}>
-                      <CustomTextBold700 fontSize={'12px'} color='#0AA464' lineHeight={"150%"} noOfLines={1}>
-                        {element?.hospital}
-                      </CustomTextBold700>
-                    </Box>
-                    <Box display={'flex'} justifyContent={doctorList?.length > 1 ? 'center' : 'flex-start'}  alignItems={'center'}  height={'26px'}>
-                      <CustomTextBold700 fontSize={'12px'} color={partTextColor} lineHeight={"150%"} letterSpacing={'-5%'} noOfLines={1}>
-                        {element?.deptname}
-                      </CustomTextBold700>
-                    </Box>
-                  </Flex>
-                  <Box
-                    flex={1} display={doctorList?.length > 1 ? 'none' : 'flex'} alignItems={'center'} justifyContent={'flex-end'}
-                    onClick={() => onSendButton(element,element?.doctor_id)} cursor={'pointer'}
-                  >
-                    <Icon as={BiChevronRight} width="20px" height="20px" color={arrowColor} />
-                  </Box>
-                </Flex>
+                <DoctorRecommandItem
+                  key={index}
+                  element={element}
+                  index={index}
+                  onSendButton={onSendButton}
+                  profileBgColor={profileBgColor}
+                  nameTextColor={nameTextColor}
+                  partTextColor={partTextColor}
+                  arrowColor={arrowColor}
+                  doctorListLength={doctorList.length}
+                />
               ))
             }
             {

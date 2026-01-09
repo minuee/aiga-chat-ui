@@ -33,6 +33,8 @@ export default ConfigInfoStore;
 interface GlobalStateStoreState {
     isGlobalState : boolean;
     setGlobalState: (isGlobalState: boolean) => void;
+    hasHydrated: boolean;
+    setHasHydrated: (hydrated: boolean) => void;
 }
 
 
@@ -49,14 +51,53 @@ export const GlobalStateStore = create<GlobalStateStoreState>()(
                     )
                 },
                 hasHydrated: false,
+                setHasHydrated: (hydrated: boolean) => {
+                    set({ hasHydrated: hydrated });
+                },
             }),
             { 
                 name: 'GlobalStateStore',
                 storage: createJSONStorage(() => localStorage),
-                onRehydrateStorage: () => (state:any) => {
-                    state?.set({ hasHydrated: true });
+                onRehydrateStorage: () => (state: any) => {
+                    state?.setHasHydrated(true);
                 }
             }
         )
     )
 );
+
+interface GlobalLocationStoreState {
+    locationPermissionState : 'prompt' | 'granted' | 'denied' | 'dont_ask';
+    setLocationPermissionState: (state: 'prompt' | 'granted' | 'denied' | 'dont_ask') => void;
+    hasHydrated: boolean;
+    setHasHydrated: (hydrated: boolean) => void;
+}
+
+export const GlobalLocationStore = create<GlobalLocationStoreState>()(
+    devtools(
+        persist(
+            (set) => ({
+                locationPermissionState: 'prompt', // Initial state
+                setLocationPermissionState: (locationPermissionState: 'prompt' | 'granted' | 'denied' | 'dont_ask') => {
+                    set((prev: GlobalLocationStoreState) =>
+                        prev.locationPermissionState === locationPermissionState
+                            ? prev
+                            : { locationPermissionState }
+                    );
+                },
+                hasHydrated: false,
+                setHasHydrated: (hydrated: boolean) => {
+                    set({ hasHydrated: hydrated });
+                },
+            }),
+            {
+                name: 'GlobalLocationStore',
+                storage: createJSONStorage(() => localStorage),
+                onRehydrateStorage: () => (state: any) => {
+                    state?.setHasHydrated(true);
+                },
+            }
+        )
+    )
+);
+

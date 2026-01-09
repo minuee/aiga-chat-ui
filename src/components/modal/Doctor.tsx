@@ -1,5 +1,5 @@
 'use client';
-import React, { PropsWithChildren } from 'react';
+import React, { useState, useEffect, PropsWithChildren } from 'react';
 import { isMobileOnly } from "react-device-detect";
 // chakra imports
 import { Box,Flex,Button,useColorModeValue,useToast,SkeletonCircle,SkeletonText,Divider,Icon,Modal,ModalOverlay,ModalContent,ModalHeader,ModalCloseButton,ModalBody,Portal} from '@chakra-ui/react';
@@ -36,6 +36,7 @@ export interface DoctorModalProps extends PropsWithChildren {
 
 const limintView = 3;
 function DoctorModal(props: DoctorModalProps) {
+  const topOfModalRef = React.useRef<HTMLDivElement>(null);
 
   const { selected_doctor } = props;
   const pathname = usePathname();
@@ -101,7 +102,27 @@ function DoctorModal(props: DoctorModalProps) {
   const btnColor = useColorModeValue('#E9EDF3','rgba(0,59,149,1)');
   const btnTextColor = useColorModeValue('#7F879B','white')
 
+  const [currentImageSrc, setCurrentImageSrc] = useState<string>(DoctorAvatar.src);
+  const [imgError, setImgError] = useState<boolean>(false);
+
+  useEffect(() => {
+      const verbose = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_VERBOSE === 'true';
+      if (verbose && doctorBasicData?.photo && !functions.isEmpty(doctorBasicData.photo)) {
+          setCurrentImageSrc(doctorBasicData.photo.trim());
+          setImgError(false); // Reset error state
+      } else {
+          setCurrentImageSrc(DoctorAvatar.src);
+          setImgError(false); // Reset error state
+      }
+  }, [doctorBasicData?.photo, DoctorAvatar.src]);
+
+  const handleImageError = () => {
+      setCurrentImageSrc(DoctorAvatar.src);
+      setImgError(true);
+  };
+
   React.useEffect(() => {
+    topOfModalRef.current?.scrollIntoView({ behavior: 'auto' });
     setDoctorBasicData({
       ...doctorBasicData,
       ...selected_doctor
@@ -294,7 +315,7 @@ function DoctorModal(props: DoctorModalProps) {
     return (
       <>
         <UsePreventRefresh />
-        <Flex display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'100px'}>
+        <Flex ref={topOfModalRef} display={'flex'} flexDirection={'row'} justifyContent={'center'} alignItems={'flex-start'} minHeight={'100px'}>
           <Box flex={3} flexDirection={'column'} justifyContent={'center'} alignItems={'flex-start'} fontSize={'15px'} pr='15px'>
             <CustomTextBold700 fontSize={'15px'} color="#0AA464" >{doctorBasicData?.hospital}</CustomTextBold700>
             <CustomTextBold700 fontSize={'24px'} color={nameText} lineHeight={"200%"}>
@@ -329,8 +350,16 @@ function DoctorModal(props: DoctorModalProps) {
               )
             }
           </Box>
-          <Box display={'flex'} justifyContent={'center'} alignItems={'center'}  width={'90px'}>
-            <Image src={DoctorAvatar} alt="doctor" width={90} height={90} />
+          <Box
+            display={'flex'}
+            justifyContent={'center'}
+            alignItems={'center'}
+            width={'90px'}
+            height={'90px'} // height 추가
+            borderRadius={'50%'}
+            overflow={'hidden'}
+          >
+            <Image src={currentImageSrc} alt="doctor" width={90} height={90} onError={handleImageError}  style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
           </Box>
         </Flex>
         <Flex flexDirection={'row'} justifyContent={'space-evenly'} alignItems={'center'} minHeight={'100px'}>

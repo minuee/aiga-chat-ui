@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 // chakra imports
 import { Box,Flex, useColorModeValue,Divider} from '@chakra-ui/react';
 import Image from 'next/image';
@@ -14,6 +14,25 @@ type DoctorListProps = {
   
 const DoctorList = ({ data, onSendDoctorButton,inputs }:DoctorListProps) => {
    
+    const [currentImageSrc, setCurrentImageSrc] = useState<string>(DoctorAvatar.src);
+    const [imgError, setImgError] = useState<boolean>(false);
+
+    useEffect(() => {
+        const verbose = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_VERBOSE === 'true';
+        if (verbose && data?.photo && !functions.isEmpty(data.photo)) {
+            setCurrentImageSrc(data.photo.trim());
+            setImgError(false); // Reset error state
+        } else {
+            setCurrentImageSrc(DoctorAvatar.src);
+            setImgError(false); // Reset error state
+        }
+    }, [data?.photo, DoctorAvatar.src]);
+
+    const handleImageError = () => {
+        setCurrentImageSrc(DoctorAvatar.src);
+        setImgError(true);
+    };
+
     const nameText = useColorModeValue('#000000','white')
     const borderColor = useColorModeValue('gray.200', 'whiteAlpha.100');
 
@@ -40,8 +59,8 @@ const DoctorList = ({ data, onSendDoctorButton,inputs }:DoctorListProps) => {
                         }
                     </Flex>
                 </Box>
-                <Box  display={'flex'}  justifyContent={'center'} alignItems={'center'} width={'60px'} onClick={() => onSendDoctorButton(data,1)} cursor={'pointer'}>
-                    <Image src={DoctorAvatar} alt="doctor" width={60} height={60} />
+                <Box  display={'flex'}  justifyContent={'center'} alignItems={'center'} width={'60px'} height={'60px'} borderRadius={'50%'} overflow={'hidden'} onClick={() => onSendDoctorButton(data,1)} cursor={'pointer'}>
+                    <Image src={currentImageSrc} alt="doctor" width={60} height={60} onError={handleImageError}  style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
                 </Box>
             </Flex>
             <Divider  my={2} />
