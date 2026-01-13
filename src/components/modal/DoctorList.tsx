@@ -313,12 +313,12 @@ function DoctorListModal(props: DoctorListModalProps) {
                   <CustomTextBold400 fontSize='15px' color={makeTextColor('experience')} letterSpacing={'-5%'}>환자 경험</CustomTextBold400>
                 </TagLabel>
               </Tag>
-              <Tag size={'lg'} borderRadius='full' px={5} ml={2} variant='solid' bg={makeBgColor('score')} onClick={() => onHandleSortChange('score')} cursor={'pointer'} flexShrink="0">
+              {/* <Tag size={'lg'} borderRadius='full' px={5} ml={2} variant='solid' bg={makeBgColor('score')} onClick={() => onHandleSortChange('score')} cursor={'pointer'} flexShrink="0">
                 <TagLeftIcon boxSize='17px' as={TbBook2} color={makeTextColor('score')} />
                 <TagLabel color={makeTextColor('score')}>
                   <CustomTextBold400 fontSize='15px' color={makeTextColor('score')} letterSpacing={'-5%'}>논문 스코어</CustomTextBold400>
                 </TagLabel>
-              </Tag>
+              </Tag> */}
               {
                 ( !functions.isEmpty(inputs.latitude) && !functions.isEmpty(inputs.longitude) && inputs.latitude != 0 && inputs.longitude != 0 ) ? 
                 (
