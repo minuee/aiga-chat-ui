@@ -428,7 +428,7 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
             {
               doctorList.slice(0, 9).map((element: any, index: number) => (
                 <DoctorRecommandItem
-                  key={element.doctor_id || index} // doctor_id가 없을 경우 index를 대체 키로 사용
+                  key={`${element.doctor_id}-${index}`} // doctor_id와 index를 조합하여 고유 키 생성
                   element={element}
                   index={index}
                   onSendButton={onSendButton}
