@@ -12,6 +12,7 @@ import { defaultUserInfo } from "@/types/userData"
 import ConfigInfoStore from '@/store/configStore';
 import NewChatStateStore, { ChatSesseionIdStore, CurrentDialogStore, CallHistoryDataStore } from '@/store/newChatStore';
 import { UserBasicInfoStore } from '@/store/userStore';
+import { useLocationStore } from '@/store/locationStore';
 import historyStore from '@/store/historyStore';
 import {
   DoctorFromListStore,
@@ -72,6 +73,7 @@ export const useChatCore = () => {
 
   // Zustand states
   const userStoreInfo = UserBasicInfoStore(state => state.userStoreInfo);
+  const { latitude, longitude } = useLocationStore();
   const { userMaxToken, userRetryLimitSec, guestMaxToken, guestRetryLimitSec } = ConfigInfoStore(state => state);
   const isNewChat = NewChatStateStore(state => state.isNew);
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
@@ -231,7 +233,7 @@ export const useChatCore = () => {
         addMessage({ chat_id: functions.getUUID(), ismode: "me", question: isText, isOnlyLive: false });
 
         try {
-            const questionResult: any = await ChatService.getChatMessage(chat_sessinn_id, isText.trim(), null,null);
+            const questionResult: any = await ChatService.getChatMessage(chat_sessinn_id, isText.trim(), latitude, longitude);
             if (requestRef.current !== newRequestId) return;
 
             if (mConstants.apiSuccessCode.includes(questionResult?.statusCode)) {
@@ -268,7 +270,7 @@ export const useChatCore = () => {
     } else {
         call_fn_error_message(isText, '', "Session ID가 없습니다.");
     }
-}, [inputCode, isNewChat, userBaseInfo, in24UsedToken, isReceiving, chatSessionId, getNewSessionID, addMessage, call_fn_error_message, toast, firstForceStep, resetUserBasicInfo]);
+}, [inputCode, isNewChat, userBaseInfo, in24UsedToken, isReceiving, chatSessionId, getNewSessionID, addMessage, call_fn_error_message, toast, firstForceStep, resetUserBasicInfo, latitude, longitude]);
 
 
   const onHandleStopInquiry = useCallback(async () => {

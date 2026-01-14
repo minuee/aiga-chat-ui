@@ -9,7 +9,6 @@ import * as mCookie from "@/utils/cookies";
 import functions from "@/utils/functions";
 import { BiChevronRight } from "react-icons/bi";
 import CustomText, { CustomTextBold400,CustomTextBold700 } from "@/components/text/CustomText";
-import DoctorAvatar from "@/assets/images/doctor_default_white.png";
 import { IconChatAiga, DefaultHeaderLogo } from '@/components/icons/svgIcons';
 import { ModalDoctorListStore,ModalDoctorReviewStore,ModalDoctorRequestStore,ModalDoctorDetailStore } from '@/store/modalStore';
 import { MdArrowBack,MdOutlineClose } from 'react-icons/md';

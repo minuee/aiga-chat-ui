@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-const [isMobileOnly, setIsMobileOnly] = React.useState(false);
 const isMobileSafari = typeof window !== 'undefined' && /iPhone/.test(window.navigator.userAgent) && !/Chrome/.test(window.navigator.userAgent);
 import { Flex,Box, SkeletonCircle, useDisclosure,useColorModeValue,useToast } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
@@ -33,6 +32,7 @@ const MOBILE_HEADER_HEIGHT = 60;
 const MOBILE_INPUT_HEIGHT = 60;
 
 export default function Index() {
+  const [isMobileOnly, setIsMobileOnly] = React.useState(false);
   console.log('[ChatPage] Rendering. isMobileOnly =', isMobileOnly);
   const pathname = usePathname();
 
@@ -80,17 +80,20 @@ export default function Index() {
     const originalBodyPosition = document.body.style.position;
     const originalBodyOverflow = document.body.style.overflow;
     const originalHtmlOverflow = document.documentElement.style.overflow;
+    const originalBodyWidth = document.body.style.width;
 
     // Apply app-mode styles to override global CSS
-    document.body.style.position = 'static'; // Override 'relative'
-    document.body.style.overflow = 'hidden'; // Override 'auto'
-    document.documentElement.style.overflow = 'hidden'; // Prevent html element from scrolling
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
 
     // Cleanup function to restore original styles when component unmounts
     return () => {
         document.body.style.position = originalBodyPosition;
         document.body.style.overflow = originalBodyOverflow;
         document.documentElement.style.overflow = originalHtmlOverflow;
+        document.body.style.width = originalBodyWidth;
     };
   }, [isMobileOnly]); // Run only when mobile view is activated/deactivated
 
@@ -281,11 +284,11 @@ export default function Index() {
           </Box>
           { ( process.env.NODE_ENV === 'development' || isGlobalState ) ?
             <Flex 
-              mt="58px"
+              mt="60px"
               alignItems={'center'} 
               width="100%" 
               maxWidth={`${mConstants.desktopMinWidth}px`} 
-              height="calc(100vh - 58px)"
+              height="calc(100vh - 60px)"
               bg={themeColor}
             >
               <ChatView />

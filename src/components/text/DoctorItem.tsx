@@ -13,24 +13,25 @@ type DoctorListProps = {
 };
   
 const DoctorList = ({ data, onSendDoctorButton,inputs }:DoctorListProps) => {
-   
-    const [currentImageSrc, setCurrentImageSrc] = useState<string>(DoctorAvatar.src);
-    const [imgError, setImgError] = useState<boolean>(false);
+    const useCache = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_VERBOSE === 'true';
+    const photoUrl = (data?.photo && !functions.isEmpty(data.photo)) ? data.photo.trim() : null;
+
+    const imageCacheServer = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER || 'http://localhost:7001/img';
+    const imageCacheWidth = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_WIDTH || '300', 10);
+    const imageCacheHeight = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_HEIGHT || '300', 10);
+
+  
+    const photoSrc = photoUrl ?  useCache ? `${imageCacheServer}?url=${encodeURIComponent(photoUrl)}&w=${imageCacheWidth}&h=${imageCacheHeight}` : photoUrl : DoctorAvatar.src;
+  
+
+    const [hasError, setHasError] = useState(false);
 
     useEffect(() => {
-        const verbose = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_VERBOSE === 'true';
-        if (verbose && data?.photo && !functions.isEmpty(data.photo)) {
-            setCurrentImageSrc(data.photo.trim());
-            setImgError(false); // Reset error state
-        } else {
-            setCurrentImageSrc(DoctorAvatar.src);
-            setImgError(false); // Reset error state
-        }
-    }, [data?.photo, DoctorAvatar.src]);
+        setHasError(false);
+    }, [photoSrc]);
 
     const handleImageError = () => {
-        setCurrentImageSrc(DoctorAvatar.src);
-        setImgError(true);
+        setHasError(true);
     };
 
     const nameText = useColorModeValue('#000000','white')
@@ -60,7 +61,7 @@ const DoctorList = ({ data, onSendDoctorButton,inputs }:DoctorListProps) => {
                     </Flex>
                 </Box>
                 <Box  display={'flex'}  justifyContent={'center'} alignItems={'center'} width={'60px'} height={'60px'} borderRadius={'50%'} overflow={'hidden'} onClick={() => onSendDoctorButton(data,1)} cursor={'pointer'}>
-                    <Image src={currentImageSrc} alt="doctor" width={60} height={60} onError={handleImageError}  style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
+                    <Image src={hasError ? DoctorAvatar.src : photoSrc} alt="doctor" width={60} height={60} onError={handleImageError}  style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
                 </Box>
             </Flex>
             <Divider  my={2} />

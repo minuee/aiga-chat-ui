@@ -28,10 +28,14 @@ const DoctorRecommandItem = ({
   arrowColor,
   doctorListLength
 }: DoctorRecommandItemProps) => {
-  const verbose = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_VERBOSE === 'true';
-  const photoSrc = (verbose && element?.photo && !functions.isEmpty(element.photo)) 
-    ? element.photo.trim() 
-    : DoctorAvatar.src;
+  const useCache = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_VERBOSE === 'true';
+  const photoUrl = (element?.photo && !functions.isEmpty(element.photo)) ? element.photo.trim() : null;
+
+  const imageCacheServer = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER || 'http://localhost:7001/img';
+  const imageCacheWidth = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_WIDTH || '300', 10);
+  const imageCacheHeight = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_HEIGHT || '300', 10);
+
+  const photoSrc = photoUrl ?  useCache ? `${imageCacheServer}?url=${encodeURIComponent(photoUrl)}&w=${imageCacheWidth}&h=${imageCacheHeight}` : photoUrl : DoctorAvatar.src;
   
   const [hasError, setHasError] = useState(false);
 

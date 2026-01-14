@@ -102,23 +102,28 @@ function DoctorModal(props: DoctorModalProps) {
   const btnColor = useColorModeValue('#E9EDF3','rgba(0,59,149,1)');
   const btnTextColor = useColorModeValue('#7F879B','white')
 
-  const [currentImageSrc, setCurrentImageSrc] = useState<string>(DoctorAvatar.src);
-  const [imgError, setImgError] = useState<boolean>(false);
+  const useCache = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_VERBOSE === 'true';
+  const photoUrl = (doctorBasicData?.photo && !functions.isEmpty(doctorBasicData.photo)) ? doctorBasicData.photo.trim() : null;
 
+  const imageCacheServer = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER || 'http://localhost:7001/img';
+  const imageCacheWidth = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_WIDTH || '300', 10);
+  const imageCacheHeight = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_HEIGHT || '300', 10);
+
+  const photoSrc = photoUrl
+    ? (useCache 
+        ? `${imageCacheServer}?url=${encodeURIComponent(photoUrl)}&w=${imageCacheWidth}&h=${imageCacheHeight}`
+        : photoUrl)
+    : DoctorAvatar.src;
+
+  const [hasError, setHasError] = useState(false);
+
+  // Reset error state when the photo source changes
   useEffect(() => {
-      const verbose = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_VERBOSE === 'true';
-      if (verbose && doctorBasicData?.photo && !functions.isEmpty(doctorBasicData.photo)) {
-          setCurrentImageSrc(doctorBasicData.photo.trim());
-          setImgError(false); // Reset error state
-      } else {
-          setCurrentImageSrc(DoctorAvatar.src);
-          setImgError(false); // Reset error state
-      }
-  }, [doctorBasicData?.photo, DoctorAvatar.src]);
+    setHasError(false);
+  }, [photoSrc]);
 
   const handleImageError = () => {
-      setCurrentImageSrc(DoctorAvatar.src);
-      setImgError(true);
+    setHasError(true);
   };
 
   React.useEffect(() => {
@@ -359,7 +364,7 @@ function DoctorModal(props: DoctorModalProps) {
             borderRadius={'50%'}
             overflow={'hidden'}
           >
-            <Image src={currentImageSrc} alt="doctor" width={90} height={90} onError={handleImageError}  style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
+            <Image src={hasError ? DoctorAvatar.src : photoSrc} alt="doctor" width={90} height={90} onError={handleImageError}  style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
           </Box>
         </Flex>
         <Flex flexDirection={'row'} justifyContent={'space-evenly'} alignItems={'center'} minHeight={'100px'}>
