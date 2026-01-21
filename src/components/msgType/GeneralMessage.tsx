@@ -99,6 +99,12 @@ const GeneralMessage = React.memo(function GeneralMessage({ output,isHistory,set
   const isOutputSame = previousOutputRef.current === output && previousOutputRef.current !== null;
   
   React.useEffect(() => {
+    if (isLiveChat && !output) {
+      setIsTypingDone();
+    }
+  }, [output, isLiveChat]);
+
+  React.useEffect(() => {
     const onClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (target.tagName === 'IMG' && target.dataset.url) {

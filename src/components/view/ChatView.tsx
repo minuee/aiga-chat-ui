@@ -1,5 +1,5 @@
 'use client';
-import { isMobileOnly, isMobileSafari } from "react-device-detect";
+
 import functions from '@/utils/functions';
 import { usePathname, useRouter } from 'next/navigation';
 import { Box, Flex, Icon, Textarea, useColorModeValue, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, useColorMode, useToast } from '@chakra-ui/react';
@@ -41,13 +41,17 @@ interface ChatViewProps {
     mobileKeyboardOffset?: number;
     isKeyboardOpenSafari?: boolean;
     isKeyboardOpen?: boolean;
+    isMobile?: boolean;
+    isMobileSafari?: boolean;
 }
 
 export default function ChatView({ 
     mobileContentScrollHeight = 0, 
     mobileKeyboardOffset = 0, 
     isKeyboardOpenSafari = false, 
-    isKeyboardOpen = false 
+    isKeyboardOpen = false, 
+    isMobile = false,
+    isMobileSafari = false
 }: ChatViewProps) {
     const t = useTranslations('Messages');
     const { colorMode } = useColorMode();
@@ -506,7 +510,7 @@ export default function ChatView({
         return <SkeletonDefaultText isOpen={isLoading} lineNum={10} />;
     }
 
-    if (isMobileOnly) {
+    if (isMobile) {
         return (
             <>
                 <Box
@@ -597,10 +601,10 @@ export default function ChatView({
             <Flex direction="column" w="100%" flex={1}>
                 {realOutputCode?.length === 0 ? (
                     <Box display='flex' flexDirection='column' justifyContent='center' alignItems='center' pt="120px">
-                        <MotionWelcomeImage isMobile={isMobileOnly} pt="0" />
-                        <MotionWelcome msg={`안녕하세요!`} pt="30px" classNames={colorMode === "light" ? "opening_box" : "opening_box_dark"} isMobile={isMobileOnly} />
-                        <MotionWelcome msg={`맞춤형 의사추천 챗봇 AIGA입니다.`} pt="10px" classNames={colorMode === "light" ? "opening_box" : "opening_box_dark"} isMobile={isMobileOnly} />
-                        <MotionWelcome msg={`어디가 아프거나 불편하신가요?`} pt="10px" classNames="opening_box_gray" isMobile={isMobileOnly} />
+                        <MotionWelcomeImage isMobile={isMobile} pt="0" />
+                        <MotionWelcome msg={`안녕하세요!`} pt="30px" classNames={colorMode === "light" ? "opening_box" : "opening_box_dark"} isMobile={isMobile} />
+                        <MotionWelcome msg={`맞춤형 의사추천 챗봇 AIGA입니다.`} pt="10px" classNames={colorMode === "light" ? "opening_box" : "opening_box_dark"} isMobile={isMobile} />
+                        <MotionWelcome msg={`어디가 아프거나 불편하신가요?`} pt="10px" classNames="opening_box_gray" isMobile={isMobile} />
                     </Box>
                 ) : (
                     realOutputCode.map(renderMessage)

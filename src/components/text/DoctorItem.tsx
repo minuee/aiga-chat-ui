@@ -61,7 +61,7 @@ const DoctorList = ({ data, onSendDoctorButton,inputs }:DoctorListProps) => {
                     </Flex>
                 </Box>
                 <Box  display={'flex'}  justifyContent={'center'} alignItems={'center'} width={'60px'} height={'60px'} borderRadius={'50%'} overflow={'hidden'} onClick={() => onSendDoctorButton(data,1)} cursor={'pointer'}>
-                    <Image src={hasError ? DoctorAvatar.src : photoSrc} alt="doctor" width={60} height={60} onError={handleImageError}  style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
+                    <Image key={data?.doctor_id || photoUrl} src={hasError ? DoctorAvatar.src : photoSrc} alt="doctor" width={60} height={60} onError={handleImageError}  style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
                 </Box>
             </Flex>
             <Divider  my={2} />

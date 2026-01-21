@@ -1,7 +1,7 @@
 export const apiSuccessCode = [200,201,202,203,300,301,302];
 export const apiAllowOriginCode = ["https://aigadev.kormedi.com","http://localhost:3000","http://localhost:5001",'https://a18c9e8377cc.ngrok-free.app']
 
-const chatAnswerType = ['recommand_doctor','search_doctor','recommand_hospital','general']
+const chatAnswerType = ['recommand_doctor','search_doctor','recommand_hospital','general','markdown']
 
 const contrants  = {
     defaultColor : '#6c62d1',

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-const isMobileSafari = typeof window !== 'undefined' && /iPhone/.test(window.navigator.userAgent) && !/Chrome/.test(window.navigator.userAgent);
 import { Flex,Box, SkeletonCircle, useDisclosure,useColorModeValue,useToast } from '@chakra-ui/react';
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
@@ -32,6 +31,9 @@ const MOBILE_HEADER_HEIGHT = 60;
 const MOBILE_INPUT_HEIGHT = 60;
 
 export default function Index() {
+  const isMobileSafari = React.useMemo(() => {
+    return typeof window !== 'undefined' && /iPhone/.test(window.navigator.userAgent) && !/Chrome/.test(window.navigator.userAgent);
+  }, []);
   const [isMobileOnly, setIsMobileOnly] = React.useState(false);
   console.log('[ChatPage] Rendering. isMobileOnly =', isMobileOnly);
   const pathname = usePathname();
@@ -61,109 +63,235 @@ export default function Index() {
 
   const themeColor = useColorModeValue('white', 'navy.800');
 
-  // Mobile layout states and effects, moved from ChatView
-  const isKeyboardOpen = useDetectKeyboardOpen();
-  const [mobileContentScrollHeight, setMobileContentScrollHeight] = React.useState(0);
-  const [mobileViewportHeight, setMobileViewportHeight] = React.useState<number | string>('100vh');
-  const [mobileKeyboardOffset, setMobileKeyboardOffset] = React.useState(0);
-  const [isKeyboardOpenSafari, setIsKeyboardOpenSafari] = React.useState(false);
-  const initialViewportHeight = React.useRef<number | null>(null); // For Safari zoom
+    // Mobile layout states and effects, from V0
 
-  React.useEffect(() => {
-    setHasMounted(true);
-  }, []);
+    const isKeyboardOpen = useDetectKeyboardOpen();
 
-  React.useEffect(() => {
-    // This effect only runs when the mobile view is active.
-    if (!isMobileOnly) return;
+    const [isKeyboardOpenSafari, setIsKeyboardOpenSafari] = React.useState(false);
 
-    const originalBodyPosition = document.body.style.position;
-    const originalBodyOverflow = document.body.style.overflow;
-    const originalHtmlOverflow = document.documentElement.style.overflow;
-    const originalBodyWidth = document.body.style.width;
+    const [mobileKeyboardOffset, setMobileKeyboardOffset] = React.useState(0);
 
-    // Apply app-mode styles to override global CSS
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
+    
 
-    // Cleanup function to restore original styles when component unmounts
-    return () => {
-        document.body.style.position = originalBodyPosition;
-        document.body.style.overflow = originalBodyOverflow;
-        document.documentElement.style.overflow = originalHtmlOverflow;
-        document.body.style.width = originalBodyWidth;
-    };
-  }, [isMobileOnly]); // Run only when mobile view is activated/deactivated
+    const [mobileViewPortHeight, setMobileViewPortHeight] = React.useState(0);
 
-  // Calculate mobile layout dimensions based on visual viewport
-  React.useEffect(() => {
-    if (isMobileOnly) {
-      const handleResize = () => {
-        const visualHeight = window.visualViewport?.height ?? window.innerHeight;
-        setMobileViewportHeight(visualHeight);
-        const isKeyboardVisible = (window.innerHeight - visualHeight) > 100;
-        
-        let contentHeight = visualHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
-        if (!isKeyboardVisible) {
-            contentHeight = window.innerHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
+    const [mobileContainerHeight, setMobileContainerHeight] = React.useState(0);
+
+    const [mobileContentScrollHeight, setMobileContentScrollHeight] = React.useState(0);
+
+  
+
+    const mobileScrollRef = React.useRef<HTMLDivElement>(null);
+
+    const initialViewportHeight = React.useRef<number | null>(null); 
+
+  
+
+    React.useEffect(() => {
+
+      setHasMounted(true);
+
+    }, []);
+
+  
+
+  
+
+    React.useEffect(() => {
+
+      if ( isMobileOnly ) {
+
+        const vpHeight = window.visualViewport?.height || window.innerHeight;
+
+        const fullHeight = window.innerHeight;
+
+        const keyboardHeight = fullHeight - vpHeight;
+
+        const isKeyboardVisible = keyboardHeight > 100;
+
+        if (isKeyboardOpen || isKeyboardVisible) {
+
+          const vpHeight = window.visualViewport?.height || window.innerHeight;
+
+          const maxContentHeight = vpHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
+
+          setMobileContentScrollHeight(maxContentHeight);
+
+        } else {
+
+          const fullHeight = window.innerHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
+
+          setMobileContentScrollHeight(fullHeight);
+
         }
-        setMobileContentScrollHeight(contentHeight);
 
-        let keyboardOffset = window.innerHeight - visualHeight;
-        if (keyboardOffset < 0) keyboardOffset = 0; // Ensure offset is not negative
-        setMobileKeyboardOffset(keyboardOffset);
+      }
 
-        setIsKeyboardOpenSafari(isKeyboardVisible);
+    }, [isMobileOnly, isKeyboardOpen, mobileKeyboardOffset]);
+
+    
+
+    React.useEffect(() => {
+
+      if ( isMobileOnly ) {
+
+        const handleResize = () => {
+
+          const height = window.visualViewport?.height || window.innerHeight;
+
+          setMobileContainerHeight(height);
+
+        };
+
+  
+
+        if (window.visualViewport) {
+
+          window.visualViewport.addEventListener('resize', handleResize);
+
+          handleResize(); // 최초 호출
+
+        } else {
+
+          window.addEventListener('resize', handleResize);
+
+          handleResize();
+
+        }
+
+  
+
+        return () => {
+
+          if (window.visualViewport) {
+
+            window.visualViewport.removeEventListener('resize', handleResize);
+
+          } else {
+
+            window.removeEventListener('resize', handleResize);
+
+          }
+
+        };
+
+      }
+
+    }, [isMobileOnly]);
+
+  
+
+    
+
+    React.useEffect(() => {
+
+      if (!isMobileOnly || !isMobileSafari) return; // iOS Safari에서만 적용
+
+    
+
+      const handleResize = () => {
+
+        const visualHeight = window.visualViewport?.height ?? window.innerHeight;
+
+        
+
+        if (!initialViewportHeight.current) {
+
+          initialViewportHeight.current = visualHeight;
+
+        }
+
+    
+
+        const keyboardHeight = initialViewportHeight.current - visualHeight;
+
+        const isKeyboardVisible = keyboardHeight > 100;
+
+    
+
+        const safeKeyboardHeight = isKeyboardVisible ? keyboardHeight : 0;
+
+        const contentHeight = visualHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
+
+        setIsKeyboardOpenSafari(isKeyboardVisible)
+
+        setMobileKeyboardOffset(safeKeyboardHeight);
+
+        setMobileViewPortHeight(contentHeight);
+
+        setMobileContainerHeight(visualHeight);
+
       };
+
+    
 
       window.visualViewport?.addEventListener('resize', handleResize);
-      window.addEventListener('resize', handleResize);
-      handleResize(); // Initial calculation
+
+      window.addEventListener('touchend', handleResize); // iOS Safari 딜레이 대응
+
+    
+
+      handleResize(); // 초기 실행
+
+    
 
       return () => {
+
         window.visualViewport?.removeEventListener('resize', handleResize);
-        window.removeEventListener('resize', handleResize);
+
+        window.removeEventListener('touchend', handleResize);
+
       };
-    }
-  }, [isMobileOnly]); // Rerun only if mobile status changes
 
+    }, [isMobileOnly, isMobileSafari]);
 
-  // Safari specific zoom handling
-  React.useEffect(() => {
-    if (!isMobileSafari) return;
   
-    const handleResize = () => {
-      const visualHeight = window.visualViewport?.height ?? window.innerHeight;
-      setMobileViewportHeight(visualHeight);
-      
-      if (!initialViewportHeight.current) {
-        initialViewportHeight.current = visualHeight;
-      }
-  
-      const keyboardHeight = initialViewportHeight.current - visualHeight;
-      const isKeyboardVisible = keyboardHeight > 100;
-  
-      const safeKeyboardHeight = isKeyboardVisible ? keyboardHeight : 0;
-      const contentHeight = visualHeight - MOBILE_HEADER_HEIGHT - MOBILE_INPUT_HEIGHT;
-      setIsKeyboardOpenSafari(isKeyboardVisible)
-      setMobileKeyboardOffset(safeKeyboardHeight);
-      setMobileContentScrollHeight(contentHeight); // Update content height here too
-    };
-  
-    window.visualViewport?.addEventListener('resize', handleResize);
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('touchend', handleResize);
-  
-    handleResize(); 
-  
-    return () => {
-      window.visualViewport?.removeEventListener("resize", handleResize);
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener("touchend", handleResize);
-    };
-  }, [isMobileSafari]);
+
+    React.useEffect(() => {
+
+      if (!isMobileOnly || isMobileSafari) return; // 사파리는 제외
+
+    
+
+      const updateOffset = () => {
+
+        const isNaverInApp = /NAVER\(inapp/.test(navigator.userAgent);
+
+        const screenHeight = window.screen.height;
+
+        const innerHeight = window.innerHeight;
+
+        const keyboardHeight = screenHeight - innerHeight;
+
+        const isKeyboardVisible = keyboardHeight > 100;
+
+        const safeKeyboardHeight = isKeyboardVisible ? keyboardHeight : 0;
+
+        const height = isKeyboardVisible ? innerHeight - keyboardHeight : innerHeight;
+
+    
+
+        setMobileViewPortHeight(isNaverInApp ? height+safeKeyboardHeight : height);
+
+        setMobileKeyboardOffset(isKeyboardVisible ? keyboardHeight : 0);
+
+      };
+
+    
+
+      window.addEventListener('resize', updateOffset);
+
+      updateOffset(); // 초기 실행
+
+    
+
+      return () => {
+
+        window.removeEventListener('resize', updateOffset);
+
+      };
+
+    }, [isMobileOnly, isMobileSafari]);
 
 
   const getConfigData = React.useCallback(
@@ -213,7 +341,7 @@ export default function Index() {
 
   if ( isMobileOnly ) {
     return (
-      <Box height={mobileViewportHeight} overflow="hidden" position="relative"> {/* Use 100vh for fixed full height for containing fixed children */}
+      <Box height={`${mobileContainerHeight}px`} overflow={isMobileSafari ? 'auto' : 'hidden'} position={'relative'} ref={mobileScrollRef}>
         { !functions.isEmpty(userBaseInfo?.email) && <TokenGuard /> }
         { isLoading && ( 
           <Flex bg={themeColor} height={"100%"} minHeight={"100vh"} width="100%" justifyContent={'center'} alignItems={'center'} zIndex={999999999} position={'absolute'} left={0} top={0} right={0} bottom={0}>
@@ -231,6 +359,8 @@ export default function Index() {
         </Flex>
         { ( process.env.NODE_ENV === 'development' || isGlobalState ) ?
           <ChatView 
+              isMobile={isMobileOnly}
+              isMobileSafari={isMobileSafari}
               mobileContentScrollHeight={mobileContentScrollHeight}
               mobileKeyboardOffset={mobileKeyboardOffset}
               isKeyboardOpenSafari={isKeyboardOpenSafari}

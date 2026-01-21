@@ -57,12 +57,15 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false, summary, is
   }, [msg]);
 
   React.useEffect(() => {
-    if ( ( isLiveChat && !functions.isEmpty(summary)  )  ) {
+    if ( isLiveChat && !functions.isEmpty(summary)  ) {
       setLocalTypeDone(false)
     }else{
       setLocalTypeDone(true)
+      if (isLiveChat) {
+        setIsTypingDone();
+      }
     }
-  }, [summary]);
+  }, [summary, isLiveChat]);
 
   const setTypingCompleteDone = () => {
     setTimeout(() => {

@@ -79,16 +79,60 @@ function SidebarContent(props: SidebarContent) {
   let navbarBg = useColorModeValue('rgba(0, 59, 149, 1)','rgba(11,20,55,0.5)');
   const reviewBtnRef = React.useRef<HTMLButtonElement>(null);
   const confirmRef = useRef();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const groupRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const scrollAfterOpenIndexesChangeRef = useRef(false);
   const chatSessionId = ChatSesseionIdStore(state => state.chatSessionId);
+  const currentHistorySelectDate = ChatSesseionIdStore(state => state.currentHistorySelectDate);
+  const setChatSessionId = ChatSesseionIdStore((state) => state.setChatSessionId);
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
   const setOldHistoryData = CallHistoryDataStore((state) => state.setOldHistoryData);
   const setOpenHistoryDrawer = DrawerHistoryStore((state) => state.setOpenHistoryDrawer);
-  
+
+  React.useEffect(() => {
+    console.log('dateString currentHistorySelectDate',currentHistorySelectDate)
+  }, [currentHistorySelectDate]);
+
+  React.useEffect(() => {
+    if (openIndexes.length > 0 && scrollContainerRef.current && scrollAfterOpenIndexesChangeRef.current) {
+        const indexToScrollTo = openIndexes[0];
+        const targetGroupElement = groupRefs.current[indexToScrollTo];
+
+        if (targetGroupElement) {
+            setTimeout(() => {
+                targetGroupElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                scrollAfterOpenIndexesChangeRef.current = false; // Reset flag after scroll
+            }, 100);
+        }
+    }
+  }, [openIndexes, scrollContainerRef.current]);
+
   React.useEffect(() => {
     setTimeout(() => {
       getMyHistoryData();
     }, 300)
   }, []);
+
+  React.useEffect(() => {
+    if (historyData?.length > 0) { // Check historyData.length
+        if (currentHistorySelectDate) {
+            const index = historyData.findIndex((group: any) => group.date === currentHistorySelectDate);
+            if (index !== -1) {
+                setOpenIndexes([index]);
+                scrollAfterOpenIndexesChangeRef.current = true; // Set flag
+            } else {
+                setOpenIndexes([0]);
+                scrollAfterOpenIndexesChangeRef.current = true; // Set flag
+            }
+        } else { // No currentHistorySelectDate, default to first group
+            setOpenIndexes([0]);
+            scrollAfterOpenIndexesChangeRef.current = true; // Set flag
+        }
+    } else { // No historyData
+        setOpenIndexes([]);
+        // No scroll needed if no history
+    }
+  }, [historyData, currentHistorySelectDate]);
 
   const getMyHistoryData = async() => {
     try{
@@ -167,7 +211,7 @@ function SidebarContent(props: SidebarContent) {
     }, 60);
   }
 
-  const onHandReplaceHistory = async( data:any ) => {
+  const onHandReplaceHistory = async( data:any,dateString:string ) => {
     try{
       let newData = [] as any;
 
@@ -202,6 +246,8 @@ function SidebarContent(props: SidebarContent) {
           session_title : data?.title,
           chattings: newData
         });
+        console.log(`dateString ${dateString}`)
+        setChatSessionId(data?.session_id, dateString);
       }else{
         toast({
           title: "일시적 장애가 발생하였습니다. 잠시후 다시 시도해 주십시요.",
@@ -325,7 +371,7 @@ function SidebarContent(props: SidebarContent) {
           </Flex>
         </Stack>
         :
-        <Stack direction="column" mb="auto"  width={'100%'}  overflowY={'auto'} minHeight={'calc(100vh - 140px'}>
+        <Stack ref={scrollContainerRef} direction="column" mb="auto"  width={'100%'}  overflowY={'auto'} minHeight={'calc(100vh - 140px'}>
           {
             isReceiving
             &&
@@ -349,7 +395,7 @@ function SidebarContent(props: SidebarContent) {
               </Flex>
               :
               historyData.map(({ date, sessions } : any, index:number) => (
-                <Flex key={date} flexDirection={'column'} width={'100%'}>
+                <Flex ref={(el) => (groupRefs.current[index] = el)} key={date} flexDirection={'column'} width={'100%'}>
                   { index > 0 && <HSeparator mt="20px" mb="15px" w="100%"  />}
                   <Flex 
                     display={sessions.length > 0 ? 'flex' : 'none'} 
@@ -364,7 +410,7 @@ function SidebarContent(props: SidebarContent) {
                   >
                     <Flex alignItems="center">
                       <CustomTextBold400 fontSize={'15px'} color={textColor2}>
-                        {date? date.toString() : "YYYY-MM-DD"}
+                        {date ? date.toString() : "YYYY-MM-DD"}
                       </CustomTextBold400>
                       {!openIndexes.includes(index) && (
                         <CustomTextBold400 fontSize={'15px'} color={textColor2} ml="2">
@@ -383,7 +429,7 @@ function SidebarContent(props: SidebarContent) {
                             data={item} 
                             onDeleteHistory={onDeleteHistory} 
                             onHandleUpdateTitle={onHandleUpdateTitle}
-                            onHandCallHistory={(data:any) => onHandReplaceHistory(data)}
+                            onHandCallHistory={(data:any) => onHandReplaceHistory(data,date.toString())}
                           />
                         ))}
                       </Stack>

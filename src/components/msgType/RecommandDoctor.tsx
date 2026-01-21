@@ -269,12 +269,15 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
   }, [data]);
 
   useEffect(() => {
-    if ( ( isLiveChat && !functions.isEmpty(summary)  )  ) {
+    if ( isLiveChat && !functions.isEmpty(summary)  ) {
       setLocalTypeDone(false)
     }else{
       setLocalTypeDone(true)
+      if (isLiveChat) {
+        setIsTypingDone();
+      }
     }
-  }, [summary]);
+  }, [summary, isLiveChat]);
 
   const setTypingCompleteDone = () => {
     setTimeout(() => {
@@ -502,6 +505,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
                     isOpen={(isOpenDocListModal && chatId ==  selectChatId)}
                     setClose={() => fn_close_modal_doctor_list()}
                     originDoctorData={doctorAllList}
+                    llmSortType={data?.answer?.front_sort_type}
                   />
                 </ModalBody>
               </ModalContent>

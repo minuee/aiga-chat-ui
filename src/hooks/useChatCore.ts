@@ -78,6 +78,7 @@ export const useChatCore = () => {
   const isNewChat = NewChatStateStore(state => state.isNew);
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
   const chatSessionId = ChatSesseionIdStore(state => state.chatSessionId);
+  const currentHistorySelectDate = ChatSesseionIdStore(state => state.currentHistorySelectDate);
   const setChatSessionId = ChatSesseionIdStore((state) => state.setChatSessionId);
   const setOutputCode = CurrentDialogStore((state) => state.setCurrentMessageData);
   const outputCode = CurrentDialogStore(state => state.messageData);
@@ -112,7 +113,8 @@ export const useChatCore = () => {
   }, [userStoreInfo]);
 
   const firstForceStep = useCallback(() => {
-    setChatSessionId('')
+    setChatSessionId('', null)
+    setOutputCode([]); // CurrentDialogStore의 messageData를 초기화합니다.
     setIsOpenReview(false)
     setIsOpenDoctorDetailModal(false);
     setOpenHistoryDrawer(false);
@@ -143,7 +145,7 @@ export const useChatCore = () => {
       const res: any = await ChatService.getChatNewSession();
       if (mConstants.apiSuccessCode.includes(res?.statusCode)) {
         const newSessionId = res?.data?.session_id;
-        setChatSessionId(newSessionId)
+        setChatSessionId(newSessionId, null)
         return newSessionId;
       }
     } catch (e: any) {
@@ -152,6 +154,9 @@ export const useChatCore = () => {
     return null;
   }, [setChatSessionId]);
 
+  useEffect(() => {
+    console.log('dateString currentHistorySelectDate 3333',currentHistorySelectDate)
+  }, [currentHistorySelectDate]);
   const addMessage = useCallback((newItem: any) => {
     if (!newItem?.isOnlyLive) {
       CurrentDialogStore.getState().setCurrentMessageData((prev: any) => [...(prev || []), { ...newItem, isLiveChat: false }]);
@@ -310,7 +315,7 @@ export const useChatCore = () => {
   useEffect(() => {
     if (!functions.isEmpty(oldHistoryData)) {
       if (!functions.isEmpty(oldHistoryData?.session_id)) {
-        setChatSessionId(oldHistoryData.session_id)
+        setChatSessionId(oldHistoryData.session_id, oldHistoryData.currentDate)
         setOutputCode(oldHistoryData.chattings);
         setRealOutputCode(oldHistoryData.chattings);
         setChatDisabled(prev => ({ ...prev, isState: true, isAlertMsg: false }));
@@ -343,7 +348,7 @@ export const useChatCore = () => {
     };
 
     if (isNewChat && realOutputCode.length > 0) {
-      setChatSessionId('');
+      setChatSessionId('', null);
       setOutputCode([]);
       setRealOutputCode([]);
       setCurrentPathname('');

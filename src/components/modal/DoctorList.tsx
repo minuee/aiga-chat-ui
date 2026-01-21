@@ -36,11 +36,12 @@ export interface DoctorListModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
   originDoctorData : any;
+  llmSortType? : string;
 }
 
 function DoctorListModal(props: DoctorListModalProps) {
   
-  const { isOpen, setClose, originDoctorData } = props;
+  const { isOpen, setClose, originDoctorData, llmSortType } = props;
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = React.useRef(pathname);
@@ -59,7 +60,7 @@ function DoctorListModal(props: DoctorListModalProps) {
   const [isReLoading, setIsReLoading] = React.useState(false);
   const [selectedDoctor, setSelectedDoctor] = React.useState<any>(null);
   const [inputs, setInputs] = React.useState({
-    sortType : [],
+    sortType : [] as string[],
     latitude : 0,
     longitude : 0
   });
@@ -113,6 +114,16 @@ function DoctorListModal(props: DoctorListModalProps) {
       }));
     }
   }, [location, setLocation]);
+
+  React.useEffect(() => {
+    if (isOpen && llmSortType === 'distance' && inputs.latitude && inputs.longitude) {
+      const isDistanceSortActive = Array.isArray(inputs.sortType) && inputs.sortType.includes('distance');
+      if (!isDistanceSortActive) {
+        onHandleSortChange('distance');
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, llmSortType, inputs.latitude, inputs.longitude]);
 
   const makeBgColor = (sortType: string = 'all') => {
     if (Array.isArray(inputs.sortType) && (inputs.sortType as string[]).includes(sortType)) {
@@ -182,7 +193,7 @@ function DoctorListModal(props: DoctorListModalProps) {
     });
   };
 
-  const summaryRankSocre =  async(data:any, gubun:string) => {
+  const summaryRankSocre =  (data:any, gubun:string) => {
     if ( gubun == 'score') {
       if ( !functions.isEmpty(data?.paper_score)){
         return data?.paper_score;

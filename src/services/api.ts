@@ -30,22 +30,26 @@ axios.interceptors.request.use(
 );
 
 axios.interceptors.request.use((config) => {
-  try{
+  try {
     const { userStoreInfo } = UserBasicInfoStore.getState();
-    const deCryptInfo = decryptToken(userStoreInfo)
-    const decryptedUser = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ?  JSON.parse(deCryptInfo) : userStoreInfo;
-    const { email  } = decryptedUser;
+    const deCryptInfo = decryptToken(userStoreInfo);
+    const decryptedUser = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ? JSON.parse(deCryptInfo) : userStoreInfo;
+    const { email } = decryptedUser;
 
-    const accessTmpToken =  mCookie.getCookie(mConstants.apiTokenName);
-    if ( !functions.isEmpty(accessTmpToken) && !functions.isEmpty(email)) { 
-      const accessToken =  decryptToken(accessTmpToken)
-      config.headers['Authorization'] = functions.isEmpty(accessToken) ? null : `Bearer ${accessToken}` 
+    const accessTmpToken = mCookie.getCookie(mConstants.apiTokenName);
+    
+    if (!functions.isEmpty(accessTmpToken) && !functions.isEmpty(email)) {
+      const accessToken = decryptToken(accessTmpToken);
+      config.headers['Authorization'] = functions.isEmpty(accessToken) ? null : `Bearer ${accessToken}`;
+    } else {
+      console.log(`[Request Interceptor] Authorization header NOT set for ${config.url} (token or email empty). Token: ${!functions.isEmpty(accessTmpToken)}, Email: ${!functions.isEmpty(email)}`);
     }
-    return config
-  }catch(e:any){
-    return config
+    return config;
+  } catch (e: any) {
+    console.error(`[Request Interceptor] Error setting Authorization header for ${config.url}: ${e.message}`);
+    return config;
   }
-})
+});
 
 // 기존 요청을 다시 실행하기 위한 함수 등록
 function subscribeTokenRefresh(cb: (token: string) => void) {
@@ -64,7 +68,7 @@ axios.interceptors.response.use(
   },
   async function (error) {
     const originalRequest = error.config as any;
-
+    
     // ✅ 로그아웃 요청은 refresh 시도하지 않음
     if (originalRequest?.url?.includes('/auth/logout')) {
       return Promise.reject(error);
@@ -85,19 +89,23 @@ axios.interceptors.response.use(
 
       originalRequest._retry = true;
       isRefreshing = true;
-
+      
       try {
-        // The refresh token is in an HttpOnly cookie, so we don't need to read it from localStorage.
-        // We just need to make the request, and the browser will send the cookie automatically.
         const res = await axios.get('/auth/refresh');
+        
+        const newAccessToken = res.data.data.access_token; // <-- 이 부분을 수정합니다!
 
-        const newAccessToken = res.data.access_token;
+        if (typeof newAccessToken !== 'string' || newAccessToken.length === 0) {
+            mCookie.removeCookie(mConstants.apiTokenName); // 문제가 있으므로 기존 쿠키 제거
+            isRefreshing = false;
+            return Promise.reject(new Error("Invalid access token received during refresh."));
+        }
 
-        // SignUpScreen.tsx와 동일하게 만료 기간 설정
         const expireDate = new Date();
         expireDate.setDate(expireDate.getDate() + 7); // 7일 후 만료 (일관성 유지)
 
         mCookie.setCookie(mConstants.apiTokenName, encryptToken(newAccessToken), { path: '/' , expires : expireDate });
+        const updatedCookie = mCookie.getCookie(mConstants.apiTokenName);
         onRefreshed(newAccessToken);
         isRefreshing = false;
 
@@ -106,12 +114,10 @@ axios.interceptors.response.use(
         
       } catch (refreshError) {
         mCookie.removeCookie(mConstants.apiTokenName);
-        // Important: Propagate the error to properly log the user out.
         isRefreshing = false;
         return Promise.reject(refreshError);
       }
     }
-
     return Promise.reject(error);
   }
 );

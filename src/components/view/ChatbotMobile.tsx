@@ -109,6 +109,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   const isNewChat = NewChatStateStore(state => state.isNew);
   const setNewChatOpen = NewChatStateStore((state) => state.setNewChatState);
   const chatSessionId = ChatSesseionIdStore(state => state.chatSessionId);
+  const currentHistorySelectDate = ChatSesseionIdStore(state => state.currentHistorySelectDate);
   const setChatSessionId = ChatSesseionIdStore((state) => state.setChatSessionId);
   const oldHistoryData = CallHistoryDataStore(state => state.historyData);
   const setOldHistoryData = CallHistoryDataStore((state) => state.setOldHistoryData);
@@ -391,7 +392,8 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   }, []); */
 
   const firstForceStep = () => {
-    setChatSessionId('')
+    setChatSessionId('', null)
+    setOutputCode([]); // CurrentDialogStore의 messageData를 초기화합니다.
     setIsOpenReview(false)
     setOpenHistoryDrawer(false);
     setIsOpenRequestModal(false);
@@ -478,7 +480,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
       const res:any = await ChatService.getChatNewSession();
       if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
         const newSessionId = res?.data?.session_id;
-        setChatSessionId(newSessionId)
+        setChatSessionId(newSessionId, null)
         return newSessionId;
       }else{
         return null;
@@ -491,7 +493,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   useEffect(() => {
     if ( !functions.isEmpty(oldHistoryData) ) {
       if ( !functions.isEmpty(oldHistoryData?.session_id) ) {
-        setChatSessionId(oldHistoryData?.session_id)
+        setChatSessionId(oldHistoryData?.session_id, oldHistoryData?.currentDate)        
         setOutputCode(oldHistoryData?.chattings);
         setRealOutputCode(oldHistoryData?.chattings)
         setChatDisabled({
@@ -508,7 +510,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   useEffect(() => {
     if ( in24UsedToken > 0 ) { 
       if ( isNewChat && realOutputCode.length > 0 ) {
-        setChatSessionId('')
+        setChatSessionId('', null)
         setOutputCode([]);
         setRealOutputCode([])
         setCurrentPathname('')
@@ -551,7 +553,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     }else{
       if ( isNewChat && realOutputCode.length > 0 ) {
         // 현 데이터를 히스토리에 넣는다 * 저장방식을 고민을 해야 한다 
-        setChatSessionId('')
+        setChatSessionId('', null)
         setOutputCode([]);
         setRealOutputCode([])
         setChatDisabled({
@@ -661,7 +663,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     debouncedSend();
   }
 
-  const onHandleTypeDone = () => {
+  const onHandleTypeDone = useCallback(() => {
     setIsLoading(false);
     setReceiving(false);
     setIsFocus(false);
@@ -671,7 +673,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
       }
     }, 100)
     
-  }
+  }, []);
 
   const addMessage = (newItem: any) => {
     if ( !newItem?.isOnlyLive) {
@@ -681,9 +683,12 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   }
 
   const handleTranslate = async( isText:any = '') => {
+    // inputCode의 토큰 계산은 여기서 바로 수행
     const nowTokens = calculateTokenCount(inputCode);
     const nowTimeStamp = functions.getKSTUnixTimestamp();
     if(isNewChat) setNewChatOpen(false);
+    // inputCode를 비우는 것은 메시지 전송 로직이 시작된 후로 이동
+    
     if ( in24UsedToken > 0 ) { 
       const realTimeIn24UsedToken = in24UsedToken+nowTokens;
       if ( userBaseInfo?.isGuest  ) {//비회원
@@ -759,23 +764,23 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
       }
      
       try{
-        setInputCode('')
+        setInputCode('') // 메시지 전송 후 inputCode 비움
         const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText.trim(), latitude, longitude);
         // ❗중지된 요청이면 무시
         if (requestRef.current !== newRequestId) return;
         if ( mConstants.apiSuccessCode.includes(questionResult?.statusCode) ) {
           const answerMessage = questionResult?.data;
           setIn24UsedToken(functions.isEmpty(answerMessage?.in24_used_token) ? 0 : answerMessage?.in24_used_token);
-          if ( answerMessage?.chat_type !== 'general' ) {
-            setIsLoading(false);
-            setReceiving(false);
-            setIsFocus(false);
-            setTimeout(() => {
-              if (textareaRef.current && !isMobileOnly) {
-                textareaRef?.current?.focus()
-              }
-            }, 100)
-          }
+          // if ( answerMessage?.chat_type !== 'general' ) {
+          //   setIsLoading(false);
+          //   setReceiving(false);
+          //   setIsFocus(false);
+          //   setTimeout(() => {
+          //     if (textareaRef.current && !isMobileOnly) {
+          //       textareaRef?.current?.focus()
+          //     }
+          //   }, 100)
+          // }
           
           setTimeout(() => {
             addMessage(
@@ -830,7 +835,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
               }
             }, 100)
             if (  questionResult?.message?.statusCode == '404' && questionResult?.message?.message == '세션이 존재하지 않습니다.') {
-              setChatSessionId('');
+              setChatSessionId('', null);
             }
             setTimeout(() => {
               addMessage(
@@ -1014,15 +1019,15 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     return count;
   };
 
-  const onSendButton = async( str : string) => {
+  const onSendButton = useCallback(async( str : string) => {
     if ( !isReceiving) await handleTranslate(str);
-  }
+  }, [isReceiving, handleTranslate]);
 
-  const onSendWelcomeButton = async( str : string) => {
+  const onSendWelcomeButton = useCallback(async( str : string) => {
     if ( !isReceiving ) await handleTranslate(str);
-  }
+  }, [isReceiving, handleTranslate]);
 
-  const onSendDoctorButton = async( data : any,isType : number) => {
+  const onSendDoctorButton = useCallback(async( data : any,isType : number) => {
     setSelectedDoctor(data);
     history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_2}`);
     setCurrentPathname(`${mConstants.pathname_modal_2}`)
@@ -1031,17 +1036,17 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     setIsOpenReview(false);
     setIsOpenRequestModal(false);
     setIsOpenDoctorModal(true);
-  }
+  }, [setCurrentPathname, setOpenDoctorListModal, setIsOpenReview, setIsOpenRequestModal, setIsOpenDoctorModal, pathnameRef]);
 
-  const onSendNameButton = async( str : string) => {
+  const onSendNameButton = useCallback(async( str : string) => {
     if ( !isReceiving ) await handleTranslate(str);
-  }
+  }, [isReceiving, handleTranslate]);
 
-  const onSendTypeButton = async( typeString : string ) => {
+  const onSendTypeButton = useCallback(async( typeString : string ) => {
     if ( !isReceiving ) await handleTranslate(typeString);
-  }
+  }, [isReceiving, handleTranslate]);
 
-  const fn_close_modal_doctor_detail = async() => {
+  const fn_close_modal_doctor_detail = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenDoctorModal(false);
     router.replace(`/${locale}/chat`);
@@ -1049,36 +1054,36 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
       setCurrentPathname('');
       mCookie.setCookie('currentPathname','')
     }, 200);
-  }
+  }, [router, setCurrentPathname, setIsOpenDoctorModal]);
 
-  const fn_close_modal_doctor_detail2 = async() => {
+  const fn_close_modal_doctor_detail2 = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenDoctorDetailModal(false);
     router.replace(`/${locale}/chat#${mConstants.pathname_modal_1}`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_1}`);
     }, 200);
-  }
+  }, [router, setIsOpenDoctorDetailModal]);
 
-  const fn_close_modal_doctor_review = async() => {
+  const fn_close_modal_doctor_review = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenReview(false);
     router.replace(`/${locale}/chat#${mConstants.pathname_modal_2}`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2}`)  
     }, 200);
-  }
+  }, [router, setIsOpenReview]);
 
-  const fn_close_modal_doctor_review2 = async() => {
+  const fn_close_modal_doctor_review2 = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenReview(false);
     router.replace(`/${locale}/chat#${mConstants.pathname_modal_2_2}`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2_2}`)  
     }, 200);
-  }
+  }, [router, setIsOpenReview]);
 
-  const fn_close_modal_doctor_request = async() => {
+  const fn_close_modal_doctor_request = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenRequestModal(false);
     if ( isFromDoctorDepth2 ) {
@@ -1092,99 +1097,99 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2}`)
       }, 200);
     }
-  }
+  }, [router, isFromDoctorDepth2, setIsOpenRequestModal]);
 
-  const fn_close_modal_doctor_list = async() => {
+  const fn_close_modal_doctor_list = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setOpenDoctorListModal(false);
     router.replace(`/${locale}/chat`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname','');
     }, 200);
-  }
+  }, [router, setOpenDoctorListModal]);
 
-  const fn_close_drawer_history = async() => {
+  const fn_close_drawer_history = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setOpenHistoryDrawer(false);
     router.replace(`/${locale}/chat`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname','') ;
     }, 200);
-  }
+  }, [router, setOpenHistoryDrawer]);
 
-  const fn_close_modal_mypage = async() => {
+  const fn_close_modal_mypage = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenSetupModal(false);
     router.replace(`/${locale}/chat#${mConstants.pathname_modal_20}`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_20}`);
     }, 200);
-  }
+  }, [router, setIsOpenSetupModal]);
 
-  const fn_close_modal_notice_list = async() => {
+  const fn_close_modal_notice_list = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenNoticeListModal(false);
     router.replace(`/${locale}/chat#${mConstants.pathname_modal_10}`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`);
     }, 200);
-  }
+  }, [router, setIsOpenNoticeListModal]);
 
-  const fn_close_modal_notice_detail = async() => {
+  const fn_close_modal_notice_detail = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenNoticeDetailModal(false);
     router.replace(`/${locale}/chat#${mConstants.pathname_modal_5}`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_5}`);
     }, 200);
-  }
+  }, [router, setIsOpenNoticeDetailModal]);
 
-  const fn_close_modal_mypage_request = async() => {
+  const fn_close_modal_mypage_request = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenMypageRequestModal(false);
     router.replace(`/${locale}/chat#${mConstants.pathname_modal_10}`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`);
     }, 200);
-  }
+  }, [router, setIsOpenMypageRequestModal]);
 
-  const fn_close_modal_mypage_entire = async() => {
+  const fn_close_modal_mypage_entire = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenEntireModal(false);
     router.replace(`/${locale}/chat#${mConstants.pathname_modal_10}`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`) 
     }, 200);
-  }
+  }, [router, setIsOpenEntireModal]);
 
-  const fn_close_modal_mypage_policy = async() => {
+  const fn_close_modal_mypage_policy = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenPolicyModal(false);
     router.replace(`/${locale}/chat#${mConstants.pathname_modal_10}`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`) 
     }, 200);
-  }
+  }, [router, setIsOpenPolicyModal]);
 
-  const fn_close_modal_mypage_policy2 = async() => {
+  const fn_close_modal_mypage_policy2 = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenPolicyModal(false);
     router.replace(`/${locale}/chat#${mConstants.pathname_modal_11}`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_11}`) 
     }, 200);
-  }
+  }, [router, setIsOpenPolicyModal]);
 
-  const fn_close_modal_mypage_yakwan = async() => {
+  const fn_close_modal_mypage_yakwan = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenYakwanModal(false);
     router.replace(`/${locale}/chat#${mConstants.pathname_modal_10}`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_10}`) 
     }, 200);
-  }
+  }, [router, setIsOpenYakwanModal]);
 
-  const fn_close_modal_mypage_yakwan2 = async() => {
+  const fn_close_modal_mypage_yakwan2 = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
 
     setIsOpenYakwanModal(false);
@@ -1192,27 +1197,27 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     setTimeout(() => {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_11}`) 
     }, 200);
-  }
+  }, [router, setIsOpenYakwanModal]);
 
-  const fn_close_modal_mypage_mingam2 = async() => {
+  const fn_close_modal_mypage_mingam2 = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenMingamModal(false);
     router.replace(`/${locale}/chat#${mConstants.pathname_modal_11}`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_11}`) 
     }, 200);
-  }
+  }, [router, setIsOpenMingamModal]);
 
-  const fn_close_modal_user_login = async() => {
+  const fn_close_modal_user_login = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenSignupModal(false);
     router.replace(`/${locale}/chat`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname','')
     }, 200);
-  }
+  }, [router, setIsOpenSignupModal]);
 
-  const fn_close_modal_user_login2 = async() => {
+  const fn_close_modal_user_login2 = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenSignupModal(false);
     if ( isFromDoctorDepth2 ) {
@@ -1226,16 +1231,16 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
         mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_3}`)  
       }, 200);
     }
-  }
+  }, [isFromDoctorDepth2, setIsOpenSignupModal]);
 
-  const fn_close_modal_signup_agree = async() => {
+  const fn_close_modal_signup_agree = useCallback(async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
     setIsOpenSignupAgreeModal(false);
     router.replace(`/${locale}/chat#${mConstants.pathname_modal_21}`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_21}`) 
     }, 200);
-  }
+  }, [router, setIsOpenSignupAgreeModal]);
 
   useEffect(() => {
     const handlePopState = async(event: PopStateEvent) => {
@@ -1334,7 +1339,120 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     window.addEventListener('popstate', handlePopState);
 
     return () => window.removeEventListener('popstate', handlePopState);
-  }, []); // ✅ 한 번만 등록
+  }, [fn_close_modal_doctor_list, fn_close_modal_doctor_detail2, fn_close_modal_doctor_detail, fn_close_modal_doctor_review, fn_close_modal_doctor_review2, fn_close_modal_doctor_request, fn_close_drawer_history, fn_close_modal_user_login, fn_close_modal_user_login2, fn_close_modal_mypage, fn_close_modal_notice_list, fn_close_modal_notice_detail, fn_close_modal_mypage_request, fn_close_modal_mypage_entire, fn_close_modal_mypage_yakwan, fn_close_modal_mypage_yakwan2, fn_close_modal_mypage_policy, fn_close_modal_mypage_policy2, fn_close_modal_mypage_mingam2, fn_close_modal_signup_agree]); // ✅ 한 번만 등록
+  
+  const memoizedMessages = useMemo(() => {
+    return realOutputCode.map((element:any,index:number) => {
+      if ( element.ismode == 'me') {
+        return (
+          <Box key={element.chat_id || index}>
+            <ChatMeMessage
+              indexKey={index}
+              question={element.question}
+            />
+          </Box>
+        )
+      }else if ( element.ismode == 'server') {
+        if ( element.chat_type === "recommand_doctor" ) {
+          return (
+            <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
+              <RecommandDoctor 
+                data={element}
+                summary={!functions.isEmpty(element?.summary) ? functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')) : ""}
+                isHistory={element?.isHistory}
+                onSendButton={onSendDoctorButton}
+                isLiveChat={element.isLiveChat}
+                setIsTypingDone={onHandleTypeDone}
+              />
+            </Box>
+          )
+        }else if ( element.chat_type === "search_doctor" ) {
+          return (
+            <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
+              <SearchDoctor 
+                data={element}
+                summary={!functions.isEmpty(element?.summary) ? functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')) : ""}
+                isHistory={element?.isHistory}
+                onSendButton={onSendDoctorButton}
+                isLiveChat={element.isLiveChat}
+                setIsTypingDone={onHandleTypeDone}
+              />
+            </Box>
+          )
+        }else if ( element.chat_type === "recommand_hospital" ) {
+          return (
+            <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
+              <Flex w="100%">
+                <SimpleListMessage 
+                  indexKey={index}
+                  isHistory={element?.isHistory}
+                  msg={element.answer} 
+                  isLiveChat={element.isLiveChat}
+                  setIsTypingDone={onHandleTypeDone}
+                  summary={!functions.isEmpty(element?.summary) ? functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')) : ""} 
+                />
+              </Flex>
+            </Box>
+          )
+        }else if ( element.chat_type === "general" ) {
+          return (
+            <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
+              <Flex w="100%">
+                <GeneralMessage 
+                  //output={functions.makeLinkify(functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
+                  output={functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))} 
+                  isHistory={element?.isHistory}
+                  setIsTypingDone={onHandleTypeDone}
+                  isLiveChat={element.isLiveChat == undefined ? false : element.isLiveChat }
+                />
+              </Flex>
+            </Box>
+          )
+        }else {
+          return (
+            <Box key={element.chat_id || index}>
+              <ChatWrongMessage
+                indexKey={index}
+                isMode="system"
+                msg={mConstants.error_message_default}
+              />
+            </Box>
+          )
+        }
+      }else if ( element.ismode == 'system_stop') {
+        return (
+          <Box key={element.chat_id || index}>
+            <ForceStop
+              indexKey={index}
+              msg={element.msg}
+            />
+          </Box>
+        )
+      }else if ( element.ismode == 'system' || element.ismode == 'system_400') {
+        return (
+          <Box key={element.chat_id || index}>
+            <ChatWrongMessage
+              indexKey={index}
+              isMode={element.ismode}
+              msg={!functions.isEmpty(element?.msg) ? element?.msg : mConstants.error_message_default}
+            />
+          </Box>
+        )
+      }else{
+        return (
+          <Flex w="100%" key={element.chat_id || index} mb="10px">
+            <Flex
+              borderRadius="full" justify="center" align="center" me="10px" h="40px" minH="40px"minW="40px"
+              bg={'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)'}
+            >
+              <Icon as={MdFitbit} width="20px" height="20px" color="white" />
+            </Flex>
+            <MessageBoxChat output={element.msg} />
+          </Flex>
+        )
+      }
+    })
+  }, [realOutputCode, onSendDoctorButton, onHandleTypeDone]);
   
   
   if (isLoading) {

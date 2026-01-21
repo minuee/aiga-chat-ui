@@ -48,20 +48,26 @@ export const CallHistoryDataStore = create<CallHistoryDataStoreState>()(
 );
 
 
+
+
 interface ChatSesseionIdStoreState {
     chatSessionId : string;
-    setChatSessionId: (chatSessionId: string) => void;
+    currentHistorySelectDate: string | null;
+    setChatSessionId: (chatSessionId: string, currentHistorySelectDate?: string | null) => void;
 }
 
 export const ChatSesseionIdStore = create<ChatSesseionIdStoreState>()(
     devtools(
         persist(
-            (set) => ({
+            (set, get) => ({
                 chatSessionId: '',
-                setChatSessionId: (chatSessionId:string) => {
-                    set({chatSessionId});
+                currentHistorySelectDate: null,
+                setChatSessionId: (chatSessionId:string, currentHistorySelectDate?: string | null) => {
+                    set((state:ChatSesseionIdStoreState) => ({
+                        chatSessionId,
+                        currentHistorySelectDate: currentHistorySelectDate !== undefined ? currentHistorySelectDate : state.currentHistorySelectDate
+                    }));
                 },
-                hasHydrated: false,
             }),
             { 
                 name: 'ChatSesseionIdStore',

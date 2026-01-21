@@ -73,6 +73,7 @@ const DoctorRecommandItem = ({
         overflow={"hidden"}
       >
         <Image
+          key={element?.doctor_id}
           src={hasError ? DoctorAvatar.src : photoSrc}
           alt="프로필이미지"
           style={{ objectFit: 'cover', width: '100%', height: '100%' }}
