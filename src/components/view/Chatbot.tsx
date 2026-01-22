@@ -56,6 +56,7 @@ export default function ChatBot() {
   const pathnameRef = useRef(pathname);
   const [isFocus, setIsFocus] = useState<boolean>(false);
   const [inputCode, setInputCode] = useState<string>('');
+  const [isComposing, setIsComposing] = useState(false);
   const [isShowScroll, setShowScroll] = useState(false);
   const [isReceiving, setReceiving] = useState(false);
   const [isThinkingDeeply, setIsThinkingDeeply] = useState<boolean>(false);
@@ -1301,13 +1302,21 @@ export default function ChatBot() {
               isMobile={false}
             />
             <MotionWelcome 
-              msg={`맞춤형 의사추천 챗봇 AIGA입니다.`}
+              msg={"AIGA는 중증·고난도 치료가 필요한 환자를 위해"}
+              pt="10px"
+              classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
+              isMobile={false}
+            />
+            <MotionWelcome 
+              //msg={`맞춤형 의사추천 챗봇 AIGA입니다.`}
+              msg={"국내 3차병원 전문의 정보를 중심으로 제공하는 AI입니다"}
               pt="10px"
               classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
               isMobile={false}
             />
             <MotionWelcome
-              msg={`어디가 아프거나 불편하신가요?`}
+              //msg={`어디가 아프거나 불편하신가요?`}
+              msg={"질환, 현재 증상, 또는 찾고 싶은 병원·전문의 정보를 입력해주세요"}
               pt="10px"
               classNames="opening_box_gray"
               isMobile={false}
@@ -1402,8 +1411,10 @@ export default function ChatBot() {
               onChange={handleChange}
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
+              onCompositionStart={() => setIsComposing(true)}
+              onCompositionEnd={() => setIsComposing(false)}
               onKeyDown={(e:any) => {
-                if (e.key === 'Enter' && !e.shiftKey && !isMobileOnly && !isReceiving)  {
+                if (e.key === 'Enter' && !isComposing && !e.shiftKey && !isMobileOnly && !isReceiving)  {
                   e.preventDefault(); // 줄바꿈 방지
                   e.stopPropagation();
                   if (isChatDisabled?.isState && inputCode.trim() !== '' && !isReceiving) {

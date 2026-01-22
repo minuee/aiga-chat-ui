@@ -1,0 +1,18 @@
+{
+    "Titles": {
+        "projectName": "AIGA",   
+        "title": "AIGA 醫生推薦"
+    },
+    "Messages": {
+        "welcome": "你好",
+        "welcome_msg": "你好，我是{app_name}。請問誰不舒服？",
+        "notfound_msg" : "抱歉，找不到您要查找的頁面。",
+        "gotohome" : "返回首頁"
+    },
+    "BrandPage" : {
+        "nav_home" : "首頁",
+        "nav_company" : "關於我們",
+        "nav_servide" : "服務",
+        "nav_contact" : "聯絡我們" 
+    }
+}

@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   icons: {
     icon: '/img/fav/Icon-512.png',
   },
+  manifest: '/manifest.json', // PWA Manifest
 }
 
 export default async function LocaleLayout({children, params}: Props) {

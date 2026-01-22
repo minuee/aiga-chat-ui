@@ -15,78 +15,9 @@ import { MdArrowBack,MdOutlineClose } from 'react-icons/md';
 import DoctorList from "@/components/modal/DoctorList";
 import { MdOutlineArrowForward } from 'react-icons/md';
 import TypeAnimation  from'@/components/text/TypeAnimation2';
+import DoctorAvatar from "@/assets/images/doctor_default_white.png";
 
 import DoctorRecommandItem from "./DoctorRecommandItem";
-
-function convertLinksAndImagesToHTML(text: string): string {
-  // Pre-process to encode spaces in image URLs
-  const imageWithSpaceRegex = /(https?:\/\/.+?\.(?:jpeg|jpg|png|gif|bmp|webp))/gi;
-  const textWithEncodedSpaces = text.replace(imageWithSpaceRegex, (url) => {
-    return url.replace(/ /g, '%20');
-  });
-
-  // Regex to find the first image (markdown or plain)
-  const firstImageRegex = /(!\[[^\]]*\]\((https?:\/\/[^)]+?\.(?:jpeg|jpg|png|gif|bmp|webp)[^)]*)\))|(https?:\/\/[^\s]+?\.(?:jpeg|jpg|png|gif|bmp|webp))/i;
-  const imageMatch = textWithEncodedSpaces.match(firstImageRegex);
-
-  // Regex for non-image URLs
-  const urlRegex = /(https?:\/\/(?!.*\.(?:jpeg|jpg|png|gif|bmp|webp))[^\s]+)/g;
-
-  if (imageMatch) {
-    // Extract the full URL of the first image
-    const imageUrl = imageMatch[2] || imageMatch[0];
-    
-    // Regex to remove all images (markdown or plain) to create clean text
-    const allImagesRegex = /(!\[[^\]]*\]\((https?:\/\/[^)]+?\.(?:jpeg|jpg|png|gif|bmp|webp)[^)]*)\))|(https?:\/\/[^\s]+?\.(?:jpeg|jpg|png|gif|bmp|webp))/gi;
-    let cleanText = textWithEncodedSpaces.replace(allImagesRegex, '');
-    
-    // Clean up excessive newlines that might be left after removing images
-    cleanText = cleanText.replace(/(\r\n|\n|\r){2,}/g, '\n').trim();
-
-    // Process remaining non-image links in the clean text
-    const cleanTextWithLinks = cleanText.replace(urlRegex, (url) => {
-      return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #1e90ff;">${url}</a>`;
-    });
-
-    // Assemble the new flexbox structure
-    return `
-      <div style="display: flex; align-items: flex-start; gap: 16px;">
-        <div style="flex: 1; max-width: 100px;">
-          <img 
-            src="${imageUrl}" 
-            alt="이미지" 
-            data-url="${imageUrl}" 
-            style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; cursor: pointer;" 
-            onerror="this.onerror=null; this.src='/img/avatars/doctor.png';"
-          />
-        </div>
-        <div style="flex: 3;">
-          ${cleanTextWithLinks}
-        </div>
-      </div>
-    `;
-  } else {
-    // No image found, just process links as usual
-    const urlRegexWithImages = /(https?:\/\/[^\s]+)/g; // Standard URL regex if no special layout is needed
-    return textWithEncodedSpaces.replace(urlRegexWithImages, (url) => {
-        // This regex is broad, so we double-check if it's an image to render as such
-        const imageCheckRegex = /\.(jpeg|jpg|png|gif|bmp|webp)(\?.*)?$/i;
-        if (imageCheckRegex.test(url)) {
-            return `<img 
-                      src="${url}" 
-                      alt="이미지" 
-                      data-url="${url}" 
-                      style="max-width: 100%; height: auto; max-height: 100px; min-width: 100px; object-fit: contain;border-radius: 8px; display: block; cursor: pointer;" 
-                      onerror="this.onerror=null; this.src='/img/avatars/doctor.png';"
-                    />`;
-        } else {
-            return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #1e90ff;">${url}</a>`;
-        }
-    });
-  }
-}
-
-
 
 type SearchDoctorProps = {
     data : any;
@@ -97,7 +28,7 @@ type SearchDoctorProps = {
     setIsTypingDone: () => void;
 };
 
-const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsTypingDone }: SearchDoctorProps) => {
+const SearchDoctor = ({ onSendButton, data, isHistory, summary, isLiveChat, setIsTypingDone }: SearchDoctorProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const pathnameRef = useRef(pathname);
@@ -130,6 +61,84 @@ const SearchDoctor = ({  onSendButton , data,isHistory,summary,isLiveChat,setIsT
 
   const previousOutputRef = useRef<string | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  // 이미지 캐싱 서버 관련 환경 변수
+  const useCache = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER_VERBOSE === 'true';
+  const imageCacheServer = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER || 'http://localhost:7001/img';
+  const imageCacheWidth = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_WIDTH || '300', 10);
+  const imageCacheHeight = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_HEIGHT || '300', 10);
+
+  // 컴포넌트 내부로 이동된 convertLinksAndImagesToHTML 함수
+  const convertLinksAndImagesToHTML = (text: string): string => {
+    // Pre-process to encode spaces in image URLs
+    const imageWithSpaceRegex = /(https?:\/\/.+?\.(?:jpeg|jpg|png|gif|bmp|webp))/gi;
+    const textWithEncodedSpaces = text.replace(imageWithSpaceRegex, (url) => {
+      return url.replace(/ /g, '%20');
+    });
+
+    // Regex to find the first image (markdown or plain)
+    const firstImageRegex = /(!\[[^\]]*\]\((https?:\/\/[^)]+?\.(?:jpeg|jpg|png|gif|bmp|webp)[^)]*)\))|(https?:\/\/[^\s]+?\.(?:jpeg|jpg|png|gif|bmp|webp))/i;
+    const imageMatch = textWithEncodedSpaces.match(firstImageRegex);
+
+    // Regex for non-image URLs
+    const urlRegex = /(https?:\/\/(?!.*\.(?:jpeg|jpg|png|gif|bmp|webp))[^\s]+)/g;
+
+    if (imageMatch) {
+      // Extract the full URL of the first image
+      const imageUrl = imageMatch[2] || imageMatch[0];
+      
+      const processedImageUrl = useCache ? `${imageCacheServer}?url=${encodeURIComponent(imageUrl)}&w=${imageCacheWidth}&h=${imageCacheHeight}` : imageUrl;
+
+      // Regex to remove all images (markdown or plain) to create clean text
+      const allImagesRegex = /(!\[[^\]]*\]\((https?:\/\/[^)]+?\.(?:jpeg|jpg|png|gif|bmp|webp)[^)]*)\))|(https?:\/\/[^\s]+?\.(?:jpeg|jpg|png|gif|bmp|webp))/gi;
+      let cleanText = textWithEncodedSpaces.replace(allImagesRegex, '');
+      
+      // Clean up excessive newlines that might be left after removing images
+      cleanText = cleanText.replace(/(\r\n|\n|\r){2,}/g, '\n').trim();
+
+      // Process remaining non-image links in the clean text
+      const cleanTextWithLinks = cleanText.replace(urlRegex, (url) => {
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #1e90ff;">${url}</a>`;
+      });
+
+      // Assemble the new flexbox structure
+      return `
+        <div style="display: flex; align-items: flex-start; gap: 16px;">
+          <div style="flex: 1; max-width: 100px;">
+            <img 
+              src="${processedImageUrl}" 
+              alt="이미지" 
+              data-url="${imageUrl}" 
+              style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; cursor: pointer;" 
+              onerror="this.onerror=null; this.src='${DoctorAvatar.src}';"
+            />
+          </div>
+          <div style="flex: 3;">
+            ${cleanTextWithLinks}
+          </div>
+        </div>
+      `;
+    } else {
+      // No image found, just process links as usual
+      const urlRegexWithImages = /(https?:\/\/[^\s]+)/g; // Standard URL regex if no special layout is needed
+      return textWithEncodedSpaces.replace(urlRegexWithImages, (url) => {
+          // This regex is broad, so we double-check if it's an image to render as such
+          const imageCheckRegex = /\.(jpeg|jpg|png|gif|bmp|webp)(\?.*)?$/i;
+          if (imageCheckRegex.test(url)) {
+              const processedImageUrl = useCache ? `${imageCacheServer}?url=${encodeURIComponent(url)}&w=${imageCacheWidth}&h=${imageCacheHeight}` : url;
+              return `<img 
+                        src="${processedImageUrl}" 
+                        alt="이미지" 
+                        data-url="${url}" 
+                        style="max-width: 100%; height: auto; max-height: 100px; min-width: 100px; object-fit: contain;border-radius: 8px; display: block; cursor: pointer;" 
+                        onerror="this.onerror=null; this.src='${DoctorAvatar.src}';"
+                      />`;
+          } else {
+              return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #1e90ff;">${url}</a>`;
+          }
+      });
+    }
+  };
 
   useEffect(() => {
     if ( !functions.isEmpty(summary)) previousOutputRef.current =  summary; 

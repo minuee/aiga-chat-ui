@@ -44,6 +44,10 @@ export default extendTheme(
   switchStyles,
   CardComponent, // card component
   {
+    /* config: {
+      initialColorMode: 'light',
+      useSystemColorMode: true,
+    }, */
     breakpoints,
     space : {
       basePadding: '16px',

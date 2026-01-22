@@ -118,14 +118,18 @@ function SidebarContent(props: SidebarContent) {
         if (currentHistorySelectDate) {
             const index = historyData.findIndex((group: any) => group.date === currentHistorySelectDate);
             if (index !== -1) {
-                setOpenIndexes([index]);
+                if (index === 0) { // If currentHistorySelectDate is in the first group
+                    setOpenIndexes(Array.from({ length: Math.min(3, historyData.length) }, (_, i) => i));
+                } else {
+                    setOpenIndexes([index]);
+                }
                 scrollAfterOpenIndexesChangeRef.current = true; // Set flag
             } else {
-                setOpenIndexes([0]);
+                setOpenIndexes(Array.from({ length: Math.min(3, historyData.length) }, (_, i) => i)); // Default to first 3 groups
                 scrollAfterOpenIndexesChangeRef.current = true; // Set flag
             }
-        } else { // No currentHistorySelectDate, default to first group
-            setOpenIndexes([0]);
+        } else { // No currentHistorySelectDate, default to first 3 groups
+            setOpenIndexes(Array.from({ length: Math.min(3, historyData.length) }, (_, i) => i));
             scrollAfterOpenIndexesChangeRef.current = true; // Set flag
         }
     } else { // No historyData

@@ -103,17 +103,14 @@ function DoctorModal(props: DoctorModalProps) {
   const btnTextColor = useColorModeValue('#7F879B','white')
 
   const useCache = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_VERBOSE === 'true';
+  console.log(`useCache 3 : ${useCache}`)
   const photoUrl = (doctorBasicData?.photo && !functions.isEmpty(doctorBasicData.photo)) ? doctorBasicData.photo.trim() : null;
 
   const imageCacheServer = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER || 'http://localhost:7001/img';
   const imageCacheWidth = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_WIDTH || '300', 10);
   const imageCacheHeight = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_HEIGHT || '300', 10);
 
-  const photoSrc = photoUrl
-    ? (useCache 
-        ? `${imageCacheServer}?url=${encodeURIComponent(photoUrl)}&w=${imageCacheWidth}&h=${imageCacheHeight}`
-        : photoUrl)
-    : DoctorAvatar.src;
+  const photoSrc = photoUrl ? ( useCache  ? `${imageCacheServer}?url=${encodeURIComponent(photoUrl)}&w=${imageCacheWidth}&h=${imageCacheHeight}` : photoUrl) : DoctorAvatar.src;
 
   const [hasError, setHasError] = useState(false);
 

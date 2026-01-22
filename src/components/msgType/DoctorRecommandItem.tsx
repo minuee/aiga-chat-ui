@@ -28,7 +28,8 @@ const DoctorRecommandItem = ({
   arrowColor,
   doctorListLength
 }: DoctorRecommandItemProps) => {
-  const useCache = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_VERBOSE === 'true';
+  const useCache = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER_VERBOSE === 'true';
+  console.log(`useCache 2 : ${useCache}`)
   const photoUrl = (element?.photo && !functions.isEmpty(element.photo)) ? element.photo.trim() : null;
 
   const imageCacheServer = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER || 'http://localhost:7001/img';

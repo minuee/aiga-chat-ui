@@ -18,7 +18,7 @@ const withPWA = withPWAInit({
   skipWaiting: true,
   //disable: process.env.NODE_ENV !== "production",
   //runtimeCaching,
-  buildExcludes: [/middleware-manifest.json$/,/app-build-manifest.json$/]
+  buildExcludes: [/middleware-manifest.json$/,/app-build-manifest.json$/, /manifest.json$/]
 });
 
 const nextConfig = {
@@ -33,6 +33,8 @@ const nextConfig = {
       'scontent.fotp8-1.fna.fbcdn.net',
       'seoul.hyumc.com',
       'k.kakaocdn.net',
+      'aigadev.kormedi.com',
+      'kormedi.com',
       'localhost',
     ],
     // Make ENV

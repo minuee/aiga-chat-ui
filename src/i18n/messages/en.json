@@ -1,0 +1,18 @@
+{
+    "Titles": {
+        "projectName": "AIGA",   
+        "title": "AIGA Doctor Recommendation"
+    },
+    "Messages": {
+        "welcome": "Hello",
+        "welcome_msg": "Hello. I'm {app_name}. Who is feeling unwell?",
+        "notfound_msg" : "Sorry, the page you are looking for could not be found.",
+        "gotohome" : "Go to Home"
+    },
+    "BrandPage" : {
+        "nav_home" : "Home",
+        "nav_company" : "About Us",
+        "nav_servide" : "Services",
+        "nav_contact" : "Contact" 
+    }
+}

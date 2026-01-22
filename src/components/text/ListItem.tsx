@@ -24,6 +24,11 @@ const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 ,is
     const visibleItems = isExpanded ? content : content.slice(0, limintView);
     const handleToggle = () => setIsExpanded((prev) => !prev);
 
+    const getItemValue = (item: any, key1: string, key2: string) => {
+        if (!item) return '';
+        return item[key1] || item[key2] || '';
+    }
+
     if ( isType == 'paper') {
         return (
             <Flex  flexDirection={'column'} justifyContent={'center'} mt={marginTop} minWidth={0}>
@@ -89,8 +94,8 @@ const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 ,is
                             {
                                 ( isType == 'career' ||  isType == 'education' )
                                 ?
-                                !functions.isEmpty(item?.period) ?  
-                                functions.stripHtmlTags(item?.period) + " " 
+                                !functions.isEmpty(getItemValue(item, 'period', 'date')) ?
+                                functions.stripHtmlTags(getItemValue(item, 'period', 'date')) + " "
                                 :
                                 ""
                                 :
@@ -99,11 +104,11 @@ const ListItemScreen = ({ title = "", content, limintView = 3, marginTop = 2 ,is
                             {
                                 isType == 'education' 
                                 ?
-                                functions.stripHtmlTags(item?.action)
+                                functions.stripHtmlTags(getItemValue(item, 'action', 'content'))
                                 :
                                 isType == 'career' 
                                 ?
-                                functions.stripHtmlTags(item?.action)
+                                functions.stripHtmlTags(getItemValue(item, 'action', 'content'))
                                 :
                                 functions.stripHtmlTags(item)
                             }

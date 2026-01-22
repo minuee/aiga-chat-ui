@@ -64,6 +64,7 @@ export default function ChatView({
     } = useChatCore();
     
     const [isFocus, setIsFocus] = useState<boolean>(false);
+    const [isComposing, setIsComposing] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isShowScroll, setShowScroll] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
@@ -671,8 +672,10 @@ export default function ChatView({
                         onChange={(e) => setInputCode(e.target.value)}
                         onFocus={() => setIsFocus(true)}
                         onBlur={() => setIsFocus(false)}
+                        onCompositionStart={() => setIsComposing(true)}
+                        onCompositionEnd={() => setIsComposing(false)}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
+                            if (e.key === 'Enter' && !isComposing && !e.shiftKey) {
                                 e.preventDefault();
                                 if (isChatDisabled?.isState && inputCode.trim() !== '') {
                                     setHasSent(true); handleSendMessage(); handleForceBlur(); setTimeout(() => setHasSent(false), 1000);
