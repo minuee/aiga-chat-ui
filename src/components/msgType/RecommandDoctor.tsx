@@ -348,12 +348,40 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
           zIndex={2}
           justifyContent={'center'}
           flexDirection={'column'}
-        > 
-          <div
-            ref={containerRef}
-            style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
-            dangerouslySetInnerHTML={{__html: convertLinksAndImagesToHTML(summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1'))}}
-          />
+        >
+          <Box>
+          {
+              ( isLiveChat && !functions.isEmpty(summary) && !isLocalTypeDone)
+              ?
+              <TypeAnimation
+                msg={ summary.replace(/^"(.*)"$/, '$1')}
+                speed={30}
+                onComplete={() => setTypingCompleteDone()}
+              />
+              :
+              ( !isLiveChat && !functions.isEmpty(summary) )
+              ?
+              <div
+                ref={containerRef}
+                style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
+                dangerouslySetInnerHTML={{__html: convertLinksAndImagesToHTML(summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1'))}}
+              />
+              :
+              ( !functions.isEmpty(summary) )
+              ?
+              <div
+                ref={containerRef}
+                style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
+                dangerouslySetInnerHTML={{__html: convertLinksAndImagesToHTML(summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1'))}}
+              />
+              :
+              <div
+                ref={containerRef}
+                style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
+                dangerouslySetInnerHTML={{__html: convertLinksAndImagesToHTML(summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1'))}}
+              />
+            }
+          </Box>
         </Box>
       </Flex>
     )
