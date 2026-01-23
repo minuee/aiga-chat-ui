@@ -63,7 +63,8 @@ const SearchDoctor = ({ onSendButton, data, isHistory, summary, isLiveChat, setI
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   // 이미지 캐싱 서버 관련 환경 변수
-  const useCache = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER_VERBOSE === 'true';
+  const useVerbose = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_VERBOSE === 'true';
+  const useCache = useVerbose && process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER_VERBOSE === 'true';
   const imageCacheServer = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER || 'http://localhost:7001/img';
   const imageCacheWidth = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_WIDTH || '300', 10);
   const imageCacheHeight = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_HEIGHT || '300', 10);
@@ -87,7 +88,7 @@ const SearchDoctor = ({ onSendButton, data, isHistory, summary, isLiveChat, setI
       // Extract the full URL of the first image
       const imageUrl = imageMatch[2] || imageMatch[0];
       
-      const processedImageUrl = useCache ? `${imageCacheServer}?url=${encodeURIComponent(imageUrl)}&w=${imageCacheWidth}&h=${imageCacheHeight}` : imageUrl;
+      const processedImageUrl = useVerbose ? (useCache ? `${imageCacheServer}?url=${encodeURIComponent(imageUrl)}&w=${imageCacheWidth}&h=${imageCacheHeight}` : imageUrl) : DoctorAvatar.src;
 
       // Regex to remove all images (markdown or plain) to create clean text
       const allImagesRegex = /(!\[[^\]]*\]\((https?:\/\/[^)]+?\.(?:jpeg|jpg|png|gif|bmp|webp)[^)]*)\))|(https?:\/\/[^\s]+?\.(?:jpeg|jpg|png|gif|bmp|webp))/gi;
@@ -125,7 +126,7 @@ const SearchDoctor = ({ onSendButton, data, isHistory, summary, isLiveChat, setI
           // This regex is broad, so we double-check if it's an image to render as such
           const imageCheckRegex = /\.(jpeg|jpg|png|gif|bmp|webp)(\?.*)?$/i;
           if (imageCheckRegex.test(url)) {
-              const processedImageUrl = useCache ? `${imageCacheServer}?url=${encodeURIComponent(url)}&w=${imageCacheWidth}&h=${imageCacheHeight}` : url;
+              const processedImageUrl = useVerbose ? (useCache ? `${imageCacheServer}?url=${encodeURIComponent(url)}&w=${imageCacheWidth}&h=${imageCacheHeight}` : url) : DoctorAvatar.src;
               return `<img 
                         src="${processedImageUrl}" 
                         alt="이미지" 

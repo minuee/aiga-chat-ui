@@ -29,6 +29,7 @@ const nextConfig = {
   images: {
     domains: [
       'images.unsplash.com',
+      'phinf.pstatic.net',
       'i.ibb.co',
       'scontent.fotp8-1.fna.fbcdn.net',
       'seoul.hyumc.com',
@@ -38,7 +39,7 @@ const nextConfig = {
       'localhost',
     ],
     // Make ENV
-    unoptimized: false,
+    unoptimized: true,
   }
 };
 //export default withNextIntl(nextConfig)

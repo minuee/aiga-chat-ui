@@ -55,6 +55,12 @@ function SidebarContent(props: SidebarContent) {
     return ret;
   }, [userStoreInfo]);
 
+  const [hasProfileImageError, setHasProfileImageError] = React.useState(false);
+
+  React.useEffect(() => {
+    setHasProfileImageError(false);
+  }, [userBaseInfo?.profileImage]);
+
   const [openIndexes, setOpenIndexes] = React.useState<number[]>([0]);
 
   const handleToggle = (index: number) => {
@@ -450,11 +456,18 @@ function SidebarContent(props: SidebarContent) {
       <Flex position={'fixed'} left={0} bottom={0} width='100%' maxWidth={`${mConstants.modalMaxWidth}px`} height={'80px'} alignItems="center"  justifyContent={'space-between'} bg={setupBgColor}  px="20px" zIndex={10}>
         <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
           {
-            functions.isEmpty(userBaseInfo?.profileImage) 
+            (functions.isEmpty(userBaseInfo?.profileImage) || hasProfileImageError)
             ?
             <DefaultProfile boxSize={'34px'} borderRadius={'17px'} />
             :
-            <NextImage  src={userBaseInfo?.profileImage} alt="프로필이미지" style={{ borderRadius: '50%', objectFit: 'cover' }}  width={34} height={34}/>
+            <img
+              src={userBaseInfo?.profileImage}
+              alt="프로필이미지"
+              style={{ borderRadius: '50%', objectFit: 'cover' }}
+              width={34}
+              height={34}
+              onError={() => setHasProfileImageError(true)}
+            />
           }
           <Box pl="10px">
             <CustomTextBold700 color={iconSubColor} fontSize="xs" me="10px">

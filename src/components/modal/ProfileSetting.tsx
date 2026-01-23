@@ -51,6 +51,12 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
     const ret = userStoreInfo == null ? defaultUserInfo : typeof userStoreInfo == 'string' ?  JSON.parse(deCryptInfo) : userStoreInfo;
     return ret;
   }, [userStoreInfo]);
+
+  const [hasProfileImageError, setHasProfileImageError] = React.useState(false);
+
+  React.useEffect(() => {
+    setHasProfileImageError(false);
+  }, [userBaseInfo?.profileImage]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isReceiving, setReceiving] = React.useState(false);
   const [isPWAPermission, setPWAPermission] = React.useState(false); // 알림 권한 여부
@@ -659,16 +665,17 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
           <Flex flexDirection={'row'} alignItems={'center'} justifyContent={'space-between'} minHeight={'50px'} width={'100%'}>
             <Box flex={5} display={'flex'} flexDirection={'row'} alignItems={'center'}>
             {
-              functions.isEmpty(userBaseInfo?.profileImage) 
+              (functions.isEmpty(userBaseInfo?.profileImage) || hasProfileImageError)
               ?
               <DefaultProfile boxSize={'48px'} borderRadius={'24px'} />
               :
-              <NextImage 
+              <img
                 src={userBaseInfo?.profileImage}
                 alt="프로필이미지"
-                style={{ borderRadius: '50%', objectFit: 'cover' }} 
-                width={34} 
-                height={34}
+                style={{ borderRadius: '50%', objectFit: 'cover' }}
+                width={48}
+                height={48}
+                onError={() => setHasProfileImageError(true)}
               />
             }
               <Box pl="10px">

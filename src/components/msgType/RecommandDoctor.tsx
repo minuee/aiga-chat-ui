@@ -61,7 +61,8 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   // 이미지 캐싱 서버 관련 환경 변수
-  const useCache = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER_VERBOSE === 'true';
+  const useVerbose = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_VERBOSE === 'true';
+  const useCache = useVerbose && process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER_VERBOSE === 'true';
   const imageCacheServer = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER || 'http://localhost:7001/img';
   const imageCacheWidth = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_WIDTH || '300', 10);
   const imageCacheHeight = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_HEIGHT || '300', 10);
@@ -84,8 +85,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
     let convertedText = textWithEncodedSpaces.replace(markdownImageRegex, (_, alt, url) => {
       const cleanUrl = url.trim();
       imageUrls.push(cleanUrl);
-      const processedImageUrl = useCache ? `${imageCacheServer}?url=${encodeURIComponent(cleanUrl)}&w=${imageCacheWidth}&h=${imageCacheHeight}` : cleanUrl;
-      return `
+              const processedImageUrl = useVerbose ? (useCache ? `${imageCacheServer}?url=${encodeURIComponent(cleanUrl)}&w=${imageCacheWidth}&h=${imageCacheHeight}` : cleanUrl) : DoctorAvatar.src;      return `
         <img
           src="${processedImageUrl}"
           alt="이미지"
@@ -113,7 +113,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
       if (imageUrls.includes(cleanUrl)) return rawUrl;
     
       if (imageRegex.test(cleanUrl)) {
-        const processedImageUrl = useCache ? `${imageCacheServer}?url=${encodeURIComponent(cleanUrl)}&w=${imageCacheWidth}&h=${imageCacheHeight}` : cleanUrl;
+        const processedImageUrl = useVerbose ? (useCache ? `${imageCacheServer}?url=${encodeURIComponent(cleanUrl)}&w=${imageCacheWidth}&h=${imageCacheHeight}` : cleanUrl) : DoctorAvatar.src;
         return `
           <img
             src="${processedImageUrl}"

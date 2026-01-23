@@ -28,7 +28,8 @@ const DoctorRecommandItem = ({
   arrowColor,
   doctorListLength
 }: DoctorRecommandItemProps) => {
-  const useCache = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER_VERBOSE === 'true';
+  const useVerbose = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_VERBOSE === 'true';
+  const useCache = useVerbose && process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER_VERBOSE === 'true';
   console.log(`useCache 2 : ${useCache}`)
   const photoUrl = (element?.photo && !functions.isEmpty(element.photo)) ? element.photo.trim() : null;
 
@@ -36,7 +37,7 @@ const DoctorRecommandItem = ({
   const imageCacheWidth = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_WIDTH || '300', 10);
   const imageCacheHeight = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_HEIGHT || '300', 10);
 
-  const photoSrc = photoUrl ?  useCache ? `${imageCacheServer}?url=${encodeURIComponent(photoUrl)}&w=${imageCacheWidth}&h=${imageCacheHeight}` : photoUrl : DoctorAvatar.src;
+  const photoSrc = useVerbose ? (photoUrl ? (useCache ? `${imageCacheServer}?url=${encodeURIComponent(photoUrl)}&w=${imageCacheWidth}&h=${imageCacheHeight}` : photoUrl) : DoctorAvatar.src) : DoctorAvatar.src;
   
   const [hasError, setHasError] = useState(false);
 
