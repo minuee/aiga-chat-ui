@@ -463,7 +463,7 @@ function SidebarContent(props: SidebarContent) {
             <img
               src={userBaseInfo?.profileImage}
               alt="프로필이미지"
-              style={{ borderRadius: '50%', objectFit: 'cover' }}
+              style={{ borderRadius: '50%', objectFit: 'cover', width: '34px', height: '34px', flexShrink: 0 }}
               width={34}
               height={34}
               onError={() => setHasProfileImageError(true)}

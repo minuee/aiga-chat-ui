@@ -672,7 +672,7 @@ function ProfileSettingModal(props: ProfileSettingModalProps) {
               <img
                 src={userBaseInfo?.profileImage}
                 alt="프로필이미지"
-                style={{ borderRadius: '50%', objectFit: 'cover' }}
+                style={{ borderRadius: '50%', objectFit: 'cover', width: '48px', height: '48px', flexShrink: 0 }}
                 width={48}
                 height={48}
                 onError={() => setHasProfileImageError(true)}

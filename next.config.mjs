@@ -39,7 +39,7 @@ const nextConfig = {
       'localhost',
     ],
     // Make ENV
-    unoptimized: true,
+    unoptimized: false,
   }
 };
 //export default withNextIntl(nextConfig)
