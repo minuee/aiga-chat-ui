@@ -204,7 +204,6 @@ export function saveErrorLog(session_id: string, msg: string,fromMessage:string)
             error_message: fromMessage,
             error_code: 500,
         };
-        console.log(`errorPayload : ${errorPayload}`)
         api.post('/log', errorPayload).catch(() => {});
    }catch(error){
         console.log("eeeee",error)

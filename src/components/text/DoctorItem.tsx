@@ -15,11 +15,9 @@ type DoctorListProps = {
 const DoctorList = ({ data, onSendDoctorButton,inputs }:DoctorListProps) => {
     const useVerbose = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_VERBOSE === 'true';
     const useCache = useVerbose && process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER_VERBOSE === 'true';
-
-    console.log(`useCache 1 : ${useCache}`)
     const photoUrl = (data?.photo && !functions.isEmpty(data.photo)) ? data.photo.trim() : null;
 
-    const imageCacheServer = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER || 'http://localhost:7001/img';
+    const imageCacheServer = process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_SERVER || 'http://localhost:7001';
     const imageCacheWidth = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_WIDTH || '300', 10);
     const imageCacheHeight = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_HEIGHT || '300', 10);
   

@@ -151,7 +151,6 @@ function LoginModal(props: LoginModalProps) {
       const interval = setInterval(async () => {
         if (popup?.closed) {
           clearInterval(interval);
-          console.log('apidata 팝업 닫힘 감지됨');
         }
       }, 500);
 
@@ -166,10 +165,7 @@ function LoginModal(props: LoginModalProps) {
 
         const expireDate = new Date();  
         expireDate.setDate(expireDate.getDate() + 7); // 7일 후 만료
-
-        console.log('apidata event.data.type',event?.data?.type);
         if (event?.data?.type === 'kakao-auth') {
-          console.log('apidata ✅ 카카오 로그인 성공:', event.data.code?.data?.user);
           const loginUserInfo = event?.data?.code?.data?.user;
           const accessToken = event?.data?.code?.data?.access_token;
           if ( loginUserInfo?.agreement ) { // 회원인상태

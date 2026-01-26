@@ -35,7 +35,6 @@ export default function Index() {
     return typeof window !== 'undefined' && /iPhone/.test(window.navigator.userAgent) && !/Chrome/.test(window.navigator.userAgent);
   }, []);
   const [isMobileOnly, setIsMobileOnly] = React.useState(false);
-  console.log('[ChatPage] Rendering. isMobileOnly =', isMobileOnly);
   const pathname = usePathname();
 
   React.useEffect(() => {

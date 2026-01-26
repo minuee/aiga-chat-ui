@@ -226,11 +226,8 @@ function DoctorListModal(props: DoctorListModalProps) {
     const userLng = inputs.longitude;
 
     setIsReLoading(true);
-    //console.log(`sorted userLat:${userLat}, userLng:${userLng},updatedSortTypeList:${updatedSortTypeList}`);
-    //console.log('sorted origin:',originDoctorData);
     if(userLat && userLng) {
       const sorted = await sortDoctors(originDoctorData,userLat,userLng,updatedSortTypeList);
-      //console.log('sorted after:',sorted);
       setDoctors(sorted);
     }
     

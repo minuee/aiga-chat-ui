@@ -154,9 +154,6 @@ export const useChatCore = () => {
     return null;
   }, [setChatSessionId]);
 
-  useEffect(() => {
-    console.log('dateString currentHistorySelectDate 3333',currentHistorySelectDate)
-  }, [currentHistorySelectDate]);
   const addMessage = useCallback((newItem: any) => {
     if (!newItem?.isOnlyLive) {
       CurrentDialogStore.getState().setCurrentMessageData((prev: any) => [...(prev || []), { ...newItem, isLiveChat: false }]);

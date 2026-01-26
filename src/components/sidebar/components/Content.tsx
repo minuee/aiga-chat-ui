@@ -154,7 +154,6 @@ function SidebarContent(props: SidebarContent) {
       }
     }catch(e:any){
       setIsLoading(false)
-      console.log("error of getNewSessionID",e)
     }
   }
 
@@ -206,7 +205,6 @@ function SidebarContent(props: SidebarContent) {
       }          
     }catch(e:any){
       setIsReceiving(false)
-      console.log("error of getNewSessionID",e)
     }
   }
 
@@ -256,7 +254,6 @@ function SidebarContent(props: SidebarContent) {
           session_title : data?.title,
           chattings: newData
         });
-        console.log(`dateString ${dateString}`)
         setChatSessionId(data?.session_id, dateString);
       }else{
         toast({

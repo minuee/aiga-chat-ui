@@ -90,7 +90,6 @@ function LoginModal(props: LoginModalProps) {
     const interval = setInterval(async () => {
       if (popup?.closed) {
         clearInterval(interval);
-        console.log('팝업 닫힘 감지됨');
       }
     }, 500);
 
@@ -101,14 +100,11 @@ function LoginModal(props: LoginModalProps) {
       }
 
       const { target } = event.data;
-      //console.log('카카오 로그인 완료, code:', target);
 
       if (event.data.type === 'kakao-login-success') {
-        //console.log('✅ 카카오 로그인 if 성공:', event.data.payload);
         popup?.close();
         window.removeEventListener('message', receiveMessage);
       }else{
-        //console.log(`✅ 카카오 로그인 else 성공:`, event);
         //popup?.close();
         window.removeEventListener('message', receiveMessage);
       }

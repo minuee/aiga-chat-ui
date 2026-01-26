@@ -140,9 +140,6 @@ export default function ChatBot() {
   
   const [requestId, setRequestId] = useState(0); // 현재 요청 식별자
   const requestRef = useRef(0); // 최신 요청 ID 저장용
-  useEffect(() => {
-    console.log('dateString currentHistorySelectDate 222',currentHistorySelectDate)
-  }, [currentHistorySelectDate]);
   const firstForceStep = () => {
     setChatSessionId('', null)
     setOutputCode([]); // CurrentDialogStore의 messageData를 초기화합니다.
@@ -228,7 +225,6 @@ export default function ChatBot() {
 
   useEffect(() => {
     if ( !functions.isEmpty(oldHistoryData) ) {
-      console.log("oldHistoryData",oldHistoryData)
       if ( !functions.isEmpty(oldHistoryData?.session_id) ) {
         setChatSessionId(oldHistoryData?.session_id, oldHistoryData?.currentDate);
         setOutputCode(oldHistoryData?.chattings);

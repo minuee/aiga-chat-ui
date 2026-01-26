@@ -41,12 +41,9 @@ axios.interceptors.request.use((config) => {
     if (!functions.isEmpty(accessTmpToken) && !functions.isEmpty(email)) {
       const accessToken = decryptToken(accessTmpToken);
       config.headers['Authorization'] = functions.isEmpty(accessToken) ? null : `Bearer ${accessToken}`;
-    } else {
-      console.log(`[Request Interceptor] Authorization header NOT set for ${config.url} (token or email empty). Token: ${!functions.isEmpty(accessTmpToken)}, Email: ${!functions.isEmpty(email)}`);
-    }
+    } 
     return config;
   } catch (e: any) {
-    console.error(`[Request Interceptor] Error setting Authorization header for ${config.url}: ${e.message}`);
     return config;
   }
 });
