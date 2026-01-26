@@ -54,5 +54,5 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   // API, 정적 파일 등을 제외한 모든 경로에서 미들웨어가 실행되도록 설정
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|fonts|images|.*\\.png$).*)'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|manifest.webmanifest|fonts|images|.*\\.png$).*)'],
 };
