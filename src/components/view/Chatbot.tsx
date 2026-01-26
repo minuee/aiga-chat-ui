@@ -1292,28 +1292,35 @@ export default function ChatBot() {
               isMobile={isMobileOnly}
             />
             <MotionWelcome 
-              msg={`안녕하세요!`}
+              msg={`안녕하세요, AIGA입니다. 😊`}
               pt="30px"
               classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
               isMobile={false}
             />
             <MotionWelcome 
-              msg={"AIGA는 중증·고난도 치료가 필요한 환자를 위해"}
+              msg={"어떤 증상으로 힘드신가요?"}
               pt="10px"
               classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
               isMobile={false}
             />
             <MotionWelcome 
               //msg={`맞춤형 의사추천 챗봇 AIGA입니다.`}
-              msg={"국내 3차병원 전문의 정보를 중심으로 제공하는 AI입니다"}
+              msg={"저는 주요 질환을 위주로 국내 상급종합병원"}
+              pt="40px"
+              classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
+              isMobile={false}
+            />
+            <MotionWelcome 
+              //msg={`맞춤형 의사추천 챗봇 AIGA입니다.`}
+              msg={"전문의를 안내해드리는 AI 어시스턴트입니다."}
               pt="10px"
               classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
               isMobile={false}
             />
             <MotionWelcome
               //msg={`어디가 아프거나 불편하신가요?`}
-              msg={"질환, 현재 증상, 또는 찾고 싶은 병원·전문의 정보를 입력해주세요"}
-              pt="10px"
+              msg={"증상이나 질환명 등을 알려주시면  적합한 전문의를 찾아드리겠습니다"}
+              pt="30px"
               classNames="opening_box_gray"
               isMobile={false}
             />

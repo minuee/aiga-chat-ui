@@ -1504,28 +1504,29 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                     pt={isMobileSafari ? "40px":  "0"}
                     isMobile={true}
                   />
-                  {/* <MotionWelcome 
-                    msg={`안녕하세요!`}
-                    pt="30px"
-                    classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
-                    isMobile={true}
-                  /> */}
                   <MotionWelcome 
-                    msg={"중증·고난도 환자를 위한"}
-                    pt="10px"
+                    msg={`안녕하세요, AIGA입니다. 😊!`}
+                    pt="30px"
                     classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
                     isMobile={true}
                   />
                   <MotionWelcome 
-                    //msg={`맞춤형 의사추천 챗봇 AIGA입니다.`}
-                    msg={"3차병원 전문의 안내 AI, AIGA"}
+                    msg={"어떤 증상으로 힘드신가요?"}
                     pt="10px"
                     classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
+                    isMobile={true}
+                  />
+                 
+                  <MotionWelcome
+                    //msg={`어디가 아프거나 불편하신가요?`}
+                    msg={"증상이나 질환명 등을 알려주시면"}
+                    pt="10px"
+                    classNames="opening_box_gray"
                     isMobile={true}
                   />
                   <MotionWelcome
                     //msg={`어디가 아프거나 불편하신가요?`}
-                    msg={"질환·증상·병원·의사를 입력하세요"}
+                    msg={"적합한 전문의를 찾아드리겠습니다."}
                     pt="10px"
                     classNames="opening_box_gray"
                     isMobile={true}

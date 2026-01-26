@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 
-import { Box,Flex,Stack,useColorModeValue,useColorMode,Icon, Modal,ModalOverlay,ModalContent,ModalHeader,SimpleGrid,ModalBody } from '@chakra-ui/react';
+import { Box,Flex,Stack,useColorModeValue,useColorMode,Icon, Modal,ModalOverlay,ModalContent,ModalHeader,SimpleGrid,ModalBody, ListItem, UnorderedList, OrderedList } from '@chakra-ui/react';
 import mConstants from "@/utils/constants";
 import * as history from '@/utils/history';
 import { usePathname, useRouter } from 'next/navigation';
@@ -17,6 +17,8 @@ import TypeAnimation  from'@/components/text/TypeAnimation2';
 import DoctorAvatar from "@/assets/images/doctor_default_white.png";
 
 import DoctorRecommandItem from "./DoctorRecommandItem";
+import ReactMarkdown from 'react-markdown';
+import { Components } from 'react-markdown';
 
 type RecommandDoctorProps = {
     data : any;
@@ -67,80 +69,98 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
   const imageCacheWidth = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_WIDTH || '300', 10);
   const imageCacheHeight = parseInt(process.env.NEXT_PUBLIC_DOCTOR_IMAGE_CACAE_HEIGHT || '300', 10);
 
-  // 컴포넌트 내부로 이동된 convertLinksAndImagesToHTML 함수
-  const convertLinksAndImagesToHTML = (text: string): string => {
-    // 0. Pre-process to encode spaces in image URLs
-    const imageWithSpaceRegex = /(https?:\/\/.+?\.(?:jpeg|jpg|png|gif|bmp|webp))/gi;
-    const textWithEncodedSpaces = text.replace(imageWithSpaceRegex, (url) => {
-      return url.replace(/ /g, '%20');
-    });
+  // 'output' 텍스트를 정리하는 함수. LLM AI가 보내주는 텍스트에 불필요한 따옴표나 <br/> 태그가 있을 수 있음.
+  const cleanOutput = (text: any) => {
+    if (typeof text !== 'string') return '';
+    // 텍스트 시작과 끝의 큰따옴표 제거
+    let cleaned = text.replace(/^"(.*)"$/, '$1');
+    // HTML <br/> 태그를 개행 문자로 변환
+    cleaned = cleaned.replace(/<br\s*\/?>/gi, '\n');
+    // \n을 \n으로 변환 (LLM 응답에서 올 수 있는 이스케이프된 개행 처리)
+    cleaned = cleaned.replace(/\\n/g, '\n');
+    // 이미지 URL 내 공백을 %20으로 인코딩
+    cleaned = cleaned.replace(/(https?:\/\/.+?\.(?:jpeg|jpg|png|gif|bmp|webp|svg|gif))\s/gi, (match) => match.replace(/\s/g, '%20'));
 
-    const markdownImageRegex = /!\[([^\]]*)\]\((https?:\/\/[^)]+)\)/g;
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const imageRegex = /\.(jpeg|jpg|png|gif|bmp|webp)(\?.*)?$/i;
+    return cleaned;
+  };
 
-    const imageUrls: string[] = [];
+  const processedSummary = cleanOutput(summary);
 
-    // 1. Markdown 이미지 처리
-    let convertedText = textWithEncodedSpaces.replace(markdownImageRegex, (_, alt, url) => {
-      const cleanUrl = url.trim();
-      imageUrls.push(cleanUrl);
-              const processedImageUrl = useVerbose ? (useCache ? `${imageCacheServer}?url=${encodeURIComponent(cleanUrl)}&w=${imageCacheWidth}&h=${imageCacheHeight}` : cleanUrl) : DoctorAvatar.src;      return `
-        <img
-          src="${processedImageUrl}"
-          alt="이미지"
-          data-url="${cleanUrl}"
-          style="max-width: 100%; height: auto; max-height: 100px; min-width: 100px; object-fit: contain; border-radius: 8px; display: block; cursor: pointer;"
-          onerror="this.onerror=null; this.src='${DoctorAvatar.src}';"
-        />
-      `;
-    });
-
-    // 2. 일반 URL 처리 (단, HTML 태그 내부는 제외)
-    const urls = convertedText.match(urlRegex);
-    const uniqueUrls = Array.from(new Set(urls ?? []));
-
-    convertedText = convertedText.replace(urlRegex, function (rawUrl, _1, offset, fullText) {
-      const cleanUrl = rawUrl.trim();
-    
-      // HTML 태그 내부에 있으면 무시
-      const before = fullText.lastIndexOf('<', offset);
-      const after = fullText.indexOf('>', offset);
-      const isInsideTag = before !== -1 && after !== -1 && before < offset && offset < after;
-    
-      if (isInsideTag) return rawUrl;
-    
-      if (imageUrls.includes(cleanUrl)) return rawUrl;
-    
-      if (imageRegex.test(cleanUrl)) {
-        const processedImageUrl = useVerbose ? (useCache ? `${imageCacheServer}?url=${encodeURIComponent(cleanUrl)}&w=${imageCacheWidth}&h=${imageCacheHeight}` : cleanUrl) : DoctorAvatar.src;
-        return `
-          <img
-            src="${processedImageUrl}"
-            alt="이미지"
-            data-url="${cleanUrl}"
-            style="max-width: 100%; height: auto; max-height: 100px; min-width: 100px; object-fit: contain;border-radius: 8px; display: block; cursor: pointer;"
-            onerror="this.onerror=null; this.src='${DoctorAvatar.src}';"
-          />
-        `;
-      } else {
-        return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer" style="color: #1e90ff;">${cleanUrl}</a>`;
-      }
-    });
-
-    // 3. 사이트 바로가기 링크 (이미지가 하나도 없을 경우에만)
-    const hasImage = imageUrls.length > 0;
-
-    const firstTextLink = uniqueUrls.find((url) => {
-      const cleanUrl = url.trim();
-      return !imageRegex.test(cleanUrl) && !imageUrls.includes(cleanUrl);
-    });
-
-    const shortcut = !hasImage && firstTextLink
-      ? `<br><a href="${firstTextLink.trim()}" target="_blank" rel="noopener noreferrer" style="color: #1e90ff;">☞ 사이트 바로가기</a>`
-      : '';
-
-    return convertedText + shortcut;
+  const renderers: Components = {
+    // 이미지 렌더링 커스터마이징
+    img: ({ node, ...props }) => {
+        const imageUrl = props.src || '';
+        const processedImageUrl = useVerbose ? (useCache ? `${imageCacheServer}?url=${encodeURIComponent(imageUrl)}&w=${imageCacheWidth}&h=${imageCacheHeight}` : imageUrl) : DoctorAvatar.src;
+        return (
+            <img
+                {...props}
+                src={processedImageUrl}
+                alt={props.alt || "이미지"}
+                data-url={imageUrl}
+                style={{
+                  maxWidth: '100%',
+                  height: 'auto',
+                  maxHeight: '100px',
+                  minWidth: '100px',
+                  objectFit: 'contain',
+                  margin: '10px 0',
+                  borderRadius: '8px',
+                  display: 'block',
+                  cursor: 'pointer',
+                }}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.onerror = null;
+                  target.src = DoctorAvatar.src;
+                }}
+            />
+        );
+    },
+    // 링크 렌더링 커스터마이징
+    a: ({ node, ...props }) => (
+      <a {...props} target="_blank" rel="noopener noreferrer" style={{ color: '#1e90ff' }} />
+    ),
+    // Chakra UI 컴포넌트로 목록 렌더링
+    ul: ({ node, ...props }) => <UnorderedList styleType='none' {...props} />,
+    ol: ({ node, ...props }) => <OrderedList styleType='none' {...props} />,
+    li: ({ node, ...props }) => <ListItem style={{ marginBottom: '5px', display: 'flex', alignItems: 'flex-start' }} {...props} />,
+    p: ({ node, ...props }) => <p style={{ marginBottom: '10px' }} {...props} />,
+    // strong 태그 (볼드체) 스타일링
+    strong: ({ node, ...props }) => <strong style={{ fontWeight: 'bold' }} {...props} />,
+  };
+  
+  const BoxProps = {
+    ref: containerRef,
+    fontSize: "17px",
+    fontFamily: "Noto Sans",
+    sx: {
+      'ul li::before': {
+        content: '"•"', 
+        marginRight: '8px',
+        color: '#1e90ff', 
+        fontWeight: 'bold', 
+        fontSize: '1em', 
+        display: 'inline-block', 
+        marginTop: '0.1em', 
+      },
+      'ol li::before': {
+        content: 'counter(list-item) ". "',
+        counterIncrement: 'list-item',
+        marginRight: '8px',
+        color: '#1e90ff',
+        fontWeight: 'bold',
+        fontSize: '1em',
+        display: 'inline-block',
+        marginTop: '0.1em',
+      },
+      'ul, ol': {
+        paddingLeft: '0', 
+      },
+      'li': {
+        paddingLeft: '0', 
+        marginLeft: '0',
+      },
+    },
   };
 
   useEffect(() => {
@@ -360,38 +380,18 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
           justifyContent={'center'}
           flexDirection={'column'}
         >
-          <Box>
+          <Box {...BoxProps}>
           {
-              ( isLiveChat && !functions.isEmpty(summary) && !isLocalTypeDone)
-              ?
-              <TypeAnimation
-                msg={ summary.replace(/^"(.*)"$/, '$1')}
-                speed={30}
-                onComplete={() => setTypingCompleteDone()}
-              />
-              :
-              ( !isLiveChat && !functions.isEmpty(summary) )
-              ?
-              <div
-                ref={containerRef}
-                style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
-                dangerouslySetInnerHTML={{__html: convertLinksAndImagesToHTML(summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1'))}}
-              />
-              :
-              ( !functions.isEmpty(summary) )
-              ?
-              <div
-                ref={containerRef}
-                style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
-                dangerouslySetInnerHTML={{__html: convertLinksAndImagesToHTML(summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1'))}}
-              />
-              :
-              <div
-                ref={containerRef}
-                style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
-                dangerouslySetInnerHTML={{__html: convertLinksAndImagesToHTML(summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1'))}}
-              />
-            }
+            ( isLiveChat && !functions.isEmpty(summary) && !isLocalTypeDone )
+            ?
+            <TypeAnimation
+              msg={processedSummary}
+              speed={30}
+              onComplete={() => setTypingCompleteDone()}
+            />
+            :
+            <ReactMarkdown components={renderers}>{processedSummary}</ReactMarkdown>
+          }
           </Box>
         </Box>
       </Flex>
@@ -418,38 +418,18 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
           flexDirection={'column'}
           mb="8px"
         > 
-          <Box>
+          <Box {...BoxProps}>
           {
-              ( isLiveChat && !functions.isEmpty(summary) && !isLocalTypeDone)
-              ?
-              <TypeAnimation
-                msg={ summary.replace(/^"(.*)"$/, '$1')}
-                speed={30}
-                onComplete={() => setTypingCompleteDone()}
-              />
-              :
-              ( !isLiveChat && !functions.isEmpty(summary) )
-              ?
-              <div
-                ref={containerRef}
-                style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
-                dangerouslySetInnerHTML={{__html: convertLinksAndImagesToHTML(summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1'))}}
-              />
-              :
-              ( !functions.isEmpty(summary) )
-              ?
-              <div
-                ref={containerRef}
-                style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
-                dangerouslySetInnerHTML={{__html: convertLinksAndImagesToHTML(summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1'))}}
-              />
-              :
-              <div
-                ref={containerRef}
-                style={{ fontSize: '17px', whiteSpace: 'pre-line', fontFamily:'Noto Sans' }}
-                dangerouslySetInnerHTML={{__html: convertLinksAndImagesToHTML(summary.replace(/<br\s*\/?>/gi, '\n').replace(/\\n/g, '\n').replace(/^"(.*)"$/, '$1'))}}
-              />
-            }
+            ( isLiveChat && !functions.isEmpty(summary) && !isLocalTypeDone )
+            ?
+            <TypeAnimation
+              msg={processedSummary}
+              speed={30}
+              onComplete={() => setTypingCompleteDone()}
+            />
+            :
+            <ReactMarkdown components={renderers}>{processedSummary}</ReactMarkdown>
+          }
           </Box>
         </Box>
         <Stack
