@@ -394,7 +394,7 @@ export default function Index() {
               ( process.env.NODE_ENV == 'development' || isGlobalState )
               ?
               <Flex 
-                mt="58px"
+                mt="18px"
                 alignItems={'center'} 
                 width="100%" 
                 maxWidth={`${mConstants.desktopMinWidth}px`} 

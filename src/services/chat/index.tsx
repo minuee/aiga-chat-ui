@@ -124,9 +124,9 @@ function getClientEnvInfo() {
     };
 }
 
-export function getChatMessage(session_id: string, msg: string, lat: number | null, lon: number | null): any {
+export function getChatMessage(session_id: string, msg: string, lat: number | null, lon: number | null, locale: string): any {
     try{
-        const res:any =  api.post(`/chat/${session_id}`,{question : msg, latitude: lat, longitude: lon},{ timeout : 60000})
+        const res:any =  api.post(`/chat/${session_id}`,{question : msg, latitude: lat, longitude: lon, current_locale: locale},{ timeout : 60000})
             .then((response) => {
                 if ( process.env.NODE_ENV == 'development') {
                     const { userStoreInfo } = UserBasicInfoStore.getState();

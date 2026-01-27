@@ -43,6 +43,7 @@ import { defaultUserInfo } from "@/types/userData"
 import { UserBasicInfoStore } from '@/store/userStore';
 import { useLocationStore } from '@/store/locationStore';
 import * as ChatService from "@/services/chat/index";
+import { decryptResponse } from '@/utils/crypto';
 import { SendButtonOff,SendButtonOn } from '@/components/icons/svgIcons';
 import useDetectKeyboardOpen from "use-detect-keyboard-open";
 import { isEmpty } from "lodash";
@@ -727,6 +728,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
       setReceiving(true);
       const msgLen = parseInt(realOutputCode.length+1);
       const inputCodeText = isText;
+      const locale = (await mCookie.getCookie('currentLocale')) || 'ko';
 
       if ( isSystemText.includes(inputCodeText) ) {
         if( inputCodeText != realOutputCode[realOutputCode?.length -1]?.msg) { 
@@ -765,11 +767,28 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
      
       try{
         setInputCode('') // 메시지 전송 후 inputCode 비움
-        const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText.trim(), latitude, longitude);
+        const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText.trim(), latitude, longitude, locale);
         // ❗중지된 요청이면 무시
         if (requestRef.current !== newRequestId) return;
         if ( mConstants.apiSuccessCode.includes(questionResult?.statusCode) ) {
-          const answerMessage = questionResult?.data;
+          let answerMessage = questionResult?.data;
+
+          // 복호화 로직 추가
+          if (
+            process.env.NEXT_PUBLIC_DECRYPT_CHAT_PARAMETERS === 'true' &&
+            answerMessage?.encrypted_response
+          ) {
+            const decryptedData = decryptResponse(answerMessage.encrypted_response);
+            if (decryptedData) {
+              // 복호화 성공 시, answerMessage를 복호화된 데이터로 교체
+              answerMessage = decryptedData;
+            } else {
+              // 복호화 실패 시, 에러 처리
+              call_fn_error_message(inputCodeText, chat_sessinn_id, "Response decryption failed.");
+              return;
+            }
+          }
+          
           setIn24UsedToken(functions.isEmpty(answerMessage?.in24_used_token) ? 0 : answerMessage?.in24_used_token);
           // if ( answerMessage?.chat_type !== 'general' ) {
           //   setIsLoading(false);
@@ -1460,6 +1479,9 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
       <SkeletonDefaultText isOpen={isLoading} lineNum={10} />
     )
   }
+
+  const paddingTopValue = realOutputCode.length > 0 ? '20px' : '0';
+
   return (
     <>
       <Box
@@ -1498,6 +1520,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                 height={isMobileSafari ?  `100%` :  isKeyboardOpen ? `${mobileViewPortHeight*0.6}px` : `${mobileViewPortHeight}px`}
                 justifyContent={realOutputCode?.length == 0  ? 'center' : 'flex-start'} 
                 alignItems={realOutputCode?.length == 0  ? 'center' : '-moz-initial'} 
+                pt={paddingTopValue}
               >
                 <Box display={realOutputCode?.length == 0 ? 'flex' : 'none'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} >
                   <MotionWelcomeImage

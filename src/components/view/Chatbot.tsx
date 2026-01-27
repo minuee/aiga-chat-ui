@@ -44,6 +44,7 @@ import { defaultUserInfo } from "@/types/userData"
 import UserStateStore, { UserBasicInfoStore } from '@/store/userStore';
 import { useLocationStore } from '@/store/locationStore';
 import * as ChatService from "@/services/chat/index";
+import { decryptResponse } from '@/utils/crypto';
 import { SendButtonOff,SendButtonOn } from '@/components/icons/svgIcons';
 
 export default function ChatBot() {
@@ -509,6 +510,7 @@ export default function ChatBot() {
     if ( functions.isEmpty(chat_sessinn_id)) {
       chat_sessinn_id = await getNewSessionID();
     }
+    const locale = (await mCookie.getCookie('currentLocale')) || 'ko';
     if ( !functions.isEmpty(chat_sessinn_id)) {
       const newRequestId = Date.now(); // 혹은 증가값
       setRequestId(newRequestId);
@@ -554,10 +556,26 @@ export default function ChatBot() {
      
       try{
         
-        const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText.trim(), latitude, longitude);
+        const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText.trim(), latitude, longitude, locale);
         if (requestRef.current !== newRequestId) return;
         if ( mConstants.apiSuccessCode.includes(questionResult?.statusCode) ) {
-          const answerMessage = questionResult?.data;
+          let answerMessage = questionResult?.data;
+
+          // 복호화 로직 추가
+          if (
+            process.env.NEXT_PUBLIC_DECRYPT_CHAT_PARAMETERS === 'true' &&
+            answerMessage?.encrypted_response
+          ) {
+            const decryptedData = decryptResponse(answerMessage.encrypted_response);
+            if (decryptedData) {
+              answerMessage = decryptedData;
+            } else {
+              // 복호화 실패 시, 에러 처리
+              call_fn_error_message(inputCodeText, chat_sessinn_id, "Response decryption failed.");
+              return;
+            }
+          }
+          
           setIn24UsedToken(functions.isEmpty(answerMessage?.in24_used_token) ? 0 : answerMessage?.in24_used_token);
           // if ( answerMessage?.chat_type !== 'general' ) {
           //   setIsLoading(false);
@@ -1265,6 +1283,9 @@ export default function ChatBot() {
       <SkeletonDefaultText isOpen={isLoading} lineNum={10} />
     )
   }
+
+  const paddingTopValue = realOutputCode.length > 0 ? '20px' : '0';
+
   return (
     <Flex 
       w={'100%'} 
@@ -1285,6 +1306,7 @@ export default function ChatBot() {
           minH={isMobileOnly ? "100%" : "calc(100vh - 106px)" }
           position="relative"
           overflowX="hidden"
+          pt={paddingTopValue}
         >
           <Box display={realOutputCode?.length == 0 ? 'flex' : 'none'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} >
             <MotionWelcomeImage

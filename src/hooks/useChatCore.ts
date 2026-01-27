@@ -5,6 +5,8 @@ import { isMobileOnly } from 'react-device-detect';
 import functions from '@/utils/functions';
 import * as ChatService from "@/services/chat/index";
 import mConstants from '@/utils/constants';
+import * as mCookie from "@/utils/cookies";
+import { decryptResponse } from '@/utils/crypto';
 import { decryptToken } from "@/utils/secureToken";
 import { defaultUserInfo } from "@/types/userData"
 
@@ -227,6 +229,7 @@ export const useChatCore = () => {
     if (functions.isEmpty(chat_sessinn_id)) {
       chat_sessinn_id = await getNewSessionID();
     }
+    const locale = (await mCookie.getCookie('currentLocale')) || 'ko';
 
     if (!functions.isEmpty(chat_sessinn_id)) {
         const newRequestId = Date.now();
@@ -235,11 +238,28 @@ export const useChatCore = () => {
         addMessage({ chat_id: functions.getUUID(), ismode: "me", question: isText, isOnlyLive: false });
 
         try {
-            const questionResult: any = await ChatService.getChatMessage(chat_sessinn_id, isText.trim(), latitude, longitude);
+            const questionResult: any = await ChatService.getChatMessage(chat_sessinn_id, isText.trim(), latitude, longitude, locale);
             if (requestRef.current !== newRequestId) return;
 
             if (mConstants.apiSuccessCode.includes(questionResult?.statusCode)) {
-                const answerMessage = questionResult?.data;
+                let answerMessage = questionResult?.data;
+
+                // 복호화 로직 추가
+                if (
+                    process.env.NEXT_PUBLIC_DECRYPT_CHAT_PARAMETERS === 'true' &&
+                    answerMessage?.encrypted_response
+                ) {
+                    const decryptedData = decryptResponse(answerMessage.encrypted_response);
+                    if (decryptedData) {
+                        // 복호화 성공 시, answerMessage를 복호화된 데이터로 교체
+                        answerMessage = decryptedData;
+                    } else {
+                        // 복호화 실패 시, 에러 처리
+                        call_fn_error_message(isText, chat_sessinn_id, "Response decryption failed.");
+                        return;
+                    }
+                }
+                
                 setIn24UsedToken(answerMessage?.in24_used_token ?? 0);
                 if (answerMessage?.chat_type !== 'general') {
                     setReceiving(false);
