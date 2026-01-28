@@ -74,16 +74,32 @@ const DoctorRecommandItem = ({
         borderRadius={"50%"}
         overflow={"hidden"}
       >
-        <Image
-          key={element?.doctor_id}
-          src={hasError ? DoctorAvatar.src : photoSrc}
-          alt="프로필이미지"
-          style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-          sizes="60px"
-          width={60} // Image prop도 Box의 고정 크기에 맞춤
-          height={60} // Image prop도 Box의 고정 크기에 맞춤
-          onError={handleImageError}
-        />
+        {useCache && photoUrl ? (
+          <img
+            key={element?.doctor_id}
+            src={photoSrc}
+            alt="프로필"
+            width={60}
+            height={60}
+            style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+            loading="lazy"
+            onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = DoctorAvatar.src;
+            }}
+          />
+        ) : (
+          <Image
+            key={element?.doctor_id}
+            src={hasError ? DoctorAvatar.src : photoSrc}
+            alt="프로필이미지"
+            style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+            sizes="60px"
+            width={60} // Image prop도 Box의 고정 크기에 맞춤
+            height={60} // Image prop도 Box의 고정 크기에 맞춤
+            onError={handleImageError}
+          />
+        )}
       </Box>
       <Flex flex={4} flexDirection={'column'} justifyContent={'center'} px="20px" mt={doctorListLength > 1 ? "10px" : 0}>
         <Box display={'flex'} justifyContent={doctorListLength > 1 ? 'center' : 'flex-start'} alignItems={'center'} height={'26px'}>

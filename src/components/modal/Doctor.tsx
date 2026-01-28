@@ -361,7 +361,23 @@ function DoctorModal(props: DoctorModalProps) {
             borderRadius={'50%'}
             overflow={'hidden'}
           >
-            <Image key={selected_doctor?.doctor_id} src={hasError ? DoctorAvatar.src : photoSrc} alt="doctor" width={90} height={90} onError={handleImageError}  style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
+            {useCache && photoUrl ? (
+              <img
+                key={selected_doctor?.doctor_id}
+                src={photoSrc}
+                alt="doctor"
+                width={90}
+                height={90}
+                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                loading="lazy"
+                onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = DoctorAvatar.src;
+                }}
+              />
+            ) : (
+              <Image key={selected_doctor?.doctor_id} src={hasError ? DoctorAvatar.src : photoSrc} alt="doctor" width={90} height={90} onError={handleImageError}  style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
+            )}
           </Box>
         </Flex>
         <Flex flexDirection={'row'} justifyContent={'space-evenly'} alignItems={'center'} minHeight={'100px'}>

@@ -323,7 +323,22 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
     setIsOpenReview(false);
     setIsOpenRequestModal(false);
     setIsOpenDoctorDetailModal(false);
-    setOpenDoctorListModal(true,id,doctorList);
+    
+    let doctors = [];
+    let title = "의사소개";
+    let llmSortType = null;
+    try {
+      let parsedAnswer = data.answer;
+      if(typeof data.answer === 'string') {
+          parsedAnswer = JSON.parse(data.answer);
+      }
+      if (Array.isArray(parsedAnswer?.doctors)) {
+        doctors = parsedAnswer.doctors;
+      }
+      title = parsedAnswer?.disease ?? "의사소개";
+      llmSortType = parsedAnswer?.front_sort_type;
+    } catch (e) { /* 파싱 오류 무시 */ }
+    setOpenDoctorListModal(true, id, doctors, title, llmSortType);
   }
 
   const fn_close_modal_doctor_list = async() => {
@@ -489,48 +504,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
             <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
           </Box>
         </Box>
-        {
-          (isOpenDocListModal && chatId ==  selectChatId) && (
-            <Modal
-              onClose={() => fn_close_modal_doctor_list()}
-              finalFocusRef={modalBtnRef}
-              isOpen={(isOpenDocListModal && chatId ==  selectChatId)}
-              scrollBehavior={'inside'}
-              size={'full'}
-            >
-              <ModalOverlay />
-              <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1000}>
-                <ModalHeader bg={navbarBg} padding="basePadding">
-                  <Flex flexDirection={'row'} position={'relative'}>
-                    <Box 
-                      position={'absolute'} left={0} top={0} width="50px" height={'100%'} display={{base :'flex', md:'none'}} alignItems={'center'}  
-                      onClick={() => fn_close_modal_doctor_list()} cursor={'pointer'}
-                    >
-                      <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
-                    </Box>
-                    <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
-                      <CustomText color={'white'} noOfLines={1}>{data?.answer?.disease ?? "의사소개"}</CustomText>
-                    </Box>
-                    <Box 
-                      position={'absolute'} right={0} top={0} width="50px" height={'100%'} display={{base :'none', md:'flex'}} justifyContent={'flex-end'} alignItems={'center'}  
-                      onClick={() => fn_close_modal_doctor_list()}  cursor={'pointer'}
-                      >
-                      <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
-                    </Box>
-                  </Flex>
-                </ModalHeader>
-                <ModalBody overflowY="auto" maxH="100vh" padding="basePadding" margin="0" >
-                  <DoctorList
-                    isOpen={(isOpenDocListModal && chatId ==  selectChatId)}
-                    setClose={() => fn_close_modal_doctor_list()}
-                    originDoctorData={doctorAllList}
-                    llmSortType={data?.answer?.front_sort_type}
-                  />
-                </ModalBody>
-              </ModalContent>
-            </Modal>
-          )
-        }
+
       </Flex>
     )
   }

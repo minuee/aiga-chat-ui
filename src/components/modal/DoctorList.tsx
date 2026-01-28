@@ -36,7 +36,7 @@ export interface DoctorListModalProps extends PropsWithChildren {
   isOpen : boolean;
   setClose : () => void;
   originDoctorData : any;
-  llmSortType? : string;
+  llmSortType? : any;
 }
 
 function DoctorListModal(props: DoctorListModalProps) {

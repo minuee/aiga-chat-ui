@@ -113,7 +113,9 @@ interface ModalDoctorListStoreState {
     isOpenDocListModal : boolean;
     chatId: number; // ✅ 추가
     doctorAllList : any;
-    setOpenDoctorListModal: (isOpenDocListModal: boolean,chatId? :number ,doctorAllList? : any) => void;
+    title: string;
+    llmSortType: string | null;
+    setOpenDoctorListModal: (isOpenDocListModal: boolean,chatId? :number ,doctorAllList? : any, title?: string, llmSortType?: string | null) => void;
 }
 
 export const ModalDoctorListStore = create<ModalDoctorListStoreState>()(
@@ -121,8 +123,12 @@ export const ModalDoctorListStore = create<ModalDoctorListStoreState>()(
         persist(
             (set) => ({
                 isOpenDocListModal: false,
-                setOpenDoctorListModal: (isOpenDocListModal:boolean,chatId :number = 0, doctorAllList : any = []) => {
-                    set({isOpenDocListModal, chatId,doctorAllList});
+                chatId: 0,
+                doctorAllList: [],
+                title: '',
+                llmSortType: null,
+                setOpenDoctorListModal: (isOpenDocListModal:boolean, chatId :number = 0, doctorAllList : any = [], title: string = '', llmSortType: string | null = null) => {
+                    set({isOpenDocListModal, chatId, doctorAllList, title, llmSortType});
                 },
                 hasHydrated: false,
             }),

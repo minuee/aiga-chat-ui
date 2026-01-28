@@ -60,7 +60,23 @@ const DoctorList = ({ data, onSendDoctorButton,inputs }:DoctorListProps) => {
                     </Flex>
                 </Box>
                 <Box  display={'flex'}  justifyContent={'center'} alignItems={'center'} width={'60px'} height={'60px'} borderRadius={'50%'} overflow={'hidden'} onClick={() => onSendDoctorButton(data,1)} cursor={'pointer'}>
-                    <Image key={data?.doctor_id || photoUrl} src={hasError ? DoctorAvatar.src : photoSrc} alt="doctor" width={60} height={60} onError={handleImageError}  style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
+                    {useCache && photoUrl ? (
+                        <img
+                            key={data?.doctor_id || photoUrl}
+                            src={photoSrc}
+                            alt="doctor"
+                            width={60}
+                            height={60}
+                            style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                            loading="lazy"
+                            onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src = DoctorAvatar.src;
+                            }}
+                        />
+                    ) : (
+                        <Image key={data?.doctor_id || photoUrl} src={hasError ? DoctorAvatar.src : photoSrc} alt="doctor" width={60} height={60} onError={handleImageError}  style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
+                    )}
                 </Box>
             </Flex>
             <Divider  my={2} />

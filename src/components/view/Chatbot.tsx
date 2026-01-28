@@ -14,6 +14,7 @@ import { MdOutlineArrowDownward, MdFitbit ,MdOutlineClose,MdArrowBack } from 're
 import DoctorDetail  from '@/components/modal/Doctor';
 import RecommandDoctor  from '@/components/msgType/RecommandDoctor';
 import SearchDoctor  from '@/components/msgType/SearchDoctor';
+import DoctorList from "@/components/modal/DoctorList";
 import ForceStop  from '@/components/msgType/ForceStop';
 import ChatMeMessage from '@/components/msgType/ChatMeMessage';
 import ChatWrongMessage from '@/components/msgType/ChatWrongMessage';
@@ -85,6 +86,8 @@ export default function ChatBot() {
   const thinkingTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isOpenDoctorModal, setIsOpenDoctorModal] = useState<boolean>(false);
+  const { isOpenDocListModal, doctorAllList, title, llmSortType } = ModalDoctorListStore(state => state);
+  const modalBtnRef = useRef<HTMLButtonElement>(null);
   
   const resetUserBasicInfo = UserBasicInfoStore((state) => state.resetUserBasicInfo);
   const userStoreInfo = UserBasicInfoStore(state => state.userStoreInfo);
@@ -148,7 +151,7 @@ export default function ChatBot() {
     setIsOpenDoctorDetailModal(false);
     setOpenHistoryDrawer(false);
     setIsOpenRequestModal(false);
-    setOpenDoctorListModal(false);
+    setOpenDoctorListModal(false, 0, []);
     setIsOpenSetupModal(false);
     setIsOpenNoticeListModal(false);
     setIsOpenDoctorDetailModal(false);
@@ -176,7 +179,7 @@ export default function ChatBot() {
     setIsOpenDoctorDetailModal(false);
     setOpenHistoryDrawer(false);
     setIsOpenRequestModal(false);
-    setOpenDoctorListModal(false);
+    setOpenDoctorListModal(false, 0, []);
     setIsOpenSetupModal(false);
     setIsOpenNoticeListModal(false);
     setIsOpenDoctorDetailModal(false);
@@ -910,7 +913,7 @@ export default function ChatBot() {
 
   const fn_close_modal_doctor_list = async() => {
     const locale = await mCookie.getCookie('currentLocale') ?  mCookie.getCookie('currentLocale') : 'ko'; 
-    setOpenDoctorListModal(false);
+    setOpenDoctorListModal(false, 0, [], '', null);
     router.replace(`/${locale}/chat`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname','');
@@ -1548,6 +1551,48 @@ export default function ChatBot() {
                 <ModalBody padding="basePadding" margin="0">
                   <DoctorDetail
                     selected_doctor={selectedDoctor}
+                  />
+                </ModalBody>
+              </ModalContent>
+            </Modal>
+          )
+        }
+        {
+          isOpenDocListModal && (
+            <Modal
+              onClose={() => fn_close_modal_doctor_list()}
+              finalFocusRef={modalBtnRef}
+              isOpen={isOpenDocListModal}
+              scrollBehavior={'inside'}
+              size={'full'}
+            >
+              <ModalOverlay />
+              <ModalContent maxW={`${mConstants.modalMaxWidth}px`} bg={sidebarBackgroundColor} zIndex={1001}>
+                <ModalHeader bg={navbarBg} padding="basePadding">
+                  <Flex flexDirection={'row'} position={'relative'}>
+                    <Box 
+                      position={'absolute'} left={0} top={0} width="50px" height={'100%'} display={{base :'flex', md:'none'}} alignItems={'center'}  
+                      onClick={() => fn_close_modal_doctor_list()} cursor={'pointer'}
+                    >
+                      <Icon as={MdArrowBack} width="24px" height="24px" color="white" />
+                    </Box>
+                    <Box  display={'flex'} alignItems={'center'} justifyContent={'center'} width='100%'>
+                      <CustomTextBold700 color={'white'} noOfLines={1}>{title || "전문의 리스트"}</CustomTextBold700>
+                    </Box>
+                    <Box 
+                      position={'absolute'} right={0} top={0} width="50px" height={'100%'} display={{base :'none', md:'flex'}} justifyContent={'flex-end'} alignItems={'center'}  
+                      onClick={() => fn_close_modal_doctor_list()}  cursor={'pointer'}
+                      >
+                      <Icon as={MdOutlineClose} width="24px" height="24px" color="white" />
+                    </Box>
+                  </Flex>
+                </ModalHeader>
+                <ModalBody overflowY="auto" maxH="100vh" padding="basePadding" margin="0" >
+                  <DoctorList
+                    isOpen={isOpenDocListModal}
+                    setClose={() => fn_close_modal_doctor_list()}
+                    originDoctorData={doctorAllList}
+                    llmSortType={llmSortType}
                   />
                 </ModalBody>
               </ModalContent>

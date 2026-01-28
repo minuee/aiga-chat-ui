@@ -89,7 +89,7 @@ export const useChatModals = () => {
 
   const fn_close_modal_doctor_list = async() => {
     const locale = await mCookie.getCookie('currentLocale') || 'ko'; 
-    setOpenDoctorListModal(false);
+    setOpenDoctorListModal(false, 0, [], '', null);
     router.replace(`/${locale}/chat`);
     setTimeout(() => {
       mCookie.setCookie('currentPathname','');
@@ -314,6 +314,25 @@ export const useChatModals = () => {
   }, []); // Re-run if any of the close functions change, which they won't.
 
   return {
-    // You can return any state or functions that the component might need
+    fn_close_modal_doctor_detail,
+    fn_close_modal_doctor_detail2,
+    fn_close_modal_doctor_review,
+    fn_close_modal_doctor_review2,
+    fn_close_modal_doctor_request,
+    fn_close_modal_doctor_list,
+    fn_close_drawer_history,
+    fn_close_modal_mypage,
+    fn_close_modal_notice_list,
+    fn_close_modal_notice_detail,
+    fn_close_modal_mypage_request,
+    fn_close_modal_mypage_entire,
+    fn_close_modal_mypage_policy,
+    fn_close_modal_mypage_policy2,
+    fn_close_modal_mypage_yakwan,
+    fn_close_modal_mypage_yakwan2,
+    fn_close_modal_mypage_mingam2,
+    fn_close_modal_user_login,
+    fn_close_modal_user_login2,
+    fn_close_modal_signup_agree,
   };
 };
