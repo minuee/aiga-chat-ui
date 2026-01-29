@@ -82,7 +82,9 @@ const SearchDoctor = ({ onSendButton, data, isHistory, summary, isLiveChat, setI
     cleaned = cleaned.replace(/\\n/g, '\n');
     // 이미지 URL 내 공백을 %20으로 인코딩
     cleaned = cleaned.replace(/(https?:\/\/.+?\.(?:jpeg|jpg|png|gif|bmp|webp|svg|gif))\s/gi, (match) => match.replace(/\s/g, '%20'));
-
+    // 각 줄의 선행 공백을 제거 (ltrim 효과) 
+    cleaned = cleaned.replace(/^[ \t]+/gm, '');
+    
     return cleaned;
   };
 
@@ -125,7 +127,7 @@ const SearchDoctor = ({ onSendButton, data, isHistory, summary, isLiveChat, setI
     // Chakra UI 컴포넌트로 목록 렌더링
     ul: ({ node, ...props }) => <UnorderedList styleType='none' {...props} />,
     ol: ({ node, ...props }) => <OrderedList styleType='none' {...props} />,
-    li: ({ node, ...props }) => <ListItem style={{ marginBottom: '5px', display: 'flex', alignItems: 'flex-start' }} {...props} />,
+    li: ({ node, ...props }) => <ListItem style={{ marginBottom: '5px', display: 'flex', alignItems: 'flex-start'}} {...props} />,
     p: ({ node, ...props }) => <p style={{ marginBottom: '10px' }} {...props} />,
     // strong 태그 (볼드체) 스타일링
     strong: ({ node, ...props }) => <strong style={{ fontWeight: 'bold' }} {...props} />,
@@ -158,9 +160,10 @@ const SearchDoctor = ({ onSendButton, data, isHistory, summary, isLiveChat, setI
       'ul, ol': {
         paddingLeft: '0', 
       },
-      'li': {
-        paddingLeft: '0', 
-        marginLeft: '0',
+      // ol 바로 뒤에 오는 ul의 li에만 들여쓰기를 적용 (교수 상세 정보)
+      'ol + ul li': { // ol 바로 뒤에 오는 ul의 li에 적용
+        paddingLeft: '10px !important', // 10px 들여쓰기
+        marginLeft: '10px !important',
       },
     },
   };

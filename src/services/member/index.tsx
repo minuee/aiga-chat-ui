@@ -134,7 +134,7 @@ export function setSignupAgree(): any {
 
  export async function setMemberLogout(): Promise<any> {
     try{
-        const res:any =  await rawAxios.get(`/auth/logout`)
+        const res:any =  await api.get(`/auth/logout`)
         .then((response) => {
              return response?.data;
         }).catch((error) => {

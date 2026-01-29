@@ -34,8 +34,10 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false, summary, is
     if (typeof text !== 'string') return '';
     let cleaned = text.replace(/^"(.*)"$/, '$1');
     cleaned = cleaned.replace(/<br\s*\/?>/gi, '\n');
-    cleaned = cleaned.replace(/\\n/g, '\n');
+    //cleaned = cleaned.replace(/\\n/g, '\n');
     cleaned = cleaned.replace(/(https?:\/\/.+?\.(?:jpeg|jpg|png|gif|bmp|webp|svg|gif))\s/gi, (match) => match.replace(/\s/g, '%20'));
+    // 각 줄의 선행 공백을 제거 (ltrim 효과) 
+    cleaned = cleaned.replace(/^[ \t]+/gm, '');
     return cleaned;
   };
 
@@ -96,9 +98,10 @@ const SimpleListMessage = ({  msg = [], indexKey, isHistory = false, summary, is
       'ul, ol': {
         paddingLeft: '0', 
       },
-      'li': {
-        paddingLeft: '0', 
-        marginLeft: '0',
+      // ol 바로 뒤에 오는 ul의 li에만 들여쓰기를 적용 (교수 상세 정보)
+      'ol + ul li': { // ol 바로 뒤에 오는 ul의 li에 적용
+        paddingLeft: '10px !important', // 10px 들여쓰기
+        marginLeft: '10px !important',
       },
     },
   };
