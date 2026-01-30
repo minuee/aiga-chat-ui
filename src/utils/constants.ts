@@ -20,7 +20,7 @@ const contrants  = {
     mobileHeaderHeight: 60,
     modalMaxWidth : 640,
     desktopMinWidth : 640,
-    inputMaxMessage : 100,
+    inputMaxMessage : 150,
     nickNameAbleString : /^[가-힣a-zA-Z0-9_]+$/,
     apiSuccessCode,
     apiAllowOriginCode,

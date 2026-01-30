@@ -20,6 +20,7 @@ import ChatMeMessage from '@/components/msgType/ChatMeMessage';
 import ChatWrongMessage from '@/components/msgType/ChatWrongMessage';
 import GeneralMessage from "@/components/msgType/GeneralMessage";
 import SimpleListMessage from '@/components/msgType/SimpleListMessage';
+import HospitalList from '@/components/msgType/HospitalList';
 import { ChatDisable,ChatWarningInfo }  from '@/components/msgType/ChatOptionView';
 import MotionWelcome,{MotionWelcomeImage}  from '@/components/msgType/MotionWelcome';
 import Processing  from '@/components/msgType/Processing';

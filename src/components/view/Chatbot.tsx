@@ -21,6 +21,7 @@ import ChatWrongMessage from '@/components/msgType/ChatWrongMessage';
 import GeneralMessage from "@/components/msgType/GeneralMessage";
 import AwesomeMessage from "@/components/msgType/AwesomeMessage";
 import SimpleListMessage from '@/components/msgType/SimpleListMessage';
+import HospitalList from '@/components/msgType/HospitalList';
 import { ChatDisable,ChatWarningInfo }  from '@/components/msgType/ChatOptionView';
 import MotionWelcome,{MotionWelcomeImage}  from '@/components/msgType/MotionWelcome';
 import Processing  from '@/components/msgType/Processing';
@@ -1196,7 +1197,7 @@ export default function ChatBot() {
           return (
             <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
               <Flex w="100%">
-                <SimpleListMessage 
+                <HospitalList 
                   indexKey={index}
                   isHistory={element?.isHistory}
                   msg={element.answer} 
