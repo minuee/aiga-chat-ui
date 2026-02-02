@@ -566,7 +566,13 @@ export default function ChatBot() {
           let answerMessage = questionResult?.data;
 
           // 복호화 로직 추가
+          // 암호화되지 않은 데이터 예외 처리
           if (
+            answerMessage?.length > 0 && answerMessage[0]?.chat_id !== undefined &&
+            process.env.NEXT_PUBLIC_DECRYPT_CHAT_PARAMETERS === 'true'
+          ) {
+            // 암호화되지 않은 데이터이므로 복호화 로직을 건너뜀
+          } else if (
             process.env.NEXT_PUBLIC_DECRYPT_CHAT_PARAMETERS === 'true' &&
             answerMessage?.encrypted_response
           ) {
@@ -579,6 +585,7 @@ export default function ChatBot() {
               return;
             }
           }
+          
           
           setIn24UsedToken(functions.isEmpty(answerMessage?.in24_used_token) ? 0 : answerMessage?.in24_used_token);
           // if ( answerMessage?.chat_type !== 'general' ) {

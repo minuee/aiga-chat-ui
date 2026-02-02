@@ -378,7 +378,7 @@ const HospitalList = ({  msg = [], indexKey, isHistory = false, summary, isLiveC
                 </Flex>
               </Box>
             )}
-            {hospitalsList.length > 2 && (
+            {( hospitalsList.length > 2 && isLocalTypeDone ) && (
               <Flex justifyContent="flex-end" mt={4}>
                 <Flex 
                   display="flex" justifyContent={'center'} alignItems={'center'} bg={expandButtonBg} borderRadius={"4px"} height={"32px"} padding="0 8px 0 20px" cursor={'pointer'}

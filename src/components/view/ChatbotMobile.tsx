@@ -19,6 +19,7 @@ import ForceStop  from '@/components/msgType/ForceStop';
 import ChatMeMessage from '@/components/msgType/ChatMeMessage';
 import ChatWrongMessage from '@/components/msgType/ChatWrongMessage';
 import GeneralMessage from "@/components/msgType/GeneralMessage";
+import AwesomeMessage from '@/components/msgType/AwesomeMessage';
 import SimpleListMessage from '@/components/msgType/SimpleListMessage';
 import HospitalList from '@/components/msgType/HospitalList';
 import { ChatDisable,ChatWarningInfo }  from '@/components/msgType/ChatOptionView';
@@ -618,6 +619,18 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     }
   }
 
+
+  const onSendDoctorButton = useCallback(async( data : any,isType : number) => {
+    setSelectedDoctor(data);
+    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_2}`);
+    setCurrentPathname(`${mConstants.pathname_modal_2}`)
+    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2}`)
+    setOpenDoctorListModal(false);
+    setIsOpenReview(false);
+    setIsOpenRequestModal(false);
+    setIsOpenDoctorModal(true);
+  }, [setCurrentPathname, setOpenDoctorListModal, setIsOpenReview, setIsOpenRequestModal, setIsOpenDoctorModal, pathnameRef]);
+
   const debouncedStopRequest = useCallback(
     debounce(() => {
       if (hasSent) return;
@@ -680,6 +693,133 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     
   }, []);
 
+  const memoizedMessages = useMemo(() => {
+    return realOutputCode.map((element:any,index:number) => {
+      if ( element.ismode == 'me') {
+        return (
+          <Box key={element.chat_id || index}>
+            <ChatMeMessage
+              indexKey={index}
+              question={element.question}
+            />
+          </Box>
+        )
+      }else if ( element.ismode == 'server') {
+        if ( element.chat_type === "recommand_doctor" ) {
+          return (
+            <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
+              <RecommandDoctor 
+                data={element}
+                summary={!functions.isEmpty(element?.summary) ? functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')) : ""}
+                isHistory={element?.isHistory}
+                onSendButton={onSendDoctorButton}
+                isLiveChat={element.isLiveChat}
+                setIsTypingDone={onHandleTypeDone}
+              />
+            </Box>
+          )
+        }else if ( element.chat_type === "search_doctor" ) {
+          return (
+            <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
+              <SearchDoctor 
+                data={element}
+                summary={!functions.isEmpty(element?.summary) ? functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')) : ""}
+                isHistory={element?.isHistory}
+                onSendButton={onSendDoctorButton}
+                isLiveChat={element.isLiveChat}
+                setIsTypingDone={onHandleTypeDone}
+              />
+            </Box>
+          )
+        }else if ( element.chat_type === "recommand_hospital" ) {
+          return (
+            <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
+              <Flex w="100%">
+                <HospitalList 
+                  indexKey={index}
+                  isHistory={element?.isHistory}
+                  msg={element.answer} 
+                  isLiveChat={element.isLiveChat}
+                  setIsTypingDone={onHandleTypeDone}
+                  summary={!functions.isEmpty(element?.summary) ? functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')) : ""} 
+                />
+              </Flex>
+            </Box>
+          )
+        } else if ( element.chat_type === "markdown" ) {
+          return (
+            <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
+              <Flex w="100%">
+                <AwesomeMessage
+                  output={functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))}
+                  isHistory={element?.isHistory}
+                  setIsTypingDone={onHandleTypeDone}
+                  isLiveChat={element.isLiveChat == undefined ? false : element.isLiveChat }
+                />
+              </Flex>
+            </Box>
+          )
+        }
+        else if ( element.chat_type === "general" ) {
+          return (
+            <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
+              <Flex w="100%">
+                <GeneralMessage 
+                  //output={functions.makeLinkify(functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
+                  output={functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))} 
+                  isHistory={element?.isHistory}
+                  setIsTypingDone={onHandleTypeDone}
+                  isLiveChat={element.isLiveChat == undefined ? false : element.isLiveChat }
+                />
+              </Flex>
+            </Box>
+          )
+        }else {
+          return (
+            <Box key={element.chat_id || index}>
+              <ChatWrongMessage
+                indexKey={index}
+                isMode="system"
+                msg={mConstants.error_message_default}
+              />
+            </Box>
+          )
+        }
+      }else if ( element.ismode == 'system_stop') {
+        return (
+          <Box key={element.chat_id || index}>
+            <ForceStop
+              indexKey={index}
+              msg={element.msg}
+            />
+          </Box>
+        )
+      }else if ( element.ismode == 'system' || element.ismode == 'system_400') {
+        return (
+          <Box key={element.chat_id || index}>
+            <ChatWrongMessage
+              indexKey={index}
+              isMode={element.ismode}
+              msg={!functions.isEmpty(element?.msg) ? element?.msg : mConstants.error_message_default}
+            />
+          </Box>
+        )
+      }else{
+        return (
+          <Flex w="100%" key={element.chat_id || index} mb="10px">
+            <Flex
+              borderRadius="full" justify="center" align="center" me="10px" h="40px" minH="40px"minW="40px"
+              bg={'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)'}
+            >
+              <Icon as={MdFitbit} width="20px" height="20px" color="white" />
+            </Flex>
+            <MessageBoxChat output={element.msg} />
+          </Flex>
+        )
+      }
+    })
+  }, [realOutputCode, onSendDoctorButton, onHandleTypeDone]);
+
   const addMessage = (newItem: any) => {
     if ( !newItem?.isOnlyLive) {
       CurrentDialogStore.getState().setCurrentMessageData((prev: any) => [...prev, {...newItem,isLiveChat:false}]);
@@ -688,12 +828,10 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   }
 
   const handleTranslate = async( isText:any = '') => {
-    // inputCode의 토큰 계산은 여기서 바로 수행
     const nowTokens = calculateTokenCount(inputCode);
     const nowTimeStamp = functions.getKSTUnixTimestamp();
     if(isNewChat) setNewChatOpen(false);
-    // inputCode를 비우는 것은 메시지 전송 로직이 시작된 후로 이동
-    
+    setInputCode('')
     if ( in24UsedToken > 0 ) { 
       const realTimeIn24UsedToken = in24UsedToken+nowTokens;
       if ( userBaseInfo?.isGuest  ) {//비회원
@@ -725,6 +863,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     if ( functions.isEmpty(chat_sessinn_id)) {
       chat_sessinn_id = await getNewSessionID();
     }
+    const locale = (await mCookie.getCookie('currentLocale')) || 'ko';
     if ( !functions.isEmpty(chat_sessinn_id)) {
       const newRequestId = Date.now(); // 혹은 증가값
       setRequestId(newRequestId);
@@ -732,7 +871,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
       setReceiving(true);
       const msgLen = parseInt(realOutputCode.length+1);
       const inputCodeText = isText;
-      const locale = (await mCookie.getCookie('currentLocale')) || 'ko';
 
       if ( isSystemText.includes(inputCodeText) ) {
         if( inputCodeText != realOutputCode[realOutputCode?.length -1]?.msg) { 
@@ -770,21 +908,25 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
       }
      
       try{
-        setInputCode('') // 메시지 전송 후 inputCode 비움
+        
         const questionResult:any = await ChatService.getChatMessage(chat_sessinn_id,inputCodeText.trim(), latitude, longitude, locale);
-        // ❗중지된 요청이면 무시
         if (requestRef.current !== newRequestId) return;
         if ( mConstants.apiSuccessCode.includes(questionResult?.statusCode) ) {
           let answerMessage = questionResult?.data;
 
           // 복호화 로직 추가
+          // 암호화되지 않은 데이터 예외 처리
           if (
+            answerMessage?.length > 0 && answerMessage[0]?.chat_id !== undefined &&
+            process.env.NEXT_PUBLIC_DECRYPT_CHAT_PARAMETERS === 'true'
+          ) {
+            // 암호화되지 않은 데이터이므로 복호화 로직을 건너뜀
+          } else if (
             process.env.NEXT_PUBLIC_DECRYPT_CHAT_PARAMETERS === 'true' &&
             answerMessage?.encrypted_response
           ) {
             const decryptedData = decryptResponse(answerMessage.encrypted_response);
             if (decryptedData) {
-              // 복호화 성공 시, answerMessage를 복호화된 데이터로 교체
               answerMessage = decryptedData;
             } else {
               // 복호화 실패 시, 에러 처리
@@ -792,6 +934,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
               return;
             }
           }
+          
           
           setIn24UsedToken(functions.isEmpty(answerMessage?.in24_used_token) ? 0 : answerMessage?.in24_used_token);
           // if ( answerMessage?.chat_type !== 'general' ) {
@@ -848,7 +991,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                 }
               )
             }, 60); 
-          } else if ( questionResult?.message?.statusCode == '400' || questionResult?.message?.statusCode == '404') {
+          } else if ( questionResult?.message?.statusCode == '404' ||  questionResult?.message?.statusCode == '400') {
             setIsLoading(false);
             setReceiving(false);
             setIsFocus(false)
@@ -857,10 +1000,11 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                 textareaRef?.current?.focus()
               }
             }, 100)
-            if (  questionResult?.message?.statusCode == '404' && questionResult?.message?.message == '세션이 존재하지 않습니다.') {
-              setChatSessionId('', null);
-            }
+            
             setTimeout(() => {
+              if (  questionResult?.message?.statusCode == '404' && questionResult?.message?.message == '세션이 존재하지 않습니다.') {
+                setChatSessionId('', null);
+              }
               addMessage(
                 {
                   ismode : 'system_400',
@@ -900,15 +1044,15 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                 }
               )
             }, 60); 
-          }else if ( questionResult?.message?.statusCode == '403') {
+          }else if ( questionResult?.message?.statusCode == '403' ) {
             const parsedMessage = parseLooselyFormattedJsonString(questionResult?.message?.message);
-            if ( !functions.isEmpty(parsedMessage) ) {
+            if ( !functions.isEmpty(parsedMessage)) {
               const nowTimeStamp = functions.getKSTUnixTimestamp();
               const parsedTimestamp = parseInt(parsedMessage?.timestamp);
               const reTrytimeStamp = parsedTimestamp ?? nowTimeStamp;
               const parsedRemainingTime = parseInt(parsedMessage?.remainingTime);
               const remainingTime = parsedRemainingTime ?? userRetryLimitSec ?? 57600;
-            
+             
               setIn24UsedToken(functions.isEmpty(parsedMessage?.in24_used_token) ? 0 :  parsedMessage?.in24_used_token)
               setIsLoading(false);
               setReceiving(false);
@@ -918,6 +1062,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                   textareaRef?.current?.focus()
                 }
               }, 100)
+
               setTimeout(() => {
                 setChatDisabled({
                   reTrytimeStamp : reTrytimeStamp,
@@ -926,8 +1071,9 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                   isAlertMsg : false
                 })
               }, 2000)
+              
             }else{
-               call_fn_error_message(inputCodeText,chat_sessinn_id,"토큰 만료 체크 오류");
+              call_fn_error_message(inputCodeText,chat_sessinn_id,"토큰 만료 체크 오류");
             }
           }else if ( questionResult?.message?.statusCode == '401' && !functions.isEmpty(userBaseInfo?.email)) { // 권한없음
             const fromMessage = "비정상적인 로그인 상태입니다. 로그아웃되었습니다."
@@ -944,7 +1090,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
             call_fn_error_message(inputCodeText,chat_sessinn_id,fromMessage)
             firstForceStep();
             resetUserBasicInfo();
-            
           }else{
             call_fn_error_message(inputCodeText,chat_sessinn_id,"not")
           }
@@ -1049,17 +1194,6 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   const onSendWelcomeButton = useCallback(async( str : string) => {
     if ( !isReceiving ) await handleTranslate(str);
   }, [isReceiving, handleTranslate]);
-
-  const onSendDoctorButton = useCallback(async( data : any,isType : number) => {
-    setSelectedDoctor(data);
-    history.push(`${pathnameRef?.current}#${mConstants.pathname_modal_2}`);
-    setCurrentPathname(`${mConstants.pathname_modal_2}`)
-    mCookie.setCookie('currentPathname',`${mConstants.pathname_modal_2}`)
-    setOpenDoctorListModal(false);
-    setIsOpenReview(false);
-    setIsOpenRequestModal(false);
-    setIsOpenDoctorModal(true);
-  }, [setCurrentPathname, setOpenDoctorListModal, setIsOpenReview, setIsOpenRequestModal, setIsOpenDoctorModal, pathnameRef]);
 
   const onSendNameButton = useCallback(async( str : string) => {
     if ( !isReceiving ) await handleTranslate(str);
@@ -1364,118 +1498,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
     return () => window.removeEventListener('popstate', handlePopState);
   }, [fn_close_modal_doctor_list, fn_close_modal_doctor_detail2, fn_close_modal_doctor_detail, fn_close_modal_doctor_review, fn_close_modal_doctor_review2, fn_close_modal_doctor_request, fn_close_drawer_history, fn_close_modal_user_login, fn_close_modal_user_login2, fn_close_modal_mypage, fn_close_modal_notice_list, fn_close_modal_notice_detail, fn_close_modal_mypage_request, fn_close_modal_mypage_entire, fn_close_modal_mypage_yakwan, fn_close_modal_mypage_yakwan2, fn_close_modal_mypage_policy, fn_close_modal_mypage_policy2, fn_close_modal_mypage_mingam2, fn_close_modal_signup_agree]); // ✅ 한 번만 등록
   
-  const memoizedMessages = useMemo(() => {
-    return realOutputCode.map((element:any,index:number) => {
-      if ( element.ismode == 'me') {
-        return (
-          <Box key={element.chat_id || index}>
-            <ChatMeMessage
-              indexKey={index}
-              question={element.question}
-            />
-          </Box>
-        )
-      }else if ( element.ismode == 'server') {
-        if ( element.chat_type === "recommand_doctor" ) {
-          return (
-            <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
-              <RecommandDoctor 
-                data={element}
-                summary={!functions.isEmpty(element?.summary) ? functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')) : ""}
-                isHistory={element?.isHistory}
-                onSendButton={onSendDoctorButton}
-                isLiveChat={element.isLiveChat}
-                setIsTypingDone={onHandleTypeDone}
-              />
-            </Box>
-          )
-        }else if ( element.chat_type === "search_doctor" ) {
-          return (
-            <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
-              <SearchDoctor 
-                data={element}
-                summary={!functions.isEmpty(element?.summary) ? functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')) : ""}
-                isHistory={element?.isHistory}
-                onSendButton={onSendDoctorButton}
-                isLiveChat={element.isLiveChat}
-                setIsTypingDone={onHandleTypeDone}
-              />
-            </Box>
-          )
-        }else if ( element.chat_type === "recommand_hospital" ) {
-          return (
-            <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
-              <Flex w="100%">
-                <SimpleListMessage 
-                  indexKey={index}
-                  isHistory={element?.isHistory}
-                  msg={element.answer} 
-                  isLiveChat={element.isLiveChat}
-                  setIsTypingDone={onHandleTypeDone}
-                  summary={!functions.isEmpty(element?.summary) ? functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')) : ""} 
-                />
-              </Flex>
-            </Box>
-          )
-        }else if ( element.chat_type === "general" ) {
-          return (
-            <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
-              <Flex w="100%">
-                <GeneralMessage 
-                  //output={functions.makeLinkify(functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
-                  output={functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))} 
-                  isHistory={element?.isHistory}
-                  setIsTypingDone={onHandleTypeDone}
-                  isLiveChat={element.isLiveChat == undefined ? false : element.isLiveChat }
-                />
-              </Flex>
-            </Box>
-          )
-        }else {
-          return (
-            <Box key={element.chat_id || index}>
-              <ChatWrongMessage
-                indexKey={index}
-                isMode="system"
-                msg={mConstants.error_message_default}
-              />
-            </Box>
-          )
-        }
-      }else if ( element.ismode == 'system_stop') {
-        return (
-          <Box key={element.chat_id || index}>
-            <ForceStop
-              indexKey={index}
-              msg={element.msg}
-            />
-          </Box>
-        )
-      }else if ( element.ismode == 'system' || element.ismode == 'system_400') {
-        return (
-          <Box key={element.chat_id || index}>
-            <ChatWrongMessage
-              indexKey={index}
-              isMode={element.ismode}
-              msg={!functions.isEmpty(element?.msg) ? element?.msg : mConstants.error_message_default}
-            />
-          </Box>
-        )
-      }else{
-        return (
-          <Flex w="100%" key={element.chat_id || index} mb="10px">
-            <Flex
-              borderRadius="full" justify="center" align="center" me="10px" h="40px" minH="40px"minW="40px"
-              bg={'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)'}
-            >
-              <Icon as={MdFitbit} width="20px" height="20px" color="white" />
-            </Flex>
-            <MessageBoxChat output={element.msg} />
-          </Flex>
-        )
-      }
-    })
-  }, [realOutputCode, onSendDoctorButton, onHandleTypeDone]);
+
   
   
   if (isLoading) {
@@ -1532,7 +1555,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                     isMobile={true}
                   />
                   <MotionWelcome 
-                    msg={`안녕하세요, AIGA입니다. 😊!`}
+                    msg={`안녕하세요, AIGA입니다. 😊`}
                     pt="30px"
                     classNames={colorMode == "light" ? "opening_box" : "opening_box_dark"}
                     isMobile={true}
@@ -1559,118 +1582,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
                     isMobile={true}
                   />
                 </Box>
-                { 
-                  realOutputCode.map((element:any,index:number) => {
-                    if ( element.ismode == 'me') {
-                      return (
-                        <Box key={index}>
-                          <ChatMeMessage
-                            indexKey={index}
-                            question={element.question}
-                          />
-                        </Box>
-                      )
-                    }else if ( element.ismode == 'server') {
-                      if ( element.chat_type === "recommand_doctor" ) {
-                        return (
-                          <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
-                            <RecommandDoctor 
-                              data={element}
-                              summary={!functions.isEmpty(element?.summary) ? functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')) : ""}
-                              isHistory={element?.isHistory}
-                              onSendButton={onSendDoctorButton}
-                              isLiveChat={element.isLiveChat}
-                              setIsTypingDone={() => onHandleTypeDone()}
-                            />
-                          </Box>
-                        )
-                      }else if ( element.chat_type === "search_doctor" ) {
-                        return (
-                          <Box key={index} display={functions.isEmpty(element) ? 'none' : 'block'}>
-                            <SearchDoctor 
-                              data={element}
-                              summary={!functions.isEmpty(element?.summary) ? functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')) : ""}
-                              isHistory={element?.isHistory}
-                              onSendButton={onSendDoctorButton}
-                              isLiveChat={element.isLiveChat}
-                              setIsTypingDone={() => onHandleTypeDone()}
-                            />
-                          </Box>
-                        )
-                      }else if ( element.chat_type === "recommand_hospital" ) {
-                        return (
-                          <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
-                            <Flex w="100%" key={index}>
-                              <SimpleListMessage 
-                                indexKey={index}
-                                isHistory={element?.isHistory}
-                                msg={element.answer} 
-                                isLiveChat={element.isLiveChat}
-                                setIsTypingDone={() => onHandleTypeDone()}
-                                summary={!functions.isEmpty(element?.summary) ? functions.cleanEscapedCharacters(element?.summary.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')) : ""} 
-                              />
-                            </Flex>
-                          </Box>
-                        )
-                      }else if ( element.chat_type === "general" ) {
-                        return (
-                          <Box key={index} display={functions.isEmpty(element.answer) ? 'none' : 'block'}>
-                            <Flex w="100%" key={index}>
-                              <GeneralMessage 
-                                //output={functions.makeLinkify(functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, '')))} 
-                                output={functions.cleanEscapedCharacters(element.answer.replace(/^"(.*)"$/, '$1').replaceAll(/\"/g, ''))} 
-                                isHistory={element?.isHistory}
-                                setIsTypingDone={() => onHandleTypeDone()}
-                                isLiveChat={element.isLiveChat == undefined ? false : element.isLiveChat }
-                              />
-                            </Flex>
-                          </Box>
-                        )
-                      }else {
-                        return (
-                          <Box key={index}>
-                            <ChatWrongMessage
-                              indexKey={index}
-                              isMode="system"
-                              msg={'흠..뭔가 잘못된 것 같습니다'}
-                            />
-                          </Box>
-                        )
-                      }
-                    }else if ( element.ismode == 'system_stop') {
-                      return (
-                        <Box key={index}>
-                          <ForceStop
-                            indexKey={index}
-                            msg={element.msg}
-                          />
-                        </Box>
-                      )
-                    }else if ( element.ismode == 'system' || element.ismode == 'system_400') {
-                      return (
-                        <Box key={index}>
-                          <ChatWrongMessage
-                            indexKey={index}
-                            isMode={element.ismode}
-                            msg={!functions.isEmpty(element?.msg) ? element?.msg : '흠..뭔가 잘못된 것 같습니다'}
-                          />
-                        </Box>
-                      )
-                    }else{
-                      return (
-                        <Flex w="100%" key={index} mb="10px">
-                          <Flex
-                            borderRadius="full" justify="center" align="center" me="10px" h="40px" minH="40px"minW="40px"
-                            bg={'linear-gradient(15.46deg, #4A25E1 26.3%, #7B5AFF 86.4%)'}
-                          >
-                            <Icon as={MdFitbit} width="20px" height="20px" color="white" />
-                          </Flex>
-                          <MessageBoxChat output={element.msg} />
-                        </Flex>
-                      )
-                    }
-                  })
-                }
+                {memoizedMessages}
                 { isReceiving && (
                   isThinkingDeeply ?
                   ( <Box><Processing  msg="🤔 깊게 생각 중… 조금만 기다려 주세요" /></Box> ) 

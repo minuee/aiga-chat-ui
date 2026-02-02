@@ -22,6 +22,7 @@ import * as mCookie from "@/utils/cookies";
 import groupSessionsByDateSorted from "./GroupSort";
 import LoadingBar from "@/assets/icons/loading.gif";
 //새창열기 전역상태
+import { decryptResponse } from '@/utils/crypto';
 import { decryptToken } from "@/utils/secureToken";
 import { defaultUserInfo } from "@/types/userData"
 import { UserBasicInfoStore } from '@/store/userStore';
@@ -224,7 +225,37 @@ function SidebarContent(props: SidebarContent) {
       let newData = [] as any;
 
       setIsReceiving(true)
-      const res:any = await ChatService.getChatHistory(data?.session_id);
+      let res:any = await ChatService.getChatHistory(data?.session_id);
+      
+      // 비암호화 데이터 예외 처리
+      if (
+        res?.data?.length > 0 && res?.data[0]?.chat_id !== undefined &&
+        process.env.NEXT_PUBLIC_DECRYPT_CHAT_PARAMETERS === 'true'
+      ) {
+        // 암호화되지 않은 데이터이므로 복호화 로직을 건너뜀
+      } else if (
+        process.env.NEXT_PUBLIC_DECRYPT_CHAT_PARAMETERS === 'true' &&
+        res?.data?.encrypted_response
+      ) {
+        const decryptedData = decryptResponse(res.data.encrypted_response);
+        if (decryptedData) {
+          res = { ...res, data: decryptedData };
+        } else {
+          // 복호화 실패 시, 에러 처리
+          toast({
+            title: "데이터를 복호화하는데 실패했습니다.",
+            position: 'top-left',
+            isClosable: true,
+            duration:2000,
+            status: 'error',
+            containerStyle: {
+              color: '#ffffff',
+            }
+          });
+          setIsReceiving(false);
+          return;
+        }
+      }
       if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
         setIsReceiving(false)
 
