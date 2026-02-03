@@ -43,7 +43,11 @@ function parseMessage(text: string): ParsedResult & { footerLines: string[] } {
   const potentialTableLines = lastKvIndex === -1 ? [] : contentLines.slice(0, lastKvIndex + 1);
   const footerLines = lastKvIndex === -1 ? contentLines : contentLines.slice(lastKvIndex + 1);
 
-  const keyValueLines = potentialTableLines.filter(line => KV_REGEX.test(line));
+  const keyValueLines = potentialTableLines.filter(line => {
+    // 번호 매겨진 목록이 아닌지 확인 (예: "1. ", "2. " 등으로 시작하지 않는지)
+    const isNumberedListItem = /^[0-9]+\.\s/.test(line.trim());
+    return KV_REGEX.test(line) && !isNumberedListItem;
+  });
   
   const isTable = (potentialTableLines.length > 0 && (keyValueLines.length / potentialTableLines.length) > 0.5 && keyValueLines.length >= 2);
 

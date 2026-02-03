@@ -238,7 +238,7 @@ const ChatBotMobile = ({  mobileContentScrollHeight = 0, mobileViewPortHeight = 
   
   useEffect(() => {
     const check = setInterval(() => {
-      const el = scrollRef.current;
+      const el = mobileContentRef.current;
       const target = scrollBottomRef.current;
       
       if (el && target) {

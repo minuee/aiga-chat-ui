@@ -86,6 +86,17 @@ axios.interceptors.response.use(
 
       originalRequest._retry = true;
       isRefreshing = true;
+
+      // ✅ 유저 정보 및 토큰 유무 확인
+      const { userStoreInfo } = UserBasicInfoStore.getState();
+      const accessTmpToken = mCookie.getCookie(mConstants.apiTokenName);
+
+      // 비회원이거나 토큰이 없으면 refresh 시도하지 않음
+      if (!userStoreInfo || functions.isEmpty(accessTmpToken)) {
+          mCookie.removeCookie(mConstants.apiTokenName); // 혹시 모를 잘못된 쿠키 제거
+          isRefreshing = false;
+          return Promise.reject(new Error("User not logged in, cannot refresh token."));
+      }
       
       try {
         const res = await axios.get('/auth/refresh');
