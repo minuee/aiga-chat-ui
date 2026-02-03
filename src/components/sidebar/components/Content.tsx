@@ -63,6 +63,7 @@ function SidebarContent(props: SidebarContent) {
   }, [userBaseInfo?.profileImage]);
 
   const [openIndexes, setOpenIndexes] = React.useState<number[]>([0]);
+  const isUpdatingOpenIndexesRef = useRef(false);
 
   const handleToggle = (index: number) => {
     setOpenIndexes(prevIndexes =>
@@ -121,29 +122,48 @@ function SidebarContent(props: SidebarContent) {
   }, []);
 
   React.useEffect(() => {
-    if (historyData?.length > 0) { // Check historyData.length
-        if (currentHistorySelectDate) {
-            const index = historyData.findIndex((group: any) => group.date === currentHistorySelectDate);
-            if (index !== -1) {
-                if (index === 0) { // If currentHistorySelectDate is in the first group
-                    setOpenIndexes(Array.from({ length: Math.min(3, historyData.length) }, (_, i) => i));
-                } else {
-                    setOpenIndexes([index]);
-                }
-                scrollAfterOpenIndexesChangeRef.current = true; // Set flag
-            } else {
-                setOpenIndexes(Array.from({ length: Math.min(3, historyData.length) }, (_, i) => i)); // Default to first 3 groups
-                scrollAfterOpenIndexesChangeRef.current = true; // Set flag
+    if (isUpdatingOpenIndexesRef.current) { // 플래그가 설정되어 있으면 건너뛰기
+      return;
+    }
+
+    if (historyData?.length > 0) {
+        const newOpenIndexes: number[] = [];
+        const currentOpenDates = openIndexes.map(idx => historyData[idx]?.date).filter(Boolean);
+
+        historyData.forEach((group:any, idx:any) => {
+            if (currentOpenDates.includes(group.date)) {
+                newOpenIndexes.push(idx);
             }
-        } else { // No currentHistorySelectDate, default to first 3 groups
+        });
+
+        // 삭제 후 빈 그룹이 생겨 인덱스가 밀리는 경우를 대비하여 새로운 인덱스로 업데이트
+        const validOpenIndexes = newOpenIndexes.filter(idx => idx < historyData.length);
+        
+        if (validOpenIndexes.length === 0 && historyData.length > 0) {
+            // 아무것도 열려있지 않으면 처음 3개 (또는 가능한 모든) 그룹 열기
             setOpenIndexes(Array.from({ length: Math.min(3, historyData.length) }, (_, i) => i));
-            scrollAfterOpenIndexesChangeRef.current = true; // Set flag
+        } else {
+            setOpenIndexes(validOpenIndexes);
         }
+
     } else { // No historyData
         setOpenIndexes([]);
         // No scroll needed if no history
     }
-  }, [historyData, currentHistorySelectDate]);
+  }, [historyData]);
+
+  React.useEffect(() => {
+    if (isUpdatingOpenIndexesRef.current) {
+        return;
+    }
+    if (currentHistorySelectDate && historyData.length > 0) {
+      const index = historyData.findIndex((group: any) => group.date === currentHistorySelectDate);
+      if (index !== -1) {
+          setOpenIndexes([index]); // 해당 그룹만 열기
+          scrollAfterOpenIndexesChangeRef.current = true;
+      }
+    }
+  }, [currentHistorySelectDate, historyData]);
 
   const getMyHistoryData = async() => {
     try{
@@ -179,15 +199,45 @@ function SidebarContent(props: SidebarContent) {
       const res:any = await ChatService.removeChatHistory(session_id);
       if ( mConstants.apiSuccessCode.includes(res?.statusCode) ) {
         setIsReceiving(false)
-        //const newHistoryData = historyData.filter((item:any) => item.session_id !== session_id);
-        const newHistoryData = await historyData.map((item:any) => {
+        const newHistoryData = historyData.map((item:any) => {
           const newSessions = item.sessions.filter((subItem: any)  => subItem.session_id !== session_id);
           return {
             ...item,
             sessions: newSessions,
           };
-        })
-        setHistoryData(newHistoryData);
+        }).filter((item:any) => item.sessions.length > 0); // 세션이 없는 빈 그룹은 제거
+
+        // 현재 열려있는 인덱스의 date를 기록
+        const currentlyOpenDates = openIndexes.map(index => historyData[index]?.date).filter(Boolean);
+
+        // 새 historyData를 기반으로 openIndexes 재설정
+        const newOpenIndexes: number[] = [];
+        newHistoryData.forEach((group:any, index:number) => {
+            if (currentlyOpenDates.includes(group.date)) {
+                newOpenIndexes.push(index);
+            }
+        });
+
+        // 만약 currentHistorySelectDate가 있었다면 해당 인덱스를 강제로 열기
+        if (currentHistorySelectDate) {
+          const newCurrentDateIndex = newHistoryData.findIndex((group: any) => group.date === currentHistorySelectDate);
+          if (newCurrentDateIndex !== -1 && !newOpenIndexes.includes(newCurrentDateIndex)) {
+            newOpenIndexes.push(newCurrentDateIndex);
+          }
+        }
+        
+        // 아무것도 열려있지 않으면 처음 3개 (또는 가능한 모든) 그룹 열기
+        if (newOpenIndexes.length === 0 && newHistoryData.length > 0) {
+          const defaultOpen = Array.from({ length: Math.min(3, newHistoryData.length) }, (_, i) => i);
+          newOpenIndexes.push(...defaultOpen);
+        }
+
+        isUpdatingOpenIndexesRef.current = true; // 플래그 설정
+        setOpenIndexes(newOpenIndexes); // openIndexes 업데이트
+        // currentHistorySelectDate를 초기화하여 useEffect가 openIndexes를 강제로 재설정하는 것을 방지
+        setChatSessionId('', ''); 
+        setHistoryData(newHistoryData); // historyData 업데이트
+
         toast({
           title: "정상적으로 삭제되었습니다.",
           position: 'top-left',
@@ -206,6 +256,8 @@ function SidebarContent(props: SidebarContent) {
       }          
     }catch(e:any){
       setIsReceiving(false)
+    } finally { // finally 블록 추가
+      isUpdatingOpenIndexesRef.current = false; // 플래그 해제
     }
   }
 
