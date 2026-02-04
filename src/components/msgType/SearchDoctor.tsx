@@ -346,7 +346,7 @@ const SearchDoctor = ({ onSendButton, data, isHistory, summary, isLiveChat, setI
       title = doctors[0]?.deptname ?? "의사 소개";
       llmSortType = parsedAnswer?.front_sort_type;
     } catch (e) { /* 파싱 오류 무시 */ }
-    setOpenDoctorListModal(true, id, doctors, title, llmSortType);
+    setOpenDoctorListModal(true, id, doctors, proposalKeyword ? proposalKeyword : title, llmSortType);
   }
 
   const fn_close_modal_doctor_list = async() => {

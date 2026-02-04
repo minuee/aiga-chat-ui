@@ -40,6 +40,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
   const [isLocalTypeDone, setLocalTypeDone] = useState(true)
   const [doctorList, setDoctorList] = useState([]);
   const [selectChatId, setSelectselectChatId] = useState(0);
+  const [proposalKeyword, setProposalKeyword] = useState(null);
   const isDark = useColorModeValue(false, true);
   const { isOpenDocListModal,chatId,doctorAllList } = ModalDoctorListStore(state => state);
   const setOpenDoctorListModal = ModalDoctorListStore((state) => state.setOpenDoctorListModal);
@@ -273,6 +274,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
 
   useEffect(() => {
     setSelectselectChatId(!functions.isEmpty(data?.chat_id) ? data?.chat_id : !functions.isEmpty(data?.id) ? data?.id : 0);
+    setProposalKeyword(!functions.isEmpty(data?.answer?.proposal) ? data?.answer?.proposal : null);
 
     let parsedAnswer = null;
     if (typeof data?.answer === 'string') {
@@ -340,7 +342,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
       title = parsedAnswer?.disease ?? "의사소개";
       llmSortType = parsedAnswer?.front_sort_type;
     } catch (e) { /* 파싱 오류 무시 */ }
-    setOpenDoctorListModal(true, id, doctors, title, llmSortType);
+    setOpenDoctorListModal(true, id, doctors, proposalKeyword ? proposalKeyword : title, llmSortType);
   }
 
   const fn_close_modal_doctor_list = async() => {
@@ -501,7 +503,7 @@ const RecommandDoctor = ({  onSendButton , data, isHistory ,summary,isLiveChat,s
             onClick={() => onSendDoctorListButton(selectChatId)} 
           >
             <CustomTextBold400 fontSize={'15px'} fontWeight={'bold'} color='#0AA464' lineHeight={"150%"} >
-            {data?.answer?.disease} 전체 보기
+            {proposalKeyword ? proposalKeyword : data?.answer?.disease} 전체 보기
             </CustomTextBold400>
             <Icon as={BiChevronRight} width="20px" height="20px" color={iconColor} />
           </Box>
