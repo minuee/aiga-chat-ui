@@ -84,7 +84,8 @@ const SearchDoctor = ({ onSendButton, data, isHistory, summary, isLiveChat, setI
     cleaned = cleaned.replace(/(https?:\/\/.+?\.(?:jpeg|jpg|png|gif|bmp|webp|svg|gif))\s/gi, (match) => match.replace(/\s/g, '%20'));
     // 각 줄의 선행 공백을 제거 (ltrim 효과) 
     cleaned = cleaned.replace(/^[ \t]+/gm, '');
-    
+    // "예: "를 "예-"로 변경
+    cleaned = cleaned.replace(/예:\s*/g, '예를 들면 ');
     return cleaned;
   };
 

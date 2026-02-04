@@ -212,8 +212,10 @@ const AwesomeMessage = React.memo(function AwesomeMessage({ output, isHistory, s
     cleaned = cleaned.replace(/\\n/g, '\n');
     // 이미지 URL 내 공백을 %20으로 인코딩
     cleaned = cleaned.replace(/(https?:\/\/.+?\.(?:jpeg|jpg|png|gif|bmp|webp|svg|gif))\s/gi, (match) => match.replace(/\s/g, '%20'));
-    // 각 줄의 선행 공백을 제거 (ltrim 효과) 
+    // 각 줄의 선행 공백을 제거 (ltrim 효과)
     cleaned = cleaned.replace(/^[ \t]+/gm, '');
+    // "예: "를 "예-"로 변경
+    cleaned = cleaned.replace(/예:\s*/g, '예를 들면 ');
     return cleaned;
   };
 
