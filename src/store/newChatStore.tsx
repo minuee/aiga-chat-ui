@@ -3,6 +3,7 @@ import { devtools, persist,createJSONStorage } from 'zustand/middleware'
 
 interface State {
     isNew : boolean;
+    lastUpdated: string | null;
     setNewChatState: (isNew: boolean) => void;
 }
 
@@ -11,13 +12,36 @@ const NewStateStore = create<State>()(
         persist(
             (set) => ({
                 isNew: false,
+                lastUpdated: null,
                 setNewChatState: (isNew:boolean) => {
-                    set({isNew});
+                    set({
+                        isNew,
+                        lastUpdated: new Date().toISOString()
+                    });
                 },
             }),
             { 
                 name: 'NewStateStore',
-                storage: createJSONStorage(() => sessionStorage)
+                storage: createJSONStorage(() => localStorage), // 3일 관리를 위해 localStorage로 변경
+                onRehydrateStorage: () => (state) => {
+                    if (state) {
+                        const { lastUpdated } = state as State;
+                        const isThreeDaysOldOrMissing = () => {
+                            if (!lastUpdated) return true;
+                            const lastUpdatedDate = new Date(lastUpdated);
+                            const threeDaysAgo = new Date();
+                            threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+                            lastUpdatedDate.setHours(0, 0, 0, 0);
+                            threeDaysAgo.setHours(0, 0, 0, 0);
+                            return lastUpdatedDate < threeDaysAgo;
+                        };
+
+                        if (isThreeDaysOldOrMissing()) {
+                            state.isNew = true; // 만료 시 신규 대화 상태로 강제 전환
+                            state.lastUpdated = null;
+                        }
+                    }
+                }
             }
         )
     )
@@ -27,6 +51,7 @@ export default NewStateStore;
 
 interface CallHistoryDataStoreState {
     historyData : any;
+    lastUpdated: string | null;
     setOldHistoryData: (historyData: any) => void;
 }
 
@@ -35,13 +60,36 @@ export const CallHistoryDataStore = create<CallHistoryDataStoreState>()(
         persist(
             (set) => ({
                 historyData: null,
+                lastUpdated: null,
                 setOldHistoryData: (historyData:any) => {
-                    set({historyData});
+                    set({
+                        historyData,
+                        lastUpdated: new Date().toISOString()
+                    });
                 },
             }),
             { 
                 name: 'CallHistoryDataStore',
-                storage: createJSONStorage(() => sessionStorage)
+                storage: createJSONStorage(() => localStorage),
+                onRehydrateStorage: () => (state) => {
+                    if (state) {
+                        const { lastUpdated } = state as CallHistoryDataStoreState;
+                        const isThreeDaysOldOrMissing = () => {
+                            if (!lastUpdated) return true;
+                            const lastUpdatedDate = new Date(lastUpdated);
+                            const threeDaysAgo = new Date();
+                            threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+                            lastUpdatedDate.setHours(0, 0, 0, 0);
+                            threeDaysAgo.setHours(0, 0, 0, 0);
+                            return lastUpdatedDate < threeDaysAgo;
+                        };
+
+                        if (isThreeDaysOldOrMissing()) {
+                            state.historyData = null;
+                            state.lastUpdated = null;
+                        }
+                    }
+                }
             }
         )
     )
@@ -53,6 +101,7 @@ export const CallHistoryDataStore = create<CallHistoryDataStoreState>()(
 interface ChatSesseionIdStoreState {
     chatSessionId : string;
     currentHistorySelectDate: string | null;
+    lastUpdated: string | null; // lastUpdated 추가
     setChatSessionId: (chatSessionId: string, currentHistorySelectDate?: string | null) => void;
 }
 
@@ -62,18 +111,39 @@ export const ChatSesseionIdStore = create<ChatSesseionIdStoreState>()(
             (set, get) => ({
                 chatSessionId: '',
                 currentHistorySelectDate: null,
+                lastUpdated: null, // 초기값
                 setChatSessionId: (chatSessionId:string, currentHistorySelectDate?: string | null) => {
                     set((state:ChatSesseionIdStoreState) => ({
                         chatSessionId,
-                        currentHistorySelectDate: currentHistorySelectDate !== undefined ? currentHistorySelectDate : state.currentHistorySelectDate
+                        currentHistorySelectDate: currentHistorySelectDate !== undefined ? currentHistorySelectDate : state.currentHistorySelectDate,
+                        lastUpdated: new Date().toISOString(), // ID 설정 시 시간 갱신
                     }));
                 },
             }),
             { 
                 name: 'ChatSesseionIdStore',
-                //storage: createJSONStorage(() => localStorage),
-                onRehydrateStorage: () => (state:any) => {
-                    state?.set({ hasHydrated: true });
+                storage: createJSONStorage(() => localStorage), // 명시적으로 localStorage 설정
+                onRehydrateStorage: () => (state) => {
+                    if (state) {
+                        const { lastUpdated } = state as ChatSesseionIdStoreState;
+                        
+                        const isThreeDaysOldOrMissing = () => {
+                            if (!lastUpdated) return true;
+                            const lastUpdatedDate = new Date(lastUpdated);
+                            const threeDaysAgo = new Date();
+                            threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+                            lastUpdatedDate.setHours(0, 0, 0, 0);
+                            threeDaysAgo.setHours(0, 0, 0, 0);
+                            return lastUpdatedDate < threeDaysAgo;
+                        };
+
+                        if (isThreeDaysOldOrMissing()) {
+                            // 세션 정보 초기화
+                            state.chatSessionId = '';
+                            state.currentHistorySelectDate = null;
+                            state.lastUpdated = null;
+                        }
+                    }
                 }
             }
         )
@@ -83,23 +153,23 @@ export const ChatSesseionIdStore = create<ChatSesseionIdStoreState>()(
 
 interface CurrentDialogStoreState {
     messageData : any[];
-    lastUpdated: string | null; // lastUpdated 필드 추가
+    lastUpdated: string | null;
     setCurrentMessageData: (messageData: any) => void;
 }
 
 export const CurrentDialogStore = create<CurrentDialogStoreState>()(
     devtools(
         persist(
-            (set, get) => ({ // get 추가
+            (set, get) => ({
                 messageData: [],
-                lastUpdated: null, // lastUpdated 초기값 설정
+                lastUpdated: null,
                 setCurrentMessageData: (messageData: any) => {
                     set((state) => ({
                         messageData:
                             typeof messageData === 'function'
                                 ? messageData(state.messageData)
                                 : messageData,
-                        lastUpdated: new Date().toISOString(), // messageData 업데이트 시 lastUpdated 갱신
+                        lastUpdated: new Date().toISOString(),
                     }));
                 }
             }),
@@ -108,24 +178,19 @@ export const CurrentDialogStore = create<CurrentDialogStoreState>()(
                 storage: createJSONStorage(() => localStorage),
                 onRehydrateStorage: () => (state) => {
                     if (state) {
-                        const { lastUpdated, messageData } = state as CurrentDialogStoreState;
+                        const { lastUpdated } = state as CurrentDialogStoreState;
 
-                        // lastUpdated가 없거나 (null, undefined), 3일 이상 지났으면 초기화
                         const isThreeDaysOldOrMissing = () => {
-                            if (!lastUpdated) {
-                                return true; // lastUpdated가 없으면 초기화 필요
-                            }
+                            if (!lastUpdated) return true;
                             const lastUpdatedDate = new Date(lastUpdated);
                             const threeDaysAgo = new Date();
                             threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-                            // Set hours, minutes, seconds, and milliseconds to 0 for a fair day-based comparison
                             lastUpdatedDate.setHours(0, 0, 0, 0);
                             threeDaysAgo.setHours(0, 0, 0, 0);
                             return lastUpdatedDate < threeDaysAgo;
                         };
 
                         if (isThreeDaysOldOrMissing()) {
-                            // messageData와 lastUpdated 초기화
                             state.messageData = [];
                             state.lastUpdated = null;
                         }
