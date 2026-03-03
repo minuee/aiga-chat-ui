@@ -73,25 +73,40 @@
 ```
 aiga_frontend_userSite
 ├── app                     => 페이징 설정
-│   ├── api                 => 로컬 API 주소 ( 주로 테스트 )
-│   ├── chat                => 챗봇 메인화면
-│   ├── layout              => auth, non-auth등 구분에 의한 레이아웃
-│   └── page                => root index page
+│   ├── api                 => 로컬 API 주소 ( 사용안함, 기본설정파일 )
+│   └── [locale]            => 다국어기반
+│       ├── chat            => 챗봇화면(2nd Tab)
+│       ├── doctor          => 명의찾기(3rd Tab)
+│       ├── board           => 커뮤니티(4th Tab)
+│       ├── mypage          => 마이페이지(5th Tab)
+│       ├── search          => 검색페이지
+│       ├── policy          => 각종약관(개인정보정책)
+│       ├── regulation      => 각종약관(이용약관)
+│       ├── sensitive       => 각종약관(민감정보이용)
+│       ├── layout          => auth, non-auth등 구분에 의한 레이아웃
+│       └── page            => root index page (홈탭)
 ├── node_modules            => library
 ├── src
 │   ├── assets              => 각종 이미지,글꼴,아이콘등
+│       ├── icons           => icons files
+│       ├── images          => images files
+│       ├── fonts           => custom fonts
+│       └── etc             => etc files
 │   ├── components          => 공통 단위 컴포넌트 관리
 │   ├── contexts            => react Core형 state management
+│   ├── hooks               => 각종 Hooks파일 
+│   ├── i18n                => 다국어버전 환경설정
+│   ├── lib                 => chakra templete 추가설정
+│   ├── store               => 광역변수 zustand 설정
 │   ├── style               => style, theme등 설정
+│   ├── theme               => style, theme등 설정
 │   ├── types               => typescript type 설정 
 │   └── utils               => 각종함수
-├── assets                  => 위 assets 상세
-│   ├── icons               => icons files
-│   ├── images              => images files
-│   ├── fonts               => custom fonts
-│   └── etc                 => etc files
 ├── .gitignore              => git 관리 비대상 설정 파일
 ├── .env                    => 환경설정파일
+├── ecosystem.config.js     => PM2 설정파일
+├── middleware.ts           => nextjs middleware파일
+├── next-sitemap.config.js  => nextjs Custom sitemap 설정
 ├── next.config.js          => nextjs 설정파일
 ├── pacakge-lock.json       => 의존성에 관한 구체적인 정보를 갖는 파일(package-lock.json이 있을경우 package.json을 참조하지 않는다)
 ├── package.json            => Module정보 설정 파일
@@ -225,65 +240,4 @@ For open source projects, say how it is licensed.
 
 ## Project status
 If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
-
-
-嵐のように心を裂く
-永遠の意味　知らぬ君に
-答えを示す時だ
-夢幻に続く螺旋の先で
-鬼哭に耳を傾けた仕舞よ
-この身に宿る万物で終いよ
-夢幻を他者に託した弱き人
-命の輝きは幾星霜に
-祈りの瞬きが照らす斜陽に
-千夜を身に宿し
-解を押し付ける
-枯らしていく　枯らしていく
-夢幻の夜に花を裂く
-繋いでいく繋いでいく
-嵐に種を撒いていく
-ゆらいでいる ゆらいでる
-花のように意思を繋ぐ
-奪っていく 奪っていく
-嵐のように心を裂く
-永遠の意味　知らぬ君に
-答えを示す時だ
-夢幻に続く螺旋の先で
-待つのは誰
-
-
-くもり硝子の向うは風の街
-問わず語りの心が切ないね
-枯葉ひとつの重さもない命
-貴女あなたを失ってから
-
-背中を丸めながら
-指のリング抜き取ったね
-俺に返すつもりならば
-捨ててくれ
-
-そうね　誕生石ならルビーなの
-そんな言葉が頭に渦巻くよ
-あれは八月　目映い陽の中で
-誓った愛の幻
-
-孤独が好きな俺さ
-気にしないで行っていいよ
-気が変わらぬうちに早く
-消えてくれ
-
-くもり硝子の向うは風の街
-さめた紅茶が残ったテーブルで
-襟を合わせて日暮れの人波に
-紛れる貴女あなたを見てた
-
-そして二年の月日が流れ去り
-街でベージュのコートを見かけると
-指にルビーのリングを探すのさ
-貴女あなたを失ってから
-
-そして二年の月日が流れ去り
-街でベージュのコートを見かけると
-指にルビーのリングを探すのさ
-貴女あなたを失ってから…
 
