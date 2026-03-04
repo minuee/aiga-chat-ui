@@ -340,13 +340,25 @@ function DoctorModal(props: DoctorModalProps) {
             {
               ( (userBaseInfo?.email == 'minuee47@gmail.com'|| userBaseInfo?.email == 'lena47@naver.com' )  && !userBaseInfo?.isGuest ) && (
                 <Flex mt="2" flexShrink={1} flexWrap={'wrap'}>
-                  { !functions.isEmpty(doctorBasicData.specialties) && (
+                  {
+                  !functions.isEmpty(doctorBasicData.parse_specialties) ?
+                  doctorBasicData.parse_specialties.split(",").map((subItem:any, subIndex:number) => (
+                    <Box display={'flex'} padding="2px 4px" bg="#EFF2F7" borderRadius={"4px"} mr="1" mt="1" key={subIndex}>
+                      <CustomText fontSize={'13px'} color="#5C5E69">{subItem.toString()}</CustomText>
+                    </Box>
+                  )
+                  )
+                  :
+                  !functions.isEmpty(doctorBasicData.specialties) ? (
                     doctorBasicData.specialties.split(",").map((subItem:any, subIndex:number) => (
                       <Box display={'flex'} padding="2px 4px" bg="#EFF2F7" borderRadius={"4px"} mr="1" mt="1" key={subIndex}>
                         <CustomText fontSize={'13px'} color="#5C5E69">{subItem.toString()}</CustomText>
                       </Box>
                     )
-                    ))
+                    )
+                  )
+                  : 
+                  null
                   }
                 </Flex>
               )
